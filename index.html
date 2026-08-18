@@ -191,12 +191,12 @@
       <div>
         <span class="eyebrow">📬 Newsletter · Every Monday</span>
         <h2 class="big">The AI Weekly Briefing<i>.</i></h2>
-        <p>Research, releases and funding from the week in AI — a 5-minute read, published every Monday. Get it on WhatsApp or read it right here.</p>
+        <p>Research, releases and funding from the week in AI — a 5-minute read, published every Monday. Straight to your inbox.</p>
         <div class="cta-row">
-          <a class="btn" href="https://wa.me/919769686931?text=SUBSCRIBE">Subscribe on WhatsApp</a>
+          <button class="btn" type="button" data-subscribe>Subscribe by email</button>
           <a class="btn ghost" style="border-color:var(--cream);color:var(--cream) !important" href="/briefing/">All issues →</a>
         </div>
-        <p style="margin-top:14px;font-size:13.5px">Send <b style="color:#F7A97E">SUBSCRIBE</b> to +91 97696 86931 on WhatsApp · No spam, just the most important updates.</p>
+        <p style="margin-top:14px;font-size:13.5px">One email every Monday · <b style="color:#F7A97E">No spam</b>, unsubscribe any time.</p>
       </div>
       <div class="card" id="latest-issue">
         <span class="pill">LOADING…</span>
@@ -248,6 +248,135 @@ fetch('/briefing/issues.json')
     document.getElementById('latest-issue').innerHTML =
       `<span class="pill">AI WEEKLY BRIEFING</span><h3>Read the latest issue</h3><a class="btn" href="/briefing/">Open the archive →</a>`;
   });
+</script>
+
+<!-- ── subscribe modal ─────────────────────────────────────── -->
+<div class="modal-overlay" id="subModal" role="dialog" aria-modal="true" aria-labelledby="subTitle" hidden>
+  <div class="modal">
+    <button class="modal-close" type="button" aria-label="Close">&times;</button>
+    <span class="eyebrow">📬 AI Weekly Briefing</span>
+    <h2 id="subTitle">Stay ahead of AI<i>.</i></h2>
+    <p class="sub">Research, releases and funding from the week in AI — a 5-minute read, every Monday morning.</p>
+    <form novalidate>
+      <label class="hp" aria-hidden="true">Leave this empty <input type="text" name="company" tabindex="-1" autocomplete="off"></label>
+      <input type="email" name="email" placeholder="you@company.com" autocomplete="email" required aria-label="Email address">
+      <p class="msg" role="alert"></p>
+      <button class="btn" type="submit">Get the briefing</button>
+      <p class="note">No spam. Unsubscribe any time.</p>
+    </form>
+    <div class="done">
+      <div class="tick">&check;</div>
+      <h2>You're in<i>.</i></h2>
+      <p class="sub" style="margin-bottom:18px">Issue #01 is waiting — the next one lands Monday.</p>
+      <a class="btn" href="/briefing/">Read the latest issue →</a>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  /* ── Where signups are sent. Point this at your n8n Production webhook URL. ── */
+  var WEBHOOK_URL = 'https://n8n.xploreaiworld.tech/webhook/xploreai-subscribe';
+
+  var KEY     = 'xai_sub',
+      overlay = document.getElementById('subModal'),
+      modal   = overlay.querySelector('.modal'),
+      form    = overlay.querySelector('form'),
+      email   = overlay.querySelector('input[type=email]'),
+      hp      = overlay.querySelector('input[name=company]'),
+      msg     = overlay.querySelector('.msg'),
+      submit  = overlay.querySelector('button[type=submit]'),
+      state   = null,
+      opened  = false,
+      lastFocus;
+
+  try { state = localStorage.getItem(KEY); } catch(e){}
+
+  function open(){
+    if (overlay.classList.contains('open')) return;
+    lastFocus = document.activeElement;
+    overlay.hidden = false;
+    void overlay.offsetWidth;              // allow the transition to run
+    overlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    void overlay.offsetWidth;              // flush the visibility change before focusing
+    (modal.classList.contains('success') ? overlay.querySelector('.done .btn') : email).focus();
+  }
+  function close(){
+    if (!overlay.classList.contains('open')) return;
+    overlay.classList.remove('open');
+    document.body.style.overflow = '';
+    setTimeout(function(){ overlay.hidden = true; }, 250);
+    if (lastFocus) lastFocus.focus();
+    if (state !== 'done') { try { localStorage.setItem(KEY, 'dismissed'); } catch(e){} state = 'dismissed'; }
+  }
+  function error(text){ msg.textContent = text; msg.classList.add('show'); }
+
+  /* triggers */
+  document.querySelectorAll('[data-subscribe]').forEach(function(b){
+    b.addEventListener('click', function(e){ e.preventDefault(); open(); });
+  });
+  overlay.querySelector('.modal-close').addEventListener('click', close);
+  overlay.addEventListener('mousedown', function(e){ if (e.target === overlay) close(); });
+  document.addEventListener('keydown', function(e){
+    if (!overlay.classList.contains('open')) return;
+    if (e.key === 'Escape') return close();
+    if (e.key !== 'Tab') return;
+    var f = modal.querySelectorAll('button, input[type=email], a[href]'),
+        list = [].filter.call(f, function(el){ return el.offsetParent !== null; });
+    if (!list.length) return;
+    var first = list[0], last = list[list.length - 1];
+    if (e.shiftKey && document.activeElement === first){ e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last){ e.preventDefault(); first.focus(); }
+  });
+
+  /* auto-open once: 20s dwell, or 50% scroll depth — whichever comes first */
+  if (!state){
+    var auto = function(){
+      if (opened || state) return;         // already shown, or dismissed/subscribed since load
+      opened = true;
+      clearTimeout(timer);
+      window.removeEventListener('scroll', onScroll);
+      open();
+    };
+    var timer = setTimeout(auto, 20000);
+    var onScroll = function(){
+      var h = document.documentElement.scrollHeight - window.innerHeight;
+      if (h > 0 && (window.scrollY / h) >= 0.5){ clearTimeout(timer); auto(); }
+    };
+    window.addEventListener('scroll', onScroll, {passive:true});
+  }
+
+  /* submit */
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    msg.classList.remove('show');
+    var val = email.value.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(val)) return error('Please enter a valid email address.');
+    if (hp.value){ modal.classList.add('success'); return; }   /* bot caught by honeypot */
+
+    submit.disabled = true;
+    submit.textContent = 'Subscribing…';
+
+    fetch(WEBHOOK_URL, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ email: val, source: 'website-popup', page: location.pathname, ts: new Date().toISOString() })
+    })
+    .then(function(r){
+      if (!r.ok) throw new Error(r.status);
+      try { localStorage.setItem(KEY, 'done'); } catch(e){}
+      state = 'done';
+      modal.classList.add('success');
+      overlay.querySelector('.done .btn').focus();
+    })
+    .catch(function(){
+      error('Something went wrong. Please try again, or email hello@xploreai.co.in.');
+      submit.disabled = false;
+      submit.textContent = 'Get the briefing';
+    });
+  });
+})();
 </script>
 </body>
 </html>
