@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Weekly Briefing — XploreAI</title>
+<meta name="description" content="The XploreAI Weekly Briefing archive — the week in AI, in 5 minutes. Research, releases and funding, every Monday.">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="XploreAI">
+<meta property="og:title" content="AI Weekly Briefing — XploreAI">
+<meta property="og:description" content="The week in AI, in 5 minutes. Every Monday.">
+<meta property="og:url" content="https://xploreai.co.in/briefing/">
+<meta property="og:image" content="https://xploreai.co.in/assets/og-image.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/style.css">
+<style>
+  .head-block{padding:70px 0 40px;text-align:center}
+  .head-block h1{font-size:clamp(32px,5vw,48px);font-weight:700;line-height:1.2;margin:10px 0 12px}
+  .head-block h1 i{font-style:normal;color:var(--rust)}
+  #issues{display:grid;gap:16px;max-width:760px;margin:0 auto;padding-bottom:80px}
+  .issue-card h3{font-size:22px;margin:8px 0 6px}
+  .issue-card p{font-size:15px;color:var(--soft);margin-bottom:12px}
+  .issue-card .hl{font-size:13.5px;color:var(--soft);margin-bottom:14px}
+  .issue-card .hl b{color:var(--rust)}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap bar">
+    <a class="wordmark" href="/">xplore<span>ai</span></a>
+    <ul>
+      <li><a href="/#agents">Solutions</a></li>
+      <li><a href="/#stories">Success Stories</a></li>
+      <li><a href="/briefing/">AI Briefing</a></li>
+      <li><a href="/#subscribe">Newsletter</a></li>
+      <li><a href="/learn.html">Learn AI</a></li>
+      <li><a class="btn" href="https://wa.me/919769686931?text=SUBSCRIBE">Subscribe</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="head-block wrap">
+  <span class="pill">EVERY MONDAY</span>
+  <h1>AI Weekly Briefing<i>.</i></h1>
+  <p class="lede" style="margin:0 auto">Research, releases and funding from the week in AI — in a 5-minute read.</p>
+</div>
+
+<div class="wrap">
+  <div id="issues"><div class="card">Loading issues…</div></div>
+</div>
+
+<footer>
+  <div class="wrap">
+    <div class="fine" style="border:none;margin:0;padding:0">
+      <span>© 2026 XploreAI · <a href="/">xploreai.co.in</a></span>
+      <span><a href="https://wa.me/919769686931?text=SUBSCRIBE">Subscribe on WhatsApp</a></span>
+    </div>
+  </div>
+</footer>
+
+<script>
+fetch('/briefing/issues.json')
+  .then(r => r.json())
+  .then(issues => {
+    document.getElementById('issues').innerHTML = issues.map(it => `
+      <div class="card issue-card">
+        <span class="pill">ISSUE #${String(it.issue).padStart(2,'0')} · ${it.dates.toUpperCase()}</span>
+        <h3>${it.title}</h3>
+        <p>${it.summary}</p>
+        <div class="hl">${it.highlights.map(h => `<b>·</b> ${h}`).join('&nbsp;&nbsp;')}</div>
+        <a class="btn" href="/briefing/${it.slug}/">Read Issue #${String(it.issue).padStart(2,'0')} →</a>
+      </div>`).join('');
+  })
+  .catch(() => {
+    document.getElementById('issues').innerHTML = '<div class="card">Could not load the issue list. Please refresh.</div>';
+  });
+</script>
+</body>
+</html>

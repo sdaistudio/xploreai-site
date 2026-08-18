@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="XploreAI Weekly Briefing #01 (10–17 Aug 2026): agentic AI moves into enterprise execution, OpenAI previews 14× Ultrafast, Gemini 3.7 Flash launches, and a billion-dollar week for AI workflow startups.">
+<link rel="canonical" href="https://xploreai.co.in/briefing/issue-01/">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="XploreAI">
+<meta property="og:title" content="AI Weekly Briefing #01 — Agentic AI Goes to Work (10–17 Aug 2026)">
+<meta property="og:description" content="The week in AI, in 5 minutes: enterprise execution, 14× model speed, and billion-dollar bets on AI workflows.">
+<meta property="og:url" content="https://xploreai.co.in/briefing/issue-01/">
+<meta property="og:image" content="https://xploreai.co.in/briefing/issue-01/og-image.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="AI Weekly Briefing #01 — XploreAI">
+<meta name="twitter:description" content="The week in AI, in 5 minutes.">
+<meta name="twitter:image" content="https://xploreai.co.in/briefing/issue-01/og-image.jpg">
+<title>XploreAI — AI Weekly Briefing · 10–17 Aug 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#F5EFE4; --card:#FFFDF8; --espresso:#4A4238; --espresso-soft:rgba(74,66,56,.72);
+    --rust:#E2571B; --rust-soft:#FBE9DF; --line:rgba(74,66,56,.14); --dark:#2B2620;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--cream);color:var(--espresso);font-family:'Quicksand',-apple-system,'Segoe UI',Arial,sans-serif;font-weight:500;line-height:1.62;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:720px;margin:0 auto;padding:40px 22px 64px}
+
+  /* Masthead */
+  .masthead{text-align:center;padding:26px 0 30px}
+  .wordmark{font-weight:700;font-size:44px;letter-spacing:.5px}
+  .wordmark .ai{color:var(--rust)}
+  .eyebrow{display:inline-block;margin-top:14px;font-size:13px;font-weight:700;letter-spacing:5px;color:var(--rust)}
+  .issue{margin-top:8px;font-size:15px;color:var(--espresso-soft)}
+  .dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--rust);margin:0 10px;vertical-align:middle}
+
+  /* One-line summary strip */
+  .strip{background:var(--dark);color:var(--cream);border-radius:18px;padding:18px 24px;text-align:center;font-weight:600;font-size:15.5px;margin:8px 0 34px}
+  .strip .up{color:#F7A97E;font-weight:700}
+
+  h2.section{font-size:14px;font-weight:700;letter-spacing:4px;color:var(--rust);margin:42px 0 6px}
+  h3.sectiontitle{font-size:27px;font-weight:700;line-height:1.25;margin-bottom:16px}
+  h3.sectiontitle .enddot{color:var(--rust)}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px 24px;margin-bottom:14px}
+  .card h4{font-size:18.5px;font-weight:700;margin-bottom:6px}
+  .card .date{display:inline-block;background:var(--rust-soft);color:var(--rust);font-weight:700;font-size:12.5px;letter-spacing:1.5px;border-radius:20px;padding:3px 12px;margin-bottom:10px}
+  .card p{font-size:15.5px;color:var(--espresso-soft)}
+  .card p b{color:var(--espresso)}
+  .why{margin-top:10px;padding-top:10px;border-top:1px dashed var(--line);font-size:14.5px}
+  .why b{color:var(--rust)}
+
+  /* Funding table */
+  table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden;font-size:14.5px}
+  thead th{background:var(--dark);color:var(--cream);text-align:left;font-weight:700;padding:12px 14px;letter-spacing:.5px}
+  tbody td{padding:12px 14px;border-top:1px solid var(--line);vertical-align:top;color:var(--espresso-soft)}
+  tbody td:first-child{white-space:nowrap;font-weight:700;color:var(--espresso)}
+  tbody td b{color:var(--rust);font-weight:700}
+  .tablewrap{border-radius:18px;overflow:hidden;border:1px solid var(--line)}
+  .tablewrap table{border:none;border-radius:0}
+
+  /* Signals */
+  .signal{display:flex;gap:16px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 18px;margin-bottom:10px}
+  .signal .num{flex:0 0 40px;height:40px;border-radius:50%;background:var(--rust);color:#fff;font-weight:700;font-size:17px;display:flex;align-items:center;justify-content:center}
+  .signal h5{font-size:16px;font-weight:700;margin-bottom:2px}
+  .signal p{font-size:14.5px;color:var(--espresso-soft)}
+
+  /* India watch + quote */
+  .india{background:var(--rust-soft);border:1px solid rgba(226,87,27,.25);border-radius:18px;padding:22px 24px;margin-top:6px}
+  .india h4{font-size:18px;font-weight:700;margin-bottom:8px}
+  .india p{font-size:15px;color:var(--espresso-soft)}
+  .quote{margin:44px 0 8px;text-align:center;padding:30px 26px;background:var(--dark);border-radius:20px;color:var(--cream)}
+  .quote .q{font-size:23px;font-weight:700;line-height:1.4}
+  .quote .q span{color:#F7A97E}
+  .quote .sub{margin-top:10px;font-size:14px;color:rgba(245,239,228,.65)}
+
+  /* Footer */
+  footer{margin-top:46px;text-align:center;border-top:1px solid var(--line);padding-top:28px}
+  footer .wordmark{font-size:26px}
+  footer .link{margin-top:8px;font-weight:700;color:var(--rust);font-size:15px;text-decoration:none;display:inline-block}
+  footer .fine{margin-top:10px;font-size:12.5px;color:var(--espresso-soft)}
+
+  @media (max-width:560px){
+    .wordmark{font-size:36px}
+    h3.sectiontitle{font-size:23px}
+    thead{display:none}
+    tbody td{display:block;border-top:none;padding:4px 14px}
+    tbody tr{display:block;border-top:1px solid var(--line);padding:8px 0}
+  }
+
+  a.readmore{display:inline-block;margin-top:10px;font-weight:700;font-size:14px;color:var(--rust);text-decoration:none}
+  a.readmore:hover{text-decoration:underline}
+  tbody td a{color:var(--espresso);text-decoration:none;border-bottom:2px solid var(--rust)}
+</style>
+</head>
+<body>
+<nav style="position:sticky;top:0;z-index:50;background:rgba(245,239,228,.92);border-bottom:1px solid rgba(74,66,56,.14);backdrop-filter:blur(8px)">
+  <div style="max-width:720px;margin:0 auto;padding:12px 22px;display:flex;justify-content:space-between;align-items:center">
+    <a href="/" style="font-weight:700;font-size:22px;text-decoration:none;color:#4A4238">xplore<span style="color:#E2571B">ai</span></a>
+    <a href="/briefing/" style="font-weight:700;font-size:14px;text-decoration:none;color:#E2571B">← All issues</a>
+  </div>
+</nav>
+<div class="wrap">
+
+  <!-- Masthead -->
+  <div class="masthead">
+    <div class="wordmark">xplore<span class="ai">ai</span></div>
+    <div class="eyebrow">AI WEEKLY BRIEFING</div>
+    <div class="issue">Issue #01 <span class="dot"></span> 10–17 August 2026 <span class="dot"></span> xploreai.co.in</div>
+  </div>
+
+  <div class="strip">
+    Agentic AI <span class="up">↑</span> &nbsp;·&nbsp; AI speed <span class="up">↑</span> &nbsp;·&nbsp; Enterprise adoption <span class="up">↑</span> &nbsp;·&nbsp; Voice AI <span class="up">↑</span> &nbsp;·&nbsp; Vertical AI funding <span class="up">↑</span> &nbsp;·&nbsp; Cyber AI <span class="up">↑</span>
+  </div>
+
+  <!-- Section 1 -->
+  <h2 class="section">01 · RESEARCH &amp; DEVELOPMENT</h2>
+  <h3 class="sectiontitle">From assistance to execution<span class="enddot">.</span></h3>
+
+  <div class="card">
+    <span class="date">12 AUG</span>
+    <h4>OpenAI: enterprises are delegating work, not just asking questions</h4>
+    <p>New enterprise adoption research shows the shift from AI assistance toward AI <b>execution</b>. Codex generated <b>64%</b> of combined ChatGPT + Codex output tokens among enterprise customers, and the most intensive "frontier" firms generated <b>8.3×</b> as many tokens per active user as typical firms. Codex growth outside engineering was striking: weekly active enterprise users up <b>108× in legal</b>, 41× in sales, 41× in recruiting and 26× in marketing since February.</p>
+    <p class="why"><b>Why it matters:</b> concrete evidence that agentic AI is moving into real business workflows — well beyond IT.</p>
+    <a class="readmore" href="https://openai.com/index/how-enterprises-put-ai-to-work/" target="_blank" rel="noopener">Read the full story →</a>
+  </div>
+
+  <div class="card">
+    <span class="date">14 AUG</span>
+    <h4>Anthropic details text watermarking for Claude</h4>
+    <p>Future Claude models will embed statistical watermarks in generated text, partly to comply with EU AI Act transparency requirements. Anthropic says the technique should not materially change output quality or token cost.</p>
+    <p class="why"><b>Why it matters:</b> AI provenance is becoming part of the model architecture itself.</p>
+    <a class="readmore" href="https://www.anthropic.com/news/claude-text-watermark" target="_blank" rel="noopener">Read the full story →</a>
+  </div>
+
+  <div class="card">
+    <span class="date">17 AUG</span>
+    <h4>OpenAI publishes "The Defender's Window"</h4>
+    <p>The paper argues that rapid advances in AI-enabled cyber capabilities require organisations to accelerate defensive security now, while defenders still hold the advantage.</p>
+    <p class="why"><b>Why it matters:</b> AI cybersecurity is emerging as a major frontier research area.</p>
+    <a class="readmore" href="https://openai.com/index/the-defenders-window/" target="_blank" rel="noopener">Read the full story →</a>
+  </div>
+
+  <!-- Section 2 -->
+  <h2 class="section">02 · TOOLS &amp; RELEASES</h2>
+  <h3 class="sectiontitle">Speed is the new battleground<span class="enddot">.</span></h3>
+
+  <div class="card">
+    <span class="date">11 AUG</span>
+    <h4>OpenAI Daybreak arrives on AWS</h4>
+    <p>Daybreak Blue and Red cyber-model capabilities are now available through <b>Amazon Bedrock</b>, giving security teams frontier cyber models inside existing AWS environments — spanning vulnerability analysis, threat detection and defensive automation.</p>
+    <a class="readmore" href="https://openai.com/index/daybreak-models-are-now-available-on-aws/" target="_blank" rel="noopener">Read the full story →</a>
+  </div>
+
+  <div class="card">
+    <span class="date">13 AUG</span>
+    <h4>GPT-5.6 Sol "Ultrafast" — up to 14× standard speed</h4>
+    <p>OpenAI previewed a new API service tier running GPT-5.6 Sol at up to <b>14× standard speed</b>, powered by Cerebras and capable of up to <b>750 output tokens per second</b> (limited preview). Target use cases: real-time financial research, fraud and security analysis, incident response, coding and customer support.</p>
+    <p class="why"><b>The new metric:</b> useful intelligence per <i>second</i>, not just per token.</p>
+    <a class="readmore" href="https://openai.com/index/previewing-ultrafast/" target="_blank" rel="noopener">Read the full story →</a>
+  </div>
+
+  <div class="card">
+    <span class="date">13 AUG</span>
+    <h4>Google launches Gemini 3.7 Flash</h4>
+    <p>Positioned as Google's most intelligent "workhorse" model yet for <b>coding and agents</b>, with gains in software engineering, web development, document understanding and workflow automation. Introductory pricing: <b>$0.75 / 1M input</b> and <b>$3.75 / 1M output tokens</b> through year-end. Google's autonomous Gemini Spark agent has already switched to it.</p>
+    <p class="why"><b>Key signal:</b> the frontier race is now intelligence + speed + agent capability + tool use + cost per task.</p>
+    <a class="readmore" href="https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-gemini-3-7-flash/" target="_blank" rel="noopener">Read the full story →</a>
+  </div>
+
+  <!-- Section 3 -->
+  <h2 class="section">03 · FUNDING &amp; STARTUPS</h2>
+  <h3 class="sectiontitle">Money is chasing workflows<span class="enddot">.</span></h3>
+
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>Date</th><th>Company</th><th>Development</th></tr></thead>
+    <tbody>
+      <tr><td>11 Aug</td><td><a href="https://www.reuters.com/technology/xai-co-founders-startup-river-ai-raises-11-billion-expand-custom-ai-tools-2026-08-11/" target="_blank" rel="noopener">River AI</a></td><td>Raised <b>$1.1B</b> to expand tools for building personalised models on customer data — backers include General Catalyst, Nvidia, AMD Ventures and Temasek.</td></tr>
+      <tr><td>11 Aug</td><td><a href="https://yourstory.com/2026/08/startup-news-and-updates-daily-roundup-august-11-2026" target="_blank" rel="noopener">Vecton AI 🇮🇳</a></td><td>Bengaluru startup raised <b>₹6 Cr pre-seed</b> for enterprise AI in financial institutions, using an FDE-style deployment model.</td></tr>
+      <tr><td>12 Aug</td><td><a href="https://www.reuters.com/technology/ai-code-review-platform-coderabbit-valued-15-billion-latest-funding-round-2026-08-12/" target="_blank" rel="noopener">CodeRabbit</a></td><td>AI code-review platform raised <b>$143M</b> at a <b>$1.5B</b> valuation.</td></tr>
+      <tr><td>12 Aug</td><td><a href="https://techcrunch.com/2026/08/12/openai-backed-thrive-holdings-raises-2b-to-bring-ai-to-the-enterprise/" target="_blank" rel="noopener">Thrive Holdings</a></td><td>Raised <b>$2B at $12B</b> — acquires traditional businesses and rebuilds their workflows with AI.</td></tr>
+      <tr><td>16 Aug</td><td><a href="https://techcrunch.com/2026/08/16/stripe-will-reportedly-acquire-ai-gateway-startup-openrouter-for-7b/" target="_blank" rel="noopener">OpenRouter</a></td><td>Stripe reportedly finalised a deal to acquire the AI model-routing platform for <b>$7B+</b>.</td></tr>
+      <tr><td>17 Aug</td><td><a href="https://www.reuters.com/technology/wispr-flow-valued-2-billion-latest-funding-round-2026-08-17/" target="_blank" rel="noopener">Wispr Flow</a></td><td>Raised <b>$280M Series B at $2B</b> and previewed proprietary speech model <b>Canto</b>.</td></tr>
+      <tr><td>17 Aug</td><td><a href="https://www.reuters.com/technology/pentagon-pressure-move-ai-faster-drives-smacks-new-funding-round-ceo-says-2026-08-17/" target="_blank" rel="noopener">Smack Technologies</a></td><td>Defense-AI startup raised <b>$61M Series B</b> to scale its battlefield decision platform Omega and wearable AI hardware.</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="card" style="margin-top:14px">
+    <span class="date">17 AUG</span>
+    <h4>And one business number worth noting</h4>
+    <p>Reuters reported that Anthropic's annual revenue run rate exceeded <b>$65B</b> by end-July, up from $47B in May, per a person familiar with the matter.</p>
+    <a class="readmore" href="https://www.reuters.com/technology/anthropic-revenue-run-rate-tops-65-billion-source-says-2026-08-17/" target="_blank" rel="noopener">Read the full story →</a>
+  </div>
+
+  <!-- India watch -->
+  <h2 class="section">04 · INDIA WATCH</h2>
+  <div class="india">
+    <h4>🇮🇳 Vecton AI — AI × BFSI × Forward Deployed Engineers</h4>
+    <p>Worth watching because it sits directly at the intersection of AI, financial services and enterprise transformation: embedded AI engineers work inside financial-institution teams to identify, build and deploy real use cases while handling integration, scalability, governance and compliance. It's a live example of where enterprise AI is heading — <b style="color:var(--rust)">POC → FDE → workflow integration → production → measurable business outcome.</b></p>
+    <a class="readmore" href="https://yourstory.com/2026/08/startup-news-and-updates-daily-roundup-august-11-2026" target="_blank" rel="noopener">Read the coverage →</a>
+  </div>
+
+  <!-- Signals -->
+  <h2 class="section">05 · THE FIVE BIG SIGNALS</h2>
+  <h3 class="sectiontitle">What this week really told us<span class="enddot">.</span></h3>
+
+  <div class="signal"><div class="num">1</div><div><h5>Agentic AI → Enterprise AI</h5><p>OpenAI's data shows organisations moving from asking AI questions to delegating actual work.</p></div></div>
+  <div class="signal"><div class="num">2</div><div><h5>Speed is the next battleground</h5><p>Ultrafast at up to 14× shows latency is becoming a strategic model capability.</p></div></div>
+  <div class="signal"><div class="num">3</div><div><h5>Coding remains AI's fastest professional use case</h5><p>Gemini 3.7 Flash and CodeRabbit's $1.5B valuation reinforce the focus on software-engineering automation.</p></div></div>
+  <div class="signal"><div class="num">4</div><div><h5>Voice AI is now a serious investment category</h5><p>Wispr's $280M round and proprietary Canto model point to voice as a broader computing interface.</p></div></div>
+  <div class="signal"><div class="num">5</div><div><h5>Investors are betting on workflows, not chatbots</h5><p>River AI, Thrive, Vecton and Smack share one thesis: put AI inside a real workflow and let it execute.</p></div></div>
+
+  <!-- Closing -->
+  <div class="quote">
+    <div class="q">AI is moving from Generate → Reason → Act → <span>Execute</span></div>
+    <div class="sub">The theme of the week, 10–17 August 2026</div>
+  </div>
+
+  <footer>
+    <div class="wordmark">xplore<span class="ai">ai</span></div>
+    <a class="link" href="https://xploreai.co.in">xploreai.co.in</a>
+    <div class="fine">You're reading the XploreAI Weekly Briefing — a 5-minute read on the week in AI.<br>© 2026 XploreAI · @xploreai</div>
+  </footer>
+
+</div>
+</body>
+</html>
