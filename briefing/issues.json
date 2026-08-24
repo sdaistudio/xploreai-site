@@ -1,10 +1,32 @@
 [
   {
+    "issue": 2,
+    "slug": "issue-02",
+    "title": "The Bottleneck Shifts",
+    "dates": "17–23 Aug 2026",
+    "summary": "OpenAI slows frontier training over cyber risk, a free million-token stealth model appears on OpenRouter, and billions pour into AI inference chips and infrastructure.",
+    "highlights": [
+      "Cyber AI ↑↑↑",
+      "Inference chips ↑↑↑",
+      "Infra capital ↑↑↑",
+      "Long context ↑↑",
+      "Agentic AI ↑↑",
+      "Open models ↑↑"
+    ]
+  },
+  {
     "issue": 1,
     "slug": "issue-01",
     "title": "Agentic AI Goes to Work",
     "dates": "10–17 Aug 2026",
     "summary": "Enterprises shift from AI assistance to AI execution, OpenAI previews 14× Ultrafast, Gemini 3.7 Flash launches, and a billion-dollar week for AI workflow startups.",
-    "highlights": ["Agentic AI ↑", "AI speed ↑", "Enterprise adoption ↑", "Voice AI ↑", "Vertical funding ↑", "Cyber AI ↑"]
+    "highlights": [
+      "Agentic AI ↑",
+      "AI speed ↑",
+      "Enterprise adoption ↑",
+      "Voice AI ↑",
+      "Vertical funding ↑",
+      "Cyber AI ↑"
+    ]
   }
 ]
