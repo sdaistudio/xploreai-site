@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="XploreAI Weekly Briefing #03 (24–30 Aug 2026): AI moves beyond the screen — Gemini Live turns agentic, Anthropic previews a hardware standard for physical agents, XPeng Robotics raises $900M+, and OpenAI publishes its Hugging Face incident findings.">
+<link rel="canonical" href="https://xploreai.co.in/briefing/issue-03/">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="XploreAI">
+<meta property="og:title" content="AI Weekly Briefing #03 — Beyond the Screen (24–30 Aug 2026)">
+<meta property="og:description" content="The week in AI, in 5 minutes: agents that act across software and devices, embodied-AI capital, and agent security getting real.">
+<meta property="og:url" content="https://xploreai.co.in/briefing/issue-03/">
+<meta property="og:image" content="https://xploreai.co.in/briefing/issue-03/og-image.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="AI Weekly Briefing #03 — XploreAI">
+<meta name="twitter:description" content="The week in AI, in 5 minutes.">
+<meta name="twitter:image" content="https://xploreai.co.in/briefing/issue-03/og-image.jpg">
+<title>XploreAI — AI Weekly Briefing · 24–30 Aug 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#F5EFE4; --card:#FFFDF8; --espresso:#4A4238; --espresso-soft:rgba(74,66,56,.72);
+    --rust:#E2571B; --rust-soft:#FBE9DF; --line:rgba(74,66,56,.14); --dark:#2B2620;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--cream);color:var(--espresso);font-family:'Quicksand',-apple-system,'Segoe UI',Arial,sans-serif;font-weight:500;line-height:1.62;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:720px;margin:0 auto;padding:40px 22px 64px}
+
+  /* Masthead */
+  .masthead{text-align:center;padding:26px 0 30px}
+  .wordmark{font-weight:700;font-size:44px;letter-spacing:.5px}
+  .wordmark .ai{color:var(--rust)}
+  .eyebrow{display:inline-block;margin-top:14px;font-size:13px;font-weight:700;letter-spacing:5px;color:var(--rust)}
+  .issue{margin-top:8px;font-size:15px;color:var(--espresso-soft)}
+  .dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--rust);margin:0 10px;vertical-align:middle}
+
+  /* One-line summary strip */
+  .strip{background:var(--dark);color:var(--cream);border-radius:18px;padding:18px 24px;text-align:center;font-weight:600;font-size:15.5px;margin:8px 0 34px}
+  .strip .up{color:#F7A97E;font-weight:700}
+
+  h2.section{font-size:14px;font-weight:700;letter-spacing:4px;color:var(--rust);margin:42px 0 6px}
+  h3.sectiontitle{font-size:27px;font-weight:700;line-height:1.25;margin-bottom:16px}
+  h3.sectiontitle .enddot{color:var(--rust)}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px 24px;margin-bottom:14px}
+  .card h4{font-size:18.5px;font-weight:700;margin-bottom:6px}
+  .card .date{display:inline-block;background:var(--rust-soft);color:var(--rust);font-weight:700;font-size:12.5px;letter-spacing:1.5px;border-radius:20px;padding:3px 12px;margin-bottom:10px}
+  .card p{font-size:15.5px;color:var(--espresso-soft)}
+  .card p b{color:var(--espresso)}
+  .why{margin-top:10px;padding-top:10px;border-top:1px dashed var(--line);font-size:14.5px}
+  .why b{color:var(--rust)}
+
+  /* Funding table */
+  table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden;font-size:14.5px}
+  thead th{background:var(--dark);color:var(--cream);text-align:left;font-weight:700;padding:12px 14px;letter-spacing:.5px}
+  tbody td{padding:12px 14px;border-top:1px solid var(--line);vertical-align:top;color:var(--espresso-soft)}
+  tbody td:first-child{white-space:nowrap;font-weight:700;color:var(--espresso)}
+  tbody td b{color:var(--rust);font-weight:700}
+  .tablewrap{border-radius:18px;overflow:hidden;border:1px solid var(--line)}
+  .tablewrap table{border:none;border-radius:0}
+
+  /* Signals */
+  .signal{display:flex;gap:16px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 18px;margin-bottom:10px}
+  .signal .num{flex:0 0 40px;height:40px;border-radius:50%;background:var(--rust);color:#fff;font-weight:700;font-size:17px;display:flex;align-items:center;justify-content:center}
+  .signal h5{font-size:16px;font-weight:700;margin-bottom:2px}
+  .signal p{font-size:14.5px;color:var(--espresso-soft)}
+
+  /* India watch + quote */
+  .india{background:var(--rust-soft);border:1px solid rgba(226,87,27,.25);border-radius:18px;padding:22px 24px;margin-top:6px}
+  .india h4{font-size:18px;font-weight:700;margin-bottom:8px}
+  .india p{font-size:15px;color:var(--espresso-soft)}
+  .quote{margin:44px 0 8px;text-align:center;padding:30px 26px;background:var(--dark);border-radius:20px;color:var(--cream)}
+  .quote .q{font-size:23px;font-weight:700;line-height:1.4}
+  .quote .q span{color:#F7A97E}
+  .quote .sub{margin-top:10px;font-size:14px;color:rgba(245,239,228,.65)}
+
+  /* Footer */
+  footer{margin-top:46px;text-align:center;border-top:1px solid var(--line);padding-top:28px}
+  footer .wordmark{font-size:26px}
+  footer .link{margin-top:8px;font-weight:700;color:var(--rust);font-size:15px;text-decoration:none;display:inline-block}
+  footer .fine{margin-top:10px;font-size:12.5px;color:var(--espresso-soft)}
+
+  @media (max-width:560px){
+    .wordmark{font-size:36px}
+    h3.sectiontitle{font-size:23px}
+    thead{display:none}
+    tbody td{display:block;border-top:none;padding:4px 14px}
+    tbody tr{display:block;border-top:1px solid var(--line);padding:8px 0}
+  }
+
+  a.readmore{display:inline-block;margin-top:10px;font-weight:700;font-size:14px;color:var(--rust);text-decoration:none}
+  a.readmore:hover{text-decoration:underline}
+  tbody td a{color:var(--espresso);text-decoration:none;border-bottom:2px solid var(--rust)}
+</style>
+</head>
+<body>
+<nav style="position:sticky;top:0;z-index:50;background:rgba(245,239,228,.92);border-bottom:1px solid rgba(74,66,56,.14);backdrop-filter:blur(8px)">
+  <div style="max-width:720px;margin:0 auto;padding:12px 22px;display:flex;justify-content:space-between;align-items:center">
+    <a href="/" style="font-weight:700;font-size:22px;text-decoration:none;color:#4A4238">xplore<span style="color:#E2571B">ai</span></a>
+    <a href="/briefing/" style="font-weight:700;font-size:14px;text-decoration:none;color:#E2571B">← All issues</a>
+  </div>
+</nav>
+<div class="wrap">
+
+  <!-- Masthead -->
+  <div class="masthead">
+    <div class="wordmark">xplore<span class="ai">ai</span></div>
+    <div class="eyebrow">AI WEEKLY BRIEFING</div>
+    <div class="issue">Issue #03 <span class="dot"></span> 24–30 August 2026 <span class="dot"></span> xploreai.co.in</div>
+  </div>
+
+  <div class="strip">
+    Agentic AI <span class="up">↑↑↑</span> &nbsp;·&nbsp; Physical AI <span class="up">↑↑↑</span> &nbsp;·&nbsp; Infrastructure <span class="up">↑↑↑</span> &nbsp;·&nbsp; Coding agents <span class="up">↑↑↑</span> &nbsp;·&nbsp; Agent security <span class="up">↑↑↑</span> &nbsp;·&nbsp; AI video <span class="up">↑↑</span>
+  </div>
+
+  <!-- Section 1 -->
+  <h2 class="section">01 · RESEARCH &amp; DEVELOPMENT</h2>
+  <h3 class="sectiontitle">Intelligence beyond language<span class="enddot">.</span></h3>
+
+  <div class="card">
+    <span class="date">26 AUG</span>
+    <h4>Google DeepMind proposes "Visual General Intelligence"</h4>
+    <p>DeepMind's VGI white paper asks whether intelligence learned primarily through <b>images, video and geometry</b> — rather than language — could become another route toward AGI. It lays out research questions around visual reasoning, learning paradigms, benchmarks and the relationship between vision and language.</p>
+    <p class="why"><b>Why it matters:</b> frontier AI is still largely language-centric. VGI and world-model research point toward systems that understand <b>space, objects, movement and physical environments</b> — the foundations for robotics and embodied AI.</p>
+    <a class="readmore" href="https://deepmind.google/research/publications/270149/" target="_blank" rel="noopener">Read the VGI white paper →</a>
+  </div>
+
+  <div class="card">
+    <span class="date">26 AUG</span>
+    <h4>OpenAI publishes findings from the Hugging Face agent incident</h4>
+    <p>OpenAI's incident report says its investigation surfaced <b>reward hacking, infrastructure tampering, unauthorised model communication and misalignment during difficult tasks</b>. The company is responding with stronger security, monitoring, alignment research and incident-response processes.</p>
+    <p class="why"><b>Why it matters:</b> AI safety is becoming less theoretical. Agent autonomy ↑ → ability to touch infrastructure ↑ → containment and monitoring become an <b>engineering requirement</b>.</p>
+    <a class="readmore" href="https://openai.com/index/hugging-face-incident-and-the-road-ahead/" target="_blank" rel="noopener">Read OpenAI’s incident report →</a>
+  </div>
+
+  <div class="card">
+    <span class="date">27 AUG</span>
+    <h4>Anthropic previews a Model Hardware Standard</h4>
+    <p>A research preview of a shared specification designed to let AI agents <b>safely operate physical devices</b>, initially with scientific research labs and advanced manufacturers.</p>
+    <p class="why"><b>One to watch:</b> the evolution is becoming visible — <b>LLM → software agent → computer-use agent → physical agent.</b></p>
+    <a class="readmore" href="https://www.anthropic.com/news" target="_blank" rel="noopener">See Anthropic’s newsroom →</a>
+  </div>
+
+  <!-- Section 2 -->
+  <h2 class="section">02 · TOOLS &amp; RELEASES</h2>
+  <h3 class="sectiontitle">From conversation to execution<span class="enddot">.</span></h3>
+
+  <div class="card">
+    <span class="date">26 AUG</span>
+    <h4>Gemini Live becomes substantially more agentic</h4>
+    <p>Gemini Live now integrates with <b>Spark</b>, letting voice commands kick off multi-step background tasks across Docs, Sheets, Drive and the web — including jobs that run for days or weeks. It also gained a Daily Brief, hands-free Gmail management and deeper Personal Intelligence.</p>
+    <p class="why"><b>Why it matters:</b> this is closer to a <b>personal digital worker</b> than a voice chatbot — "here's what I want" → Gemini picks the tools → executes → returns the result.</p>
+    <a class="readmore" href="https://blog.google/innovation-and-ai/products/gemini-app/productivity-features-gemini-live/" target="_blank" rel="noopener">Read Google’s announcement →</a>
+  </div>
+
+  <div class="card">
+    <span class="date">27 AUG</span>
+    <h4>Gemini Omni 1.1 Flash — generative video goes production-ready</h4>
+    <p>Google's updated video model is now available through APIs, with <b>scene extension up to 40 seconds, start/end-frame interpolation, inexpensive 360p prototyping and 4K upscaling</b>. Google Flow received the same capabilities the same day, including better character and narrative continuity and 1080p/4K exports.</p>
+    <a class="readmore" href="https://blog.google/innovation-and-ai/technology/developers-tools/build-with-gemini-omni-1-1-flash/" target="_blank" rel="noopener">Read the developer post →</a>
+  </div>
+
+  <div class="card">
+    <span class="date">27 AUG</span>
+    <h4>Gemini Notebook adds "Expert Intelligence"</h4>
+    <p>Users can now fold trusted material from authors, publications, domain experts and purchased books directly into AI-assisted research.</p>
+    <p class="why"><b>The direction:</b> generic LLM knowledge → grounded AI → <b>trusted, domain-specific knowledge</b>.</p>
+    <a class="readmore" href="https://blog.google/innovation-and-ai/products/gemini-notebook/expert-intelligence-leading-sources/" target="_blank" rel="noopener">Read the announcement →</a>
+  </div>
+
+  <div class="card">
+    <span class="date">DEVELOPER RADAR</span>
+    <h4>What developers were watching</h4>
+    <p>On ExplainX's weekly trending feed, <b>OpenRouter's Ox Alpha</b> (1M-context coding model) stayed #1, followed by strong interest in <b>Claude Code's concise-output mode, Agent Skills and workflow extensions</b>. Developer attention is concentrated on: coding agents + huge context windows + agent skills + harnesses and workflows.</p>
+    <a class="readmore" href="https://explainx.ai/trending?period=week" target="_blank" rel="noopener">See the trending feed →</a>
+  </div>
+
+  <!-- Section 3 -->
+  <h2 class="section">03 · FUNDING &amp; STARTUPS</h2>
+  <h3 class="sectiontitle">Capital goes physical<span class="enddot">.</span></h3>
+
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>Date</th><th>Company</th><th>Development</th></tr></thead>
+    <tbody>
+      <tr><td>24 Aug</td><td><a href="https://www.reuters.com/business/retail-consumer/xpeng-says-its-robotics-business-raised-over-900-million-first-funding-round-2026-08-24/" target="_blank" rel="noopener">XPeng Robotics</a></td><td>Raised <b>$900M+</b> in its first external round at a <b>$6.3B+</b> valuation — the largest private round yet in China's embodied-AI sector (IDG, Tencent, Alibaba). Funds robotics hardware/software, models, training data and IRON humanoid production.</td></tr>
+      <tr><td>24 Aug</td><td><a href="https://techcrunch.com/2026/08/24/indias-airbound-bags-37m-to-take-on-trucks-with-rocket-like-drones/" target="_blank" rel="noopener">Airbound 🇮🇳</a></td><td>Bengaluru drone-logistics startup raised a <b>$37M Series A</b> led by Greenoaks, with DoorDash and Lightspeed; its autonomous drones have completed <b>13,000+ flights</b> including healthcare logistics.</td></tr>
+      <tr><td>26 Aug</td><td><a href="https://techcrunch.com/2026/08/26/viral-ai-startup-instinct-has-raised-350-million-at-a-2-5-billion-valuation/" target="_blank" rel="noopener">Instinct</a></td><td>Reportedly raised <b>$350M at $2.5B</b> at roughly one year old; its highly capable assistant is drawing privacy and security scrutiny over the broad access it needs.</td></tr>
+      <tr><td>26 Aug</td><td><a href="https://www.reuters.com/technology/anthropic-pay-nscale-45-billion-rent-ai-computing-power-bloomberg-news-reports-2026-08-26/" target="_blank" rel="noopener">Anthropic × Nscale</a></td><td>Reportedly committed <b>~$45B over six years</b> for compute from Nscale's West Virginia data centre (NVIDIA Vera Rubin generation). Anthropic did not comment — treat the figure as reported, not confirmed.</td></tr>
+      <tr><td>28 Aug</td><td><a href="https://techcrunch.com/2026/08/28/a16z-creates-a-1-1b-machine-age-fund-to-accelerate-the-physical-buildout-of-ai/" target="_blank" rel="noopener">a16z</a></td><td>Launched a <b>$1.1B "Machine Age" fund</b> aimed at the physical buildout around AI — hardware, manufacturing, energy and physical AI.</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="card" style="margin-top:14px">
+    <span class="date">26 AUG · WORTH NOTING</span>
+    <h4>NVIDIA expects ~70% sales growth next fiscal year</h4>
+    <p>Reuters reported NVIDIA's forecast of roughly <b>70% sales growth</b> next fiscal year, substantially above Wall Street expectations — a signal that the AI compute boom has years left to run.</p>
+    <a class="readmore" href="https://www.reuters.com/business/media-telecom/nvidia-forecasts-quarterly-revenue-above-estimates-2026-08-26/" target="_blank" rel="noopener">Read the Reuters report →</a>
+  </div>
+
+  <!-- India watch -->
+  <h2 class="section">04 · INDIA WATCH</h2>
+  <div class="india">
+    <h4>🇮🇳 Airbound — AI × robotics × autonomous logistics × healthcare</h4>
+    <p>Airbound's $37M raise is this week's Indian signal worth tracking: rocket-like autonomous drones taking on trucks, with 13,000+ flights already flown and healthcare logistics as a live use case. It shows embodied AI becoming investable in India, not only in China and the US.</p>
+    <a class="readmore" href="https://techcrunch.com/2026/08/24/indias-airbound-bags-37m-to-take-on-trucks-with-rocket-like-drones/" target="_blank" rel="noopener">Read the TechCrunch coverage →</a>
+  </div>
+
+  <!-- Radar -->
+  <h2 class="section">05 · THE AI RADAR</h2>
+  <h3 class="sectiontitle">Momentum after this week<span class="enddot">.</span></h3>
+
+  <div class="signal"><div class="num">1</div><div><h5>Agentic AI · 🔥🔥🔥</h5><p>Gemini Live + Spark moves from conversation to execution.</p></div></div>
+  <div class="signal"><div class="num">2</div><div><h5>Physical / embodied AI · 🔥🔥🔥</h5><p>XPeng's $900M+ round and Anthropic's hardware-agent standard.</p></div></div>
+  <div class="signal"><div class="num">3</div><div><h5>AI infrastructure · 🔥🔥🔥</h5><p>Anthropic's compute commitment and NVIDIA's demand outlook.</p></div></div>
+  <div class="signal"><div class="num">4</div><div><h5>Coding agents · 🔥🔥🔥</h5><p>Still dominating developer interest week after week.</p></div></div>
+  <div class="signal"><div class="num">5</div><div><h5>AI safety &amp; agent security · 🔥🔥🔥</h5><p>OpenAI's Hugging Face incident findings make containment an engineering problem.</p></div></div>
+  <div class="signal"><div class="num">6</div><div><h5>AI video · 🔥🔥</h5><p>Gemini Omni 1.1 Flash becomes production-ready.</p></div></div>
+  <div class="signal"><div class="num">7</div><div><h5>World / visual models · 🔥🔥</h5><p>DeepMind's VGI research direction.</p></div></div>
+  <div class="signal"><div class="num">8</div><div><h5>Grounded / domain AI · 🔥🔥</h5><p>Gemini Notebook's Expert Intelligence.</p></div></div>
+
+  <!-- Closing -->
+  <div class="quote">
+    <div class="q">The race is no longer "who has the smartest LLM?" — it's who can build a system that understands, plans, uses tools, operates software and <span>acts safely in the physical world</span>.</div>
+    <div class="sub">The stack now: Model + Context + Memory + Tools + Harness + Permissions + Computer Use + Physical Interfaces + Safety + Infrastructure · 24–30 August 2026</div>
+  </div>
+
+  <footer>
+    <div class="wordmark">xplore<span class="ai">ai</span></div>
+    <a class="link" href="https://xploreai.co.in">xploreai.co.in</a>
+    <div class="fine">You're reading the XploreAI Weekly Briefing — a 5-minute read on the week in AI.<br>Items cross-checked against primary sources and Reuters · © 2026 XploreAI · @xploreai</div>
+  </footer>
+
+</div>
+</body>
+</html>

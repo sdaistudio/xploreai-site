@@ -1,5 +1,20 @@
 [
   {
+    "issue": 3,
+    "slug": "issue-03",
+    "title": "Beyond the Screen",
+    "dates": "24–30 Aug 2026",
+    "summary": "AI moves beyond the screen: Gemini Live turns agentic, Anthropic previews a standard for agents operating physical devices, XPeng Robotics raises $900M+, and OpenAI publishes its Hugging Face agent-incident findings.",
+    "highlights": [
+      "Agentic AI 🔥🔥🔥",
+      "Physical AI 🔥🔥🔥",
+      "Infrastructure 🔥🔥🔥",
+      "Coding agents 🔥🔥🔥",
+      "Agent security 🔥🔥🔥",
+      "AI video 🔥🔥"
+    ]
+  },
+  {
     "issue": 2,
     "slug": "issue-02",
     "title": "The Bottleneck Shifts",
