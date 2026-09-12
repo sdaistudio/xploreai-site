@@ -73,6 +73,8 @@ Tools live at `tools/<slug>/index.html` and are listed in the **Tools** section 
 2. In `learn.html`, copy the Token economics `<article class="card tool">` block inside `.tools`, then change the pill, title, description and link.
 3. Commit and push.
 
+To list a tool hosted elsewhere, skip step 1 and just add the card. Give its button `target="_blank" rel="noopener noreferrer"` and a short "opens in a new tab" note — see the Embedding projector card.
+
 ## Notes
 
 - Paths are root-absolute (`/assets/…`, `/briefing/…`) — correct for the custom domain. If you ever preview at `username.github.io/xploreai-site/` *without* the custom domain, links will break; that's expected.
