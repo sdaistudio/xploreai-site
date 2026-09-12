@@ -14,6 +14,7 @@ briefing/issue-NN/index.html→ one folder per issue
 learn.html                  → Learn AI hub — "Tools" section lists every tool
 tools/token-economics/      → Token economics calculator
 tools/bpe-visualizer/       → BPE tokenization visualizer
+concepts/context-windows/   → "Why AI forgets" explainer (Concepts made simple)
 favicon.ico / favicon-32.png / apple-touch-icon.png
 CNAME                       → custom domain (xploreai.co.in)
 ```
@@ -74,6 +75,10 @@ Tools live at `tools/<slug>/index.html` and are listed in the **Tools** section 
 3. Commit and push.
 
 To list a tool hosted elsewhere, skip step 1 and just add the card. Give its button `target="_blank" rel="noopener noreferrer"` and a short "opens in a new tab" note — see the Embedding projector card.
+
+## Adding an explainer
+
+Explainers live at `concepts/<slug>/index.html` and are listed in the **Concepts made simple** section of `learn.html`. Copy `concepts/context-windows/` for the page shell, then copy its card in `learn.html`. Scope all page CSS under the page's own class (`.explainer`) — the site nav uses `class="wrap bar"` and the site stylesheet styles bare `footer` and `section`.
 
 ## Notes
 

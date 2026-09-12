@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Why AI Forgets: Context Windows Explained — XploreAI</title>
+<meta name="description" content="Claude chat, Claude Code and ChatGPT all sit on a model with zero memory. Here is how each one fakes it — explained with animation, no maths required.">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="XploreAI">
+<meta property="og:title" content="Why AI forgets — and how each one fakes remembering">
+<meta property="og:description" content="Six short animations explain context windows, caching, compaction and sub-agents. No maths required.">
+<meta property="og:url" content="https://xploreai.co.in/concepts/context-windows/">
+<meta property="og:image" content="https://xploreai.co.in/assets/og-image.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/style.css">
+<style>
+  nav ul a[aria-current="page"]{color:var(--rust)}
+
+  /* explainer — every rule is scoped under .explainer so the site nav, footer and badges are untouched */
+  .explainer{--cream-2:#EDE4D3;--espresso-2:#6B6155;--espresso-3:#A89C8C;--muted-text:#766B5F;
+             --rust-tint:#F3C7B0;--paper:#FFFBF4;--dur:9s;font-size:17px;line-height:1.6;padding-bottom:30px}
+  .explainer a{color:var(--rust)}
+  .explainer .hero{padding:36px 0 20px}
+  .explainer .hero .kicker{color:var(--rust);font-weight:700;font-size:15px;margin:0 0 10px}
+  .explainer h1{font-size:clamp(34px,6vw,52px);line-height:1.05;letter-spacing:-.02em;font-weight:700;margin:0 0 18px}
+  .explainer .hero p.lede{font-size:20px;line-height:1.5;color:var(--espresso-2);margin:0 0 14px}
+  .explainer .meta{color:var(--espresso-3);font-size:14px;font-weight:600}
+  .explainer h2{font-size:clamp(24px,4vw,32px);line-height:1.15;letter-spacing:-.015em;margin:64px 0 12px;font-weight:700}
+  .explainer h2 .n{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--rust);color:var(--cream);font-size:16px;margin-right:12px;vertical-align:6px}
+  .explainer p{margin:0 0 16px}
+  .explainer .plain{margin:20px 0 6px;padding:16px 20px;border-left:4px solid var(--rust);
+    background:var(--paper);border-radius:0 12px 12px 0;}
+  .explainer .plain b{color:var(--rust)}
+  .explainer strong{font-weight:700}
+  .explainer .scene{margin:22px 0 26px;background:var(--paper);border:1.5px solid var(--cream-2);
+    border-radius:18px;overflow:hidden;}
+  .explainer .scene svg{display:block;width:100%;height:auto}
+  .explainer .scene .bar{display:flex;justify-content:space-between;align-items:center;
+    padding:10px 16px;border-top:1.5px solid var(--cream-2);font-size:14px;color:var(--espresso-2);font-weight:600}
+  .explainer .scene button{font:inherit;font-weight:700;font-size:14px;color:var(--rust);background:none;border:1.5px solid var(--rust);
+    border-radius:999px;padding:5px 14px;cursor:pointer}
+  .explainer .scene button:hover{background:var(--rust);color:var(--cream)}
+  .explainer .scene button:focus-visible{outline:3px solid var(--rust);outline-offset:2px}
+  .explainer svg text{font-family:'Quicksand',system-ui,sans-serif;font-weight:600}
+  .explainer :where(svg text:not([fill])){fill:var(--espresso)}
+  .explainer svg .lbl{font-size:13px;fill:var(--espresso-2)}
+  .explainer svg .big{font-size:15px;font-weight:700}
+  .explainer svg .rust{fill:var(--rust)}
+  .explainer svg .muted{fill:var(--espresso-3)}
+  .explainer svg .stroke{fill:none;stroke:var(--espresso);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .explainer svg .strokeRust{fill:none;stroke:var(--rust);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+  .explainer .scene:not(.play) [data-anim]{animation:none!important}
+  @keyframes s1-file{
+    0%{transform:translate(0,0);opacity:0}
+    6%{opacity:1}
+    22%{transform:translate(0,0)}
+    38%{transform:translate(210px,0)}
+    58%{transform:translate(210px,0)}
+    70%{transform:translate(210px,0);opacity:1}
+    76%{transform:translate(210px,-6px);opacity:0}
+    100%{opacity:0}
+  }
+  @keyframes s1-read{
+    0%,38%{opacity:0}
+    44%,56%{opacity:1}
+    62%,100%{opacity:0}
+  }
+  @keyframes s1-reply{
+    0%,60%{transform:translate(0,0);opacity:0}
+    66%{opacity:1}
+    82%{transform:translate(-210px,0);opacity:1}
+    90%,100%{transform:translate(-210px,0);opacity:0}
+  }
+  @keyframes s1-poof{
+    0%,70%{opacity:0;transform:scale(.6)}
+    76%{opacity:1;transform:scale(1)}
+    86%,100%{opacity:0;transform:scale(1.15)}
+  }
+  @keyframes s1-page{
+    0%{opacity:0}100%{opacity:1}
+  }
+  .explainer .s1-file{animation:s1-file var(--dur) linear infinite}
+  .explainer .s1-read{animation:s1-read var(--dur) linear infinite}
+  .explainer .s1-reply{animation:s1-reply var(--dur) linear infinite}
+  .explainer .s1-poof{transform-origin:center;transform-box:fill-box;animation:s1-poof var(--dur) linear infinite}
+  @keyframes s2-grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+  .explainer .s2-seg{transform-origin:left center;transform-box:fill-box;animation:s2-grow .9s cubic-bezier(.2,.8,.2,1) both}
+  @keyframes s2-fade{from{opacity:0}to{opacity:1}}
+  .explainer .s2-lbl{animation:s2-fade .5s both}
+  @keyframes s3-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+  .explainer .s3-blk{animation:s3-in .5s cubic-bezier(.2,.8,.2,1) both}
+  @keyframes s3-cache{0%,70%{opacity:0}100%{opacity:1}}
+  .explainer .s3-cache{animation:s3-cache .6s both}
+  @keyframes s3-pulse{0%{stroke-dashoffset:120}100%{stroke-dashoffset:0}}
+  .explainer .s3-wire{stroke-dasharray:6 6;animation:s3-pulse 2.4s linear infinite}
+  @keyframes s4-evict{0%,20%{transform:translateY(0);opacity:1}45%{transform:translateY(-34px);opacity:0}100%{transform:translateY(-34px);opacity:0}}
+  @keyframes s4-shift{0%,20%{transform:translateY(0)}45%,100%{transform:translateY(-26px)}}
+  @keyframes s4-new{0%,40%{opacity:0;transform:translateY(10px)}60%,100%{opacity:1;transform:translateY(0)}}
+  .explainer .s4-evict{animation:s4-evict 6s ease-in-out infinite}
+  .explainer .s4-shift{animation:s4-shift 6s ease-in-out infinite}
+  .explainer .s4-new{animation:s4-new 6s ease-in-out infinite}
+  @keyframes s4-squash{0%,25%{transform:scaleY(1);opacity:1}55%{transform:scaleY(.06);opacity:.3}60%,100%{transform:scaleY(.06);opacity:0}}
+  @keyframes s4-sum{0%,50%{opacity:0;transform:scale(.7)}65%,100%{opacity:1;transform:scale(1)}}
+  .explainer .s4-squash{transform-origin:center top;transform-box:fill-box;animation:s4-squash 6s ease-in-out infinite}
+  .explainer .s4-sum{transform-origin:center;transform-box:fill-box;animation:s4-sum 6s ease-in-out infinite}
+  @keyframes s4-fetch{0%,25%{transform:translate(0,0);opacity:0}30%{opacity:1}55%{transform:translate(-118px,-8px);opacity:1}80%,100%{transform:translate(-118px,-8px);opacity:1}}
+  @keyframes s4-drawer{0%,22%{transform:translateX(0)}30%,60%{transform:translateX(8px)}70%,100%{transform:translateX(0)}}
+  .explainer .s4-fetch{animation:s4-fetch 6s ease-in-out infinite}
+  .explainer .s4-drawer{animation:s4-drawer 6s ease-in-out infinite}
+  @keyframes s5-fill{0%,10%{transform:scaleY(0)}50%,100%{transform:scaleY(1)}}
+  .explainer .s5-fill{transform-origin:center bottom;transform-box:fill-box;animation:s5-fill 7s ease-in-out infinite}
+  @keyframes s5-note{0%,50%{opacity:0;transform:translate(0,0)}58%{opacity:1}80%,100%{opacity:1;transform:translate(-210px,0)}}
+  .explainer .s5-note{animation:s5-note 7s ease-in-out infinite}
+  @keyframes s5-clear{0%,80%{opacity:0}90%,100%{opacity:1}}
+  .explainer .s5-clear{animation:s5-clear 7s ease-in-out infinite}
+  @keyframes s5-blink{0%,10%{opacity:.35}30%{opacity:1}50%,100%{opacity:.35}}
+  .explainer .s5-blink{animation:s5-blink 7s ease-in-out infinite}
+  .explainer .cmp{width:100%;border-collapse:collapse;margin:20px 0 8px;font-size:15px}
+  .explainer .cmp th,.explainer .cmp td{text-align:left;vertical-align:top;padding:12px 10px;border-bottom:1.5px solid var(--cream-2)}
+  .explainer .cmp th{font-weight:700;color:var(--espresso)}
+  .explainer .cmp thead th{border-bottom:2.5px solid var(--espresso)}
+  .explainer .cmp td:first-child{font-weight:700;color:var(--espresso-2);width:26%}
+  .explainer .yes{color:var(--rust);font-weight:700}
+  .explainer .play-list{list-style:none;padding:0;margin:20px 0 0}
+  .explainer .play-list li{display:grid;grid-template-columns:auto 1fr;gap:14px;padding:14px 0;border-top:1.5px solid var(--cream-2)}
+  .explainer .play-list li:last-child{border-bottom:1.5px solid var(--cream-2)}
+  .explainer .play-list .when{font-weight:700}
+  .explainer .play-list .do{color:var(--espresso-2)}
+  .explainer .play-list .mark{width:10px;height:10px;border-radius:50%;background:var(--rust);margin-top:9px}
+  .explainer .foot{margin:80px 0 40px;padding-top:24px;border-top:2px solid var(--espresso);font-size:15px;color:var(--espresso-2)}
+  .explainer .foot .cta{display:inline-block;margin-top:14px;background:var(--rust);color:var(--cream);text-decoration:none;
+    font-weight:700;padding:10px 20px;border-radius:999px}
+  @media (max-width:560px){.explainer{font-size:16px}
+  .explainer .cmp{font-size:13px}
+  .explainer .cmp th,.explainer .cmp td{padding:9px 6px}}
+  @media (prefers-reduced-motion:reduce){.explainer [data-anim]{animation:none!important;opacity:1!important;transform:none!important}
+  .explainer .scene button{display:none}
+  .explainer .scene .bar span::after{content:" (animation paused by your system setting)"}}
+  /* integration overrides */
+  .explainer .article{max-width:720px;margin:0 auto}
+  .explainer .crumb{font-size:13.5px;font-weight:700;color:var(--soft);padding-top:34px}
+  .explainer .crumb a{color:var(--soft);text-decoration:none}
+  .explainer .crumb a:hover{color:var(--rust)}
+  .explainer .hero{padding:14px 0 20px}
+  .explainer h1{margin-top:12px}
+  .explainer h1 i{font-style:normal;color:var(--rust)}
+  .explainer .meta{color:var(--muted-text)}
+  .explainer svg .muted{fill:var(--muted-text)}
+  .explainer .cmp-wrap{overflow-x:auto}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap bar">
+    <a class="wordmark" href="/">xplore<span>ai</span></a>
+    <ul>
+      <li><a href="/#agents">Solutions</a></li>
+      <li><a href="/#stories">Success Stories</a></li>
+      <li><a href="/#subscribe">Newsletter</a></li>
+      <li><a href="/learn.html" aria-current="page">Learn AI</a></li>
+      <li><a class="btn" href="https://wa.me/919769686931?text=Hi%20XploreAI%2C%20I%27m%20interested%20in%20AI%20automation!">Get Started</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main class="explainer wrap">
+<div class="article">
+  <p class="crumb"><a href="/learn.html">Learn AI</a> &nbsp;/&nbsp; <a href="/learn.html#concepts">Concepts</a> &nbsp;/&nbsp; Context windows</p>
+
+<section class="hero">
+    <span class="pill">EXPLAINER</span>
+    <h1>Why your AI forgets — and how each one fakes remembering<i>.</i></h1>
+    <p class="lede">Claude chat, Claude Code and ChatGPT all sit on a model that remembers nothing. Six short animations show how each one works around that — no maths required.</p>
+    <p class="meta">September 2026 · 7 minute read · Simplified from a longer technical reference</p>
+  </section>
+
+  <!-- ============ 1 ============ -->
+  <h2><span class="n">1</span>The model has no memory. None.</h2>
+  <p>Here is the single fact that everything else follows from. A language model is a pure function: you hand it text, it hands you back the next likely word. Nothing about you survives between two requests. There is no session, no notebook, no "as we discussed".</p>
+  <p>So when an assistant says <em>"as you mentioned earlier"</em>, it isn't remembering. It is <strong>re-reading</strong> — because your whole conversation was just sent to it again, from the first message onwards.</p>
+
+  <div class="scene" data-scene="1">
+    <svg viewBox="0 0 700 300" role="img" aria-label="A case file slides under a door to a consultant who reads it, replies, and forgets. Each turn the file gets thicker.">
+      <!-- room -->
+      <rect x="330" y="30" width="340" height="240" rx="14" fill="var(--cream)" stroke="var(--cream-2)" stroke-width="2"/>
+      <rect x="330" y="30" width="6" height="240" fill="var(--espresso)" opacity=".15"/>
+      <text x="500" y="58" text-anchor="middle" class="lbl">The model</text>
+      <!-- consultant -->
+      <circle cx="500" cy="130" r="26" fill="var(--espresso)"/>
+      <path d="M455 215 q45 -50 90 0 v30 h-90z" fill="var(--espresso)"/>
+      <!-- thought: reading -->
+      <g class="s1-read" data-anim opacity="0">
+        <path d="M535 100 q30 -30 60 -8 q10 -30 -20 -34 q-10 -20 -40 2 z" fill="var(--paper)" stroke="var(--espresso-3)" stroke-width="1.5"/>
+        <text x="561" y="82" text-anchor="middle" font-size="12" class="rust">reading…</text>
+        <text x="561" y="97" text-anchor="middle" font-size="12" class="rust">all of it</text>
+      </g>
+      <!-- outside -->
+      <text x="160" y="58" text-anchor="middle" class="lbl">You</text>
+      <circle cx="160" cy="130" r="26" fill="var(--rust)"/>
+      <path d="M115 215 q45 -50 90 0 v30 h-90z" fill="var(--rust)"/>
+
+      <!-- file sliding under the door -->
+      <g class="s1-file" data-anim>
+        <rect x="212" y="228" width="88" height="10" rx="2" fill="var(--paper)" stroke="var(--espresso)" stroke-width="2"/>
+        <rect x="212" y="238" width="88" height="10" rx="2" fill="var(--paper)" stroke="var(--espresso)" stroke-width="2"/>
+        <g class="s1-extra"></g>
+        <text x="212" y="220" font-size="12" class="rust">the whole case file</text>
+      </g>
+
+      <!-- reply coming back -->
+      <g class="s1-reply" data-anim opacity="0">
+        <rect x="420" y="238" width="60" height="10" rx="2" fill="var(--rust-tint)" stroke="var(--rust)" stroke-width="2"/>
+        <text x="450" y="230" text-anchor="middle" font-size="12" class="rust">one reply</text>
+      </g>
+
+      <!-- forget poof -->
+      <g class="s1-poof" data-anim opacity="0">
+        <circle cx="640" cy="200" r="20" fill="none" stroke="var(--espresso-3)" stroke-width="2" stroke-dasharray="4 4"/>
+        <text x="640" y="204" text-anchor="middle" font-size="11" class="muted">forgot</text>
+      </g>
+
+      <!-- counter -->
+      <text x="20" y="288" font-size="13" class="lbl">Turn <tspan class="s1-turn">1</tspan> · pages in file: <tspan class="s1-pages">2</tspan></text>
+    </svg>
+    <div class="bar"><span>The file gets thicker every turn. The model reads it fresh every time.</span><button type="button" data-replay>Replay</button></div>
+  </div>
+
+  <div class="plain">
+    <b>In plain terms.</b> Picture a brilliant consultant with zero memory. Every question, you slide the <em>entire</em> case file under the door. He reads it from page one, writes one paragraph back, and forgets everything the moment you take the file away. The "relationship" is an illusion produced by the file getting thicker. The <strong>context window</strong> is simply the thickest file he can read in one sitting.
+  </div>
+
+  <!-- ============ 2 ============ -->
+  <h2><span class="n">2</span>The window is a budget, not a container</h2>
+  <p>Text is counted in tokens — roughly three-quarters of a word each. But your messages are only one line-item. Everything the product quietly packs into the request counts against the same total, and the reply being written comes out of it too.</p>
+
+  <div class="scene" data-scene="2">
+    <svg viewBox="0 0 700 250" role="img" aria-label="A bar fills segment by segment: system prompt, tool definitions, your messages, tool results and files, and the reply, until it reaches the window edge.">
+      <text x="20" y="34" class="big">One request, one budget</text>
+      <text x="680" y="34" text-anchor="end" class="lbl">window edge →</text>
+      <!-- track -->
+      <rect x="20" y="50" width="660" height="44" rx="10" fill="var(--cream-2)"/>
+      <line x1="680" y1="42" x2="680" y2="102" stroke="var(--espresso)" stroke-width="3" stroke-dasharray="4 3"/>
+      <!-- segments (widths sum to 660) -->
+      <rect class="s2-seg" data-anim style="animation-delay:.2s" x="20" y="50" width="90" height="44" rx="10" fill="var(--espresso)"/>
+      <rect class="s2-seg" data-anim style="animation-delay:1.1s" x="110" y="50" width="60" height="44" fill="var(--espresso-2)"/>
+      <rect class="s2-seg" data-anim style="animation-delay:2.0s" x="170" y="50" width="150" height="44" fill="var(--rust)"/>
+      <rect class="s2-seg" data-anim style="animation-delay:2.9s" x="320" y="50" width="250" height="44" fill="var(--rust-tint)"/>
+      <rect class="s2-seg" data-anim style="animation-delay:3.8s" x="570" y="50" width="110" height="44" rx="10" fill="var(--espresso-3)"/>
+      <rect x="20" y="50" width="660" height="44" rx="10" fill="none" stroke="var(--espresso)" stroke-width="2"/>
+
+      <!-- labels -->
+      <g class="s2-lbl" data-anim style="animation-delay:.6s">
+        <line x1="65" y1="98" x2="65" y2="120" stroke="var(--espresso-3)" stroke-width="1.5"/>
+        <text x="20" y="138" class="lbl">System prompt</text>
+        <text x="20" y="154" font-size="12" class="muted">memory, rules</text>
+      </g>
+      <g class="s2-lbl" data-anim style="animation-delay:1.5s">
+        <line x1="140" y1="98" x2="140" y2="170" stroke="var(--espresso-3)" stroke-width="1.5"/>
+        <text x="120" y="188" class="lbl">Tool definitions</text>
+        <text x="120" y="204" font-size="12" class="muted">before you type a word</text>
+      </g>
+      <g class="s2-lbl" data-anim style="animation-delay:2.4s">
+        <line x1="245" y1="98" x2="245" y2="120" stroke="var(--espresso-3)" stroke-width="1.5"/>
+        <text x="245" y="138" class="lbl">Your messages</text>
+        <text x="245" y="154" font-size="12" class="muted">and every earlier reply</text>
+      </g>
+      <g class="s2-lbl" data-anim style="animation-delay:3.3s">
+        <line x1="445" y1="98" x2="445" y2="170" stroke="var(--espresso-3)" stroke-width="1.5"/>
+        <text x="405" y="188" class="lbl">Files, search, tool output</text>
+        <text x="405" y="204" font-size="12" class="muted">usually the biggest slice</text>
+      </g>
+      <g class="s2-lbl" data-anim style="animation-delay:4.2s">
+        <line x1="625" y1="98" x2="625" y2="120" stroke="var(--espresso-3)" stroke-width="1.5"/>
+        <text x="680" y="138" text-anchor="end" class="lbl">The reply</text>
+        <text x="680" y="154" text-anchor="end" font-size="12" class="muted">reserved up front</text>
+      </g>
+      <text x="20" y="238" font-size="13" class="lbl">A 40-page PDF you dropped in at turn 2 is still in the file at turn 30.</text>
+    </svg>
+    <div class="bar"><span>Everything in the request, plus the answer, shares one number.</span><button type="button" data-replay>Replay</button></div>
+  </div>
+
+  <!-- ============ 3 ============ -->
+  <h2><span class="n">3</span>Every turn re-sends everything — caching makes that affordable</h2>
+  <p>Nothing stays open on the server between turns. The app rebuilds the whole conversation and sends it again. Turn 3 contains turns 1 and 2 verbatim. That sounds wasteful, and it would be, except for one trick.</p>
+  <p><strong>Prompt caching.</strong> If the start of this request is byte-for-byte identical to the start of the last one, the model reuses its earlier work on that part. The catch: it is a prefix match. Change one character near the top and everything below it is recomputed.</p>
+
+  <div class="scene" data-scene="3">
+    <svg viewBox="0 0 700 320" role="img" aria-label="Three requests stacked side by side; each later request repeats all earlier content. Repeated top sections are marked as cached.">
+      <defs>
+        <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="var(--espresso-3)"/></marker>
+      </defs>
+      <!-- column headers -->
+      <text x="105" y="30" text-anchor="middle" class="big">Turn 1</text>
+      <text x="350" y="30" text-anchor="middle" class="big">Turn 2</text>
+      <text x="595" y="30" text-anchor="middle" class="big">Turn 3</text>
+
+      <!-- Turn 1 -->
+      <g class="s3-blk" data-anim style="animation-delay:.2s">
+        <rect x="40" y="46" width="130" height="34" rx="6" fill="var(--espresso)"/><text x="105" y="68" text-anchor="middle" font-size="13" fill="var(--cream)">system + tools</text>
+        <rect x="40" y="86" width="130" height="26" rx="6" fill="var(--rust)"/><text x="105" y="104" text-anchor="middle" font-size="13" fill="var(--cream)">you: msg 1</text>
+      </g>
+
+      <!-- Turn 2 -->
+      <g class="s3-blk" data-anim style="animation-delay:1.6s">
+        <rect x="285" y="46" width="130" height="34" rx="6" fill="var(--espresso)"/><text x="350" y="68" text-anchor="middle" font-size="13" fill="var(--cream)">system + tools</text>
+        <rect x="285" y="86" width="130" height="26" rx="6" fill="var(--rust)"/><text x="350" y="104" text-anchor="middle" font-size="13" fill="var(--cream)">you: msg 1</text>
+        <rect x="285" y="118" width="130" height="26" rx="6" fill="var(--rust-tint)"/><text x="350" y="136" text-anchor="middle" font-size="13">AI: reply 1</text>
+        <rect x="285" y="150" width="130" height="26" rx="6" fill="var(--rust)"/><text x="350" y="168" text-anchor="middle" font-size="13" fill="var(--cream)">you: msg 2</text>
+      </g>
+      <g class="s3-cache" data-anim style="animation-delay:2.6s">
+        <rect x="279" y="40" width="142" height="78" rx="9" fill="none" stroke="var(--espresso-3)" stroke-width="2" stroke-dasharray="5 4"/>
+        <text x="350" y="204" text-anchor="middle" font-size="12" class="muted">↑ identical prefix: cached</text>
+      </g>
+
+      <!-- Turn 3 -->
+      <g class="s3-blk" data-anim style="animation-delay:3.2s">
+        <rect x="530" y="46" width="130" height="34" rx="6" fill="var(--espresso)"/><text x="595" y="68" text-anchor="middle" font-size="13" fill="var(--cream)">system + tools</text>
+        <rect x="530" y="86" width="130" height="26" rx="6" fill="var(--rust)"/><text x="595" y="104" text-anchor="middle" font-size="13" fill="var(--cream)">you: msg 1</text>
+        <rect x="530" y="118" width="130" height="26" rx="6" fill="var(--rust-tint)"/><text x="595" y="136" text-anchor="middle" font-size="13">AI: reply 1</text>
+        <rect x="530" y="150" width="130" height="26" rx="6" fill="var(--rust)"/><text x="595" y="168" text-anchor="middle" font-size="13" fill="var(--cream)">you: msg 2</text>
+        <rect x="530" y="182" width="130" height="26" rx="6" fill="var(--rust-tint)"/><text x="595" y="200" text-anchor="middle" font-size="13">AI: reply 2</text>
+        <rect x="530" y="214" width="130" height="26" rx="6" fill="var(--rust)"/><text x="595" y="232" text-anchor="middle" font-size="13" fill="var(--cream)">you: msg 3</text>
+      </g>
+      <g class="s3-cache" data-anim style="animation-delay:4.2s">
+        <rect x="524" y="40" width="142" height="142" rx="9" fill="none" stroke="var(--espresso-3)" stroke-width="2" stroke-dasharray="5 4"/>
+        <text x="595" y="268" text-anchor="middle" font-size="12" class="muted">↑ cached prefix</text>
+      </g>
+
+      <!-- wires to server -->
+      <path class="s3-wire" data-anim d="M105 122 v40 h150" fill="none" stroke="var(--espresso-3)" stroke-width="2" marker-end="url(#arr)" opacity=".7"/>
+      <text x="20" y="306" font-size="13" class="lbl">Builders: stable content first. A timestamp at the top breaks the cache every turn.</text>
+    </svg>
+    <div class="bar"><span>Only the new lines cost full price — until one edit near the top resets it all.</span><button type="button" data-replay>Replay</button></div>
+  </div>
+
+  <div class="plain">
+    <b>In plain terms.</b> A courtroom where the stenographer must read the entire transcript aloud before each new question. Caching is the judge saying "we all remember pages 1 to 400 from this morning — start at 401." But only if pages 1 to 400 are word for word what they were. Fix a typo on page 3 and the reading starts from the top.
+  </div>
+
+  <!-- ============ 4 ============ -->
+  <h2><span class="n">4</span>What happens when the file gets too thick</h2>
+  <p>Eventually the conversation outgrows the window. Every product has to do <em>something</em>. There are really only three moves, and the products differ mainly in which they pick and whether they tell you.</p>
+
+  <div class="scene" data-scene="4">
+    <svg viewBox="0 0 700 330" role="img" aria-label="Three side-by-side panels: eviction drops the oldest message; compaction squashes history into a summary; working set keeps an index in the window and fetches a folder from a cabinet on demand.">
+      <!-- Panel A: eviction -->
+      <text x="115" y="30" text-anchor="middle" class="big">Evict</text>
+      <text x="115" y="48" text-anchor="middle" font-size="11" class="muted">drop the oldest, silently</text>
+      <rect x="45" y="60" width="140" height="200" rx="10" fill="none" stroke="var(--espresso)" stroke-width="2"/>
+      <g class="s4-evict" data-anim>
+        <rect x="55" y="70" width="120" height="20" rx="5" fill="var(--rust)"/><text x="115" y="84" text-anchor="middle" font-size="10" fill="var(--cream)">turn 1: your constraint</text>
+      </g>
+      <g class="s4-shift" data-anim>
+        <rect x="55" y="96" width="120" height="20" rx="5" fill="var(--rust-tint)"/>
+        <rect x="55" y="122" width="120" height="20" rx="5" fill="var(--rust)"/>
+        <rect x="55" y="148" width="120" height="20" rx="5" fill="var(--rust-tint)"/>
+        <rect x="55" y="174" width="120" height="20" rx="5" fill="var(--rust)"/>
+        <rect x="55" y="200" width="120" height="20" rx="5" fill="var(--rust-tint)"/>
+        <rect x="55" y="226" width="120" height="20" rx="5" fill="var(--rust)"/>
+      </g>
+      <g class="s4-new" data-anim>
+        <rect x="55" y="226" width="120" height="20" rx="5" fill="var(--espresso)"/><text x="115" y="240" text-anchor="middle" font-size="11" fill="var(--cream)">new message</text>
+      </g>
+      <text x="115" y="285" text-anchor="middle" font-size="12" class="lbl">Cheap. Lossy. Silent.</text>
+      <text x="115" y="302" text-anchor="middle" font-size="12" class="muted">Claude chat · ChatGPT</text>
+
+      <!-- Panel B: compaction -->
+      <text x="350" y="30" text-anchor="middle" class="big">Compact</text>
+      <text x="350" y="48" text-anchor="middle" font-size="11" class="muted">rewrite history as a summary</text>
+      <rect x="280" y="60" width="140" height="200" rx="10" fill="none" stroke="var(--espresso)" stroke-width="2"/>
+      <g class="s4-squash" data-anim>
+        <rect x="290" y="70" width="120" height="20" rx="5" fill="var(--rust)"/>
+        <rect x="290" y="96" width="120" height="20" rx="5" fill="var(--rust-tint)"/>
+        <rect x="290" y="122" width="120" height="20" rx="5" fill="var(--rust)"/>
+        <rect x="290" y="148" width="120" height="20" rx="5" fill="var(--rust-tint)"/>
+        <rect x="290" y="174" width="120" height="20" rx="5" fill="var(--rust)"/>
+        <rect x="290" y="200" width="120" height="20" rx="5" fill="var(--rust-tint)"/>
+      </g>
+      <g class="s4-sum" data-anim>
+        <rect x="290" y="70" width="120" height="44" rx="6" fill="var(--espresso)"/>
+        <text x="350" y="88" text-anchor="middle" font-size="11" fill="var(--cream)">summary of</text>
+        <text x="350" y="103" text-anchor="middle" font-size="11" fill="var(--cream)">everything so far</text>
+        <rect x="290" y="122" width="120" height="20" rx="5" fill="var(--rust)"/><text x="350" y="136" text-anchor="middle" font-size="11" fill="var(--cream)">new message</text>
+      </g>
+      <text x="350" y="285" text-anchor="middle" font-size="12" class="lbl">Extra model call. Announced.</text>
+      <text x="350" y="302" text-anchor="middle" font-size="12" class="muted">Claude Code · API</text>
+
+      <!-- Panel C: working set -->
+      <text x="585" y="30" text-anchor="middle" class="big">Working set</text>
+      <text x="585" y="48" text-anchor="middle" font-size="11" class="muted">index on the desk, fetch the rest</text>
+      <!-- desk (window) -->
+      <rect x="490" y="60" width="90" height="200" rx="10" fill="none" stroke="var(--espresso)" stroke-width="2"/>
+      <text x="535" y="80" text-anchor="middle" font-size="11" class="lbl">desk</text>
+      <rect x="500" y="90" width="70" height="46" rx="5" fill="var(--cream-2)" stroke="var(--espresso-3)" stroke-width="1.5"/>
+      <text x="535" y="107" text-anchor="middle" font-size="10" class="lbl">index:</text>
+      <line x1="508" y1="115" x2="562" y2="115" stroke="var(--espresso-3)" stroke-width="2"/>
+      <line x1="508" y1="123" x2="556" y2="123" stroke="var(--espresso-3)" stroke-width="2"/>
+      <line x1="508" y1="131" x2="558" y2="131" stroke="var(--espresso-3)" stroke-width="2"/>
+      <!-- cabinet -->
+      <rect x="600" y="60" width="80" height="200" rx="8" fill="var(--cream-2)" stroke="var(--espresso)" stroke-width="2"/>
+      <text x="640" y="80" text-anchor="middle" font-size="11" class="lbl">cabinet</text>
+      <g class="s4-drawer" data-anim>
+        <rect x="608" y="92" width="64" height="30" rx="4" fill="var(--paper)" stroke="var(--espresso-3)" stroke-width="1.5"/>
+      </g>
+      <rect x="608" y="130" width="64" height="30" rx="4" fill="var(--paper)" stroke="var(--espresso-3)" stroke-width="1.5"/>
+      <rect x="608" y="168" width="64" height="30" rx="4" fill="var(--paper)" stroke="var(--espresso-3)" stroke-width="1.5"/>
+      <rect x="608" y="206" width="64" height="30" rx="4" fill="var(--paper)" stroke="var(--espresso-3)" stroke-width="1.5"/>
+      <!-- fetched folder -->
+      <g class="s4-fetch" data-anim>
+        <rect x="618" y="158" width="46" height="30" rx="4" fill="var(--rust)"/>
+        <text x="641" y="177" text-anchor="middle" font-size="10" fill="var(--cream)">folder</text>
+      </g>
+      <text x="585" y="285" text-anchor="middle" font-size="12" class="lbl">Survives closing the chat.</text>
+      <text x="585" y="302" text-anchor="middle" font-size="12" class="muted">memory files · past-chat search</text>
+    </svg>
+    <div class="bar"><span>Evict, compact, or keep an index and fetch. Every product is a mix of these.</span><button type="button" data-replay>Replay</button></div>
+  </div>
+
+  <div class="plain">
+    <b>The one pattern worth stealing.</b> Your desk holds six open folders. Behind you is a cabinet with four hundred. You don't try to fit the cabinet on the desk — you tape a one-page index to it and pull a folder when a meeting needs it. The desk is the window and it is exactly as big today as yesterday, no matter how full the cabinet gets. When a client says "the assistant must remember our whole account history," they think they need a bigger desk. They need a cabinet and an index.
+  </div>
+
+  <!-- ============ 5 ============ -->
+  <h2><span class="n">5</span>Sub-agents: let someone else read the thick file</h2>
+  <p>Research is expensive in tokens and cheap in conclusions. You might read 6,000 tokens of source to produce a 400-token finding. Keeping the 6,000 in your window afterwards is pure cost.</p>
+  <p>So Claude Code hands the reading to a <strong>sub-agent with its own fresh window</strong>. It reads whatever it needs, and only its final answer comes back to you. The general rule: isolate any step whose inputs are far bigger than its outputs.</p>
+
+  <div class="scene" data-scene="5">
+    <svg viewBox="0 0 700 280" role="img" aria-label="A main window stays mostly empty while a separate sub-agent window fills with reading; a short note travels back to the main window.">
+      <!-- main window -->
+      <text x="160" y="30" text-anchor="middle" class="big">Your window</text>
+      <rect x="60" y="45" width="200" height="180" rx="12" fill="none" stroke="var(--espresso)" stroke-width="2"/>
+      <rect x="70" y="200" width="180" height="16" rx="4" fill="var(--rust)"/>
+      <rect x="70" y="180" width="180" height="16" rx="4" fill="var(--rust-tint)"/>
+      <text x="160" y="130" text-anchor="middle" font-size="12" class="muted">stays clear for the</text>
+      <text x="160" y="146" text-anchor="middle" font-size="12" class="muted">actual decision</text>
+      <!-- sub-agent window -->
+      <text x="540" y="30" text-anchor="middle" class="big">Sub-agent window</text>
+      <rect x="440" y="45" width="200" height="180" rx="12" fill="none" stroke="var(--espresso-3)" stroke-width="2" stroke-dasharray="6 4"/>
+      <rect class="s5-fill" data-anim x="450" y="55" width="180" height="160" rx="6" fill="var(--rust-tint)"/>
+      <g class="s5-blink" data-anim>
+        <text x="540" y="128" text-anchor="middle" font-size="12" class="rust">reads 6 files, greps,</text>
+        <text x="540" y="144" text-anchor="middle" font-size="12" class="rust">runs the tests…</text>
+      </g>
+      <!-- instruction arrow -->
+      <path class="strokeRust" d="M262 100 h170" marker-end="url(#arr2)"/>
+      <defs><marker id="arr2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="var(--rust)"/></marker></defs>
+      <text x="350" y="92" text-anchor="middle" font-size="12" class="lbl">one clear instruction</text>
+      <!-- note coming back -->
+      <g class="s5-note" data-anim>
+        <rect x="440" y="150" width="76" height="28" rx="5" fill="var(--espresso)"/>
+        <text x="478" y="168" text-anchor="middle" font-size="11" fill="var(--cream)">1-page note</text>
+      </g>
+      <g class="s5-clear" data-anim>
+        <rect x="70" y="160" width="180" height="16" rx="4" fill="var(--espresso)"/>
+        <text x="160" y="172" text-anchor="middle" font-size="11" fill="var(--cream)">finding (400 tokens)</text>
+      </g>
+      <text x="20" y="262" font-size="13" class="lbl">You get the summary, not the raw understanding — scope the instruction well.</text>
+    </svg>
+    <div class="bar"><span>Big reading happens elsewhere. Only the conclusion comes home.</span><button type="button" data-replay>Replay</button></div>
+  </div>
+
+  <!-- ============ 6 ============ -->
+  <h2><span class="n">6</span>Same physics, three different contracts</h2>
+  <p>Strip away the branding and all three products face one constraint: a fixed window over a function with no memory. They differ on one axis that matters to you — <strong>whether they tell you when something was dropped</strong>.</p>
+
+  <div class="cmp-wrap"><table class="cmp">
+    <thead><tr><th></th><th>Claude chat</th><th>Claude Code</th><th>ChatGPT</th></tr></thead>
+    <tbody>
+      <tr><td>When the window fills</td><td>Oldest turns quietly leave</td><td>History replaced by a summary; project files reloaded from disk</td><td>Oldest turns dropped or condensed</td></tr>
+      <tr><td>Are you told?</td><td>No</td><td><span class="yes">Yes</span> — visible compaction, /context breakdown</td><td>No</td></tr>
+      <tr><td>Across sessions</td><td>Memory files, past-chat search, projects</td><td>CLAUDE.md, MEMORY.md, rules, skills — re-read from disk</td><td>Saved memories, chat-history insights, project memory</td></tr>
+      <tr><td>Biggest token hog</td><td>Uploaded docs and long generated artifacts</td><td>File reads and tool output</td><td>Pasted content and long threads</td></tr>
+      <tr><td>Effective window</td><td>The model's full window</td><td>200K by default, 1M on supported models</td><td>Tiered by plan and mode — well below the API window</td></tr>
+    </tbody>
+  </table></div>
+  <p>ChatGPT's consumer design favours uninterrupted flow: the thread never refuses to continue, it quietly truncates and carries on. Claude Code favours legibility: you are interrupted, but you know exactly what happened. Neither is wrong. Which is right depends on whether the user wants a conversation or a controllable system.</p>
+  <p>One governance point for regulated teams: in ChatGPT, <strong>deleting a chat does not delete memories derived from it</strong>. A fact extracted from a conversation can outlive it and surface in an unrelated future chat. That is a data-flow decision to make before rollout, not after an incident.</p>
+
+  <h2>Bigger is not better</h2>
+  <p>A one-million-token window is not the end of the problem. As the window fills, recall degrades — Anthropic calls this <strong>context rot</strong>. Material at the very start and very end of a long prompt is remembered best; things buried in the middle are weakest. A big window full of noise underperforms a small one kept clean. That is why curating what goes in matters at least as much as how much room there is.</p>
+
+  <h2>The playbook</h2>
+  <ul class="play-list">
+    <li><span class="mark"></span><div><div class="when">The chat is getting slow, vague or forgetful</div><div class="do">Start a new one and paste a short brief. You are swapping 80,000 tokens of noise for 400 of signal.</div></div></li>
+    <li><span class="mark"></span><div><div class="when">Working through a long document</div><div class="do">Put it at the top, above your question. Ask for the relevant quotes before the analysis.</div></div></li>
+    <li><span class="mark"></span><div><div class="when">Agentic work with heavy exploration</div><div class="do">Delegate the reading to a sub-agent. Isolate any step whose inputs dwarf its outputs.</div></div></li>
+    <li><span class="mark"></span><div><div class="when">Switching to an unrelated task</div><div class="do">Clear, don't compact. A summary of finished work is still tokens you pay for every turn.</div></div></li>
+    <li><span class="mark"></span><div><div class="when">Your own app's cache hit rate is poor</div><div class="do">Look for a timestamp, session id or rotating instruction above the breakpoint. Stable content first.</div></div></li>
+    <li><span class="mark"></span><div><div class="when">A client asks for "memory of everything"</div><div class="do">Sell them a working set, not a bigger window: durable store, index in the prompt, retrieval on demand.</div></div></li>
+  </ul>
+
+  <div class="foot">
+    <p>Simplified from a longer technical reference verified against Anthropic's context-window, caching, compaction and sub-agent documentation in September 2026. ChatGPT's internal truncation behaviour is not published by OpenAI and is described here from observed behaviour; its window sizes change by plan and mode.</p>
+    <p>xploreai builds WhatsApp bots, booking automation and lead-gen AI for clinics, real-estate firms, schools and hotels in Mumbai — most of it on exactly the working-set pattern above.</p>
+    <a class="cta" href="mailto:hello@xploreai.co.in">Talk to us</a>
+  </div>
+</div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="fine" style="border:none;margin:0;padding:0">
+      <span>© 2026 XploreAI · <a href="/">xploreai.co.in</a></span>
+      <span><a href="mailto:hello@xploreai.co.in">hello@xploreai.co.in</a></span>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const scenes = document.querySelectorAll('.scene');
+
+  // Start animations only once a scene is visible; pause when off-screen.
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      e.target.classList.toggle('play', e.isIntersecting && !reduce);
+    });
+  }, {threshold: .35});
+  scenes.forEach(s => io.observe(s));
+
+  // Replay: force a reflow so CSS animations restart from 0.
+  document.querySelectorAll('[data-replay]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const s = btn.closest('.scene');
+      s.classList.remove('play');
+      void s.offsetWidth;
+      s.classList.add('play');
+      if (s.dataset.scene === '1') s1reset();
+    });
+  });
+
+  // Scene 1: file thickens each loop, counter updates.
+  const s1 = document.querySelector('[data-scene="1"]');
+  const extra = s1.querySelector('.s1-extra');
+  const turnEl = s1.querySelector('.s1-turn');
+  const pagesEl = s1.querySelector('.s1-pages');
+  const fileLbl = s1.querySelector('.s1-file text');
+  const dur = 9000;
+  let turn = 1, timer = null;
+  function s1reset(){ turn = 1; extra.innerHTML=''; turnEl.textContent='1'; pagesEl.textContent='2'; fileLbl.setAttribute('y', 220); }
+  function tick(){
+    if (!s1.classList.contains('play')) return;
+    turn++;
+    if (turn > 5){ s1reset(); return; }
+    const y = 228 - (turn-1)*10;
+    const r = document.createElementNS('http://www.w3.org/2000/svg','rect');
+    r.setAttribute('x',212); r.setAttribute('y',y); r.setAttribute('width',88); r.setAttribute('height',10); r.setAttribute('rx',2);
+    r.setAttribute('fill', turn%2 ? 'var(--paper)' : 'var(--rust-tint)');
+    r.setAttribute('stroke','var(--espresso)'); r.setAttribute('stroke-width',2);
+    extra.appendChild(r);
+    fileLbl.setAttribute('y', y-6);
+    turnEl.textContent = turn; pagesEl.textContent = 2 + (turn-1);
+  }
+  // Align the counter to the CSS loop boundary.
+  const obs1 = new MutationObserver(() => {
+    clearInterval(timer);
+    if (s1.classList.contains('play')) { s1reset(); timer = setInterval(tick, dur); }
+  });
+  obs1.observe(s1, {attributes:true, attributeFilter:['class']});
+})();
+</script>
+</body>
+</html>
