@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BPE Tokenization Visualizer — XploreAI</title>
+<meta name="description" content="Watch byte pair encoding build a vocabulary step by step: pair counts, merges, token IDs and compression ratio.">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="XploreAI">
+<meta property="og:title" content="BPE Tokenization Visualizer — XploreAI">
+<meta property="og:description" content="See how AI splits text into tokens. Type anything and step through the merges.">
+<meta property="og:url" content="https://xploreai.co.in/tools/bpe-visualizer/">
+<meta property="og:image" content="https://xploreai.co.in/assets/og-image.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/style.css">
+<style>
+  nav ul a[aria-current="page"]{color:var(--rust)}
+
+  /* visualizer — every rule is scoped under .bpe so nothing touches the site nav/footer */
+  .bpe{--muted:var(--soft);--gold-soft:#F3E7C4;--mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+       font-variant-numeric:tabular-nums;padding-bottom:70px}
+  .bpe .crumb{font-size:13.5px;font-weight:700;color:var(--soft);padding-top:34px}
+  .bpe .crumb a{color:var(--soft);text-decoration:none}
+  .bpe .crumb a:hover{color:var(--rust)}
+  .bpe .bpe-head{padding:14px 0 28px}
+  .bpe .bpe-head h1{font-size:clamp(28px,4.2vw,40px);font-weight:700;line-height:1.2;margin:10px 0 8px}
+  .bpe .bpe-head h1 i{font-style:normal;color:var(--rust)}
+  .bpe .bpe-head p{color:var(--soft);max-width:66ch}
+  .bpe .bpe-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:28px}
+  .bpe .span2{grid-column:1/-1}
+  @media (max-width:900px){.bpe .bpe-grid{grid-template-columns:minmax(0,1fr)}}
+  .bpe section{padding:0;margin:0}
+  .bpe h2{font-size:17px;font-weight:700;margin:0 0 12px;padding-bottom:8px;border-bottom:2px solid var(--espresso);display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+  .bpe h2 small{font-weight:600;color:var(--muted);font-size:13px}
+  .bpe textarea{width:100%;min-height:96px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--card);font:inherit;color:var(--espresso);resize:vertical}
+  .bpe textarea:focus,.bpe button:focus-visible,.bpe input:focus-visible{outline:2px solid var(--rust);outline-offset:1px}
+  .bpe .chips{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 16px}
+  .bpe .chip{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:5px 12px;font:inherit;font-size:13.5px;font-weight:700;color:var(--espresso);cursor:pointer}
+  .bpe .chip:hover{border-color:var(--rust);color:var(--rust)}
+  .bpe .controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .bpe .ctl{border:1px solid var(--line);background:var(--card);color:var(--espresso);border-radius:30px;padding:7px 14px;min-width:44px;font:inherit;font-weight:700;cursor:pointer}
+  .bpe .ctl:hover{border-color:var(--espresso)}
+  .bpe .ctl.primary{background:var(--espresso);border-color:var(--espresso);color:var(--cream);min-width:84px}
+  .bpe .ctl:disabled{opacity:.4;cursor:default}
+  .bpe .speed{margin-left:auto;display:flex;align-items:center;gap:8px;color:var(--muted);font-size:13.5px}
+  .bpe .speed input{width:110px;accent-color:var(--rust)}
+  .bpe .stepline{margin:12px 0 0;color:var(--muted);font-size:13.5px}
+  .bpe .stepline b{color:var(--espresso);font-weight:700}
+  .bpe .progress{height:4px;background:var(--line);border-radius:2px;margin-top:6px;overflow:hidden}
+  .bpe .progress i{display:block;height:100%;background:var(--rust);width:0;transition:width .2s}
+  .bpe .tokens{display:flex;flex-wrap:wrap;gap:4px;padding:12px;background:var(--card);border:1px solid var(--line);border-radius:12px;min-height:64px;font-family:var(--mono);font-size:14px;line-height:1.3}
+  .bpe .tok{padding:4px 7px;border-radius:6px;white-space:pre;border:1px solid transparent}
+  .bpe .tok.hot{outline:2px solid var(--rust);outline-offset:-1px}
+  .bpe .tok.new{outline:2px solid var(--espresso);outline-offset:-1px}
+  .bpe .tok sub{display:block;font-size:10px;color:var(--muted);line-height:1;margin-top:3px;font-family:"Quicksand",sans-serif}
+  .bpe .toggle{display:flex;align-items:center;gap:8px;font-size:13.5px;color:var(--muted);margin-top:10px}
+  .bpe .toggle input{accent-color:var(--rust)}
+  .bpe table{width:100%;border-collapse:collapse;font-size:14px}
+  .bpe th{text-align:left;font-weight:700;color:var(--muted);padding:6px 8px;border-bottom:1px solid var(--espresso)}
+  .bpe td{padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:middle}
+  .bpe th.r,.bpe td.r{text-align:right}
+  .bpe td code{font-family:var(--mono);font-size:13px;background:var(--cream);padding:2px 5px;border-radius:4px;white-space:pre;border:1px solid var(--line)}
+  .bpe tr.top td{background:var(--gold-soft)}
+  .bpe .scroll{position:relative;max-height:280px;overflow:auto;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+  .bpe .steps{list-style:none;margin:0;padding:8px;display:flex;flex-direction:column;gap:8px}
+  .bpe .steps li{padding:10px 12px;border-radius:10px;background:var(--cream);border:1px solid var(--line);cursor:pointer}
+  .bpe .steps li:hover{border-color:var(--espresso)}
+  .bpe .steps li.cur{background:var(--espresso);color:var(--cream);border-color:var(--espresso)}
+  .bpe .steps li.cur .m,.bpe .steps li.cur code{color:var(--cream);opacity:.85}
+  .bpe .steps li b{display:block;font-weight:700;font-size:14.5px}
+  .bpe .steps li .d{font-size:13.5px;margin:2px 0}
+  .bpe .steps li code{font-family:var(--mono);font-size:13px;white-space:pre}
+  .bpe .steps li .m{font-size:13px;color:var(--muted)}
+  .bpe .kpis{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+  .bpe .kpi{padding:12px 14px;border-left:3px solid var(--rust);background:var(--card);border-radius:0 12px 12px 0}
+  .bpe .kpi b{display:block;font-size:24px;font-weight:700;font-family:var(--mono)}
+  .bpe .kpi span{color:var(--muted);font-size:13px}
+  .bpe .vocab{display:flex;flex-wrap:wrap;gap:6px}
+  .bpe .vocab span{font-family:var(--mono);font-size:13px;padding:3px 8px;border-radius:6px;border:1px solid var(--line);background:var(--card);white-space:pre}
+  .bpe .vocab span.merged{border-color:var(--rust);color:var(--rust)}
+  .bpe .vocab span i{font-style:normal;color:var(--muted);font-size:11px;margin-left:5px}
+  .bpe .empty{color:var(--muted);font-size:14px;padding:10px 0}
+  .bpe details{font-size:13.5px;color:var(--muted);margin-top:10px}
+  .bpe details summary{cursor:pointer;color:var(--espresso);font-weight:700}
+  @media (prefers-reduced-motion:reduce){.bpe .progress i{transition:none}}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap bar">
+    <a class="wordmark" href="/">xplore<span>ai</span></a>
+    <ul>
+      <li><a href="/#agents">Solutions</a></li>
+      <li><a href="/#stories">Success Stories</a></li>
+      <li><a href="/#subscribe">Newsletter</a></li>
+      <li><a href="/learn.html" aria-current="page">Learn AI</a></li>
+      <li><a class="btn" href="https://wa.me/919769686931?text=Hi%20XploreAI%2C%20I%27m%20interested%20in%20AI%20automation!">Get Started</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main class="bpe wrap">
+  <p class="crumb"><a href="/learn.html">Learn AI</a> &nbsp;/&nbsp; <a href="/learn.html#tools">Tools</a> &nbsp;/&nbsp; Tokenization visualizer</p>
+
+  <header class="bpe-head">
+    <span class="pill">VISUALIZER</span>
+    <h1>BPE tokenization visualizer<i>.</i></h1>
+    <p>Byte pair encoding is how most language models turn text into tokens. Type anything, then step through the algorithm as it counts adjacent pairs, merges the most common one, and grows its vocabulary.</p>
+  </header>
+
+  <div class="bpe-grid">
+    <section class="span2">
+      <h2><label for="text">Text to tokenize</label> <small id="charCount"></small></h2>
+      <textarea id="text" spellcheck="false">the cat sat on the mat and the cat slept</textarea>
+      <div class="chips">
+        <button class="chip" data-t="Hello, world! Hello again, world.">Hello, world!</button>
+        <button class="chip" data-t="machine learning makes learning machines learn">Machine learning</button>
+        <button class="chip" data-t="the quick brown fox jumps over the lazy dog the quick brown dog">The quick brown fox</button>
+        <button class="chip" data-t="मुंबई में बारिश हो रही है और मुंबई भीग रही है">Hindi sample</button>
+        <button class="chip" data-t="insurance premium premium insurance policy policy premium">Insurance words</button>
+      </div>
+      <div class="controls">
+        <button class="ctl" id="first" title="First step" aria-label="First step">⏮</button>
+        <button class="ctl" id="prev" title="Previous step" aria-label="Previous step">◀</button>
+        <button class="ctl primary" id="play">Play</button>
+        <button class="ctl" id="next" title="Next step" aria-label="Next step">▶</button>
+        <button class="ctl" id="last" title="Last step" aria-label="Last step">⏭</button>
+        <label class="speed">Speed <input type="range" id="speed" min="1" max="4" value="1" step="1"><span id="speedLabel">1×</span></label>
+      </div>
+      <p class="stepline">Step <b id="stepNow">0</b> of <b id="stepMax">0</b> <span id="stepMsg"></span></p>
+      <div class="progress"><i id="bar"></i></div>
+    </section>
+
+    <section class="span2">
+      <h2>Tokenization <small>rust outline = pair about to merge · espresso outline = token created this step</small></h2>
+      <div class="tokens" id="tokens"></div>
+      <label class="toggle"><input type="checkbox" id="showIds" checked> Show token IDs</label>
+    </section>
+
+    <section>
+      <h2>Pair frequencies <small id="pairCount"></small></h2>
+      <div class="scroll"><table id="pairs"><thead><tr><th>Pair</th><th>Merged</th><th class="r">Count</th></tr></thead><tbody></tbody></table></div>
+      <details><summary>What is this?</summary>Each step counts every adjacent pair of tokens in the sequence. The most frequent pair (top row, highlighted) is merged into a single new token wherever it appears. Ties are broken by first appearance. The algorithm stops when no pair occurs more than once.</details>
+    </section>
+
+    <section>
+      <h2>BPE steps <small>click a step to jump</small></h2>
+      <div class="scroll" id="stepsWrap"><ul class="steps" id="steps"></ul></div>
+    </section>
+
+    <section>
+      <h2>Vocabulary statistics</h2>
+      <div class="kpis">
+        <div class="kpi"><b id="vocabSize">0</b><span>unique tokens in vocabulary</span></div>
+        <div class="kpi"><b id="ratio">1.00</b><span>compression ratio (characters ÷ tokens)</span></div>
+        <div class="kpi"><b id="seqLen">0</b><span>tokens in sequence</span></div>
+        <div class="kpi"><b id="merges">0</b><span>merges applied so far</span></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Current vocabulary <small>rust = created by a merge</small></h2>
+      <div class="vocab" id="vocab"></div>
+    </section>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="fine" style="border:none;margin:0;padding:0">
+      <span>© 2026 XploreAI · <a href="/">xploreai.co.in</a></span>
+      <span><a href="mailto:hello@xploreai.co.in">hello@xploreai.co.in</a></span>
+    </div>
+  </div>
+</footer>
+
+<script>
+const $ = id => document.getElementById(id);
+const NL  = String.fromCharCode(10);   // newline
+const SEP = String.fromCharCode(0);    // pair-key separator; cannot occur in typed text
+const vis  = s => s.split(" ").join("␣").split(NL).join("⏎");                                           // for textContent
+const show = s => vis(s.split("&").join("&amp;").split("<").join("&lt;").split(">").join("&gt;"));        // for innerHTML
+
+// Precompute all BPE states for a given text
+function computeSteps(text){
+  const chars = Array.from(text);
+  const vocab = new Map();                       // token -> id
+  chars.forEach(c=>{ if(!vocab.has(c)) vocab.set(c, vocab.size); });
+  let tokens = chars.slice();
+  const states = [];
+  const log = [];
+  for(;;){
+    const counts = new Map(), firstAt = new Map();
+    for(let i=0;i<tokens.length-1;i++){
+      const key = tokens[i]+SEP+tokens[i+1];
+      counts.set(key,(counts.get(key)||0)+1);
+      if(!firstAt.has(key)) firstAt.set(key,i);
+    }
+    const pairs = [...counts.entries()].map(([k,c])=>{const [a,b]=k.split(SEP);return {a,b,c,at:firstAt.get(k)};})
+                   .sort((x,y)=>y.c-x.c || x.at-y.at);
+    const best = pairs.length && pairs[0].c>1 ? pairs[0] : null;
+    states.push({ tokens: tokens.slice(), pairs, best, vocab: new Map(vocab), log: log.slice() });
+    if(!best) break;
+    const merged = best.a+best.b;
+    vocab.set(merged, vocab.size);
+    log.push({a:best.a,b:best.b,merged,count:best.c});
+    const out=[];
+    for(let i=0;i<tokens.length;i++){
+      if(i<tokens.length-1 && tokens[i]===best.a && tokens[i+1]===best.b){ out.push(merged); i++; }
+      else out.push(tokens[i]);
+    }
+    tokens = out;
+    if(states.length>400) break;                 // safety cap for very long inputs
+  }
+  return states;
+}
+
+let states=[], step=0, timer=null, chars=0;
+
+// Stable colour per token (hue from hash), soft tints on cream
+function tint(tok){
+  let h=0; for(const ch of tok) h=(h*31+ch.codePointAt(0))%360;
+  return `hsl(${h} 45% 88%)`;
+}
+
+function render(){
+  const s = states[step]; if(!s) return;
+  $("stepNow").textContent = step; $("stepMax").textContent = states.length-1;
+  $("bar").style.width = states.length>1 ? (100*step/(states.length-1))+"%" : "100%";
+  $("stepMsg").textContent = s.best ? `— next merge: "${vis(s.best.a)}" + "${vis(s.best.b)}" (${s.best.c}×)` : (chars? "— finished, no pair repeats" : "");
+  const showIds = $("showIds").checked;
+  const prevLog = step>0 ? states[step].log[step-1] : null;
+
+  // Mark exactly the occurrences the merge will consume: left to right, non-overlapping
+  const hot = new Set();
+  if(s.best) for(let i=0;i<s.tokens.length-1;i++){
+    if(s.tokens[i]===s.best.a && s.tokens[i+1]===s.best.b){ hot.add(i); hot.add(i+1); i++; }
+  }
+
+  // tokens
+  const wrap = $("tokens"); wrap.innerHTML="";
+  s.tokens.forEach((t,i)=>{
+    const el=document.createElement("span"); el.className="tok";
+    el.style.background=tint(t);
+    if(hot.has(i)) el.classList.add("hot");
+    if(prevLog && t===prevLog.merged) el.classList.add("new");
+    el.innerHTML = show(t) + (showIds?`<sub>${s.vocab.get(t)}</sub>`:"");
+    wrap.appendChild(el);
+  });
+
+  // pairs
+  const tb=$("pairs").querySelector("tbody"); tb.innerHTML="";
+  $("pairCount").textContent = s.pairs.length ? `${s.pairs.length} distinct pairs` : "";
+  if(!s.pairs.length) tb.innerHTML=`<tr><td colspan="3" class="empty">No token pairs available</td></tr>`;
+  s.pairs.slice(0,60).forEach((p,i)=>{
+    const tr=document.createElement("tr"); if(i===0 && s.best) tr.className="top";
+    tr.innerHTML=`<td><code>${show(p.a)}</code> + <code>${show(p.b)}</code></td><td><code>${show(p.a+p.b)}</code></td><td class="r">${p.c}</td>`;
+    tb.appendChild(tr);
+  });
+
+  // steps list (one card per state)
+  const ul=$("steps"); ul.innerHTML="";
+  states.forEach((st,i)=>{
+    const li=document.createElement("li"); if(i===step) li.className="cur";
+    let desc;
+    if(i===0) desc = "Initial characters";
+    else { const m=st.log[i-1]; desc = `Merged <code>[${show(m.a)}]</code> + <code>[${show(m.b)}]</code> → <code>[${show(m.merged)}]</code> (${m.count}×)`; }
+    if(i===states.length-1 && i>0) desc += " · finished";
+    li.innerHTML=`<b>Step ${i}</b><div class="d">${desc}</div><div class="m">Tokens: ${st.tokens.length} | Vocab: ${st.vocab.size}</div>`;
+    li.onclick=()=>{ step=i; stop(); render(); };
+    ul.appendChild(li);
+  });
+  // Keep the current step visible by scrolling only its own box — never the page
+  const cur=ul.querySelector(".cur"), box=$("stepsWrap");
+  if(cur){
+    const top=cur.offsetTop, bottom=top+cur.offsetHeight;
+    if(top < box.scrollTop) box.scrollTop = top-8;
+    else if(bottom > box.scrollTop+box.clientHeight) box.scrollTop = bottom-box.clientHeight+8;
+  }
+
+  // stats
+  $("vocabSize").textContent = s.vocab.size;
+  $("seqLen").textContent = s.tokens.length;
+  $("merges").textContent = step;
+  $("ratio").textContent = s.tokens.length ? (chars/s.tokens.length).toFixed(2) : "1.00";
+
+  // vocab
+  const v=$("vocab"); v.innerHTML="";
+  [...s.vocab.entries()].forEach(([t,id])=>{
+    const el=document.createElement("span"); if(Array.from(t).length>1) el.className="merged";
+    el.innerHTML=show(t)+(showIds?`<i>#${id}</i>`:""); v.appendChild(el);
+  });
+
+  $("prev").disabled=$("first").disabled = step===0;
+  $("next").disabled=$("last").disabled = step>=states.length-1;
+  $("play").disabled = states.length<=1;
+  if(step>=states.length-1) stop();
+}
+
+function rebuild(){
+  stop();
+  const text=$("text").value;
+  chars=Array.from(text).length;
+  $("charCount").textContent = chars ? `${chars} characters` : "";
+  states = chars ? computeSteps(text) : [{tokens:[],pairs:[],best:null,vocab:new Map(),log:[]}];
+  step=0; render();
+}
+function stop(){ if(timer){ clearInterval(timer); timer=null; } $("play").textContent="Play"; }
+function play(){
+  if(timer){ stop(); return; }
+  if(step>=states.length-1) step=0;
+  $("play").textContent="Pause";
+  timer=setInterval(()=>{ if(step<states.length-1){ step++; render(); } else stop(); }, 1200/(+$("speed").value));
+}
+
+$("text").addEventListener("input", rebuild);
+document.querySelectorAll(".chip").forEach(b=>b.onclick=()=>{ $("text").value=b.dataset.t; rebuild(); });
+$("play").onclick=play;
+$("next").onclick=()=>{ stop(); step=Math.min(step+1,states.length-1); render(); };
+$("prev").onclick=()=>{ stop(); step=Math.max(step-1,0); render(); };
+$("first").onclick=()=>{ stop(); step=0; render(); };
+$("last").onclick=()=>{ stop(); step=states.length-1; render(); };
+$("showIds").onchange=render;
+$("speed").oninput=()=>{ $("speedLabel").textContent=$("speed").value+"×"; if(timer){ stop(); play(); } };
+document.addEventListener("keydown",e=>{
+  const t=e.target;
+  if(t.closest("textarea,input,select,[contenteditable=true]") || e.metaKey || e.ctrlKey || e.altKey) return;
+  if(e.key==="ArrowRight") $("next").click();
+  else if(e.key==="ArrowLeft") $("prev").click();
+  else if(e.key===" " && !t.closest("button,a,summary")){ e.preventDefault(); play(); }  // buttons already act on space
+});
+rebuild();
+</script>
+</body>
+</html>

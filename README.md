@@ -12,7 +12,8 @@ briefing/index.html         → briefing archive (renders issues.json)
 briefing/issues.json        → ⭐ the ONE file that lists all issues
 briefing/issue-NN/index.html→ one folder per issue
 learn.html                  → Learn AI hub — "Tools" section lists every tool
-tools/token-economics/      → Token economics calculator (first tool)
+tools/token-economics/      → Token economics calculator
+tools/bpe-visualizer/       → BPE tokenization visualizer
 favicon.ico / favicon-32.png / apple-touch-icon.png
 CNAME                       → custom domain (xploreai.co.in)
 ```
