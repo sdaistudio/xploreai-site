@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Token Economics Calculator — XploreAI</title>
+<meta name="description" content="Compare what an AI support conversation costs across models, and see how resending conversation history multiplies cost as a chat grows. Every number is editable.">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="XploreAI">
+<meta property="og:title" content="Token Economics Calculator — XploreAI">
+<meta property="og:description" content="What does an AI support conversation really cost? Compare models and watch cost grow turn by turn.">
+<meta property="og:url" content="https://xploreai.co.in/tools/token-economics/">
+<meta property="og:image" content="https://xploreai.co.in/assets/og-image.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/style.css">
+<style>
+  nav ul a[aria-current="page"]{color:var(--rust)}
+  /* the model table needs ~780px; widen this page (nav + footer too, so edges stay aligned) */
+  .wrap{max-width:1180px}
+
+  /* calculator — scoped so the site stylesheet's section/footer rules don't leak in */
+  .calc{--muted:var(--soft);--amber:#8C6A2F;--amber-soft:#F0E6CF;--red:#A63D2F;
+        --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;padding-bottom:70px}
+  .crumb{font-size:13.5px;font-weight:700;color:var(--soft);padding-top:34px}
+  .crumb a{color:var(--soft);text-decoration:none}
+  .crumb a:hover{color:var(--rust)}
+  .calc-head{padding:14px 0 28px}
+  .calc-head h1{font-size:clamp(28px,4.2vw,40px);font-weight:700;line-height:1.2;margin:10px 0 8px}
+  .calc-head h1 i{font-style:normal;color:var(--rust)}
+  .calc-head p{color:var(--soft);max-width:64ch}
+  .calc-grid{display:grid;grid-template-columns:300px minmax(0,1fr);gap:32px}
+  @media (max-width:900px){.calc-grid{grid-template-columns:minmax(0,1fr)}}   /* minmax(0,…) stops the wide table stretching the column */
+  .calc section{padding:0;margin-bottom:32px}
+  .calc h2{font-size:17px;font-weight:700;margin:0 0 12px;padding-bottom:8px;border-bottom:2px solid var(--espresso)}
+  .field{display:grid;grid-template-columns:1fr 110px;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--line)}
+  .field small{display:block;color:var(--muted);font-size:12.5px;line-height:1.3}
+  .calc input[type=number],.calc input[type=text]{width:100%;padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:var(--card);font:inherit;color:var(--espresso);text-align:right}
+  .calc input[type=text]{text-align:left}
+  .calc input:focus,.calc button:focus-visible{outline:2px solid var(--rust);outline-offset:1px}
+  .seg{display:flex;border:1px solid var(--line);border-radius:30px;overflow:hidden;margin:6px 0 4px}
+  .seg button{flex:1;padding:8px;border:0;background:var(--card);font:inherit;font-size:14px;font-weight:700;color:var(--muted);cursor:pointer}
+  .seg button[aria-pressed=true]{background:var(--espresso);color:var(--cream)}
+  .scroll{overflow-x:auto}
+  .calc table{width:100%;border-collapse:collapse;font-size:14px}
+  .calc th{text-align:right;font-weight:700;color:var(--muted);padding:6px 8px;border-bottom:1px solid var(--espresso);white-space:nowrap}
+  .calc th:first-child,.calc td:first-child{text-align:left}
+  .calc td{padding:6px 8px;text-align:right;border-bottom:1px solid var(--line);vertical-align:middle}
+  .calc td input[type=number]{width:84px;padding:4px 6px}
+  .calc td input[type=text]{min-width:150px;padding:4px 6px}
+  tr.selected td{background:var(--rust-soft)}
+  tr.pick{cursor:pointer}
+  .fit{display:inline-block;padding:1px 9px;border-radius:999px;font-size:12.5px;font-weight:700}
+  .fit.yes{background:var(--rust-soft);color:var(--rust)}
+  .fit.no{background:var(--amber-soft);color:var(--amber)}
+  .money{font-family:var(--mono);font-size:13.5px;white-space:nowrap}
+  .strong{font-weight:700;color:var(--espresso)}
+  .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:0 0 20px}
+  .kpi{padding:12px 14px;border-left:3px solid var(--rust);background:var(--card);border-radius:0 12px 12px 0}
+  .kpi b{display:block;font-size:22px;font-weight:700;font-family:var(--mono)}
+  .kpi span{color:var(--muted);font-size:13px}
+  .bars{display:flex;align-items:flex-end;gap:3px;height:120px;margin:14px 0 4px;padding-bottom:1px;border-bottom:1px solid var(--espresso)}
+  .bar{flex:1;display:flex;flex-direction:column-reverse;min-width:6px;height:100%}
+  .bar i{display:block}
+  .bar .h{background:var(--rust);opacity:.35}
+  .bar .n{background:var(--rust)}
+  .bar .o{background:var(--espresso)}
+  .legend{display:flex;flex-wrap:wrap;gap:18px;color:var(--muted);font-size:13px;margin-bottom:12px}
+  .legend i{display:inline-block;width:12px;height:12px;vertical-align:-1px;margin-right:5px;border-radius:3px}
+  .actions{display:flex;gap:10px;margin-top:12px}
+  button.link{background:none;border:2px solid var(--espresso);border-radius:30px;padding:6px 16px;font:inherit;font-size:14px;font-weight:700;color:var(--espresso);cursor:pointer}
+  button.link:hover{border-color:var(--rust);color:var(--rust)}
+  .note{color:var(--muted);font-size:13px;margin-top:10px}
+  .del{border:0;background:none;color:var(--muted);cursor:pointer;font-size:18px;padding:0 4px}
+  .del:hover{color:var(--red)}
+  .turnwrap{max-height:320px;overflow:auto;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+  /* keep last: must come after the base .kpis rule to win the cascade */
+  @media (max-width:520px){.kpis{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap bar">
+    <a class="wordmark" href="/">xplore<span>ai</span></a>
+    <ul>
+      <li><a href="/#agents">Solutions</a></li>
+      <li><a href="/#stories">Success Stories</a></li>
+      <li><a href="/#subscribe">Newsletter</a></li>
+      <li><a href="/learn.html" aria-current="page">Learn AI</a></li>
+      <li><a class="btn" href="https://wa.me/919769686931?text=Hi%20XploreAI%2C%20I%27m%20interested%20in%20AI%20automation!">Get Started</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main class="calc wrap">
+  <p class="crumb"><a href="/learn.html">Learn AI</a> &nbsp;/&nbsp; <a href="/learn.html#tools">Tools</a> &nbsp;/&nbsp; Token economics</p>
+
+  <header class="calc-head">
+    <span class="pill">CALCULATOR</span>
+    <h1>Token economics calculator<i>.</i></h1>
+    <p>Compare what a support conversation costs across models, then see how a stateless API multiplies that cost as the conversation grows. Every number below is editable.</p>
+  </header>
+
+  <div class="calc-grid">
+    <aside>
+      <section>
+        <h2>Volume</h2>
+        <div class="field"><label for="tickets">Tickets per month</label><input type="number" id="tickets" value="5000" min="0" step="100"></div>
+        <div class="field"><label for="turns">Turns per conversation<small>one turn = user message + reply</small></label><input type="number" id="turns" value="15" min="1" max="200"></div>
+        <div class="field"><label for="budget">Monthly budget ($)<small>used for the "fits" column</small></label><input type="number" id="budget" value="500" min="0" step="50"></div>
+      </section>
+      <section>
+        <h2>Tokens per turn</h2>
+        <div class="field"><label for="userTok">User message</label><input type="number" id="userTok" value="40" min="0"></div>
+        <div class="field"><label for="asstTok">Assistant reply</label><input type="number" id="asstTok" value="120" min="0"></div>
+        <div class="field"><label for="sysTok">System prompt<small>sent on every call</small></label><input type="number" id="sysTok" value="0" min="0"></div>
+      </section>
+      <section>
+        <h2>Context handling</h2>
+        <div class="seg" role="group" aria-label="Context mode">
+          <button id="modeStateless" aria-pressed="true">Stateless (resend history)</button>
+          <button id="modeSession" aria-pressed="false">Server-side session</button>
+        </div>
+        <div class="field" id="cacheRow"><label for="cacheRate">Prompt caching<small>cached input billed at this share of full price</small></label><input type="number" id="cacheRate" value="100" min="0" max="100" step="5"></div>
+        <p class="note" id="modeNote"></p>
+      </section>
+    </aside>
+
+    <div>
+      <section>
+        <h2>Model comparison</h2>
+        <div class="scroll">
+          <table id="modelTable">
+            <thead><tr>
+              <th>Model</th><th>$/M input</th><th>$/M output</th><th>$ / first turn</th><th>$ / conversation</th><th>$ / month</th><th>Fits?</th><th></th>
+            </tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="actions"><button class="link" id="addModel">Add a model</button><button class="link" id="resetModels">Reset prices</button></div>
+        <p class="note">Click a row to inspect its turn-by-turn cost below. Prices are list prices per million tokens; edit them to match your contract. Cache-write premiums are ignored.</p>
+      </section>
+
+      <section>
+        <h2 id="growTitle">Growing conversation</h2>
+        <div class="kpis">
+          <div class="kpi"><b id="kFirst">–</b><span>first turn</span></div>
+          <div class="kpi"><b id="kLast">–</b><span>last turn</span></div>
+          <div class="kpi"><b id="kTotal">–</b><span>whole conversation</span></div>
+        </div>
+        <div class="legend"><span><i style="background:var(--rust);opacity:.35"></i>history resent</span><span><i style="background:var(--rust)"></i>new input</span><span><i style="background:var(--espresso)"></i>output</span></div>
+        <div class="bars" id="bars" aria-hidden="true"></div>
+        <p class="note" id="barNote"></p>
+        <div class="turnwrap">
+          <table id="turnTable">
+            <thead><tr><th>Turn</th><th>Input tokens</th><th>Output tokens</th><th>Cost this turn</th><th>Running total</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="fine" style="border:none;margin:0;padding:0">
+      <span>© 2026 XploreAI · <a href="/">xploreai.co.in</a></span>
+      <span><a href="mailto:hello@xploreai.co.in">hello@xploreai.co.in</a></span>
+    </div>
+  </div>
+</footer>
+
+<script>
+// Default list prices, $ per million tokens. Update here when list prices change.
+const DEFAULT_MODELS = [
+  {name:"GPT-5.5", inp:5, out:30},
+  {name:"Claude Opus 5", inp:5, out:25},
+  {name:"Gemini 3.1 Pro", inp:2, out:12},
+  {name:"Claude Sonnet 5", inp:2, out:10},
+  {name:"Claude Haiku 4.5", inp:1, out:5},
+  {name:"DeepSeek V4 Flash", inp:0.10, out:0.65},
+  {name:"Llama 4 Scout (hosted)", inp:0.08, out:0.30},
+];
+let models = DEFAULT_MODELS.map(m=>({...m}));
+let selected = 3;           // Claude Sonnet 5
+let stateless = true;
+
+const $ = id => document.getElementById(id);
+const num = id => Math.max(0, parseFloat($(id).value) || 0);
+const usd = (v, d=4) => "$" + v.toFixed(d);
+const esc = s => String(s).replace(/[&"<>]/g, c => ({"&":"&amp;",'"':"&quot;","<":"&lt;",">":"&gt;"}[c]));
+
+function params(){
+  return { T:Math.max(1,Math.round(num("turns"))), U:num("userTok"), A:num("asstTok"), S:num("sysTok"),
+           tickets:num("tickets"), budget:num("budget"), cache:Math.min(100,num("cacheRate"))/100 };
+}
+
+// Per-turn token breakdown, independent of price
+function turnTokens(k, p){
+  const {U,A,S} = p;
+  if(!stateless) return { fresh: U + (k===1 ? S : 0), cached: 0, out: A };
+  if(k===1)      return { fresh: S + U, cached: 0, out: A };        // nothing cached yet
+  // Stateless: everything sent on the previous call is a cacheable prefix;
+  // the previous reply and the new user message are fresh.
+  return { fresh: A + U, cached: S + (k-1)*U + (k-2)*A, out: A };
+}
+
+function turnCost(k, p, m){
+  const t = turnTokens(k,p);
+  return (t.fresh*m.inp + t.cached*m.inp*p.cache + t.out*m.out) / 1e6;
+}
+
+function convCost(p, m){
+  let s=0; for(let k=1;k<=p.T;k++) s+=turnCost(k,p,m); return s;
+}
+
+function renderModels(){
+  const p = params();
+  const tb = $("modelTable").querySelector("tbody");
+  tb.innerHTML = "";
+  const rows = models.map((m,i)=>{ const c=convCost(p,m); return {i,m,conv:c, month:c*p.tickets, first:turnCost(1,p,m)}; })
+                     .sort((a,b)=>a.month-b.month);
+  rows.forEach(r=>{
+    const tr = document.createElement("tr");
+    tr.className = "pick" + (r.i===selected?" selected":"");
+    tr.innerHTML = `
+      <td><input type="text" aria-label="Model name" data-i="${r.i}" data-k="name" value="${esc(r.m.name)}"></td>
+      <td><input type="number" aria-label="Input price per million tokens" step="0.01" min="0" data-i="${r.i}" data-k="inp" value="${r.m.inp}"></td>
+      <td><input type="number" aria-label="Output price per million tokens" step="0.01" min="0" data-i="${r.i}" data-k="out" value="${r.m.out}"></td>
+      <td class="money">${usd(r.first,5)}</td>
+      <td class="money">${usd(r.conv,4)}</td>
+      <td class="money strong">${usd(r.month,2)}</td>
+      <td><span class="fit ${r.month<=p.budget?"yes":"no"}">${r.month<=p.budget?"Yes":"Over"}</span></td>
+      <td><button class="del" data-del="${r.i}" title="Remove" aria-label="Remove model">×</button></td>`;
+    tr.addEventListener("click", e=>{ if(e.target.tagName==="INPUT"||e.target.tagName==="BUTTON") return; selected=r.i; render(); });
+    tb.appendChild(tr);
+  });
+  tb.querySelectorAll("input").forEach(inp=>inp.addEventListener("input", e=>{
+    const {i,k} = e.target.dataset;
+    models[i][k] = k==="name" ? e.target.value : (parseFloat(e.target.value)||0);
+    if(k!=="name") renderNumbersOnly(); else renderGrowth();
+  }));
+  tb.querySelectorAll("[data-del]").forEach(b=>b.addEventListener("click", e=>{
+    const i = +e.currentTarget.dataset.del; if(models.length<=1) return;
+    models.splice(i,1);
+    if(i<selected) selected--; else if(i===selected) selected=0;   // keep the same model selected
+    render();
+  }));
+}
+// Re-render without rebuilding inputs (so typing prices doesn't lose focus)
+function renderNumbersOnly(){
+  const p = params();
+  $("modelTable").querySelectorAll("tbody tr").forEach(tr=>{
+    const i = +tr.querySelector("input").dataset.i, m=models[i], c=convCost(p,m), mo=c*p.tickets;
+    const tds = tr.children;
+    tds[3].textContent = usd(turnCost(1,p,m),5); tds[4].textContent = usd(c,4); tds[5].textContent = usd(mo,2);
+    tds[6].innerHTML = `<span class="fit ${mo<=p.budget?"yes":"no"}">${mo<=p.budget?"Yes":"Over"}</span>`;
+  });
+  renderGrowth();
+}
+
+function renderGrowth(){
+  const p = params(), m = models[selected];
+  $("growTitle").textContent = `Growing conversation — ${m.name}`;
+  const tb = $("turnTable").querySelector("tbody"); tb.innerHTML="";
+  const bars = $("bars"); bars.innerHTML="";
+  let run=0, first=0, last=0, maxTok=0;
+  const rows=[];
+  for(let k=1;k<=p.T;k++){
+    const t=turnTokens(k,p), c=turnCost(k,p,m); run+=c;
+    if(k===1) first=c; last=c;
+    rows.push({k,t,c,run}); maxTok=Math.max(maxTok, t.fresh+t.cached+t.out);
+  }
+  const pct = v => maxTok ? 100*v/maxTok : 0;
+  rows.forEach(r=>{
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td>${r.k}</td><td>${(r.t.fresh+r.t.cached).toLocaleString()}</td><td>${r.t.out.toLocaleString()}</td><td class="money">${usd(r.c,6)}</td><td class="money">${usd(r.run,6)}</td>`;
+    tb.appendChild(tr);
+    const b=document.createElement("div"); b.className="bar";
+    b.innerHTML = `<i class="o" style="height:${pct(r.t.out)}%"></i><i class="n" style="height:${pct(r.t.fresh)}%"></i><i class="h" style="height:${pct(r.t.cached)}%"></i>`;
+    bars.appendChild(b);
+  });
+  $("kFirst").textContent=usd(first,5); $("kLast").textContent=usd(last,5); $("kTotal").textContent=usd(run,4);
+  const ratio = first? (last/first) : 0;
+  $("barNote").textContent = stateless
+    ? `Tokens per turn (total ${rows.reduce((s,r)=>s+r.t.fresh+r.t.cached+r.t.out,0).toLocaleString()} across ${p.T} turns). The last turn costs ${ratio.toFixed(1)}× the first — that multiplier is the price of statelessness, and it grows with turn count, not ticket volume.`
+    : `With a server-side session only new tokens are billed each turn, so cost per turn stays flat at ${usd(last,5)}.`;
+}
+
+function render(){ renderModels(); renderGrowth(); updateModeUI(); }
+
+function updateModeUI(){
+  $("modeStateless").setAttribute("aria-pressed", stateless);
+  $("modeSession").setAttribute("aria-pressed", !stateless);
+  $("cacheRow").style.display = stateless ? "" : "none";
+  $("modeNote").textContent = stateless
+    ? "Each call resends the full history. Set prompt caching to 10 to model a cache-read discount of 90%; 100 means no caching."
+    : "The provider keeps conversation state; each call sends only the new user message (system prompt once).";
+}
+
+["tickets","turns","budget","userTok","asstTok","sysTok","cacheRate"].forEach(id=>$(id).addEventListener("input", renderNumbersOnly));
+$("modeStateless").onclick=()=>{stateless=true; render();};
+$("modeSession").onclick=()=>{stateless=false; render();};
+$("addModel").onclick=()=>{ models.push({name:"New model", inp:1, out:5}); selected=models.length-1; render(); };
+$("resetModels").onclick=()=>{ models=DEFAULT_MODELS.map(m=>({...m})); selected=3; render(); };
+render();
+</script>
+</body>
+</html>

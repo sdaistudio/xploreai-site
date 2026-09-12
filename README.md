@@ -10,7 +10,9 @@ assets/style.css            → shared brand stylesheet
 assets/logo.svg             → wordmark
 briefing/index.html         → briefing archive (renders issues.json)
 briefing/issues.json        → ⭐ the ONE file that lists all issues
-briefing/issue-01/index.html→ Issue #01 (10–17 Aug 2026)
+briefing/issue-NN/index.html→ one folder per issue
+learn.html                  → Learn AI hub — "Tools" section lists every tool
+tools/token-economics/      → Token economics calculator (first tool)
 favicon.ico / favicon-32.png / apple-touch-icon.png
 CNAME                       → custom domain (xploreai.co.in)
 ```
@@ -34,7 +36,6 @@ The homepage "This Week in AI" card and the archive page both read `briefing/iss
    - `A` records for `xploreai.co.in` → `185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153`
    - `CNAME` record for `www` → `<your-username>.github.io`
 5. Back in GitHub Pages settings, tick **Enforce HTTPS** once the certificate is issued (can take up to an hour after DNS changes).
-6. If you have an existing `learn.html`, copy it into the repo root so `/learn.html` keeps working.
 
 ## Weekly publishing workflow (≈5 minutes)
 
@@ -62,6 +63,14 @@ Every Monday:
    ```
 
 GitHub Pages redeploys automatically in ~1 minute. The homepage card, the archive, and the new issue page all go live together.
+
+## Adding a tool
+
+Tools live at `tools/<slug>/index.html` and are listed in the **Tools** section of `learn.html`.
+
+1. Copy `tools/token-economics/` as a starting point — it already has the site nav, footer and the Learn AI → Tools breadcrumb.
+2. In `learn.html`, copy the Token economics `<article class="card tool">` block inside `.tools`, then change the pill, title, description and link.
+3. Commit and push.
 
 ## Notes
 

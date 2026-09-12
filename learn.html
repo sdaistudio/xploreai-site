@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Learn AI — XploreAI</title>
+<meta name="description" content="Hands-on ways to understand AI from XploreAI — interactive tools, starting with a token economics calculator for AI support conversations.">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="XploreAI">
+<meta property="og:title" content="Learn AI — XploreAI">
+<meta property="og:description" content="Interactive tools for understanding what AI can do — and what it really costs.">
+<meta property="og:url" content="https://xploreai.co.in/learn.html">
+<meta property="og:image" content="https://xploreai.co.in/assets/og-image.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/style.css">
+<style>
+  nav ul a[aria-current="page"]{color:var(--rust)}
+  .head-block{padding:70px 0 20px;text-align:center}
+  .head-block h1{font-size:clamp(32px,5vw,48px);font-weight:700;line-height:1.2;margin:10px 0 12px}
+  .head-block h1 i{font-style:normal;color:var(--rust)}
+  #tools{padding:40px 0 90px}
+  .tools{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;margin-top:24px}
+  .tool{display:flex;flex-direction:column}
+  .tool .pill{align-self:flex-start}
+  .tool h3{font-size:21px;margin:12px 0 8px}
+  .tool p{font-size:15px;color:var(--soft);margin-bottom:18px;flex:1}
+  .tool .btn{align-self:flex-start}
+  .tool.soon{background:transparent;border-style:dashed;justify-content:center;text-align:center}
+  .tool.soon h3{font-size:18px;color:var(--soft);margin-top:0}
+  .tool.soon p{flex:0;margin:0}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap bar">
+    <a class="wordmark" href="/">xplore<span>ai</span></a>
+    <ul>
+      <li><a href="/#agents">Solutions</a></li>
+      <li><a href="/#stories">Success Stories</a></li>
+      <li><a href="/#subscribe">Newsletter</a></li>
+      <li><a href="/learn.html" aria-current="page">Learn AI</a></li>
+      <li><a class="btn" href="https://wa.me/919769686931?text=Hi%20XploreAI%2C%20I%27m%20interested%20in%20AI%20automation!">Get Started</a></li>
+    </ul>
+  </div>
+</nav>
+
+<header class="head-block wrap">
+  <span class="pill">FREE LEARNING</span>
+  <h1>Learn AI<i>.</i></h1>
+  <p class="lede" style="margin:0 auto">Hands-on ways to understand what AI can do for your business — and what it really costs.</p>
+</header>
+
+<section id="tools">
+  <div class="wrap">
+    <span class="eyebrow">🧰 Tools</span>
+    <h2 class="big">Try the numbers yourself<i>.</i></h2>
+    <p class="lede">Interactive calculators you can play with — change any input and see the result instantly. Nothing to install, nothing to sign up for.</p>
+
+    <div class="tools">
+      <!-- To add a tool: copy this <article>, point it at /tools/<slug>/ -->
+      <article class="card tool">
+        <span class="pill">CALCULATOR</span>
+        <h3>Token economics</h3>
+        <p>What does an AI support conversation actually cost? Compare models side by side, and see why long chats get expensive when every reply resends the whole history.</p>
+        <a class="btn" href="/tools/token-economics/">Open the calculator →</a>
+      </article>
+
+      <div class="card tool soon">
+        <h3>More tools on the way</h3>
+        <p>New calculators land here as we build them.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="fine" style="border:none;margin:0;padding:0">
+      <span>© 2026 XploreAI · <a href="/">xploreai.co.in</a></span>
+      <span><a href="mailto:hello@xploreai.co.in">hello@xploreai.co.in</a></span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
