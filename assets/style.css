@@ -11,7 +11,7 @@ a{color:inherit}
 
 /* nav */
 nav{position:sticky;top:0;z-index:50;background:rgba(245,239,228,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
-nav .bar{display:flex;align-items:center;justify-content:space-between;padding:14px 0}
+nav .bar{display:flex;align-items:center;justify-content:space-between;padding-top:14px;padding-bottom:14px} /* longhands: keep .wrap's side padding */
 .wordmark{font-weight:700;font-size:26px;text-decoration:none;letter-spacing:.3px}
 .wordmark span{color:var(--rust)}
 nav ul{display:flex;gap:26px;list-style:none;align-items:center}
