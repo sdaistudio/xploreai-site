@@ -41,7 +41,7 @@ The homepage "This Week in AI" card and the archive page both read `briefing/iss
 
 ## Weekly publishing workflow (≈5 minutes)
 
-Every Monday:
+Every Sunday:
 
 1. Copy last week's issue folder:
    ```bash
