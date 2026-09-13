@@ -66,15 +66,16 @@ Every Sunday:
 
 GitHub Pages redeploys automatically in ~1 minute. The homepage card, the archive, and the new issue page all go live together.
 
-## Motion graphics in the briefing
+## Motion graphics
 
-`assets/motion.js` adds a looping topic animation to issue pages. Each issue needs one line before `</body>`:
+`assets/motion.js` renders looping SVG/CSS animations. It currently powers the Agentic AI animation in the homepage "Multi-Agent Intelligence" section. To place one, add a slot and load the script once on the page:
 
 ```html
+<div class="mx-slot" data-motion="agentic-ai" data-kicker="Heading" data-caption="Caption"></div>
 <script src="/assets/motion.js" defer></script>
 ```
 
-It reads the highlights strip (`.strip`), picks the first listed topic that has an animation (currently: Agentic AI), and inserts it just below the strip. **Add this line to the weekly issue generator's template** so new issues get it automatically. To place an animation by hand, put `<div class="mx-slot" data-motion="agentic-ai"></div>` where it should go. All its styles and keyframes are prefixed `mx-` so they can't collide with issue-page CSS.
+`data-kicker` and `data-caption` are optional. All styles and keyframes are prefixed `mx-` so they can't collide with page CSS.
 
 ## Adding a tool
 

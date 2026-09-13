@@ -1,10 +1,11 @@
-/* XploreAI motion graphics for the AI Weekly Briefing.
-   Add ONE line to an issue page:  <script src="/assets/motion.js" defer></script>
-   It reads the highlights strip (.strip), picks the first listed topic that has an animation,
-   and inserts it right after the strip. To place one by hand instead, put
-   <div class="mx-slot" data-motion="agentic-ai"></div> anywhere on the page.
+/* XploreAI motion graphics.
+   Put a slot where the animation should appear, then load this file once per page:
+     <div class="mx-slot" data-motion="agentic-ai" data-kicker="Heading" data-caption="Caption"></div>
+     <script src="/assets/motion.js" defer></script>
+   data-kicker and data-caption are optional and override the default text.
    Animations play by default; they pause off screen only once the browser has proven it
-   reports visibility, and visitors with Reduce motion see a still frame + a Play button. */
+   reports visibility, and visitors with Reduce motion see a still frame + a Play button.
+   All classes and keyframes are prefixed mx- so they can't collide with page CSS. */
 (function(){
   var CSS = `.mx-slot{margin:4px 0 36px}
 .mx{--mx-t:9s;max-width:520px;margin:0 auto;background:#FFFDF8;border:1px solid rgba(74,66,56,.14);border-radius:18px;padding:14px 14px 10px;font-family:'Quicksand',-apple-system,'Segoe UI',Arial,sans-serif;text-align:left}
@@ -62,7 +63,7 @@
 @media (prefers-reduced-motion:reduce){.mx:not(.mx-force) *{animation:none!important}.mx:not(.mx-force) .mx-tick,.mx:not(.mx-force) .mx-slotfill{opacity:1}.mx:not(.mx-force) .mx-cap{opacity:0}.mx:not(.mx-force) .mx-cap5{opacity:1}.mx:not(.mx-force) .mx-play{display:inline-block}}`;
 
   var MOTIONS = {
-    'agentic-ai': { match: /agentic ai/i, html: `<figure class="mx">
+    'agentic-ai': { html: `<figure class="mx">
     <span class="mx-kicker">What is agentic AI?</span>
     <svg viewBox="0 0 360 272" role="img" aria-label="An AI agent reads a WhatsApp booking request, finds a free slot in the calendar, updates the patient record and emails the confirmation, ticking off each step.">
       <!-- spokes -->
@@ -137,28 +138,19 @@
   };
 
   function place(){
-    if (!document.querySelector('.mx-slot')) {
-      var strip = document.querySelector('.strip');
-      if (strip) {
-        var txt = strip.textContent, best = null, at = Infinity;
-        Object.keys(MOTIONS).forEach(function(id){
-          var pos = txt.search(MOTIONS[id].match);
-          if (pos >= 0 && pos < at) { at = pos; best = id; }
-        });
-        if (best) {
-          var slot = document.createElement('div');
-          slot.className = 'mx-slot'; slot.setAttribute('data-motion', best);
-          strip.parentNode.insertBefore(slot, strip.nextSibling);
-        }
-      }
-    }
     var slots = document.querySelectorAll('.mx-slot[data-motion]');
     if (!slots.length) return;
     if (!document.getElementById('mx-style')) {
       var st = document.createElement('style'); st.id = 'mx-style'; st.textContent = CSS;
       document.head.appendChild(st);
     }
-    slots.forEach(function(slot){ var m = MOTIONS[slot.getAttribute('data-motion')]; if (m) slot.innerHTML = m.html; });
+    slots.forEach(function(slot){
+      var m = MOTIONS[slot.getAttribute('data-motion')]; if (!m) return;
+      slot.innerHTML = m.html;
+      var k = slot.getAttribute('data-kicker'), c = slot.getAttribute('data-caption');
+      if (k) slot.querySelector('.mx-kicker').textContent = k;
+      if (c) slot.querySelector('figcaption').textContent = c;
+    });
 
     var figs = document.querySelectorAll('.mx');
     if ('IntersectionObserver' in window) {

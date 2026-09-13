@@ -53,6 +53,10 @@
   .subscribe{text-align:center}
   .subscribe .band{padding:56px 36px}
   @media(max-width:820px){.g4,.g3,.g2,.newsbox{grid-template-columns:1fr}.hero{padding:56px 0 40px}}
+  /* agents section: copy left, motion graphic right; stacks on phones */
+  .agents-intro{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,480px);gap:40px;align-items:center}
+  .agents-intro .mx-slot{margin:0}
+  @media (max-width:880px){.agents-intro{grid-template-columns:minmax(0,1fr);gap:24px}}
 </style>
 </head>
 <body>
@@ -90,9 +94,15 @@
 
 <section id="agents">
   <div class="wrap">
-    <span class="eyebrow">Multi-Agent Intelligence</span>
-    <h2 class="big">Multiple agents. One brain.<br>Working simultaneously<i>.</i></h2>
-    <p class="lede">While you sleep, your AI agents handle appointments, qualify leads, answer queries, and send reminders — all at once, without error.</p>
+    <div class="agents-intro">
+      <div>
+        <span class="eyebrow">Multi-Agent Intelligence</span>
+        <h2 class="big">Multiple agents. One brain.<br>Working simultaneously<i>.</i></h2>
+        <p class="lede">While you sleep, your AI agents handle appointments, qualify leads, answer queries, and send reminders — all at once, without error.</p>
+      </div>
+      <div class="mx-slot" data-motion="agentic-ai" data-kicker="See one agent at work"
+           data-caption="A patient messages on WhatsApp at 11 pm. The agent reads it, finds a free slot, updates the record and sends the confirmation — before anyone is awake."></div>
+    </div>
     <div class="grid g4" style="margin-top:34px">
       <div class="card stat"><h3>24/7</h3><p>Always On</p></div>
       <div class="card stat"><h3>10x</h3><p>Faster Response</p></div>
@@ -249,5 +259,6 @@ fetch('/briefing/issues.json')
       `<span class="pill">AI WEEKLY BRIEFING</span><h3>Read the latest issue</h3><a class="btn" href="/briefing/">Open the archive →</a>`;
   });
 </script>
+<script src="/assets/motion.js" defer></script>
 </body>
 </html>
