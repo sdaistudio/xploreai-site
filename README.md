@@ -15,6 +15,7 @@ learn.html                  → Learn AI hub — "Tools" section lists every too
 tools/token-economics/      → Token economics calculator
 tools/bpe-visualizer/       → BPE tokenization visualizer
 concepts/context-windows/   → "Why AI forgets" explainer (Concepts made simple)
+concepts/agent-harness/     → "What is an agent harness?" explainer (Concepts made simple)
 favicon.ico / favicon-32.png / apple-touch-icon.png
 CNAME                       → custom domain (xploreai.co.in)
 ```

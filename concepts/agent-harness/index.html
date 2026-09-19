@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>What Is an Agent Harness? The Six Parts Explained — XploreAI</title>
+<meta name="description" content="A language model is a brilliant new hire on their first morning. The harness is everything you build around it so it can actually do a job — sandbox, sub-agents, observability, compression, evaluator, approval loop.">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="XploreAI">
+<meta property="og:title" content="The model is the hire. The harness is the job.">
+<meta property="og:description" content="Six parts turn a capable model into a system you can trust with real work. Each one explained, with animation.">
+<meta property="og:url" content="https://xploreai.co.in/concepts/agent-harness/">
+<meta property="og:image" content="https://xploreai.co.in/concepts/agent-harness/harness-poster.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/style.css">
+<style>
+  nav ul a[aria-current="page"]{color:var(--rust)}
+
+  /* explainer — every rule is scoped under .explainer so the site nav, footer and badges are untouched */
+  .explainer{--cream-2:#EDE4D3;--espresso-2:#6B6155;--espresso-3:#A89C8C;--muted-text:#766B5F;
+             --rust-tint:#F3C7B0;--paper:#FFFBF4;--dur:8s;font-size:17px;line-height:1.6;padding-bottom:30px}
+  .explainer a{color:var(--rust)}
+  .explainer .hero{padding:14px 0 20px}
+  .explainer .hero .kicker{color:var(--rust);font-weight:700;font-size:15px;margin:0 0 10px}
+  .explainer h1{font-size:clamp(34px,6vw,52px);line-height:1.05;letter-spacing:-.02em;font-weight:700;margin:12px 0 18px}
+  .explainer h1 i{font-style:normal;color:var(--rust)}
+  .explainer .hero p.lede{font-size:20px;line-height:1.5;color:var(--espresso-2);margin:0 0 14px}
+  .explainer .meta{color:var(--muted-text);font-size:14px;font-weight:600}
+  .explainer h2{font-size:clamp(24px,4vw,32px);line-height:1.15;letter-spacing:-.015em;margin:64px 0 12px;font-weight:700}
+  .explainer h2 .n{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--rust);color:var(--cream);font-size:16px;margin-right:12px;vertical-align:6px}
+  .explainer h3{font-size:19px;margin:28px 0 8px;font-weight:700}
+  .explainer p{margin:0 0 16px}
+  .explainer strong{font-weight:700}
+  .explainer .plain{margin:20px 0 6px;padding:16px 20px;border-left:4px solid var(--rust);
+    background:var(--paper);border-radius:0 12px 12px 0}
+  .explainer .plain b{color:var(--rust)}
+  .explainer ul.ticks{margin:0 0 16px;padding-left:22px}
+  .explainer ul.ticks li{margin-bottom:7px}
+
+  /* article shell */
+  .explainer .article{max-width:720px;margin:0 auto}
+  .explainer .crumb{font-size:13.5px;font-weight:700;color:var(--soft);padding-top:34px}
+  .explainer .crumb a{color:var(--soft);text-decoration:none}
+  .explainer .crumb a:hover{color:var(--rust)}
+
+  /* the reel */
+  .explainer .reel{margin:26px 0 30px;text-align:center}
+  .explainer .reel video{width:100%;max-width:330px;height:auto;border-radius:18px;
+    border:1.5px solid var(--cream-2);background:var(--paper);display:inline-block}
+  .explainer .reel figcaption{font-size:14px;color:var(--muted-text);font-weight:600;margin-top:12px}
+
+  /* animated scenes — same pattern as the context-windows explainer */
+  .explainer .scene{margin:22px 0 26px;background:var(--paper);border:1.5px solid var(--cream-2);
+    border-radius:18px;overflow:hidden}
+  .explainer .scene svg{display:block;width:100%;height:auto}
+  .explainer .scene .bar{display:flex;justify-content:space-between;align-items:center;gap:12px;
+    padding:10px 16px;border-top:1.5px solid var(--cream-2);font-size:14px;color:var(--espresso-2);font-weight:600}
+  .explainer .scene button{font:inherit;font-weight:700;font-size:14px;color:var(--rust);background:none;border:1.5px solid var(--rust);
+    border-radius:999px;padding:5px 14px;cursor:pointer;flex:none}
+  .explainer .scene button:hover{background:var(--rust);color:var(--cream)}
+  .explainer .scene button:focus-visible{outline:3px solid var(--rust);outline-offset:2px}
+  .explainer svg text{font-family:'Quicksand',system-ui,sans-serif;font-weight:600}
+  .explainer :where(svg text:not([fill])){fill:var(--espresso)}
+  .explainer svg .lbl{font-size:13px;fill:var(--espresso-2)}
+  .explainer svg .big{font-size:15px;font-weight:700}
+  .explainer svg .rust{fill:var(--rust)}
+  .explainer svg .muted{fill:var(--muted-text)}
+  .explainer svg .stroke{fill:none;stroke:var(--espresso);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .explainer svg .strokeRust{fill:none;stroke:var(--rust);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+  .explainer svg .dash{fill:none;stroke:var(--espresso);stroke-width:2;stroke-dasharray:7 9;opacity:.3}
+  .explainer .scene:not(.play) [data-anim]{animation:none!important}
+
+  /* summary table */
+  .explainer .cmp-wrap{overflow-x:auto}
+  .explainer .cmp{width:100%;border-collapse:collapse;font-size:15px;margin:10px 0 6px}
+  .explainer .cmp th,.explainer .cmp td{padding:12px 10px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+  .explainer .cmp th{font-weight:700;color:var(--rust);font-size:13px;letter-spacing:1px;text-transform:uppercase}
+  .explainer .cmp td:first-child{font-weight:700;white-space:nowrap}
+
+  /* closing call to action */
+  .explainer .cta{margin:56px 0 10px;padding:28px 26px;background:var(--rust-soft);border-radius:18px}
+  .explainer .cta h2{margin:0 0 10px;font-size:26px}
+  .explainer .cta p{margin:0 0 18px;color:var(--espresso-2)}
+
+  /* ---- animations ---- */
+  @keyframes orbit-in{0%{opacity:0;transform:scale(.72)}12%,92%{opacity:1;transform:scale(1)}100%{opacity:1;transform:scale(1)}}
+  @keyframes sand-ball{
+    0%{transform:translate(0,0)}
+    26%{transform:translate(150px,-34px)}
+    46%{transform:translate(214px,4px)}
+    58%{transform:translate(150px,30px)}
+    78%{transform:translate(40px,10px)}
+    100%{transform:translate(0,0)}}
+  @keyframes sand-flash{0%,42%{opacity:0}48%{opacity:1}62%,100%{opacity:0}}
+  @keyframes sub-split{0%,14%{opacity:0;transform:translate(0,0)}28%,84%{opacity:1;transform:translate(150px,0)}100%{opacity:0;transform:translate(150px,0)}}
+  @keyframes sub-back{0%,62%{opacity:0}74%,92%{opacity:1}100%{opacity:0}}
+  @keyframes obs-step{0%{opacity:0}100%{opacity:1}}
+  @keyframes obs-lens{0%{transform:translate(0,0)}100%{transform:translate(420px,0)}}
+  @keyframes comp-squash{0%,18%{transform:scaleY(1);opacity:1}54%,100%{transform:scaleY(.18);opacity:.25}}
+  @keyframes comp-out{0%,46%{opacity:0;transform:translate(0,0)}64%,100%{opacity:1;transform:translate(0,0)}}
+  @keyframes eval-move{0%{transform:translate(0,0)}34%,52%{transform:translate(215px,0)}86%,100%{transform:translate(430px,0)}}
+  @keyframes eval-score{0%,40%{opacity:0}54%,100%{opacity:1}}
+  @keyframes appr-draft{0%,10%{opacity:0;transform:translate(0,0)}24%,44%{opacity:1;transform:translate(0,0)}56%,100%{opacity:1;transform:translate(196px,0)}}
+  @keyframes appr-tick{0%,58%{opacity:0;transform:scale(.4)}70%,100%{opacity:1;transform:scale(1)}}
+  @keyframes appr-send{0%,72%{opacity:0;transform:translate(0,0)}86%,100%{opacity:1;transform:translate(180px,0)}}
+
+  .explainer [data-anim]{animation-duration:var(--dur);animation-iteration-count:infinite;animation-timing-function:ease-in-out}
+  .explainer .n1{animation-name:orbit-in;animation-delay:0s}
+  .explainer .n2{animation-name:orbit-in;animation-delay:.28s}
+  .explainer .n3{animation-name:orbit-in;animation-delay:.56s}
+  .explainer .n4{animation-name:orbit-in;animation-delay:.84s}
+  .explainer .n5{animation-name:orbit-in;animation-delay:1.12s}
+  .explainer .n6{animation-name:orbit-in;animation-delay:1.4s}
+
+  @media (max-width:560px){
+    .explainer{font-size:16px}
+    .explainer .cmp{font-size:13px}
+    .explainer .cmp th,.explainer .cmp td{padding:9px 6px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .explainer [data-anim]{animation:none!important;opacity:1!important;transform:none!important}
+    .explainer .scene button{display:none}
+    .explainer .scene .bar span::after{content:" (animation paused by your system setting)"}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap bar">
+    <a class="wordmark" href="/">xplore<span>ai</span></a>
+    <ul>
+      <li><a href="/#agents">Solutions</a></li>
+      <li><a href="/#stories">Success Stories</a></li>
+      <li><a href="/#subscribe">Newsletter</a></li>
+      <li><a href="/learn.html" aria-current="page">Learn AI</a></li>
+      <li><a class="btn" href="https://wa.me/919769686931?text=Hi%20XploreAI%2C%20I%27m%20interested%20in%20AI%20automation!">Get Started</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main class="explainer wrap">
+<div class="article">
+  <p class="crumb"><a href="/learn.html">Learn AI</a> &nbsp;/&nbsp; <a href="/learn.html#concepts">Concepts</a> &nbsp;/&nbsp; Agent harness</p>
+
+  <section class="hero">
+    <span class="pill">EXPLAINER</span>
+    <h1>The model is the hire. The harness is the job<i>.</i></h1>
+    <p class="lede">Everyone argues about which model is best. Almost every agent that fails in production fails somewhere else — in the scaffolding around the model. Here is what that scaffolding is made of, one part at a time.</p>
+    <p class="meta">September 2026 · 9 minute read · Every animation can be replayed</p>
+  </section>
+
+  <figure class="reel">
+    <video controls playsinline preload="metadata" poster="harness-poster.jpg">
+      <source src="harness-reel.mp4" type="video/mp4">
+      Your browser cannot play this video. <a href="harness-reel.mp4">Download it instead</a>.
+    </video>
+    <figcaption>The whole thing in 32 seconds. Read on for each part.</figcaption>
+  </figure>
+
+  <!-- ============ 1 ============ -->
+  <h2><span class="n">1</span>A model on its own cannot hold a job</h2>
+  <p>Picture the best new hire you have ever met. Sharp, quick, genuinely knowledgeable. Now put them in an empty room on their first morning. No desk. No files. No login. Nobody to ask. No one checking their work before it reaches a customer.</p>
+  <p>They would be useless — not because they lack ability, but because ability was never the missing piece. A language model is in exactly that position. It is a pure function: text goes in, text comes out. It cannot remember yesterday, it cannot look anything up, it cannot take an action, and nothing stops it acting on a misunderstanding.</p>
+  <p>The <strong>harness</strong> is everything you build around the model so it can actually do a job: the workspace it runs in, the notes it keeps, the rules it follows, and the person who signs off before anything reaches a customer.</p>
+
+  <div class="plain">
+    <b>In plain terms.</b> The model is the hire. The harness is the job — the desk, the filing cabinet, the handbook and the manager. Swapping in a smarter model rarely fixes a weak harness.
+  </div>
+
+  <!-- ============ 2 ============ -->
+  <h2><span class="n">2</span>Six parts do the work</h2>
+  <p>A production agent is not one clever prompt. It is a small system, and it has recognisable organs. Six of them carry most of the weight.</p>
+
+  <div class="scene" data-scene="orbit">
+    <svg viewBox="0 0 700 360" role="img" aria-label="A central Harness hub with six components arranged around it: Sandbox, Sub-agents, Observability, Compression, Evaluator and Approval loop.">
+      <circle cx="350" cy="180" r="118" class="dash"/>
+      <!-- spokes -->
+      <line x1="350" y1="180" x2="350" y2="62"  class="dash"/>
+      <line x1="350" y1="180" x2="452" y2="121" class="dash"/>
+      <line x1="350" y1="180" x2="452" y2="239" class="dash"/>
+      <line x1="350" y1="180" x2="350" y2="298" class="dash"/>
+      <line x1="350" y1="180" x2="248" y2="239" class="dash"/>
+      <line x1="350" y1="180" x2="248" y2="121" class="dash"/>
+      <!-- nodes -->
+      <g class="n1" data-anim style="transform-origin:350px 62px">
+        <circle cx="350" cy="62" r="34" fill="var(--paper)" stroke="var(--cream-2)" stroke-width="2"/>
+        <rect x="337" y="49" width="26" height="26" rx="7" class="stroke"/>
+        <text x="350" y="116" text-anchor="middle" class="lbl">Sandbox</text>
+      </g>
+      <g class="n2" data-anim style="transform-origin:452px 121px">
+        <circle cx="452" cy="121" r="34" fill="var(--paper)" stroke="var(--cream-2)" stroke-width="2"/>
+        <circle cx="442" cy="121" r="7" class="stroke"/><circle cx="464" cy="110" r="5" class="stroke"/>
+        <circle cx="464" cy="121" r="5" class="stroke"/><circle cx="464" cy="132" r="5" class="stroke"/>
+        <path d="M449 121h10M449 121l10-11M449 121l10 11" class="stroke"/>
+        <text x="452" y="175" text-anchor="middle" class="lbl">Sub-agents</text>
+      </g>
+      <g class="n3" data-anim style="transform-origin:452px 239px">
+        <circle cx="452" cy="239" r="34" fill="var(--paper)" stroke="var(--cream-2)" stroke-width="2"/>
+        <path d="M436 239q16 -12 32 0q-16 12 -32 0z" class="stroke"/><circle cx="452" cy="239" r="4.5" class="stroke"/>
+        <text x="452" y="293" text-anchor="middle" class="lbl">Observability</text>
+      </g>
+      <g class="n4" data-anim style="transform-origin:350px 298px">
+        <circle cx="350" cy="298" r="34" fill="var(--paper)" stroke="var(--cream-2)" stroke-width="2"/>
+        <path d="M335 289h30M340 298h20M345 307h10" class="stroke"/>
+        <text x="350" y="352" text-anchor="middle" class="lbl">Compression</text>
+      </g>
+      <g class="n5" data-anim style="transform-origin:248px 239px">
+        <circle cx="248" cy="239" r="34" fill="var(--paper)" stroke="var(--cream-2)" stroke-width="2"/>
+        <path d="M235 250v-14M248 250v-22M261 250v-10M231 250h34" class="stroke"/>
+        <text x="248" y="293" text-anchor="middle" class="lbl">Evaluator</text>
+      </g>
+      <g class="n6" data-anim style="transform-origin:248px 121px">
+        <circle cx="248" cy="121" r="34" fill="var(--paper)" stroke="var(--cream-2)" stroke-width="2"/>
+        <path d="M237 121l8 9 16 -18" class="strokeRust"/>
+        <text x="248" y="175" text-anchor="middle" class="lbl">Approval loop</text>
+      </g>
+      <!-- hub -->
+      <circle cx="350" cy="180" r="52" fill="var(--rust-soft)"/>
+      <text x="350" y="186" text-anchor="middle" class="big rust">Harness</text>
+    </svg>
+    <div class="bar"><span>The six parts, around the model</span><button data-replay type="button">Replay</button></div>
+  </div>
+
+  <p>They are not optional extras you add once something breaks. Each one closes a specific failure mode, and the failure modes are predictable.</p>
+
+  <!-- ============ 3 ============ -->
+  <h2><span class="n">3</span>Sandbox — somewhere safe to be wrong</h2>
+  <p>The moment an agent can run code, send messages or touch a database, a misunderstanding stops being a bad sentence and becomes a bad action. A sandbox is a walled-off place to act: a container, a scratch directory, a test account, a database copy.</p>
+  <p>The point is not that the agent will behave. The point is that when it does not, the blast radius is a throwaway environment rather than your production data.</p>
+
+  <div class="scene" data-scene="sandbox">
+    <svg viewBox="0 0 700 250" role="img" aria-label="An agent action bounces around inside a walled box and never reaches the production systems outside it.">
+      <rect x="40" y="40" width="330" height="170" rx="16" fill="var(--cream)" stroke="var(--rust)" stroke-width="2.5"/>
+      <text x="205" y="30" text-anchor="middle" class="lbl">Sandbox</text>
+      <g data-anim style="animation-name:sand-ball;transform-origin:110px 130px">
+        <circle cx="110" cy="130" r="15" fill="var(--rust)"/>
+      </g>
+      <g data-anim style="animation-name:sand-flash">
+        <path d="M356 106v48" class="strokeRust"/>
+      </g>
+      <rect x="430" y="52" width="230" height="46" rx="10" fill="var(--paper)" stroke="var(--cream-2)" stroke-width="2"/>
+      <text x="545" y="81" text-anchor="middle" class="lbl">Patient records</text>
+      <rect x="430" y="110" width="230" height="46" rx="10" fill="var(--paper)" stroke="var(--cream-2)" stroke-width="2"/>
+      <text x="545" y="139" text-anchor="middle" class="lbl">Live WhatsApp line</text>
+      <rect x="430" y="168" width="230" height="46" rx="10" fill="var(--paper)" stroke="var(--cream-2)" stroke-width="2"/>
+      <text x="545" y="197" text-anchor="middle" class="lbl">Payments</text>
+      <text x="545" y="30" text-anchor="middle" class="lbl muted">Untouched</text>
+    </svg>
+    <div class="bar"><span>The action bounces. Production never sees it</span><button data-replay type="button">Replay</button></div>
+  </div>
+
+  <div class="plain"><b>Failure it prevents.</b> A confident agent deleting or messaging something real because it misread one instruction.</div>
+
+  <!-- ============ 4 ============ -->
+  <h2><span class="n">4</span>Sub-agent orchestration — narrow jobs, focused workers</h2>
+  <p>One agent asked to do six things at once does all six adequately and none of them well. Its instructions grow long, its attention spreads thin, and every extra tool you hand it makes the next decision harder.</p>
+  <p>The fix is delegation. A coordinator breaks the work into narrow jobs and hands each to a sub-agent with its own short instructions and a couple of tools. Each one has a small decision to make, so each one makes it better. The results come back to the coordinator to assemble.</p>
+
+  <div class="scene" data-scene="subagents">
+    <svg viewBox="0 0 700 250" role="img" aria-label="A coordinator splits one task into three narrow jobs handled by separate sub-agents, whose results return to the coordinator.">
+      <circle cx="120" cy="125" r="42" fill="var(--rust-soft)" stroke="var(--rust)" stroke-width="2"/>
+      <text x="120" y="131" text-anchor="middle" class="big rust">Lead</text>
+      <g data-anim style="animation-name:sub-split;animation-delay:0s">
+        <rect x="300" y="36" width="170" height="44" rx="10" fill="var(--paper)" stroke="var(--cream-2)" stroke-width="2"/>
+        <text x="385" y="63" text-anchor="middle" class="lbl">Find the slot</text>
+      </g>
+      <g data-anim style="animation-name:sub-split;animation-delay:.5s">
+        <rect x="300" y="103" width="170" height="44" rx="10" fill="var(--paper)" stroke="var(--cream-2)" stroke-width="2"/>
+        <text x="385" y="130" text-anchor="middle" class="lbl">Check the patient</text>
+      </g>
+      <g data-anim style="animation-name:sub-split;animation-delay:1s">
+        <rect x="300" y="170" width="170" height="44" rx="10" fill="var(--paper)" stroke="var(--cream-2)" stroke-width="2"/>
+        <text x="385" y="197" text-anchor="middle" class="lbl">Write the reply</text>
+      </g>
+      <g data-anim style="animation-name:sub-back">
+        <path d="M640 58 H560 M640 125 H560 M640 192 H560" class="strokeRust"/>
+        <text x="600" y="232" text-anchor="middle" class="lbl rust">results back</text>
+      </g>
+    </svg>
+    <div class="bar"><span>One broad task becomes three narrow ones</span><button data-replay type="button">Replay</button></div>
+  </div>
+
+  <div class="plain"><b>Failure it prevents.</b> An agent with twenty tools and a two-page prompt that quietly picks the wrong one.</div>
+
+  <!-- ============ 5 ============ -->
+  <h2><span class="n">5</span>Observability — being able to answer "why did it do that?"</h2>
+  <p>An agent that gives a wrong answer once is a curiosity. An agent that gives a wrong answer and leaves no trace is unfixable, because you cannot tell whether the model misread the request, a tool returned bad data, or a retry silently swallowed an error.</p>
+  <p>Observability means every step is recorded: what the agent was asked, what it decided, which tool it called, what came back, how long it took and what it cost. When something goes wrong you read the trace instead of guessing.</p>
+
+  <div class="scene" data-scene="observability">
+    <svg viewBox="0 0 700 220" role="img" aria-label="A trace of an agent run: each step is recorded in order and a lens moves across them.">
+      <line x1="60" y1="150" x2="640" y2="150" class="dash"/>
+      <g data-anim style="animation-name:obs-step;animation-delay:0s"><circle cx="90" cy="150" r="11" fill="var(--rust)"/><text x="90" y="186" text-anchor="middle" class="lbl">message in</text></g>
+      <g data-anim style="animation-name:obs-step;animation-delay:.9s"><circle cx="228" cy="150" r="11" fill="var(--rust)"/><text x="228" y="186" text-anchor="middle" class="lbl">decided</text></g>
+      <g data-anim style="animation-name:obs-step;animation-delay:1.8s"><circle cx="366" cy="150" r="11" fill="var(--rust)"/><text x="366" y="186" text-anchor="middle" class="lbl">tool called</text></g>
+      <g data-anim style="animation-name:obs-step;animation-delay:2.7s"><circle cx="504" cy="150" r="11" fill="var(--rust)"/><text x="504" y="186" text-anchor="middle" class="lbl">data back</text></g>
+      <g data-anim style="animation-name:obs-step;animation-delay:3.6s"><circle cx="620" cy="150" r="11" fill="var(--rust)"/><text x="620" y="186" text-anchor="middle" class="lbl">replied</text></g>
+      <g data-anim style="animation-name:obs-lens;transform-origin:90px 150px">
+        <circle cx="90" cy="92" r="26" class="stroke"/><path d="M108 110l16 16" class="stroke"/>
+      </g>
+      <text x="350" y="40" text-anchor="middle" class="lbl muted">every step, with timings and cost</text>
+    </svg>
+    <div class="bar"><span>A readable trace of the whole run</span><button data-replay type="button">Replay</button></div>
+  </div>
+
+  <div class="plain"><b>Failure it prevents.</b> A bug you can reproduce for a customer but never explain, so you never actually fix it.</div>
+
+  <!-- ============ 6 ============ -->
+  <h2><span class="n">6</span>Compression — keeping what still matters</h2>
+  <p>Every model has a finite context window, and a long-running agent will fill it. Once it is full something has to go, and if you have not decided what, the system decides for you — usually by dropping the oldest messages, which is often where the actual instructions were.</p>
+  <p>Compression is doing that deliberately: summarise the settled part of the conversation, keep the decisions and the open questions, drop the transcript. It also cuts cost, because you are re-sending a summary rather than an ever-growing history on every single turn.</p>
+
+  <div class="scene" data-scene="compression">
+    <svg viewBox="0 0 700 250" role="img" aria-label="A tall stack of conversation turns is compressed into a short summary block, with the key decisions kept.">
+      <text x="150" y="34" text-anchor="middle" class="lbl">40 turns of history</text>
+      <g data-anim style="animation-name:comp-squash;transform-origin:150px 220px">
+        <rect x="70" y="50" width="160" height="22" rx="4" fill="var(--paper)" stroke="var(--cream-2)" stroke-width="2"/>
+        <rect x="70" y="78" width="160" height="22" rx="4" fill="var(--paper)" stroke="var(--cream-2)" stroke-width="2"/>
+        <rect x="70" y="106" width="160" height="22" rx="4" fill="var(--paper)" stroke="var(--cream-2)" stroke-width="2"/>
+        <rect x="70" y="134" width="160" height="22" rx="4" fill="var(--paper)" stroke="var(--cream-2)" stroke-width="2"/>
+        <rect x="70" y="162" width="160" height="22" rx="4" fill="var(--paper)" stroke="var(--cream-2)" stroke-width="2"/>
+        <rect x="70" y="190" width="160" height="22" rx="4" fill="var(--paper)" stroke="var(--cream-2)" stroke-width="2"/>
+      </g>
+      <path d="M270 125h80" class="strokeRust"/><path d="M336 113l16 12-16 12" class="strokeRust"/>
+      <g data-anim style="animation-name:comp-out">
+        <rect x="400" y="78" width="230" height="94" rx="12" fill="var(--rust-soft)" stroke="var(--rust)" stroke-width="2"/>
+        <text x="515" y="110" text-anchor="middle" class="big rust">Summary</text>
+        <text x="515" y="134" text-anchor="middle" class="lbl">decisions kept</text>
+        <text x="515" y="154" text-anchor="middle" class="lbl">open questions kept</text>
+      </g>
+    </svg>
+    <div class="bar"><span>Keep the decisions, drop the transcript</span><button data-replay type="button">Replay</button></div>
+  </div>
+
+  <div class="plain"><b>Failure it prevents.</b> An agent that forgets its own instructions halfway through a long task — and a bill that grows with every turn.</div>
+
+  <!-- ============ 7 ============ -->
+  <h2><span class="n">7</span>Evaluator — scoring the work before it ships</h2>
+  <p>"It looked fine when I tried it" is not a quality bar, and it does not survive a prompt change. An evaluator is a fixed set of cases with known-good answers, run automatically, scoring each output against a standard.</p>
+  <p>It can be a second model grading the first, a rule check, or simply an assertion that the reply contains a real appointment time. What matters is that it runs every time, so a change that improves one case and breaks four others is caught by you rather than reported by a customer.</p>
+
+  <div class="scene" data-scene="evaluator">
+    <svg viewBox="0 0 700 230" role="img" aria-label="A draft output passes through an evaluator which scores it before it is allowed to ship.">
+      <g data-anim style="animation-name:eval-move;transform-origin:110px 115px">
+        <rect x="60" y="88" width="106" height="54" rx="10" fill="var(--paper)" stroke="var(--cream-2)" stroke-width="2"/>
+        <text x="113" y="120" text-anchor="middle" class="lbl">draft</text>
+      </g>
+      <rect x="288" y="52" width="130" height="126" rx="14" fill="var(--cream)" stroke="var(--rust)" stroke-width="2.5"/>
+      <text x="353" y="44" text-anchor="middle" class="lbl">Evaluator</text>
+      <path d="M318 148v-30M353 148v-52M388 148v-18M312 148h82" class="strokeRust"/>
+      <g data-anim style="animation-name:eval-score">
+        <text x="353" y="176" text-anchor="middle" class="lbl rust">scored</text>
+      </g>
+      <rect x="540" y="88" width="120" height="54" rx="10" fill="var(--rust-soft)" stroke="var(--rust)" stroke-width="2"/>
+      <text x="600" y="120" text-anchor="middle" class="lbl rust">ships</text>
+    </svg>
+    <div class="bar"><span>Nothing ships unscored</span><button data-replay type="button">Replay</button></div>
+  </div>
+
+  <div class="plain"><b>Failure it prevents.</b> A prompt tweak that quietly makes the agent worse, discovered weeks later.</div>
+
+  <!-- ============ 8 ============ -->
+  <h2><span class="n">8</span>Approval loop — a person signs off on anything irreversible</h2>
+  <p>Some actions can be undone and some cannot. Drafting a reply is reversible. Sending it to a patient is not. Refunding money, deleting records, posting publicly, messaging a customer at 2am — those need a human in front of them.</p>
+  <p>An approval loop is the rule that the agent drafts and a person sends. It sounds like it defeats the purpose, and it does not: the agent still does the reading, the reasoning and the writing, which is the slow part. The human does the one-second check that keeps the whole thing trustworthy.</p>
+
+  <div class="scene" data-scene="approval">
+    <svg viewBox="0 0 700 230" role="img" aria-label="The agent writes a draft, a person approves it, and only then is it sent.">
+      <circle cx="80" cy="115" r="34" fill="var(--rust-soft)" stroke="var(--rust)" stroke-width="2"/>
+      <text x="80" y="121" text-anchor="middle" class="lbl rust">agent</text>
+      <g data-anim style="animation-name:appr-draft">
+        <rect x="150" y="88" width="120" height="54" rx="10" fill="var(--paper)" stroke="var(--cream-2)" stroke-width="2"/>
+        <text x="210" y="120" text-anchor="middle" class="lbl">draft</text>
+      </g>
+      <circle cx="420" cy="115" r="38" fill="var(--cream)" stroke="var(--espresso)" stroke-width="2"/>
+      <circle cx="420" cy="102" r="12" fill="var(--espresso)"/>
+      <path d="M400 142q20 -24 40 0z" fill="var(--espresso)"/>
+      <text x="420" y="182" text-anchor="middle" class="lbl">you</text>
+      <g data-anim style="animation-name:appr-tick;transform-origin:452px 88px">
+        <circle cx="452" cy="88" r="15" fill="var(--rust)"/>
+        <path d="M445 88l5 6 9 -11" fill="none" stroke="var(--cream)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </g>
+      <g data-anim style="animation-name:appr-send">
+        <rect x="490" y="88" width="120" height="54" rx="10" fill="var(--rust-soft)" stroke="var(--rust)" stroke-width="2"/>
+        <text x="550" y="120" text-anchor="middle" class="lbl rust">sent</text>
+      </g>
+    </svg>
+    <div class="bar"><span>The agent drafts. A person sends</span><button data-replay type="button">Replay</button></div>
+  </div>
+
+  <div class="plain"><b>Failure it prevents.</b> The single message to a real customer that you would give anything to take back.</div>
+
+  <!-- ============ 9 ============ -->
+  <h2><span class="n">9</span>The six, side by side</h2>
+  <div class="cmp-wrap">
+    <table class="cmp">
+      <thead><tr><th>Part</th><th>What it does</th><th>What goes wrong without it</th></tr></thead>
+      <tbody>
+        <tr><td>Sandbox</td><td>A walled-off place to run code and take actions</td><td>A misunderstanding becomes a real, irreversible action</td></tr>
+        <tr><td>Sub-agents</td><td>Narrow jobs handed to focused workers</td><td>One overloaded agent picks the wrong tool</td></tr>
+        <tr><td>Observability</td><td>A recorded trace of every step</td><td>Bugs you can see but never explain</td></tr>
+        <tr><td>Compression</td><td>Keeps the decisions, drops the transcript</td><td>The agent forgets its own instructions; costs climb</td></tr>
+        <tr><td>Evaluator</td><td>Scores output against a standard, every time</td><td>Quality drifts silently after each change</td></tr>
+        <tr><td>Approval loop</td><td>A human signs off on anything irreversible</td><td>The message you cannot take back</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ============ 10 ============ -->
+  <h2><span class="n">10</span>What this looks like in a real system</h2>
+  <p>We run a WhatsApp booking agent for clinics. Patients message at any hour, it answers, finds a slot and books it. The model doing the reasoning is a commodity — you could swap it for a competitor and patients would not notice.</p>
+  <p>Everything that makes it trustworthy is harness. Bookings are written to a test calendar until the flow is proven. Availability lookup and reply-writing are separate steps rather than one large prompt. Every conversation is logged end to end, so when a booking goes wrong we can read exactly what happened. Long threads are summarised down to the patient, the reason for the visit and the slot. A fixed set of awkward messages is replayed after every change. And anything involving a cancellation or a refund is drafted for the front desk rather than sent.</p>
+
+  <div class="plain"><b>The line worth keeping.</b> When an agent is unreliable, the instinct is to reach for a better model. Look at the harness first — that is almost always where the problem lives.</div>
+
+  <section class="cta">
+    <h2>Want this built for your business?</h2>
+    <p>We build WhatsApp and workflow agents for clinics and small businesses in Mumbai — with the harness included, not bolted on later.</p>
+    <a class="btn" href="https://wa.me/919769686931?text=Hi%20XploreAI%2C%20I%20read%20the%20agent%20harness%20explainer!">Talk to us on WhatsApp</a>
+  </section>
+
+  <p style="margin-top:34px"><a href="/learn.html#concepts">← Back to Concepts</a></p>
+</div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="fine" style="border:none;margin:0;padding:0">
+      <span>© 2026 XploreAI · <a href="/">xploreai.co.in</a></span>
+      <span><a href="mailto:hello@xploreai.co.in">hello@xploreai.co.in</a></span>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Start animations only once a scene is visible; pause when off-screen.
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      e.target.classList.toggle('play', e.isIntersecting && !reduce);
+    });
+  }, {threshold: .35});
+  document.querySelectorAll('.scene').forEach(s => io.observe(s));
+
+  // Replay: force a reflow so CSS animations restart from 0.
+  document.querySelectorAll('[data-replay]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const s = btn.closest('.scene');
+      s.classList.remove('play');
+      void s.offsetWidth;
+      s.classList.add('play');
+    });
+  });
+})();
+</script>
+</body>
+</html>
