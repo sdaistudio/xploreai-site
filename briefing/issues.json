@@ -1,5 +1,20 @@
 [
   {
+    "issue": 6,
+    "slug": "issue-06",
+    "title": "The Reliability Era",
+    "dates": "14–20 Sep 2026",
+    "summary": "No giant flagship launch this week — instead DeepMind's Dream-RSI self-improvement research, Gemini 3.8 Live voice agents, OpenAI's misalignment reporting framework, and funding that turns agent reliability into a market of its own.",
+    "highlights": [
+      "Agentic AI 🔥🔥🔥🔥🔥",
+      "Voice agents 🔥🔥🔥🔥🔥",
+      "Coding agents 🔥🔥🔥🔥🔥",
+      "Agent safety 🔥🔥🔥🔥🔥",
+      "Infrastructure 🔥🔥🔥🔥🔥",
+      "Self-improving AI 🔥🔥🔥🔥"
+    ]
+  },
+  {
     "issue": 5,
     "slug": "issue-05",
     "title": "The Research Co-Worker",
