@@ -1,5 +1,20 @@
 [
   {
+    "issue": 8,
+    "slug": "issue-08",
+    "title": "The Gated Frontier",
+    "dates": "28 Sep – 4 Oct 2026",
+    "summary": "Capability accelerates while access tightens: OpenAI shelves GPT-6.1 Astra over safety, Google restricts Gemini 4 Argon to vetted defenders, AMD buys Fei-Fei Li's World Labs for $8.2B, and Anthropic's IPO prospectus reveals $518B in compute obligations.",
+    "highlights": [
+      "Frontier reasoning 🔥🔥🔥🔥🔥",
+      "Agentic AI 🔥🔥🔥🔥🔥",
+      "AI safety 🔥🔥🔥🔥🔥",
+      "Cyber AI 🔥🔥🔥🔥🔥",
+      "Physical AI 🔥🔥🔥🔥🔥",
+      "AI networking 🔥🔥🔥🔥"
+    ]
+  },
+  {
     "issue": 7,
     "slug": "issue-07",
     "title": "The Industrialization of AI",
