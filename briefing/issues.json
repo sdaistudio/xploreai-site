@@ -1,5 +1,20 @@
 [
   {
+    "issue": 10,
+    "slug": "issue-10",
+    "title": "Three Ways to Deploy",
+    "dates": "11–17 Oct 2026",
+    "summary": "Gemini 4 Argon goes broadly available, Meta returns to the frontier with Muse Wonder's persistent-memory agents, NVIDIA ships efficient Nemotron 3.5 models that run in 24GB — and CERN partners with Mistral on a physics foundation model.",
+    "highlights": [
+      "Frontier competition 🔥🔥🔥🔥🔥",
+      "Persistent agents 🔥🔥🔥🔥🔥",
+      "Agent security 🔥🔥🔥🔥🔥",
+      "Efficient models 🔥🔥🔥🔥",
+      "AI for science 🔥🔥🔥🔥",
+      "AI governance 🔥🔥🔥🔥"
+    ]
+  },
+  {
     "issue": 9,
     "slug": "issue-09",
     "title": "Intelligence Gets Cheap",
