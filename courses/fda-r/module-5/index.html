@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 5: Volatility Modeling and Risk Analytics — Financial Data Analytics using R — XploreAI</title>
+<meta name="description" content="Returns are only half the story. Model how NIFTY&#x27;s risk changes from day to day with ARCH and GARCH, then put a rupee figure on downside risk with Value at Risk and check that figure with a backtest.">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="XploreAI">
+<meta property="og:title" content="Module 5: Volatility Modeling and Risk Analytics — Financial Data Analytics using R">
+<meta property="og:description" content="Returns are only half the story. Model how NIFTY&#x27;s risk changes from day to day with ARCH and GARCH, then put a rupee figure on downside risk with Value at Risk and check that figure with a backtest.">
+<meta property="og:url" content="https://xploreai.co.in/courses/fda-r/module-5/">
+<meta property="og:image" content="https://xploreai.co.in/assets/og-image.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/style.css">
+<link rel="stylesheet" href="/courses/fda-r/course.css">
+</head>
+<body>
+
+<nav>
+  <div class="wrap bar">
+    <a class="wordmark" href="/">xplore<span>ai</span></a>
+    <ul>
+      <li><a href="/#agents">Solutions</a></li>
+      <li><a href="/#stories">Success Stories</a></li>
+      <li><a href="/#subscribe">Newsletter</a></li>
+      <li><a href="/learn.html" aria-current="page">Learn AI</a></li>
+      <li><a class="btn" href="https://wa.me/919769686931?text=Hi%20XploreAI%2C%20I%27m%20interested%20in%20AI%20automation!">Get Started</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main class="fdar">
+<header class="mhero wrap">
+  <p class="crumb"><a href="/learn.html">Learn AI</a> / <a href="../">Financial Data Analytics using R</a> / Module 5</p>
+  <span class="pill">MODULE 5 OF 6 · 4 SESSIONS</span>
+  <h1>Volatility Modeling and Risk Analytics<i>.</i></h1>
+  <p class="lede">Returns are only half the story. Model how NIFTY's risk changes from day to day with ARCH and GARCH, then put a rupee figure on downside risk with Value at Risk and check that figure with a backtest.</p>
+  <div class="dl"><a class="btn" href="../code/module-5.R" download>Download the R script</a> <a class="btn ghost" href="../#data">Get the data</a></div>
+</header>
+<div class="wrap layout">
+  <aside class="toc" aria-label="Sessions"><p>In this module</p><ol><li><a href="#s5-1"><span>5.1</span>Volatility: why the variance itself needs a model</a></li><li><a href="#s5-2"><span>5.2</span>ARCH and GARCH in R: modelling NIFTY 50&#x27;s volatility</a></li><li><a href="#s5-3"><span>5.3</span>Value at Risk and backtesting in R</a></li><li><a href="#s5-4"><span>5.4</span>The VaR framework: what it is, and what it misses</a></li></ol></aside>
+  <div class="content">
+<section class="session" id="s5-1"><p class="snum">Session 5.1</p><h2>Volatility: why the variance itself needs a model</h2><p>Modules 2–4 modelled the <strong>mean</strong>: the expected return. Finance cares just as much about <strong>risk</strong>, because asset pricing is all about risk-adjusted return. The classical regression in Module 3 assumed <strong>homoskedasticity</strong>, a constant error variance. Market returns break that assumption every day.</p><aside class="call concept"><b>The idea</b><p><strong>Volatility clustering:</strong> large moves tend to follow large moves, and calm days follow calm days. Think of March 2020, or oil during a Middle East flare-up. Clustering is the <strong>precondition</strong> for an ARCH effect. If you can see it in a returns chart, the variance is predictable and worth modelling.</p></aside><h3>ARCH (Engle, 1982)</h3><p>ARCH stands for autoregressive conditional heteroskedasticity. Today's variance depends on yesterday's <strong>squared shocks</strong>:</p><p><strong>ARCH(q): σₜ² = α₀ + α₁εₜ₋₁² + … + α_qεₜ₋_q²</strong></p><p>If the α's are significantly above zero, there's an ARCH effect. The drawback is that capturing long memory needs many lags, which eats degrees of freedom and can produce negative coefficients that make no sense for a variance.</p><h3>GARCH (Bollerslev, 1986)</h3><p>GARCH adds <strong>yesterday's variance</strong> itself, so one term captures that long memory:</p><p><strong>GARCH(1,1): σₜ² = ω + α₁εₜ₋₁² + β₁σₜ₋₁²</strong></p><div class="tbl"><table><thead><tr><th>Term</th><th>Name</th><th>Meaning</th></tr></thead><tbody><tr><td>ω</td><td>Constant</td><td>The long-run baseline of variance</td></tr><tr><td>α₁</td><td>ARCH term</td><td>Reaction to <strong>news</strong>: how much yesterday's surprise moves today's risk</td></tr><tr><td>β₁</td><td>GARCH term</td><td><strong>Persistence</strong>: how much yesterday's risk carries into today</td></tr><tr><td>α₁ + β₁</td><td></td><td>Close to 1 means shocks fade slowly. It must stay below 1</td></tr></tbody></table></div><p>The procedure has three steps:</p><p>1. Fit a <strong>mean model</strong> (ARMA) to the returns. 2. Test its residuals for an <strong>ARCH effect</strong>. 3. If one is present, fit a <strong>GARCH</strong> model and forecast volatility.</p></section><section class="session" id="s5-2"><p class="snum">Session 5.2</p><h2>ARCH and GARCH in R: modelling NIFTY 50&#x27;s volatility</h2><h3>Get the data</h3><p>The lecture downloads prices live with <code>quantmod</code>:</p><div class="cell"><div class="code"><div class="lab"><span>R</span><span class="noeval">shown, not run here</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">install.packages(c(&quot;quantmod&quot;, &quot;rugarch&quot;, &quot;FinTS&quot;))
+library(quantmod)
+getSymbols(&quot;^NSEI&quot;, src = &quot;yahoo&quot;, from = &quot;2015-01-01&quot;)
+price &lt;- Cl(NSEI)</code></pre></div></div><p>To keep everyone on identical numbers, these pages use the same Yahoo series saved as a CSV (2015–2025):</p><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">library(xts)
+url &lt;- &quot;https://xploreai.co.in/courses/fda-r/data/&quot;
+rust &lt;- &quot;#E2571B&quot;; espresso &lt;- &quot;#4A4238&quot;
+nifty &lt;- read.csv(paste0(url, &quot;NIFTY50.csv&quot;))
+price &lt;- xts(nifty$Close, order.by = as.Date(nifty$Date))
+head(price, 3); tail(price, 3)</code></pre></div><div class="out"><div class="lab"><span>Console output</span></div><pre>             [,1]
+2015-01-02 8395.5
+2015-01-05 8378.4
+2015-01-06 8127.4
+            [,1]
+2025-12-29 25942
+2025-12-30 25939
+2025-12-31 26130</pre></div></div><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">plot(price, col = rust, main = &quot;NIFTY 50 close, 2015-2025&quot;, grid.col = &quot;#EDE4D3&quot;, yaxis.right = FALSE)</code></pre></div><figure class="plot"><div class="lab"><span>Plot output</span></div><img src="../img/m5c003-1.png" alt="R plot output for session 5.2" loading="lazy"></figure></div><h3>Log returns, and a look for clustering</h3><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">returns &lt;- na.omit(diff(log(price)))
+plot(returns, col = espresso, main = &quot;NIFTY 50 daily log returns&quot;, grid.col = &quot;#EDE4D3&quot;, yaxis.right = FALSE)</code></pre></div><figure class="plot"><div class="lab"><span>Plot output</span></div><img src="../img/m5c004-1.png" alt="R plot output for session 5.2" loading="lazy"></figure></div><aside class="call read"><b>How to read it</b><p>The returns hover around zero, so the mean is stationary, but the <strong>width</strong> of the band changes. The March 2020 COVID crash stands out, and quiet stretches like 2017 are visibly narrow. That's volatility clustering.</p></aside><h3>Step 1: a mean model</h3><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">AR_fit &lt;- arima(returns, order = c(1, 0, 0))
+AR_fit
+residuals_AR &lt;- residuals(AR_fit)</code></pre></div><div class="out"><div class="lab"><span>Console output</span></div><pre>
+Call:
+arima(x = returns, order = c(1, 0, 0))
+
+Coefficients:
+         ar1  intercept
+      -0.026          0
+s.e.   0.019          0
+
+sigma^2 estimated as 0.000106:  log likelihood = 8547.5,  aic = -17089</pre></div></div><h3>Step 2: the ARCH LM test</h3><p>H₀: there is <strong>no ARCH effect</strong>. We need to <strong>reject</strong> it before a GARCH model is justified.</p><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">library(FinTS)
+ArchTest(residuals_AR, lags = 12)</code></pre></div><div class="out"><div class="lab"><span>Console output</span></div><pre>
+	ARCH LM-test; Null hypothesis: no ARCH effects
+
+data:  residuals_AR
+Chi-squared = 747, df = 12, p-value &lt;2e-16</pre></div></div><aside class="call read"><b>How to read it</b><p>The p-value is essentially zero, so reject H₀. NIFTY's squared residuals are strongly autocorrelated, which means <strong>today's risk depends on recent risk</strong>. GARCH is justified.</p></aside><h3>Step 3: fit GARCH(1,1)</h3><p><code>rugarch</code> separates the <strong>specification</strong> (what model) from the <strong>fit</strong> (estimate it on data).</p><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">library(rugarch)
+garch11_spec &lt;- ugarchspec(
+  variance.model     = list(model = &quot;sGARCH&quot;, garchOrder = c(1, 1)),
+  mean.model         = list(armaOrder = c(1, 0), include.mean = TRUE),
+  distribution.model = &quot;norm&quot;)
+garch11_fit &lt;- ugarchfit(spec = garch11_spec, data = returns)
+round(garch11_fit@fit$matcoef, 6)</code></pre></div><div class="out"><div class="lab"><span>Console output</span></div><pre>        Estimate  Std. Error  t value Pr(&gt;|t|)
+mu      0.000678    0.000157   4.3101 0.000016
+ar1     0.050611    0.020820   2.4308 0.015064
+omega   0.000002    0.000001   2.0811 0.037424
+alpha1  0.104654    0.013455   7.7783 0.000000
+beta1   0.872156    0.015047  57.9614 0.000000</pre></div></div><aside class="call read"><b>How to read it</b><p><strong>mu</strong> and <strong>ar1</strong> belong to the mean equation. <strong>omega</strong> is the variance constant. <strong>alpha1</strong> (about 0.1) is significant, so news moves volatility. <strong>beta1</strong> (about 0.87) is significant, so volatility is persistent. Their sum is about 0.98, close to 1: a shock takes weeks, not days, to wash out of NIFTY's volatility.</p></aside><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">sum(coef(garch11_fit)[c(&quot;alpha1&quot;, &quot;beta1&quot;)])      # persistence</code></pre></div><div class="out"><div class="lab"><span>Console output</span></div><pre>[1] 0.97681</pre></div></div><h3>Conditional volatility through time</h3><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">cond_vol &lt;- sigma(garch11_fit) * sqrt(252) * 100         # annualised, in %
+plot(cond_vol, col = rust, main = &quot;NIFTY 50: GARCH(1,1) annualised volatility (%)&quot;,
+     grid.col = &quot;#EDE4D3&quot;, yaxis.right = FALSE)</code></pre></div><figure class="plot"><div class="lab"><span>Plot output</span></div><img src="../img/m5c009-1.png" alt="R plot output for session 5.2" loading="lazy"></figure></div><h3>Forecast volatility 90 days ahead</h3><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">garch_fc &lt;- ugarchforecast(garch11_fit, n.ahead = 90)
+sigma_fc &lt;- as.numeric(sigma(garch_fc))
+round(head(sigma_fc), 5)                         # daily sigma for T+1, T+2, ...
+sqrt(sum(sigma_fc^2))                            # aggregate 90-day volatility</code></pre></div><div class="out"><div class="lab"><span>Console output</span></div><pre>[1] 0.00593 0.00606 0.00618 0.00629 0.00641 0.00651
+[1] 0.081233</pre></div></div><aside class="call read"><b>How to read it</b><p>Variances add up over time, standard deviations don't. So you sum the 90 daily <strong>variances</strong> and then take the square root. The last line gives the expected spread of NIFTY's <strong>total</strong> return over the next 90 trading days. Here it's about 0.08: a one-standard-deviation band of roughly ±8% over the next three months.</p></aside><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">plot(sigma_fc * 100, type = &quot;l&quot;, lwd = 2.5, col = rust, xlab = &quot;Days ahead&quot;, ylab = &quot;Daily sigma (%)&quot;,
+     main = &quot;GARCH forecast: volatility drifts back to its long-run level&quot;)
+abline(h = sqrt(coef(garch11_fit)[&quot;omega&quot;] / (1 - sum(coef(garch11_fit)[c(&quot;alpha1&quot;, &quot;beta1&quot;)]))) * 100,
+       col = espresso, lty = 2)</code></pre></div><figure class="plot"><div class="lab"><span>Plot output</span></div><img src="../img/m5c011-1.png" alt="R plot output for session 5.2" loading="lazy"></figure></div><aside class="call try"><b>Try it</b><p>Swap in <code>armaOrder = c(1, 1)</code> for the mean equation and re-run. The aggregate 90-day volatility barely changes. The mean model matters far less than the variance model when you're forecasting risk.</p></aside></section><section class="session" id="s5-3"><p class="snum">Session 5.3</p><h2>Value at Risk and backtesting in R</h2><p><strong>Value at Risk</strong> answers one question: <em>how much could we lose on a bad day?</em> A 1-day 95% VaR of −1.3% means that on 95% of days the loss won't exceed 1.3%. On the other 5%, it will.</p><p>The data is the daily log return of an equal-weighted portfolio of Reliance, TCS, HDFC Bank, Infosys and ICICI Bank, 2023–2025.</p><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">data &lt;- read.csv(paste0(url, &quot;portfolio_returns.csv&quot;))
+str(data)
+data$Date &lt;- as.Date(data$Date, format = &quot;%d-%m-%Y&quot;)
+returns &lt;- data$Portfolio_Return
+mu &lt;- mean(returns); sigma &lt;- sd(returns)
+cat(&quot;Mean:&quot;, round(mu, 6), &quot;  SD:&quot;, round(sigma, 6), &quot;  Days:&quot;, length(returns), &quot;\n&quot;)
+conf_level &lt;- 0.95; alpha &lt;- 1 - conf_level</code></pre></div><div class="out"><div class="lab"><span>Console output</span></div><pre>&#x27;data.frame&#x27;:	740 obs. of  2 variables:
+ $ Date            : chr  &quot;02-01-2023&quot; &quot;03-01-2023&quot; &quot;04-01-2023&quot; &quot;05-01-2023&quot; ...
+ $ Portfolio_Return: num  0.00727 0.00244 -0.01062 -0.00899 -0.01068 ...
+Mean: 0.000324   SD: 0.008506   Days: 740 </pre></div></div><h3>Three ways to calculate VaR</h3><div class="tbl"><table><thead><tr><th>Method</th><th>How</th><th>Assumption</th></tr></thead><tbody><tr><td>Historical</td><td>The 5th percentile of actual past returns</td><td>The past repeats; no distribution assumed</td></tr><tr><td>Parametric</td><td>μ + σ × z₀.₀₅, where z₀.₀₅ = −1.645</td><td>Returns are normal</td></tr><tr><td>Monte Carlo</td><td>Simulate 10,000 returns, take the 5th percentile</td><td>The simulated model is right</td></tr></tbody></table></div><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">hist_var  &lt;- quantile(returns, probs = alpha)
+param_var &lt;- mu + sigma * qnorm(alpha)
+set.seed(123)
+sim_returns &lt;- rnorm(10000, mean = mu, sd = sigma)
+mc_var &lt;- quantile(sim_returns, probs = alpha)
+
+var_results &lt;- data.frame(Method  = c(&quot;Historical&quot;, &quot;Parametric&quot;, &quot;Monte Carlo&quot;),
+                          VaR     = round(c(hist_var, param_var, mc_var), 5),
+                          LossPct = round(-100 * c(hist_var, param_var, mc_var), 3))
+var_results</code></pre></div><div class="out"><div class="lab"><span>Console output</span></div><pre>       Method      VaR LossPct
+1  Historical -0.01328   1.328
+2  Parametric -0.01367   1.367
+3 Monte Carlo -0.01364   1.364</pre></div></div><h3>Backtesting: did reality break the VaR as often as it should?</h3><p>A <strong>violation</strong> is a day when the actual return falls below the VaR. At 95%, you expect violations on 5% of days.</p><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">n_obs &lt;- length(returns)
+backtest &lt;- data.frame(Method   = var_results$Method,
+                       Expected = n_obs * alpha,
+                       Actual   = c(sum(returns &lt; hist_var), sum(returns &lt; param_var), sum(returns &lt; mc_var)))
+backtest$ViolationRatio &lt;- round(backtest$Actual / backtest$Expected, 3)
+backtest</code></pre></div><div class="out"><div class="lab"><span>Console output</span></div><pre>       Method Expected Actual ViolationRatio
+1  Historical       37     37          1.000
+2  Parametric       37     26          0.703
+3 Monte Carlo       37     27          0.730</pre></div></div><aside class="call read"><b>How to read it</b><p>A <strong>ratio near 1</strong> means the model is accurate. <strong>Above 1</strong> means more violations than promised, so the model <strong>underestimates</strong> risk. <strong>Below 1</strong> means it <strong>overestimates</strong> risk and is overly cautious. Historical VaR hits its expected count exactly, by construction, because it <em>is</em> the 5th percentile of this same sample. The parametric and Monte Carlo VaRs are breached only about 26–27 times against 37 expected (ratio ≈ 0.7), so the normal distribution makes them slightly too cautious here.</p></aside><h3>The Kupiec test: is the gap statistically significant?</h3><p>The Kupiec proportion-of-failures (POF) test asks whether the actual violation rate differs significantly from 5%. H₀: the model is correctly calibrated.</p><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">kupiec &lt;- function(x, n, p) {
+  phat &lt;- x / n
+  lr &lt;- -2 * (log((1 - p)^(n - x) * p^x) - log((1 - phat)^(n - x) * phat^x))
+  c(LR = round(lr, 3), p.value = round(1 - pchisq(lr, df = 1), 3))
+}
+t(sapply(backtest$Actual, kupiec, n = n_obs, p = alpha))</code></pre></div><div class="out"><div class="lab"><span>Console output</span></div><pre>        LR p.value
+[1,] 0.000   1.000
+[2,] 3.825   0.051
+[3,] 3.127   0.077</pre></div></div><aside class="call read"><b>How to read it</b><p>Every p-value is above 0.05, so we <strong>can't reject</strong> correct calibration for any method. The parametric VaR is borderline, though (p ≈ 0.05). This is an <strong>in-sample</strong> check, because VaR was estimated and tested on the same days. A proper backtest re-estimates VaR each day using only past data. That's a rolling window, and it's the natural next step.</p></aside><h3>Visualise</h3><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">plot(data$Date, returns * 100, type = &quot;h&quot;, col = ifelse(returns &lt; hist_var, rust, &quot;#C9B8A3&quot;),
+     xlab = &quot;&quot;, ylab = &quot;Daily return (%)&quot;, main = &quot;Portfolio returns: days that breached the 95% VaR in orange&quot;)
+abline(h = var_results$VaR * 100, col = c(rust, espresso, &quot;#2F7D5B&quot;), lty = c(1, 2, 3), lwd = 2)
+legend(&quot;bottomleft&quot;, legend = var_results$Method, col = c(rust, espresso, &quot;#2F7D5B&quot;),
+       lty = c(1, 2, 3), lwd = 2, bty = &quot;n&quot;, cex = .85)</code></pre></div><figure class="plot"><div class="lab"><span>Plot output</span></div><img src="../img/m5c016-1.png" alt="R plot output for session 5.3" loading="lazy"></figure></div><h3>From percent to rupees</h3><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">portfolio_value &lt;- 1e7                           # Rs 1 crore
+data.frame(Method = var_results$Method,
+           VaR_Rs = round(portfolio_value * var_results$LossPct / 100))</code></pre></div><div class="out"><div class="lab"><span>Console output</span></div><pre>       Method VaR_Rs
+1  Historical 132800
+2  Parametric 136700
+3 Monte Carlo 136400</pre></div></div><aside class="call read"><b>How to read it</b><p>On a Rs 1 crore portfolio, the 1-day 95% VaR is about <strong>Rs 1.3–1.4 lakh</strong>. On roughly 1 day in 20, expect to lose more than that.</p></aside></section><section class="session" id="s5-4"><p class="snum">Session 5.4</p><h2>The VaR framework: what it is, and what it misses</h2><aside class="call concept"><b>The idea</b><p><strong>VaR = the maximum expected loss over a given holding period at a given confidence level.</strong> For example, "With 95% confidence, our Rs 1,000 crore book won't lose more than Rs 50 crore over one week."</p></aside><h3>The four ingredients</h3><div class="tbl"><table><thead><tr><th>Ingredient</th><th>Example</th></tr></thead><tbody><tr><td>Portfolio value</td><td>Rs 1,000 crore</td></tr><tr><td>Confidence level</td><td>95% or 99%</td></tr><tr><td>Holding period</td><td>1 day, 10 days, 1 week</td></tr><tr><td>Volatility</td><td>From history, from σ, or from GARCH (Session 5.2)</td></tr></tbody></table></div><aside class="call tip"><b>Tip</b><p>Scale a 1-day VaR to h days with <strong>VaR × √h</strong>. This square-root-of-time rule assumes returns are independent from day to day. GARCH tells you they aren't quite, so use it as an approximation.</p></aside><h3>Where VaR is used</h3><ul><li><strong>Banks</strong>: capital adequacy under Basel market-risk rules.</li><li><strong>Treasury desks</strong>: daily risk monitoring and trading limits.</li><li><strong>Portfolio managers</strong>: risk budgeting and capital allocation.</li><li><strong>Regulators</strong>: standardised, comparable risk reporting.</li></ul><h3>Choosing a method</h3><div class="tbl"><table><thead><tr><th>Speed</th><th>Fast</th><th>Fastest</th><th>Slowest</th></tr></thead><tbody><tr><td>Fat tails</td><td>Captured, if they're in the sample</td><td>Missed (assumes normal)</td><td>Only if you simulate them</td></tr><tr><td>Best for</td><td>Simple portfolios with long histories</td><td>Quick daily estimates</td><td>Options and other complex books</td></tr></tbody></table></div><h3>Limitations</h3><ul><li><strong>It says nothing beyond the cutoff.</strong> VaR tells you the threshold, not how bad the worst 5% of days get. <strong>Expected Shortfall</strong> (the average loss beyond VaR) fills that gap, and the Basel FRTB rules now use it.</li><li><strong>It's backward-looking.</strong> It's calm-period VaR that fails in a crisis.</li><li><strong>It's sensitive to assumptions</strong>: the window length, the distribution and the confidence level.</li></ul><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">ES_hist &lt;- mean(returns[returns &lt; hist_var])
+c(VaR_95 = round(unname(hist_var) * 100, 2), ExpectedShortfall_95 = round(ES_hist * 100, 2))</code></pre></div><div class="out"><div class="lab"><span>Console output</span></div><pre>              VaR_95 ExpectedShortfall_95 
+               -1.33                -1.84 </pre></div></div><aside class="call read"><b>How to read it</b><p>VaR says the loss is worse than <strong>1.33%</strong> on 1 day in 20. Expected Shortfall says that on those days the <strong>average</strong> loss is about <strong>1.84%</strong>, roughly 40% worse. That gap is the tail risk VaR hides.</p></aside></section>
+  <div class="pager"><a class="btn ghost" href="../module-4/">← Module 4</a><a class="btn" href="../module-6/">Module 6 →</a></div>
+  </div>
+</div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="fine" style="border:none;margin:0;padding:0">
+      <span>© 2026 XploreAI · <a href="/">xploreai.co.in</a></span>
+      <span><a href="mailto:hello@xploreai.co.in">hello@xploreai.co.in</a></span>
+    </div>
+  </div>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/r.min.js"></script>
+<script src="/courses/fda-r/course.js"></script>
+</body>
+</html>

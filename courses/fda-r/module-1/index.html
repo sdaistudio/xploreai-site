@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 1: Introduction to Financial Data Analytics and R-Studio — Financial Data Analytics using R — XploreAI</title>
+<meta name="description" content="Why finance runs on data, how R and RStudio fit together, and your first real workflow, which takes a messy price file and turns it into clean daily returns.">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="XploreAI">
+<meta property="og:title" content="Module 1: Introduction to Financial Data Analytics and R-Studio — Financial Data Analytics using R">
+<meta property="og:description" content="Why finance runs on data, how R and RStudio fit together, and your first real workflow, which takes a messy price file and turns it into clean daily returns.">
+<meta property="og:url" content="https://xploreai.co.in/courses/fda-r/module-1/">
+<meta property="og:image" content="https://xploreai.co.in/assets/og-image.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/style.css">
+<link rel="stylesheet" href="/courses/fda-r/course.css">
+</head>
+<body>
+
+<nav>
+  <div class="wrap bar">
+    <a class="wordmark" href="/">xplore<span>ai</span></a>
+    <ul>
+      <li><a href="/#agents">Solutions</a></li>
+      <li><a href="/#stories">Success Stories</a></li>
+      <li><a href="/#subscribe">Newsletter</a></li>
+      <li><a href="/learn.html" aria-current="page">Learn AI</a></li>
+      <li><a class="btn" href="https://wa.me/919769686931?text=Hi%20XploreAI%2C%20I%27m%20interested%20in%20AI%20automation!">Get Started</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main class="fdar">
+<header class="mhero wrap">
+  <p class="crumb"><a href="/learn.html">Learn AI</a> / <a href="../">Financial Data Analytics using R</a> / Module 1</p>
+  <span class="pill">MODULE 1 OF 6 · 7 SESSIONS</span>
+  <h1>Introduction to Financial Data Analytics and R-Studio<i>.</i></h1>
+  <p class="lede">Why finance runs on data, how R and RStudio fit together, and your first real workflow, which takes a messy price file and turns it into clean daily returns.</p>
+  <div class="dl"><a class="btn" href="../code/module-1.R" download>Download the R script</a> <a class="btn ghost" href="../#data">Get the data</a></div>
+</header>
+<div class="wrap layout">
+  <aside class="toc" aria-label="Sessions"><p>In this module</p><ol><li><a href="#s1-1"><span>1.1</span>What financial data analytics is</a></li><li><a href="#s1-2"><span>1.2</span>R, RStudio and your first commands</a></li><li><a href="#s1-3"><span>1.3</span>The RStudio interface: scripts, console and objects</a></li><li><a href="#s1-4"><span>1.4</span>R programming basics: vectors, sequences and matrices</a></li><li><a href="#s1-5"><span>1.5</span>Importing your own data</a></li><li><a href="#s1-6"><span>1.6</span>Data cleaning I: inspecting a messy price file</a></li><li><a href="#s1-7"><span>1.7</span>Data cleaning II: fixing problems, returns and a first chart</a></li></ol></aside>
+  <div class="content">
+<section class="session" id="s1-1"><p class="snum">Session 1.1</p><h2>What financial data analytics is</h2><p>W. Edwards Deming said it best: <em>"In God we trust; all others must bring data."</em> Finance is a field where every decision (what to buy, how much to lend, how much capital to hold) is a bet on numbers. Analytics is the discipline of making those bets with evidence instead of instinct. The flip side is <strong>GIGO: garbage in, garbage out</strong>. The right tool on the wrong data still gives the wrong answer.</p><h3>The four levels of analytics</h3><div class="tbl"><table><thead><tr><th>Level</th><th>Question it answers</th><th>Finance example</th></tr></thead><tbody><tr><td>Descriptive</td><td>What happened?</td><td>Average NIFTY return and volatility last year</td></tr><tr><td>Predictive</td><td>Why did it happen, and what happens next?</td><td>Does the rupee drive IT-stock returns? Next month's forecast</td></tr><tr><td>Prescriptive</td><td>What should we do?</td><td>Optimal hedge ratio, portfolio weights</td></tr><tr><td>Cognitive</td><td>Can a machine decide for us?</td><td>ML credit scoring, algorithmic trading</td></tr></tbody></table></div><p>Almost everything in finance comes back to two numbers: <strong>return</strong> (the mean) and <strong>risk</strong> (the volatility). This course builds tools for both. Modules 2–4 model the mean with regression, ARIMA and VAR. Module 5 models the volatility with GARCH and Value at Risk.</p><h3>Levels of measurement</h3><p>The type of a variable decides which statistics are even legal to compute:</p><div class="tbl"><table><thead><tr><th>Scale</th><th>Example</th><th>Order?</th><th>Meaningful zero?</th><th>Valid average</th></tr></thead><tbody><tr><td>Nominal</td><td>Sector, gender</td><td>No</td><td>No</td><td>Mode only</td></tr><tr><td>Ordinal</td><td>Credit rating AAA &gt; AA &gt; A</td><td>Yes</td><td>No</td><td>Median, mode</td></tr><tr><td>Interval</td><td>Temperature in °C</td><td>Yes</td><td>No</td><td>Mean, median, mode</td></tr><tr><td>Ratio</td><td>Price, income, volume</td><td>Yes</td><td>Yes</td><td>Mean, median, mode</td></tr></tbody></table></div><p>Nominal and ordinal together are <strong>categorical</strong> data. Interval and ratio together are <strong>continuous</strong> data.</p><h3>Three shapes of data</h3><ul><li><strong>Cross-sectional</strong>: many units at one point in time, such as the P/E ratios of all NIFTY 50 firms on 31 March.</li><li><strong>Time series</strong>: one unit observed over time, such as daily NIFTY closes. Most finance data looks like this.</li><li><strong>Panel</strong>: many units over time, such as quarterly results of 50 firms over 10 years.</li></ul><aside class="call concept"><b>The idea</b><p>This course starts with cross-sectional tools (regression in Module 3) and then spends most of its time on time series, because stock prices, exchange rates, GDP and commodity prices all arrive as a sequence over time. The two big goals are <strong>establishing causality</strong> and <strong>forecasting</strong>.</p></aside></section><section class="session" id="s1-2"><p class="snum">Session 1.2</p><h2>R, RStudio and your first commands</h2><p><strong>R</strong> is a free, open-source statistical language created by Ross Ihaka and Robert Gentleman in 1993. <strong>RStudio</strong> is the workbench that sits on top of it. Install R first from CRAN (cran.r-project.org), then RStudio Desktop from posit.co. RStudio does nothing without R underneath.</p><p>Why R and not Excel, EViews or Stata? It's free, and new statistical methods usually appear as R packages first. Banks, the Big Four audit firms and regulators also use it daily.</p><p>Base R ships with built-in help. You'll use these constantly:</p><div class="cell"><div class="code"><div class="lab"><span>R</span><span class="noeval">shown, not run here</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">license()      # what licence R is released under
+demo()         # list of built-in demonstrations
+help.start()   # opens the HTML manuals in your browser
+help(sum)      # help page for one function
+?mean          # shortcut for the same thing</code></pre></div></div><p>The first thing to learn in any statistics package is to use it as a calculator:</p><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">2 + 2
+5 * 5
+100 - 20
+100 / 20</code></pre></div><div class="out"><div class="lab"><span>Console output</span></div><pre>[1] 4
+[1] 25
+[1] 80
+[1] 5</pre></div></div><aside class="call read"><b>How to read it</b><p>The <code>[1]</code> before each answer is R telling you "this is element 1 of the result". Every answer in R is a vector, even when it holds a single number.</p></aside></section><section class="session" id="s1-3"><p class="snum">Session 1.3</p><h2>The RStudio interface: scripts, console and objects</h2><p>RStudio has four panes:</p><div class="tbl"><table><thead><tr><th>Pane</th><th>Where</th><th>What it's for</th></tr></thead><tbody><tr><td>Source (script)</td><td>Top-left</td><td>Where you write and save code</td></tr><tr><td>Console</td><td>Bottom-left</td><td>Where code runs and output appears</td></tr><tr><td>Environment / History</td><td>Top-right</td><td>Every object you've created</td></tr><tr><td>Files / Plots / Packages / Help</td><td>Bottom-right</td><td>Charts, installed packages, documentation</td></tr></tbody></table></div><aside class="call tip"><b>Tip</b><p>Write code in a script (File → New File → R Script), not in the console. Run the current line with <strong>Ctrl + Enter</strong> (Cmd + Enter on Mac), or select everything with Ctrl + A and run it all. Save the script and you can rebuild your whole analysis tomorrow.</p></aside><h3>Objects and assignment</h3><p>You store a value in a named <strong>object</strong> with <code>&lt;-</code> (or <code>=</code>). R is <strong>case-sensitive</strong>: <code>Y</code> and <code>y</code> are two different objects.</p><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">x &lt;- 100
+Y &lt;- 150
+x + Y
+200 + x</code></pre></div><div class="out"><div class="lab"><span>Console output</span></div><pre>[1] 250
+[1] 300</pre></div></div><p>Use an object before you create it and R refuses:</p><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">x + y</code></pre></div><div class="out"><div class="lab"><span>Console output</span></div><pre>Error: object &#x27;y&#x27; not found</pre></div></div><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">y &lt;- 300
+x + y
+(x + y) * y    # anything after # is a comment and is ignored</code></pre></div><div class="out"><div class="lab"><span>Console output</span></div><pre>[1] 400
+[1] 120000</pre></div></div><h3>Text needs quotes</h3><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">today &lt;- &quot;today we are learning the basics of RStudio&quot;
+now   &lt;- &#x27;it is a sunny day here&#x27;   # single quotes work too
+today
+now</code></pre></div><div class="out"><div class="lab"><span>Console output</span></div><pre>[1] &quot;today we are learning the basics of RStudio&quot;
+[1] &quot;it is a sunny day here&quot;</pre></div></div><aside class="call warn"><b>Watch out</b><p>The error <code>object 'y' not found</code> is the most common message you'll see. It almost always means a typo, the wrong case, or a line you forgot to run. Read every error. R tells you exactly what it couldn't find.</p></aside></section><section class="session" id="s1-4"><p class="snum">Session 1.4</p><h2>R programming basics: vectors, sequences and matrices</h2><h3>Functions</h3><p>A function takes inputs inside round brackets and returns a result.</p><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">sum(2, 3, 5)
+sqrt(25)
+rep(1, times = 3)</code></pre></div><div class="out"><div class="lab"><span>Console output</span></div><pre>[1] 10
+[1] 5
+[1] 1 1 1</pre></div></div><h3>Vectors: the basic unit of data in R</h3><p><code>c()</code> (for <em>combine</em>) builds a vector. A vector can hold numbers or text, but not a mix of both.</p><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">q &lt;- c(1, 2, 5)
+p &lt;- c(&quot;India&quot;, &quot;China&quot;, &quot;USA&quot;, &quot;Japan&quot;)
+q
+p</code></pre></div><div class="out"><div class="lab"><span>Console output</span></div><pre>[1] 1 2 5
+[1] &quot;India&quot; &quot;China&quot; &quot;USA&quot;   &quot;Japan&quot;</pre></div></div><h3>Sequences</h3><p><code>1:10</code> counts in whole steps. For any other step size, use <code>seq(from, to, by)</code>.</p><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">1:10
+c(1, 100, 0.5)          # NOT a sequence, just three numbers
+h &lt;- seq(1, 100, 0.5)   # 1, 1.5, 2, ... 100
+head(h, 12)
+length(h)</code></pre></div><div class="out"><div class="lab"><span>Console output</span></div><pre> [1]  1  2  3  4  5  6  7  8  9 10
+[1]   1.0 100.0   0.5
+ [1] 1.0 1.5 2.0 2.5 3.0 3.5 4.0 4.5 5.0 5.5 6.0 6.5
+[1] 199</pre></div></div><h3>Picking elements with [ ]</h3><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">h[1]
+h[10]
+p[3]</code></pre></div><div class="out"><div class="lab"><span>Console output</span></div><pre>[1] 1
+[1] 5.5
+[1] &quot;USA&quot;</pre></div></div><h3>Matrices</h3><p>A matrix is a grid with rows and columns. R fills it <strong>column by column</strong>.</p><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">A &lt;- matrix(0, nrow = 3, ncol = 4)
+A
+B &lt;- matrix(1:12, nrow = 3, ncol = 4)
+B
+B[2, 3]      # row 2, column 3</code></pre></div><div class="out"><div class="lab"><span>Console output</span></div><pre>     [,1] [,2] [,3] [,4]
+[1,]    0    0    0    0
+[2,]    0    0    0    0
+[3,]    0    0    0    0
+     [,1] [,2] [,3] [,4]
+[1,]    1    4    7   10
+[2,]    2    5    8   11
+[3,]    3    6    9   12
+[1] 8</pre></div></div><aside class="call tip"><b>Tip</b><p>If you type an incomplete command, the console prompt changes from <code>&gt;</code> to <code>+</code> because R is waiting for the rest. Finish the line or press <strong>Esc</strong>. <strong>Ctrl + L</strong> clears the console.</p></aside></section><section class="session" id="s1-5"><p class="snum">Session 1.5</p><h2>Importing your own data</h2><p>Real work starts with a file. Save spreadsheets as <strong>CSV (comma delimited)</strong>: it's plain text, small and readable by every tool. In RStudio you can use <em>Environment → Import Dataset → From Text (base)</em>. The menu simply writes a <code>read.csv()</code> line for you, so copy that line into your script.</p><p>All the course data lives on this site, so the scripts on these pages run anywhere with no file paths to fix:</p><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">url &lt;- &quot;https://xploreai.co.in/courses/fda-r/data/&quot;
+practice_data &lt;- read.csv(paste0(url, &quot;practice_data.csv&quot;))
+practice_data</code></pre></div><div class="out"><div class="lab"><span>Console output</span></div><pre>  Country Characteristics.1 Characteristics.2
+1   India                20                10
+2   China                25                20
+3   Japan                30                30
+4     USA                35                40
+5  Russia                40                50</pre></div></div><div class="cell"><div class="code"><div class="lab"><span>R</span><span class="noeval">shown, not run here</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">View(practice_data)          # opens a spreadsheet-style viewer in RStudio
+# reading from your own computer instead:
+practice_data &lt;- read.csv(&quot;C:/Users/you/Desktop/practice_data.csv&quot;)</code></pre></div></div><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">str(practice_data)               # structure: rows, columns, types
+practice_data$Characteristics.1  # $ pulls out one column
+practice_data[2, ]               # row 2, all columns
+practice_data[, &quot;Country&quot;]       # all rows, one column</code></pre></div><div class="out"><div class="lab"><span>Console output</span></div><pre>&#x27;data.frame&#x27;:	5 obs. of  3 variables:
+ $ Country          : chr  &quot;India&quot; &quot;China&quot; &quot;Japan&quot; &quot;USA&quot; ...
+ $ Characteristics.1: int  20 25 30 35 40
+ $ Characteristics.2: int  10 20 30 40 50
+[1] 20 25 30 35 40
+  Country Characteristics.1 Characteristics.2
+2   China                25                20
+[1] &quot;India&quot;  &quot;China&quot;  &quot;Japan&quot;  &quot;USA&quot;    &quot;Russia&quot;</pre></div></div><aside class="call read"><b>How to read it</b><p><code>str()</code> says <strong>5 obs. of 3 variables</strong>. <code>chr</code> means text and <code>num</code> or <code>int</code> means numbers. The column header "Characteristics 1" became <code>Characteristics.1</code>, because R swaps spaces for dots. Keep object and column names to single words or underscores.</p></aside></section><section class="session" id="s1-6"><p class="snum">Session 1.6</p><h2>Data cleaning I: inspecting a messy price file</h2><p>This file holds 31 days of prices for "ABC Limited". Like most real data, it has problems. Exploratory data analysis (EDA) is the habit of looking before you model.</p><div class="cell"><div class="code"><div class="lab"><span>R</span><span class="noeval">shown, not run here</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">install.packages(c(&quot;dplyr&quot;, &quot;tidyr&quot;, &quot;stringr&quot;, &quot;ggplot2&quot;))   # once per computer</code></pre></div></div><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">library(dplyr); library(tidyr); library(stringr); library(ggplot2)   # every session
+df &lt;- read.csv(paste0(url, &quot;sample_financial_data.csv&quot;))
+head(df)</code></pre></div><div class="out"><div class="lab"><span>Console output</span></div><pre>        Date     Company  Sector Closing_Price Volume Market_Return
+1 01-01-2025 ABC Limited Banking         105.0 146900        0.0040
+2 02-01-2025 ABC Limited Banking         103.7 200600       -0.0124
+3 03-01-2025 ABC Limited Banking         104.2 170900        0.0048
+4 06-01-2025 ABC LimiTed Banking         104.3 161000        0.0010
+5 07-01-2025 ABC Limited Banking         103.6 156000       -0.0067
+6 08-01-2025 ABC Limited Banking         100.3 127500       -0.0319</pre></div></div><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">str(df)
+summary(df)</code></pre></div><div class="out"><div class="lab"><span>Console output</span></div><pre>&#x27;data.frame&#x27;:	31 obs. of  6 variables:
+ $ Date         : chr  &quot;01-01-2025&quot; &quot;02-01-2025&quot; &quot;03-01-2025&quot; &quot;06-01-2025&quot; ...
+ $ Company      : chr  &quot;ABC Limited&quot; &quot;ABC Limited&quot; &quot;ABC Limited&quot; &quot;ABC LimiTed&quot; ...
+ $ Sector       : chr  &quot;Banking&quot; &quot;Banking&quot; &quot;Banking&quot; &quot;Banking&quot; ...
+ $ Closing_Price: num  105 104 104 104 104 ...
+ $ Volume       : int  146900 200600 170900 161000 156000 127500 176700 161900 171500 179600 ...
+ $ Market_Return: num  0.004 -0.0124 0.0048 0.001 -0.0067 -0.0319 -0.007 -0.012 0.0041 -0.004 ...
+        Date         Company         Sector   Closing_Price       Volume      
+ Length   :31   Length   :31   Length   :31   Min.   : 93.8   Min.   :127500  
+ N.unique :30   N.unique : 4   N.unique : 3   1st Qu.: 97.4   1st Qu.:154575  
+ N.blank  : 0   N.blank  : 0   N.blank  : 0   Median : 98.4   Median :176250  
+ Min.nchar:10   Min.nchar:11   Min.nchar: 7   Mean   :130.0   Mean   :172397  
+ Max.nchar:10   Max.nchar:11   Max.nchar: 7   3rd Qu.:104.1   3rd Qu.:195500  
+                                              Max.   :999.0   Max.   :208000  
+                                              NAs    :1       NAs    :1       
+ Market_Return     
+ Min.   :-0.03500  
+ 1st Qu.:-0.00685  
+ Median : 0.00000  
+ Mean   : 0.00117  
+ 3rd Qu.: 0.00830  
+ Max.   : 0.02940  
+                   </pre></div></div><aside class="call read"><b>How to read it</b><p>Three red flags already. <strong>Date</strong> came in as text (<code>chr</code>), not a date. Closing_Price and Volume each show <strong>1 NA</strong> (a missing value). And Closing_Price has a <strong>max of 999</strong> while its median is about 98. That's an obvious outlier.</p></aside><h3>Missing values and duplicates</h3><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">colSums(is.na(df))     # missing values per column
+sum(duplicated(df))    # how many rows are exact copies
+df[duplicated(df), ]   # which row</code></pre></div><div class="out"><div class="lab"><span>Console output</span></div><pre>         Date       Company        Sector Closing_Price        Volume Market_Return 
+            0             0             0             1             1             0 
+[1] 1
+         Date     Company  Sector Closing_Price Volume Market_Return
+16 14-01-2025 ABC Limited Banking          98.4 179600        -0.004</pre></div></div><h3>Inconsistent text</h3><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">unique(df$Company)
+unique(df$Sector)</code></pre></div><div class="out"><div class="lab"><span>Console output</span></div><pre>[1] &quot;ABC Limited&quot; &quot;ABC LimiTed&quot; &quot;abc limited&quot; &quot;ABC LIMITED&quot;
+[1] &quot;Banking&quot; &quot;banking&quot; &quot;BANKING&quot;</pre></div></div><aside class="call warn"><b>Watch out</b><p>R is case-sensitive, so "ABC Limited", "abc limited" and "ABC LIMITED" count as <strong>three different companies</strong>. Group by company now and you'd get three groups.</p></aside></section><section class="session" id="s1-7"><p class="snum">Session 1.7</p><h2>Data cleaning II: fixing problems, returns and a first chart</h2><h3>Standardise the text</h3><p><code>mutate()</code> changes or adds columns. <code>str_to_title()</code> capitalises the first letter of each word, like Excel's PROPER().</p><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">df &lt;- df %&gt;%
+  mutate(Company = str_to_title(Company),
+         Sector  = str_to_title(Sector))
+unique(df$Company)
+unique(df$Sector)</code></pre></div><div class="out"><div class="lab"><span>Console output</span></div><pre>[1] &quot;Abc Limited&quot;
+[1] &quot;Banking&quot;</pre></div></div><h3>Remove duplicates, then fill gaps</h3><p><code>distinct()</code> keeps one copy of each row. For a price series, <strong>forward fill</strong> is a sensible fix: carry the last known price forward. Always sort by date first.</p><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">df &lt;- df %&gt;%
+  distinct() %&gt;%
+  mutate(Date = as.Date(Date, format = &quot;%d-%m-%Y&quot;)) %&gt;%
+  arrange(Date) %&gt;%
+  fill(Closing_Price, Volume, .direction = &quot;down&quot;)
+nrow(df)
+colSums(is.na(df))</code></pre></div><div class="out"><div class="lab"><span>Console output</span></div><pre>[1] 30
+         Date       Company        Sector Closing_Price        Volume Market_Return 
+            0             0             0             0             0             0 </pre></div></div><aside class="call concept"><b>The idea</b><p>Other options for missing values are deleting the row (only if that won't bias the result), replacing with the mean or median, or interpolating between neighbours. Forward fill suits prices because the last traded price really is the best guess.</p></aside><h3>Find the outlier with the IQR rule</h3><p>A box plot draws the five-number summary. Anything beyond <strong>1.5 × IQR</strong> from the box is flagged as an outlier.</p><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">rust &lt;- &quot;#E2571B&quot;; espresso &lt;- &quot;#4A4238&quot;
+boxplot(df$Closing_Price, horizontal = TRUE, col = &quot;#FBE9DF&quot;, border = espresso,
+        main = &quot;ABC Limited closing price: one value is not like the others&quot;)</code></pre></div><figure class="plot"><div class="lab"><span>Plot output</span></div><img src="../img/m1c022-1.png" alt="R plot output for session 1.7" loading="lazy"></figure></div><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">Q1 &lt;- quantile(df$Closing_Price, 0.25)
+Q3 &lt;- quantile(df$Closing_Price, 0.75)
+IQR_value &lt;- Q3 - Q1
+lower_bound &lt;- Q1 - 1.5 * IQR_value
+upper_bound &lt;- Q3 + 1.5 * IQR_value
+c(lower = lower_bound, upper = upper_bound)
+df %&gt;% filter(Closing_Price &lt; lower_bound | Closing_Price &gt; upper_bound)
+df &lt;- df %&gt;% filter(Closing_Price &gt;= lower_bound, Closing_Price &lt;= upper_bound)
+summary(df$Closing_Price)</code></pre></div><div class="out"><div class="lab"><span>Console output</span></div><pre>lower.25% upper.75% 
+   87.325   114.125 
+        Date     Company  Sector Closing_Price Volume Market_Return
+1 2025-02-04 Abc Limited Banking           999 130300         0.003
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   93.8    97.3    98.4   100.1   103.7   108.5 </pre></div></div><h3>Calculate returns</h3><p>Prices aren't comparable across stocks, but returns are. There are two versions:</p><div class="tbl"><table><thead><tr><th>Return</th><th>Formula</th><th>Why use it</th></tr></thead><tbody><tr><td>Simple</td><td>Rₜ = Pₜ / Pₜ₋₁ − 1</td><td>Easy to read: "+1.2% today"</td></tr><tr><td>Log</td><td>rₜ = ln(Pₜ / Pₜ₋₁)</td><td>Adds up over time; standard in models</td></tr></tbody></table></div><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">df &lt;- df %&gt;%
+  arrange(Date) %&gt;%
+  mutate(Simple_Return = Closing_Price / lag(Closing_Price) - 1,
+         Log_Return    = log(Closing_Price / lag(Closing_Price)))
+head(df[, c(&quot;Date&quot;, &quot;Closing_Price&quot;, &quot;Simple_Return&quot;, &quot;Log_Return&quot;)])</code></pre></div><div class="out"><div class="lab"><span>Console output</span></div><pre>        Date Closing_Price Simple_Return  Log_Return
+1 2025-01-01         105.0            NA          NA
+2 2025-01-02         103.7   -0.01238095 -0.01245823
+3 2025-01-03         104.2    0.00482160  0.00481001
+4 2025-01-06         104.3    0.00095969  0.00095923
+5 2025-01-07         103.6   -0.00671141 -0.00673403
+6 2025-01-08         100.3   -0.03185328 -0.03237163</pre></div></div><aside class="call read"><b>How to read it</b><p>The first return is <code>NA</code> because day 1 has no previous price. For small moves the simple and log returns are almost identical. They only drift apart on big days.</p></aside><h3>Summarise and plot</h3><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">df %&gt;% summarise(Mean_Price  = mean(Closing_Price),
+                 SD_Price    = sd(Closing_Price),
+                 Mean_Return = mean(Simple_Return, na.rm = TRUE),
+                 SD_Return   = sd(Simple_Return, na.rm = TRUE),
+                 Mean_Volume = mean(Volume))</code></pre></div><div class="out"><div class="lab"><span>Console output</span></div><pre>  Mean_Price SD_Price Mean_Return SD_Return Mean_Volume
+1     100.05   3.6698   0.0012964  0.016082      174586</pre></div></div><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">ggplot(df, aes(Date, Closing_Price)) +
+  geom_line(colour = rust, linewidth = 1) +
+  geom_point(colour = rust, size = 1.8) +
+  labs(title = &quot;ABC Limited: clean closing price&quot;, x = NULL, y = &quot;Price (Rs)&quot;) +
+  theme_minimal(base_size = 12)</code></pre></div><figure class="plot"><div class="lab"><span>Plot output</span></div><img src="../img/m1c026-1.png" alt="R plot output for session 1.7" loading="lazy"></figure></div><aside class="call try"><b>Try it</b><p>Re-run the chart <em>before</em> removing the outlier. The 999 spike squashes every other point into a flat line. That's why you clean before you chart.</p></aside></section>
+  <div class="pager"><a class="btn ghost" href="../">← Course home</a><a class="btn" href="../module-2/">Module 2 →</a></div>
+  </div>
+</div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="fine" style="border:none;margin:0;padding:0">
+      <span>© 2026 XploreAI · <a href="/">xploreai.co.in</a></span>
+      <span><a href="mailto:hello@xploreai.co.in">hello@xploreai.co.in</a></span>
+    </div>
+  </div>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/r.min.js"></script>
+<script src="/courses/fda-r/course.js"></script>
+</body>
+</html>

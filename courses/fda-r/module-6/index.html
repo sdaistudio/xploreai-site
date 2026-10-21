@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 6: Applications of Financial Data Analytics in the Real World — Financial Data Analytics using R — XploreAI</title>
+<meta name="description" content="Put the toolkit to work on three real questions. How hard did the COVID lockdown hit NIFTY? Does Wall Street lead Dalal Street? And can machine learning call tomorrow&#x27;s market direction?">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="XploreAI">
+<meta property="og:title" content="Module 6: Applications of Financial Data Analytics in the Real World — Financial Data Analytics using R">
+<meta property="og:description" content="Put the toolkit to work on three real questions. How hard did the COVID lockdown hit NIFTY? Does Wall Street lead Dalal Street? And can machine learning call tomorrow&#x27;s market direction?">
+<meta property="og:url" content="https://xploreai.co.in/courses/fda-r/module-6/">
+<meta property="og:image" content="https://xploreai.co.in/assets/og-image.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/style.css">
+<link rel="stylesheet" href="/courses/fda-r/course.css">
+</head>
+<body>
+
+<nav>
+  <div class="wrap bar">
+    <a class="wordmark" href="/">xplore<span>ai</span></a>
+    <ul>
+      <li><a href="/#agents">Solutions</a></li>
+      <li><a href="/#stories">Success Stories</a></li>
+      <li><a href="/#subscribe">Newsletter</a></li>
+      <li><a href="/learn.html" aria-current="page">Learn AI</a></li>
+      <li><a class="btn" href="https://wa.me/919769686931?text=Hi%20XploreAI%2C%20I%27m%20interested%20in%20AI%20automation!">Get Started</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main class="fdar">
+<header class="mhero wrap">
+  <p class="crumb"><a href="/learn.html">Learn AI</a> / <a href="../">Financial Data Analytics using R</a> / Module 6</p>
+  <span class="pill">MODULE 6 OF 6 · 4 SESSIONS</span>
+  <h1>Applications of Financial Data Analytics in the Real World<i>.</i></h1>
+  <p class="lede">Put the toolkit to work on three real questions. How hard did the COVID lockdown hit NIFTY? Does Wall Street lead Dalal Street? And can machine learning call tomorrow's market direction?</p>
+  <div class="dl"><a class="btn" href="../code/module-6.R" download>Download the R script</a> <a class="btn ghost" href="../#data">Get the data</a></div>
+</header>
+<div class="wrap layout">
+  <aside class="toc" aria-label="Sessions"><p>In this module</p><ol><li><a href="#s6-1"><span>6.1</span>Event study: the COVID-19 lockdown and NIFTY 50</a></li><li><a href="#s6-2"><span>6.2</span>Does the US lead India? Causality between NIFTY and the S&amp;P 500</a></li><li><a href="#s6-3"><span>6.3</span>The machine learning framework for finance</a></li><li><a href="#s6-4"><span>6.4</span>Machine learning in R: predicting NIFTY&#x27;s direction</a></li></ol></aside>
+  <div class="content">
+<section class="session" id="s6-1"><p class="snum">Session 6.1</p><h2>Event study: the COVID-19 lockdown and NIFTY 50</h2><p>An <strong>event study</strong> measures how a specific piece of news moved a price, whether the news was a war, a policy announcement, an earnings surprise or a pandemic. The idea is to compare what actually happened with what would have happened <strong>without</strong> the event.</p><h3>The timeline</h3><div class="tbl"><table><thead><tr><th>Window</th><th>Purpose</th><th>Here</th></tr></thead><tbody><tr><td><strong>Estimation window</strong></td><td>Estimate "normal" returns</td><td>120 trading days before the event window</td></tr><tr><td><strong>Event day (t = 0)</strong></td><td>The first trading day under the news</td><td>25 March 2020, the first session of India's national lockdown</td></tr><tr><td><strong>Event window</strong></td><td>Measure the reaction</td><td>t = −10 to t = +10 (21 trading days)</td></tr></tbody></table></div><h3>The formulas</h3><ul><li><strong>Expected return</strong> under the <strong>constant-mean model</strong>: E[R] is the average return over the estimation window. The market model (E[Rᵢ] = α + βRₘ) or Fama–French are the research-grade alternatives.</li><li><strong>Abnormal return</strong>: ARₜ = Rₜ − E[R]</li><li><strong>Cumulative abnormal return</strong>: CAR = Σ ARₜ</li><li><strong>t-statistics</strong>: t = AR₀ / σ_est for the event day, and t = CAR / (σ_est × √L) for a window of L days. If |t| &gt; 1.96, the effect is significant at 5%.</li></ul><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">library(xts)
+url &lt;- &quot;https://xploreai.co.in/courses/fda-r/data/&quot;
+rust &lt;- &quot;#E2571B&quot;; espresso &lt;- &quot;#4A4238&quot;
+nifty &lt;- read.csv(paste0(url, &quot;NIFTY50.csv&quot;))
+nifty$Date &lt;- as.Date(nifty$Date)
+nifty &lt;- subset(nifty, Date &gt;= as.Date(&quot;2019-09-01&quot;) &amp; Date &lt;= as.Date(&quot;2020-05-31&quot;))
+
+returns_df &lt;- data.frame(Date = nifty$Date[-1], Return = diff(log(nifty$Close)))
+event_date &lt;- as.Date(&quot;2020-03-25&quot;)
+event_index &lt;- which(returns_df$Date == event_date)
+est_window &lt;- 120; event_window &lt;- 10
+
+est_data &lt;- returns_df[(event_index - event_window - est_window):(event_index - event_window - 1), ]
+evt_data &lt;- returns_df[(event_index - event_window):(event_index + event_window), ]
+range(est_data$Date); range(evt_data$Date)</code></pre></div><div class="out"><div class="lab"><span>Console output</span></div><pre>[1] &quot;2019-09-13&quot; &quot;2020-03-09&quot;
+[1] &quot;2020-03-11&quot; &quot;2020-04-13&quot;</pre></div></div><h3>Abnormal and cumulative abnormal returns</h3><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">exp_ret &lt;- mean(est_data$Return)
+sd_est  &lt;- sd(est_data$Return)
+
+evt_data$EventTime &lt;- -event_window:event_window
+evt_data$AR  &lt;- evt_data$Return - exp_ret
+evt_data$CAR &lt;- cumsum(evt_data$AR)
+evt_data$t_AR &lt;- evt_data$AR / sd_est
+print(transform(evt_data, Return = round(Return * 100, 2), AR = round(AR * 100, 2),
+                CAR = round(CAR * 100, 2), t_AR = round(t_AR, 2)), row.names = FALSE)</code></pre></div><div class="out"><div class="lab"><span>Console output</span></div><pre>       Date Return EventTime     AR    CAR   t_AR
+ 2020-03-11   0.07       -10   0.11   0.11   0.10
+ 2020-03-12  -8.67        -9  -8.63  -8.52  -7.68
+ 2020-03-13   3.74        -8   3.78  -4.74   3.36
+ 2020-03-16  -7.92        -7  -7.88 -12.62  -7.02
+ 2020-03-17  -2.54        -6  -2.50 -15.11  -2.22
+ 2020-03-18  -5.72        -5  -5.68 -20.79  -5.06
+ 2020-03-19  -2.45        -4  -2.41 -23.20  -2.15
+ 2020-03-20   5.67        -3   5.71 -17.49   5.09
+ 2020-03-23 -13.90        -2 -13.86 -31.35 -12.35
+ 2020-03-24   2.48        -1   2.52 -28.83   2.24
+ 2020-03-25   6.41         0   6.46 -22.38   5.75
+ 2020-03-26   3.82         1   3.86 -18.52   3.44
+ 2020-03-27   0.22         2   0.26 -18.26   0.23
+ 2020-03-30  -4.48         3  -4.44 -22.70  -3.95
+ 2020-03-31   3.75         4   3.79 -18.90   3.38
+ 2020-04-01  -4.08         5  -4.04 -22.95  -3.60
+ 2020-04-03  -2.08         6  -2.04 -24.99  -1.82
+ 2020-04-07   8.40         7   8.44 -16.54   7.52
+ 2020-04-08  -0.50         8  -0.45 -17.00  -0.40
+ 2020-04-09   4.07         9   4.11 -12.89   3.66
+ 2020-04-13  -1.30        10  -1.26 -14.15  -1.12</pre></div></div><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">CAR_full &lt;- sum(evt_data$AR)
+t_CAR &lt;- CAR_full / (sd_est * sqrt(nrow(evt_data)))
+cat(&quot;Event-day AR:&quot;, round(evt_data$AR[evt_data$EventTime == 0] * 100, 2), &quot;%  t =&quot;,
+    round(evt_data$t_AR[evt_data$EventTime == 0], 2), &quot;\n&quot;)
+cat(&quot;CAR(-10,+10):&quot;, round(CAR_full * 100, 2), &quot;%  t =&quot;, round(t_CAR, 2), &quot;\n&quot;)</code></pre></div><div class="out"><div class="lab"><span>Console output</span></div><pre>Event-day AR: 6.46 %  t = 5.75 
+CAR(-10,+10): -14.15 %  t = -2.75 </pre></div></div><aside class="call read"><b>How to read it</b><p>Two numbers tell the story. On the <strong>event day</strong> NIFTY actually <em>rose</em>, with a large positive abnormal return. Markets had sold off for weeks, and the relief rally came as the lockdown and early stimulus took shape. Over the <strong>full window</strong>, though, the <strong>CAR is deeply negative</strong> and its |t| is well above 1.96, so the period around the lockdown destroyed significant value. Always read the event day and the window separately.</p></aside><h3>Visualise</h3><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">par(mfrow = c(2, 1), mar = c(3, 4.2, 2.6, 1))
+barplot(evt_data$AR * 100, names.arg = evt_data$EventTime, col = ifelse(evt_data$AR &lt; 0, rust, &quot;#C9B8A3&quot;),
+        border = NA, ylab = &quot;AR (%)&quot;, main = &quot;Abnormal returns, t = -10 to +10&quot;)
+abline(h = 0, col = espresso)
+plot(evt_data$EventTime, evt_data$CAR * 100, type = &quot;b&quot;, pch = 19, col = rust, lwd = 2,
+     xlab = &quot;&quot;, ylab = &quot;CAR (%)&quot;, main = &quot;Cumulative abnormal return&quot;)
+abline(v = 0, h = 0, col = espresso, lty = 2)
+par(mfrow = c(1, 1))</code></pre></div><figure class="plot"><div class="lab"><span>Plot output</span></div><img src="../img/m6c004-1.png" alt="R plot output for session 6.1" loading="lazy"></figure></div><div class="cell"><div class="code"><div class="lab"><span>R</span><span class="noeval">shown, not run here</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">write.csv(evt_data, &quot;event_study_results.csv&quot;, row.names = FALSE)   # saved to getwd()</code></pre></div></div><aside class="call try"><b>Try it</b><p>Narrow the window to [−3, +3] or [−1, +1] by changing <code>event_window</code>, then re-run. Shorter windows isolate the news itself. Longer windows capture how the market digested it.</p></aside></section><section class="session" id="s6-2"><p class="snum">Session 6.2</p><h2>Does the US lead India? Causality between NIFTY and the S&amp;P 500</h2><p>This applies Module 4 end to end: stationarity, then lags, then Johansen, then a VAR or VECM, then Granger.</p><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">sp &lt;- read.csv(paste0(url, &quot;SP500.csv&quot;))
+nf &lt;- read.csv(paste0(url, &quot;NIFTY50.csv&quot;))
+price_data &lt;- na.omit(merge(data.frame(Date = nf$Date, nifty_close = nf$Close),
+                            data.frame(Date = sp$Date, sp500_close = sp$Close), by = &quot;Date&quot;))
+price_data$Date &lt;- as.Date(price_data$Date)
+dim(price_data)</code></pre></div><div class="out"><div class="lab"><span>Console output</span></div><pre>[1] 2629    3</pre></div></div><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">par(mar = c(3, 4.5, 3, 4.5))
+plot(price_data$Date, price_data$nifty_close, type = &quot;l&quot;, col = rust, lwd = 1.6, xlab = &quot;&quot;, ylab = &quot;NIFTY 50&quot;,
+     main = &quot;NIFTY 50 (orange, left) and S&amp;P 500 (dark, right)&quot;)
+par(new = TRUE)
+plot(price_data$Date, price_data$sp500_close, type = &quot;l&quot;, col = espresso, lwd = 1.2, axes = FALSE, xlab = &quot;&quot;, ylab = &quot;&quot;)
+axis(4); par(mar = c(5, 4, 4, 2) + .1)</code></pre></div><figure class="plot"><div class="lab"><span>Plot output</span></div><img src="../img/m6c007-1.png" alt="R plot output for session 6.2" loading="lazy"></figure><figure class="plot"><div class="lab"><span>Plot output</span></div><img src="../img/m6c007-2.png" alt="R plot output for session 6.2" loading="lazy"></figure></div><h3>Step 1: orders of integration</h3><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">library(urca)
+nifty_d &lt;- diff(price_data$nifty_close); sp_d &lt;- diff(price_data$sp500_close)
+c(nifty_level = summary(ur.df(price_data$nifty_close))@teststat,
+  nifty_diff  = summary(ur.df(nifty_d))@teststat,
+  sp_level    = summary(ur.df(price_data$sp500_close))@teststat,
+  sp_diff     = summary(ur.df(sp_d))@teststat)</code></pre></div><div class="out"><div class="lab"><span>Console output</span></div><pre>nifty_level  nifty_diff    sp_level     sp_diff 
+     2.5084    -35.6152      2.5102    -34.8503 </pre></div></div><aside class="call read"><b>How to read it</b><p>Both levels are above −1.95 and both differences are far below it, so <strong>both indices are I(1)</strong>. Next stop: Johansen.</p></aside><h3>Step 2: lags and cointegration</h3><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">library(vars)
+VARselect(data.frame(nifty_d, sp_d), lag.max = 10, type = &quot;const&quot;)$selection
+jo &lt;- ca.jo(data.frame(nifty = price_data$nifty_close, sp500 = price_data$sp500_close),
+            type = &quot;trace&quot;, ecdet = &quot;const&quot;, K = 2)
+cbind(test = round(jo@teststat, 2), jo@cval)</code></pre></div><div class="out"><div class="lab"><span>Console output</span></div><pre>AIC(n)  HQ(n)  SC(n) FPE(n) 
+     8      3      1      8 
+          test 10pct  5pct  1pct
+r &lt;= 1 |  7.87  7.52  9.24 12.97
+r = 0  | 18.62 17.85 19.96 24.60</pre></div></div><aside class="call read"><b>How to read it</b><p>The <strong>r = 0</strong> statistic is <strong>below</strong> its 5% critical value, so we can't reject "no cointegration". NIFTY and the S&amp;P 500 don't share a stable long-run path, so a VECM is the wrong tool. Use a <strong>VAR on the differenced (stationary) series</strong> instead. Note that <code>ca.jo()</code> needs <code>K ≥ 2</code> even if the selected lag is 1.</p></aside><h3>Step 3: the VAR on daily changes</h3><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">diff_data &lt;- data.frame(nifty = nifty_d, sp500 = sp_d)
+var1 &lt;- VAR(diff_data, lag.max = 5, ic = &quot;AIC&quot;, type = &quot;const&quot;)
+round(coef(var1)$nifty[1:4, ], 4)        # NIFTY equation: does the S&amp;P lead?
+round(coef(var1)$sp500[1:4, ], 4)        # S&amp;P equation: does NIFTY lead?</code></pre></div><div class="out"><div class="lab"><span>Console output</span></div><pre>         Estimate Std. Error t value Pr(&gt;|t|)
+nifty.l1  -0.1050     0.0202 -5.1860   0.0000
+sp500.l1   0.9677     0.0668 14.4813   0.0000
+nifty.l2  -0.0010     0.0203 -0.0511   0.9593
+sp500.l2   0.3410     0.0699  4.8814   0.0000
+         Estimate Std. Error t value Pr(&gt;|t|)
+nifty.l1  -0.0045     0.0061 -0.7342   0.4629
+sp500.l1  -0.0520     0.0202 -2.5725   0.0102
+nifty.l2   0.0057     0.0062  0.9226   0.3563
+sp500.l2   0.0596     0.0211  2.8170   0.0049</pre></div></div><h3>Step 4: Granger causality in both directions</h3><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">library(lmtest)
+k &lt;- var1$p
+grangertest(nifty ~ sp500, order = k, data = diff_data)
+grangertest(sp500 ~ nifty, order = k, data = diff_data)</code></pre></div><div class="out"><div class="lab"><span>Console output</span></div><pre>Granger causality test
+
+Model 1: nifty ~ Lags(nifty, 1:5) + Lags(sp500, 1:5)
+Model 2: nifty ~ Lags(nifty, 1:5)
+  Res.Df Df    F Pr(&gt;F)    
+1   2612                   
+2   2617 -5 45.4 &lt;2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+Granger causality test
+
+Model 1: sp500 ~ Lags(sp500, 1:5) + Lags(nifty, 1:5)
+Model 2: sp500 ~ Lags(sp500, 1:5)
+  Res.Df Df    F Pr(&gt;F)  
+1   2612                 
+2   2617 -5 2.12   0.06 .
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1</pre></div></div><aside class="call read"><b>How to read it</b><p><strong>S&amp;P → NIFTY</strong>: F ≈ 45 with a p-value of essentially zero, so the US Granger-causes India. <strong>NIFTY → S&amp;P</strong>: p ≈ 0.06, which isn't significant at 5%. Causality is <strong>unidirectional, from the US to India</strong>. The VAR coefficients agree: <code>sp500.l1</code> in the NIFTY equation is large and highly significant.</p></aside><aside class="call warn"><b>Watch out</b><p>Part of this is the clock. The US market closes about 10 hours <strong>after</strong> India's on the same calendar date. So a row that pairs "today's" S&amp;P close with "tomorrow's" NIFTY is really pairing <strong>consecutive</strong> sessions, and one lag of the S&amp;P is effectively news that India hasn't traded yet. Here the lead–lag is real, but it isn't mysterious.</p></aside></section><section class="session" id="s6-3"><p class="snum">Session 6.3</p><h2>The machine learning framework for finance</h2><p><strong>Machine learning</strong> means programming computers to optimise a criterion from data, so that they learn the patterns themselves instead of being given an equation. It sits at the <strong>cognitive</strong> end of the analytics ladder from Session 1.1.</p><p>Why it matters in finance now: data has exploded, storage is cheap, decisions need to be fast, and markets are <strong>noisy and non-linear</strong>, which linear models miss.</p><h3>Two families</h3><div class="tbl"><table><thead><tr><th>Training data</th><th>Labelled (we know the answer)</th><th>Unlabelled</th></tr></thead><tbody><tr><td>Continuous target</td><td><strong>Regression</strong> (predict the return)</td><td>n/a</td></tr><tr><td>Categorical target</td><td><strong>Classification</strong> (predict Up or Down)</td><td>n/a</td></tr><tr><td>Goal</td><td>Predict</td><td><strong>Cluster</strong> similar observations</td></tr><tr><td>Finance example</td><td>Next-day direction, credit default</td><td>Grouping stocks by behaviour, fraud anomalies</td></tr></tbody></table></div><h3>The models in Session 6.4</h3><div class="tbl"><table><thead><tr><th>Model</th><th>How it works</th><th>Use it when…</th></tr></thead><tbody><tr><td>Linear regression</td><td>A straight-line equation</td><td>You need an interpretable baseline</td></tr><tr><td>Decision tree</td><td>A sequence of if/then splits</td><td>You want readable trading rules or threshold effects</td></tr><tr><td>Random forest</td><td>Hundreds of trees, then a majority vote</td><td>The data is noisy and you need robustness</td></tr><tr><td>Support vector machine (SVM)</td><td>Finds the widest boundary between classes, curved by a kernel</td><td>Up and Down aren't separated by a straight line</td></tr><tr><td>Neural network</td><td>Layers of weighted nodes</td><td>There's lots of data and hidden interactions</td></tr></tbody></table></div><aside class="call warn"><b>Watch out</b><p><strong>The traps that matter most in finance</strong></p><p><strong>Overfitting</strong>: a model that memorises the past and fails tomorrow.</p><p><strong>Structural breaks</strong>: relationships change, for example after COVID.</p><p><strong>Look-ahead bias</strong>: using information you wouldn't have had at the time.</p><p><strong>Data snooping</strong>: re-running until something "works". Choosing the right <em>design</em> matters more than choosing a fancy algorithm.</p></aside></section><section class="session" id="s6-4"><p class="snum">Session 6.4</p><h2>Machine learning in R: predicting NIFTY&#x27;s direction</h2><p><strong>Target:</strong> will NIFTY close <strong>Up</strong> or <strong>Down</strong> tomorrow? The regression version predicts the size of the return.</p><p><strong>Features</strong>, all known at the close of day <em>t</em> and used to predict day <em>t+1</em>:</p><ul><li>the last three days' returns</li><li>the S&amp;P 500's return</li><li>the 5-day and 20-day moving averages relative to price</li><li>the 14-day RSI</li><li>the 10-day volatility</li><li>the change in volume</li></ul><div class="cell"><div class="code"><div class="lab"><span>R</span><span class="noeval">shown, not run here</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">install.packages(c(&quot;TTR&quot;, &quot;caret&quot;, &quot;rpart&quot;, &quot;randomForest&quot;, &quot;e1071&quot;, &quot;neuralnet&quot;))</code></pre></div></div><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">library(TTR)
+nf &lt;- read.csv(paste0(url, &quot;NIFTY50.csv&quot;)); sp &lt;- read.csv(paste0(url, &quot;SP500.csv&quot;))
+d &lt;- na.omit(merge(data.frame(Date = nf$Date, close = nf$Close, volume = nf$Volume),
+                   data.frame(Date = sp$Date, sp_close = sp$Close), by = &quot;Date&quot;))
+d &lt;- subset(d, Date &gt;= &quot;2018-01-01&quot; &amp; volume &gt; 0)
+
+d$ret     &lt;- c(NA, diff(log(d$close))) * 100
+d$sp_ret  &lt;- c(NA, diff(log(d$sp_close))) * 100
+d$lag1    &lt;- d$ret; d$lag2 &lt;- c(NA, head(d$ret, -1)); d$lag3 &lt;- c(NA, NA, head(d$ret, -2))
+d$ma5_gap  &lt;- (d$close / SMA(d$close, 5) - 1) * 100
+d$ma20_gap &lt;- (d$close / SMA(d$close, 20) - 1) * 100
+d$rsi14    &lt;- RSI(d$close, 14)
+d$vol10    &lt;- runSD(d$ret, 10)
+d$vol_chg  &lt;- c(NA, diff(log(d$volume)))
+
+# the target is TOMORROW&#x27;s return: every feature is known today
+d$next_ret  &lt;- c(d$ret[-1], NA)
+d$Direction &lt;- factor(ifelse(d$next_ret &gt; 0, &quot;Up&quot;, &quot;Down&quot;))
+ml_df &lt;- na.omit(d)
+nrow(ml_df); table(ml_df$Direction)</code></pre></div><div class="out"><div class="lab"><span>Console output</span></div><pre>[1] 1867
+
+Down   Up 
+ 859 1008 </pre></div></div><h3>Split by time, not at random</h3><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">predictors &lt;- c(&quot;lag1&quot;, &quot;lag2&quot;, &quot;lag3&quot;, &quot;sp_ret&quot;, &quot;ma5_gap&quot;, &quot;ma20_gap&quot;, &quot;rsi14&quot;, &quot;vol10&quot;, &quot;vol_chg&quot;)
+cut   &lt;- floor(0.8 * nrow(ml_df))
+train &lt;- ml_df[1:cut, ];  test &lt;- ml_df[(cut + 1):nrow(ml_df), ]
+range(train$Date); range(test$Date)
+fml_reg &lt;- as.formula(paste(&quot;next_ret ~&quot;, paste(predictors, collapse = &quot; + &quot;)))
+fml_cls &lt;- as.formula(paste(&quot;Direction ~&quot;, paste(predictors, collapse = &quot; + &quot;)))</code></pre></div><div class="out"><div class="lab"><span>Console output</span></div><pre>[1] &quot;2018-01-31&quot; &quot;2024-06-04&quot;
+[1] &quot;2024-06-05&quot; &quot;2025-12-30&quot;</pre></div></div><aside class="call warn"><b>Watch out</b><p>The lecture uses a random 80/20 split (<code>sample()</code>) and same-day features. On time series both leak the future into training and <strong>inflate accuracy</strong>. Here we train on 2018 to early 2024 and test only on the later period the model has never seen. That's how you'd use the model in practice.</p></aside><h3>1. Linear regression (the baseline)</h3><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">library(caret)
+lm_model &lt;- lm(fml_reg, data = train)
+round(summary(lm_model)$coefficients, 4)
+lm_pred &lt;- predict(lm_model, test)
+c(adj_R2 = round(summary(lm_model)$adj.r.squared, 4),
+  RMSE = round(RMSE(lm_pred, test$next_ret), 3), MAE = round(MAE(lm_pred, test$next_ret), 3),
+  RMSE_naive = round(RMSE(rep(mean(train$next_ret), nrow(test)), test$next_ret), 3))</code></pre></div><div class="out"><div class="lab"><span>Console output</span></div><pre>            Estimate Std. Error t value Pr(&gt;|t|)
+(Intercept)  -0.1004     0.2249 -0.4465   0.6553
+lag1         -0.2504     0.1110 -2.2571   0.0241
+lag2         -0.0169     0.0840 -0.2009   0.8408
+lag3         -0.0638     0.0569 -1.1203   0.2628
+sp_ret        0.2724     0.0240 11.3658   0.0000
+ma5_gap       0.0808     0.1417  0.5703   0.5686
+ma20_gap      0.0243     0.0212  1.1450   0.2524
+rsi14         0.0014     0.0040  0.3416   0.7327
+vol10         0.0599     0.0513  1.1688   0.2427
+vol_chg       0.0829     0.0595  1.3922   0.1641
+    adj_R2       RMSE        MAE RMSE_naive 
+    0.0829     0.7660     0.5740     0.7620 </pre></div></div><aside class="call read"><b>How to read it</b><p>Only two features matter. The <strong>S&amp;P 500's return</strong> is strongly positive: the US session closes after India's, so its move is genuine overnight news for NIFTY. <strong>Yesterday's NIFTY return</strong> is mildly negative, a small reversal effect. But the adjusted R² is only about 8%, and out of sample the RMSE (0.766) is no better than the naive forecast of "always predict the training average" (0.762). Predicting the <em>size</em> of tomorrow's return is very hard. In the lecture's version, with same-day features, the R² was about 25%, because today's S&amp;P "explained" today's NIFTY.</p></aside><h3>2. Decision tree</h3><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">library(rpart)
+tree_model &lt;- rpart(fml_cls, data = train, method = &quot;class&quot;, control = rpart.control(cp = 0.004, maxdepth = 4))
+tree_pred  &lt;- predict(tree_model, test, type = &quot;class&quot;)
+par(xpd = NA, mar = c(1, 1, 2, 1))
+plot(tree_model, uniform = TRUE, branch = .6, margin = .06, col = espresso, main = &quot;Decision tree: Up or Down tomorrow?&quot;)
+text(tree_model, use.n = TRUE, cex = .72, col = rust)</code></pre></div><figure class="plot"><div class="lab"><span>Plot output</span></div><img src="../img/m6c016-1.png" alt="R plot output for session 6.4" loading="lazy"></figure></div><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">confusionMatrix(tree_pred, test$Direction, positive = &quot;Up&quot;)</code></pre></div><div class="out"><div class="lab"><span>Console output</span></div><pre>Confusion Matrix and Statistics
+
+          Reference
+Prediction Down  Up
+      Down  114  88
+      Up     69 103
+                                        
+               Accuracy : 0.58          
+                 95% CI : (0.528, 0.631)
+    No Information Rate : 0.511         
+    P-Value [Acc &gt; NIR] : 0.0041        
+                                        
+                  Kappa : 0.162         
+                                        
+ Mcnemar&#x27;s Test P-Value : 0.1508        
+                                        
+            Sensitivity : 0.539         
+            Specificity : 0.623         
+         Pos Pred Value : 0.599         
+         Neg Pred Value : 0.564         
+             Prevalence : 0.511         
+         Detection Rate : 0.275         
+   Detection Prevalence : 0.460         
+      Balanced Accuracy : 0.581         
+                                        
+       &#x27;Positive&#x27; Class : Up            
+                                        </pre></div></div><aside class="call read"><b>How to read it</b><p>The <strong>confusion matrix</strong> shows predicted classes in rows and actual classes in columns. <strong>Accuracy</strong> = correct predictions / total. Always compare it with the <strong>No Information Rate</strong>, the accuracy you'd get by always predicting the more common class. A model is only useful if it beats that, and the p-value <code>[Acc &gt; NIR]</code> tells you whether it does so significantly.</p></aside><h3>3. Random forest</h3><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">library(randomForest)
+set.seed(123)
+rf_model &lt;- randomForest(fml_cls, data = train, ntree = 500)
+rf_pred  &lt;- predict(rf_model, test)
+confusionMatrix(rf_pred, test$Direction, positive = &quot;Up&quot;)$overall[c(&quot;Accuracy&quot;, &quot;AccuracyNull&quot;, &quot;AccuracyPValue&quot;)]</code></pre></div><div class="out"><div class="lab"><span>Console output</span></div><pre>      Accuracy   AccuracyNull AccuracyPValue 
+       0.53743        0.51070        0.16288 </pre></div></div><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">varImpPlot(rf_model, main = &quot;Random forest: which features matter?&quot;, pch = 19, col = rust)</code></pre></div><figure class="plot"><div class="lab"><span>Plot output</span></div><img src="../img/m6c019-1.png" alt="R plot output for session 6.4" loading="lazy"></figure></div><h3>4. Support vector machine</h3><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">library(e1071)
+svm_model &lt;- svm(fml_cls, data = train, kernel = &quot;radial&quot;)
+svm_pred  &lt;- predict(svm_model, test)
+confusionMatrix(svm_pred, test$Direction, positive = &quot;Up&quot;)$overall[c(&quot;Accuracy&quot;, &quot;AccuracyNull&quot;, &quot;AccuracyPValue&quot;)]</code></pre></div><div class="out"><div class="lab"><span>Console output</span></div><pre>      Accuracy   AccuracyNull AccuracyPValue 
+      0.548128       0.510695       0.081191 </pre></div></div><h3>5. Neural network</h3><p>Neural nets need inputs on a common scale. Scale the test set with the <strong>training</strong> set's min and max, so no test information leaks back.</p><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">library(neuralnet)
+mins &lt;- sapply(train[predictors], min); maxs &lt;- sapply(train[predictors], max)
+sc &lt;- function(df) as.data.frame(scale(df[predictors], center = mins, scale = maxs - mins))
+nn_train &lt;- sc(train); nn_train$Up &lt;- as.numeric(train$Direction == &quot;Up&quot;)
+set.seed(123)
+nn_model &lt;- neuralnet(as.formula(paste(&quot;Up ~&quot;, paste(predictors, collapse = &quot; + &quot;))),
+                      data = nn_train, hidden = 3, linear.output = FALSE, stepmax = 1e6)
+nn_prob &lt;- compute(nn_model, sc(test))$net.result
+nn_pred &lt;- factor(ifelse(nn_prob &gt; 0.5, &quot;Up&quot;, &quot;Down&quot;), levels = c(&quot;Down&quot;, &quot;Up&quot;))
+confusionMatrix(nn_pred, test$Direction, positive = &quot;Up&quot;)$overall[c(&quot;Accuracy&quot;, &quot;AccuracyNull&quot;, &quot;AccuracyPValue&quot;)]</code></pre></div><div class="out"><div class="lab"><span>Console output</span></div><pre>      Accuracy   AccuracyNull AccuracyPValue 
+      0.564171       0.510695       0.021711 </pre></div></div><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">plot(nn_model, rep = &quot;best&quot;, col.entry = espresso, col.hidden = rust, col.out = espresso,
+     col.intercept = &quot;#C9B8A3&quot;, show.weights = FALSE, information = FALSE, fontsize = 10)</code></pre></div><figure class="plot"><div class="lab"><span>Plot output</span></div><img src="../img/m6c022-1.png" alt="R plot output for session 6.4" loading="lazy"></figure></div><h3>Compare all four</h3><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">acc &lt;- data.frame(Model = c(&quot;Decision tree&quot;, &quot;Random forest&quot;, &quot;SVM&quot;, &quot;Neural net&quot;),
+                  Accuracy = 100 * c(mean(tree_pred == test$Direction), mean(rf_pred == test$Direction),
+                                     mean(svm_pred == test$Direction), mean(nn_pred == test$Direction)))
+nir &lt;- 100 * max(prop.table(table(test$Direction)))
+acc$Accuracy &lt;- round(acc$Accuracy, 1); acc
+bp &lt;- barplot(acc$Accuracy, names.arg = acc$Model, col = rust, border = NA, ylim = c(0, 75),
+              ylab = &quot;Out-of-sample accuracy (%)&quot;, main = &quot;Next-day direction: models vs &#x27;always say Up&#x27;&quot;)
+abline(h = nir, col = espresso, lty = 2, lwd = 2)
+text(bp, acc$Accuracy + 3, paste0(acc$Accuracy, &quot;%&quot;), col = espresso, font = 2)</code></pre></div><div class="out"><div class="lab"><span>Console output</span></div><pre>          Model Accuracy
+1 Decision tree     58.0
+2 Random forest     53.7
+3           SVM     54.8
+4    Neural net     56.4</pre></div><figure class="plot"><div class="lab"><span>Plot output</span></div><img src="../img/m6c023-1.png" alt="R plot output for session 6.4" loading="lazy"></figure></div><aside class="call read"><b>How to read it</b><p>The dashed line is the <strong>No Information Rate</strong> (about 51%): the accuracy of always predicting the more common outcome. Honest out-of-sample models beat it by only <strong>3–7 points</strong>. The simple decision tree does best (58%, significantly above the NIR), and almost all of its edge comes from one feature, the overnight S&amp;P move. The fancier models don't win. The lecture's 60–73% figures come from same-day features and a random split, so this gap is the most valuable lesson in the module.</p></aside><aside class="call warn"><b>Watch out</b><p>Even 58% direction accuracy isn't money in the bank. By the time NIFTY opens, the S&amp;P's overnight move is already in the opening price, so a close-to-close prediction doesn't translate directly into a trade. Measure ML trading ideas on <strong>returns after costs</strong>, not on accuracy.</p></aside><aside class="call try"><b>Try it</b><p>Recreate the lecture's setup to see the inflation for yourself. Use <strong>same-day</strong> <code>sp_ret</code> as a feature with today's direction as the target, then split with <code>sample()</code>. Accuracy jumps, because the S&amp;P's same-day close already contains much of NIFTY's next-morning news.</p></aside><aside class="call concept"><b>The idea</b><p><strong>Accuracy or interpretability?</strong> A linear model or a single tree is easy to explain to a risk committee. A forest or a neural network may squeeze out a little more accuracy. In finance, a model nobody can explain rarely makes it to production.</p></aside></section>
+  <div class="pager"><a class="btn ghost" href="../module-5/">← Module 5</a><a class="btn" href="../">Course home →</a></div>
+  </div>
+</div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="fine" style="border:none;margin:0;padding:0">
+      <span>© 2026 XploreAI · <a href="/">xploreai.co.in</a></span>
+      <span><a href="mailto:hello@xploreai.co.in">hello@xploreai.co.in</a></span>
+    </div>
+  </div>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/r.min.js"></script>
+<script src="/courses/fda-r/course.js"></script>
+</body>
+</html>

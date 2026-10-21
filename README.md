@@ -16,6 +16,7 @@ tools/token-economics/      → Token economics calculator
 tools/bpe-visualizer/       → BPE tokenization visualizer
 concepts/context-windows/   → "Why AI forgets" explainer (Concepts made simple)
 concepts/agent-harness/     → "What is an agent harness?" explainer (Concepts made simple)
+courses/fda-r/              → "Financial Data Analytics using R" course (Learn AI → Courses)
 favicon.ico / favicon-32.png / apple-touch-icon.png
 CNAME                       → custom domain (xploreai.co.in)
 ```
@@ -91,6 +92,15 @@ To list a tool hosted elsewhere, skip step 1 and just add the card. Give its but
 ## Adding an explainer
 
 Explainers live at `concepts/<slug>/index.html` and are listed in the **Concepts made simple** section of `learn.html`. Copy `concepts/context-windows/` for the page shell, then copy its card in `learn.html`. Scope all page CSS under the page's own class (`.explainer`) — the site nav uses `class="wrap bar"` and the site stylesheet styles bare `footer` and `section`.
+
+## Financial Data Analytics using R course
+
+`courses/fda-r/` is a 6-module, 32-session R course listed in the **Courses** section of `learn.html`. Every page is generated, so don't hand-edit `module-N/index.html`, `img/` or `code/`:
+
+- `source/content/mN.md` — the lesson text. `## 1.2 | Title` starts a session, a ```` ```r ```` block is a code cell (options: `h=5`, `w=8`, `eval=false`), and `> [read]`, `> [tip]`, `> [warn]`, `> [concept]`, `> [try]` are callouts.
+- `cd courses/fda-r/source && python3 build.py [N]` runs every code cell in R, captures the real console output and plots, and rewrites the module page(s), the hub page and `code/module-N.R`. It needs R plus the packages listed on the hub page.
+- `data/` holds the CSVs the code reads from `https://xploreai.co.in/courses/fda-r/data/`. Market data comes from `source/dl.py` (Yahoo Finance) and the synthetic teaching files from `source/gen_data.R`.
+- Page styles live in `course.css`, all scoped under `.fdar`.
 
 ## Notes
 

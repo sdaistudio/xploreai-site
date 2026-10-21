@@ -1,0 +1,111 @@
+/* Financial Data Analytics using R — every rule is scoped under .fdar so the site nav and footer are untouched */
+nav ul a[aria-current="page"]{color:var(--rust)}
+.fdar{--paper:#FFFBF4;--cream-2:#EDE4D3;--muted:#766B5F;--mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;font-size:17px;line-height:1.65;padding-bottom:40px}
+.fdar a{color:var(--rust)}
+.fdar .btn{color:#fff}
+.fdar .btn.ghost{color:var(--espresso)}
+.fdar .crumb{font-size:14px;font-weight:600;color:var(--muted);margin-bottom:18px}
+.fdar .crumb a{text-decoration:none}
+.fdar .mhero{padding-top:46px;padding-bottom:34px}
+.fdar .mhero h1{font-size:clamp(32px,5vw,50px);line-height:1.1;letter-spacing:-.02em;font-weight:700;margin:14px 0 14px;max-width:860px}
+.fdar .mhero h1 i{font-style:normal;color:var(--rust)}
+.fdar .mhero .lede{max-width:760px;font-size:18.5px}
+.fdar .dl{display:flex;gap:12px;flex-wrap:wrap;margin-top:24px}
+
+/* layout: sticky session list + content */
+.fdar .layout{display:grid;grid-template-columns:240px minmax(0,1fr);gap:44px;align-items:start}
+.fdar .toc{position:sticky;top:84px;max-height:calc(100vh - 100px);overflow:auto;padding:4px 0 20px}
+.fdar .toc p{font-size:12.5px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--rust);margin-bottom:10px}
+.fdar .toc ol{list-style:none;display:grid;gap:2px}
+.fdar .toc a{display:flex;gap:10px;text-decoration:none;color:var(--soft);font-weight:600;font-size:14.5px;line-height:1.35;padding:8px 10px;border-radius:10px;border-left:3px solid transparent}
+.fdar .toc a span{font-variant-numeric:tabular-nums;color:var(--muted);min-width:26px}
+.fdar .toc a:hover{background:var(--card);color:var(--espresso)}
+.fdar .toc a.on{background:var(--card);color:var(--espresso);border-left-color:var(--rust)}
+.fdar .toc a.on span{color:var(--rust)}
+
+/* sessions */
+.fdar .session{padding:6px 0 30px;margin-bottom:34px;border-bottom:1px solid var(--line);scroll-margin-top:84px}
+.fdar .session:last-of-type{border-bottom:none}
+.fdar .snum{font-size:12.5px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--rust);margin-bottom:6px}
+.fdar .session h2{font-size:clamp(25px,3.4vw,33px);line-height:1.18;letter-spacing:-.015em;margin-bottom:16px}
+.fdar .session h3{font-size:20px;margin:34px 0 10px;line-height:1.3}
+.fdar .session p{margin-bottom:14px}
+.fdar .session ul{margin:0 0 16px 22px}
+.fdar .session li{margin-bottom:6px}
+.fdar strong{font-weight:700}
+.fdar :not(pre)>code{font-family:var(--mono);font-size:.84em;background:var(--rust-soft);color:#A63A0C;padding:1px 6px;border-radius:6px;word-break:break-word}
+
+.fdar .tbl{overflow-x:auto;margin:6px 0 20px;border:1px solid var(--line);border-radius:14px;background:var(--card)}
+.fdar table{border-collapse:collapse;width:100%;font-size:15px}
+.fdar th,.fdar td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+.fdar th{font-size:13px;letter-spacing:.5px;color:var(--muted);background:var(--paper)}
+.fdar tr:last-child td{border-bottom:none}
+
+/* callouts */
+.fdar .call{margin:18px 0 22px;padding:14px 18px;border-left:4px solid var(--rust);background:var(--paper);border-radius:0 14px 14px 0}
+.fdar .call>b{display:block;font-size:12.5px;letter-spacing:2px;text-transform:uppercase;color:var(--rust);margin-bottom:6px}
+.fdar .call p{margin-bottom:8px}
+.fdar .call p:last-child{margin-bottom:0}
+.fdar .call.concept{border-left-color:var(--espresso)}
+.fdar .call.concept>b{color:var(--espresso)}
+.fdar .call.warn{background:#FBEFE6}
+.fdar .call.tip>b,.fdar .call.try>b{color:#2F7D5B}
+.fdar .call.tip,.fdar .call.try{border-left-color:#2F7D5B}
+
+/* code cells */
+.fdar .cell{margin:16px 0 26px;display:grid;gap:10px}
+.fdar .lab{display:flex;align-items:center;gap:10px;padding:8px 14px;font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase}
+.fdar .lab span:first-child{flex:1}
+.fdar .code{background:#2B2620;border-radius:14px;overflow:hidden}
+.fdar .code .lab{color:#F7A97E;border-bottom:1px solid rgba(245,239,228,.1)}
+.fdar .noeval{flex:0 0 auto!important;color:rgba(245,239,228,.55);letter-spacing:.5px;text-transform:none;font-weight:600}
+.fdar .copy{font:inherit;font-size:12px;letter-spacing:1px;color:var(--cream);background:transparent;border:1px solid rgba(245,239,228,.3);border-radius:999px;padding:3px 12px;cursor:pointer}
+.fdar .copy:hover{border-color:#F7A97E;color:#F7A97E}
+.fdar .copy:focus-visible{outline:2px solid #F7A97E;outline-offset:2px}
+.fdar pre{margin:0;overflow-x:auto;font-family:var(--mono);font-size:13.5px;line-height:1.6;padding:14px 18px 16px;tab-size:2}
+.fdar .code pre,.fdar .code code{color:#F1E9DC;background:none}
+.fdar .out{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.fdar .out .lab{color:var(--muted);background:var(--paper);border-bottom:1px solid var(--line)}
+.fdar .out pre{color:var(--espresso);font-size:12.8px;max-height:520px}
+.fdar .plot{margin:0;background:#FFFDF8;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.fdar .plot .lab{color:var(--muted);background:var(--paper);border-bottom:1px solid var(--line)}
+.fdar .plot img{display:block;width:100%;height:auto}
+
+/* highlight.js tokens in the brand palette */
+.fdar .hljs-comment{color:#A89C8C;font-style:italic}
+.fdar .hljs-keyword,.fdar .hljs-literal{color:#F7A97E;font-weight:600}
+.fdar .hljs-string{color:#B8D99A}
+.fdar .hljs-number{color:#F3C7B0}
+.fdar .hljs-built_in{color:#8EC5E8}
+.fdar .hljs-operator,.fdar .hljs-punctuation{color:#E8DCCB}
+.fdar .hljs-params,.fdar .hljs-attr{color:#E8C27A}
+
+.fdar .pager{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:20px}
+
+/* course hub */
+.fdar .hub-mods{display:grid;gap:16px;margin-top:26px}
+.fdar .mod{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:26px 28px;display:grid;grid-template-columns:110px minmax(0,1fr);gap:24px}
+.fdar .mod .no{font-size:54px;font-weight:700;color:var(--rust);line-height:1}
+.fdar .mod .no small{display:block;font-size:12.5px;letter-spacing:3px;color:var(--muted);margin-top:6px}
+.fdar .mod h3{font-size:23px;line-height:1.25;margin-bottom:6px}
+.fdar .mod h3 a{color:var(--espresso);text-decoration:none}
+.fdar .mod h3 a:hover{color:var(--rust)}
+.fdar .mod p{color:var(--soft);font-size:15.5px;margin-bottom:12px}
+.fdar .mod ol{list-style:none;display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:4px 18px;margin-bottom:16px}
+.fdar .mod ol a{text-decoration:none;color:var(--espresso);font-size:15px;font-weight:600}
+.fdar .mod ol a:hover{color:var(--rust)}
+.fdar .mod ol span{color:var(--rust);margin-right:8px;font-variant-numeric:tabular-nums}
+.fdar .hub-sec{padding:44px 0 10px}
+.fdar .facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-top:22px}
+.fdar .facts .card{padding:18px 20px}
+.fdar .facts b{display:block;font-size:30px;color:var(--rust);line-height:1.1}
+.fdar .facts span{font-size:14px;font-weight:700;color:var(--soft)}
+
+@media(max-width:900px){
+  .fdar .layout{grid-template-columns:minmax(0,1fr);gap:0}
+  .fdar .toc{position:static;max-height:none;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:28px}
+  .fdar .mod{grid-template-columns:1fr;gap:6px;padding:22px}
+  .fdar .mod .no{font-size:38px}
+  .fdar pre{font-size:12.5px;padding:12px 14px}
+}
+.fdar .more{font-size:15px;color:var(--muted)}

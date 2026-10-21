@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 3: Predictive Analytics and Applications for Data Analysis — Financial Data Analytics using R — XploreAI</title>
+<meta name="description" content="Regression is the workhorse of predictive analytics. Build simple and multiple regressions in R, read the output in three steps, then check whether the model&#x27;s assumptions actually hold.">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="XploreAI">
+<meta property="og:title" content="Module 3: Predictive Analytics and Applications for Data Analysis — Financial Data Analytics using R">
+<meta property="og:description" content="Regression is the workhorse of predictive analytics. Build simple and multiple regressions in R, read the output in three steps, then check whether the model&#x27;s assumptions actually hold.">
+<meta property="og:url" content="https://xploreai.co.in/courses/fda-r/module-3/">
+<meta property="og:image" content="https://xploreai.co.in/assets/og-image.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/style.css">
+<link rel="stylesheet" href="/courses/fda-r/course.css">
+</head>
+<body>
+
+<nav>
+  <div class="wrap bar">
+    <a class="wordmark" href="/">xplore<span>ai</span></a>
+    <ul>
+      <li><a href="/#agents">Solutions</a></li>
+      <li><a href="/#stories">Success Stories</a></li>
+      <li><a href="/#subscribe">Newsletter</a></li>
+      <li><a href="/learn.html" aria-current="page">Learn AI</a></li>
+      <li><a class="btn" href="https://wa.me/919769686931?text=Hi%20XploreAI%2C%20I%27m%20interested%20in%20AI%20automation!">Get Started</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main class="fdar">
+<header class="mhero wrap">
+  <p class="crumb"><a href="/learn.html">Learn AI</a> / <a href="../">Financial Data Analytics using R</a> / Module 3</p>
+  <span class="pill">MODULE 3 OF 6 · 5 SESSIONS</span>
+  <h1>Predictive Analytics and Applications for Data Analysis<i>.</i></h1>
+  <p class="lede">Regression is the workhorse of predictive analytics. Build simple and multiple regressions in R, read the output in three steps, then check whether the model's assumptions actually hold.</p>
+  <div class="dl"><a class="btn" href="../code/module-3.R" download>Download the R script</a> <a class="btn ghost" href="../#data">Get the data</a></div>
+</header>
+<div class="wrap layout">
+  <aside class="toc" aria-label="Sessions"><p>In this module</p><ol><li><a href="#s3-1"><span>3.1</span>Introduction to predictive analytics</a></li><li><a href="#s3-2"><span>3.2</span>Simple and multiple regression in R</a></li><li><a href="#s3-3"><span>3.3</span>The assumptions of the classical linear regression model</a></li><li><a href="#s3-4"><span>3.4</span>Testing the assumptions: cross-sectional data</a></li><li><a href="#s3-5"><span>3.5</span>Testing the assumptions: time-series data</a></li></ol></aside>
+  <div class="content">
+<section class="session" id="s3-1"><p class="snum">Session 3.1</p><h2>Introduction to predictive analytics</h2><p>Predictive modelling starts with <strong>regression</strong>, a term that goes back to Francis Galton's "regression to the mean". The idea is to explain changes in one variable (Y) through changes in others (X). Both must actually vary: if either one is constant, there's nothing to explain.</p><div class="tbl"><table><thead><tr><th>Role</th><th>Other names</th></tr></thead><tbody><tr><td>Dependent variable (Y)</td><td>Explained, response, regressand, outcome, endogenous</td></tr><tr><td>Independent variable (X)</td><td>Explanatory, predictor, regressor, covariate, exogenous</td></tr><tr><td>Control variable</td><td>Included to hold other effects constant, not of direct interest</td></tr></tbody></table></div><h3>The linear model</h3><p><strong>Y = α + βX + ε</strong></p><ul><li><strong>α (intercept)</strong>: the value of Y when X = 0. For example, what a household spends with zero income.</li><li><strong>β (slope)</strong>: the change in Y for a one-unit change in X. If β = 0.8, each extra rupee of income adds 80 paise of spending. A negative β means the two move in opposite directions.</li><li><strong>ε (error)</strong>: actual minus predicted. No relationship is perfect, and ordinary least squares (OLS) picks the line that minimises the squared errors.</li></ul><p>When the classical assumptions hold (Session 3.3), OLS is <strong>BLUE</strong>: the Best Linear Unbiased Estimator.</p><h3>Which model fits which data?</h3><div class="tbl"><table><thead><tr><th>Y (dependent)</th><th>X (independent)</th><th>Model</th></tr></thead><tbody><tr><td>Continuous</td><td>Continuous</td><td>Simple or multiple linear regression</td></tr><tr><td>Continuous</td><td>Categorical</td><td>Dummy-variable regression</td></tr><tr><td>Categorical</td><td>Continuous</td><td>Logistic regression</td></tr><tr><td>Categorical</td><td>Categorical</td><td>Classification techniques</td></tr></tbody></table></div></section><section class="session" id="s3-2"><p class="snum">Session 3.2</p><h2>Simple and multiple regression in R</h2><p>The data is cross-sectional: 24 employees, each with a monthly salary (in Rs '000s), a performance rating out of 10, years of experience and number of certifications.</p><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">url &lt;- &quot;https://xploreai.co.in/courses/fda-r/data/&quot;
+salary &lt;- read.csv(paste0(url, &quot;salary.csv&quot;))
+str(salary)</code></pre></div><div class="out"><div class="lab"><span>Console output</span></div><pre>&#x27;data.frame&#x27;:	24 obs. of  5 variables:
+ $ Employee_ID   : chr  &quot;E01&quot; &quot;E02&quot; &quot;E03&quot; &quot;E04&quot; ...
+ $ Salary        : num  55.6 47.1 49.6 44 46.3 44 49.3 45.1 53.7 40.7 ...
+ $ Rating        : num  5.6 6.3 5.1 4.8 5.3 4.8 6.1 3.1 5.7 3 ...
+ $ Experience    : int  23 18 19 8 9 9 20 10 17 10 ...
+ $ Certifications: int  5 1 1 2 3 2 2 3 5 0 ...</pre></div></div><h3>Simple regression: Salary on Experience</h3><p><code>lm()</code> fits a linear model. The <code>~</code> reads as "is regressed on".</p><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">model3 &lt;- lm(Salary ~ Experience, data = salary)
+summary(model3)</code></pre></div><div class="out"><div class="lab"><span>Console output</span></div><pre>
+Call:
+lm(formula = Salary ~ Experience, data = salary)
+
+Residuals:
+   Min     1Q Median     3Q    Max 
+ -5.78  -1.42  -0.14   1.55   3.94 
+
+Coefficients:
+            Estimate Std. Error t value  Pr(&gt;|t|)    
+(Intercept)  41.7997     1.0559   39.59   &lt; 2e-16 ***
+Experience    0.4683     0.0772    6.06 0.0000042 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 2.33 on 22 degrees of freedom
+Multiple R-squared:  0.626,	Adjusted R-squared:  0.609 
+F-statistic: 36.8 on 1 and 22 DF,  p-value: 0.0000042</pre></div></div><aside class="call read"><b>How to read it</b><p>Read every regression in <strong>three steps</strong>.</p><p><strong>1. R²</strong>: what share of the variation in salary does experience explain? Higher is better, but a very high R² on time-series data can be spurious.</p><p><strong>2. F-test</strong>: H₀ says every slope is zero. If its p-value is below 0.05, reject H₀: the model is useful overall.</p><p><strong>3. Coefficients</strong>: check each p-value (or the stars: <em>*</em> means p &lt; 0.001), then read the sign and size. Here every extra year of experience adds the <code>Experience</code> estimate to salary, measured in Rs '000.</p></aside><h3>Using the equation to predict</h3><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">coef(model3)
+coef(model3)[1] + coef(model3)[2] * 20          # by hand: someone with 20 years
+predict(model3, newdata = data.frame(Experience = c(5, 10, 20)))</code></pre></div><div class="out"><div class="lab"><span>Console output</span></div><pre>(Intercept)  Experience 
+   41.79973     0.46828 
+(Intercept) 
+     51.165 
+     1      2      3 
+44.141 46.483 51.165 </pre></div></div><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">rust &lt;- &quot;#E2571B&quot;; espresso &lt;- &quot;#4A4238&quot;
+plot(salary$Experience, salary$Salary, pch = 19, col = rust, cex = 1.3,
+     xlab = &quot;Experience (years)&quot;, ylab = &quot;Salary (Rs &#x27;000)&quot;, main = &quot;Salary vs experience, with the OLS line&quot;)
+abline(model3, col = espresso, lwd = 2.5)</code></pre></div><figure class="plot"><div class="lab"><span>Plot output</span></div><img src="../img/m3c004-1.png" alt="R plot output for session 3.2" loading="lazy"></figure></div><h3>Multiple regression</h3><p>Add rating and certifications to the model:</p><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">model4 &lt;- lm(Salary ~ Rating + Experience + Certifications, data = salary)
+summary(model4)</code></pre></div><div class="out"><div class="lab"><span>Console output</span></div><pre>
+Call:
+lm(formula = Salary ~ Rating + Experience + Certifications, data = salary)
+
+Residuals:
+   Min     1Q Median     3Q    Max 
+-1.802 -1.256 -0.231  0.991  2.249 
+
+Coefficients:
+               Estimate Std. Error t value  Pr(&gt;|t|)    
+(Intercept)     36.0624     1.3542   26.63   &lt; 2e-16 ***
+Rating           0.9240     0.2649    3.49    0.0023 ** 
+Experience       0.3247     0.0511    6.36 0.0000033 ***
+Certifications   1.1744     0.2356    4.99 0.0000711 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 1.39 on 20 degrees of freedom
+Multiple R-squared:  0.88,	Adjusted R-squared:  0.862 
+F-statistic: 48.7 on 3 and 20 DF,  p-value: 0.00000000223</pre></div></div><aside class="call read"><b>How to read it</b><p>With several regressors, use <strong>Adjusted R²</strong>. It penalises every extra variable, so you can't inflate it by adding noise (the principle of parsimony). Notice that the experience coefficient has <strong>shrunk</strong> compared with model 3. Some of what experience was "explaining" really belonged to rating and certifications.</p></aside><aside class="call try"><b>Try it</b><p>Fit <code>lm(Salary ~ Rating, data = salary)</code> and <code>lm(Salary ~ Certifications, data = salary)</code> yourself and interpret them with the same three steps.</p></aside></section><section class="session" id="s3-3"><p class="snum">Session 3.3</p><h2>The assumptions of the classical linear regression model</h2><p>OLS is only BLUE if seven assumptions hold:</p><div class="tbl"><table><thead><tr><th>#</th><th>Assumption</th><th>What breaks if it fails</th><th>How to check</th></tr></thead><tbody><tr><td>1</td><td>Linear in <strong>parameters</strong> (X² or 1/X is fine, β² is not)</td><td>Wrong model form</td><td>Theory, residual plots</td></tr><tr><td>2</td><td>Correctly specified, with no relevant variable left out</td><td>Biased coefficients</td><td>Theory, RESET test</td></tr><tr><td>3</td><td>No (perfect) multicollinearity among the X's</td><td>Unstable, inflated standard errors</td><td>Correlations, <strong>VIF</strong></td></tr><tr><td>4</td><td>Errors have zero mean: E(ε) = 0</td><td>Biased intercept</td><td><code>mean(resid())</code></td></tr><tr><td>5</td><td><strong>Homoskedasticity</strong>: constant error variance</td><td>Wrong standard errors and p-values</td><td><strong>Breusch–Pagan</strong></td></tr><tr><td>6</td><td>Errors are normally distributed</td><td>Unreliable t and F tests in small samples</td><td>Histogram, Shapiro–Wilk</td></tr><tr><td>7</td><td><strong>No autocorrelation</strong> of errors</td><td>Over-confident p-values (time series)</td><td><strong>Durbin–Watson</strong></td></tr></tbody></table></div><aside class="call concept"><b>The idea</b><p>Cross-sectional data mostly runs into problems with assumptions <strong>3 and 5</strong>. Time-series data adds <strong>7</strong>: this month's error tends to look like last month's error, because of trends, seasons and cycles.</p></aside></section><section class="session" id="s3-4"><p class="snum">Session 3.4</p><h2>Testing the assumptions: cross-sectional data</h2><h3>Multicollinearity: correlations and VIF</h3><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">library(psych)
+pairs.panels(salary[, -1], hist.col = rust, col = espresso, stars = TRUE)</code></pre></div><figure class="plot"><div class="lab"><span>Plot output</span></div><img src="../img/m3c006-1.png" alt="R plot output for session 3.4" loading="lazy"></figure></div><p>The <strong>variance inflation factor</strong> shows how much each coefficient's variance is inflated by its correlation with the other X's.</p><div class="cell"><div class="code"><div class="lab"><span>R</span><span class="noeval">shown, not run here</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">install.packages(c(&quot;car&quot;, &quot;lmtest&quot;))</code></pre></div></div><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">library(car)
+vif(model4)</code></pre></div><div class="out"><div class="lab"><span>Console output</span></div><pre>        Rating     Experience Certifications 
+        1.1501         1.2366         1.1550 </pre></div></div><aside class="call read"><b>How to read it</b><p>The usual rule of thumb: <strong>VIF &gt; 10</strong> is serious, so drop the variable. <strong>5–10</strong> calls for judgement. <strong>Below 5</strong> (stricter authors say below 3) is no problem. All three values here are close to 1, so the regressors are not collinear.</p></aside><h3>Zero mean of errors</h3><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">error_model4 &lt;- resid(model4)
+mean(error_model4)       # effectively zero</code></pre></div><div class="out"><div class="lab"><span>Console output</span></div><pre>[1] 7.6328e-17</pre></div></div><h3>Homoskedasticity: the Breusch–Pagan test</h3><p>Squared residuals stand in for the error variance. Plot them first, then test.</p><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">plot(error_model4^2, pch = 19, col = rust, ylab = &quot;Squared residual&quot;, xlab = &quot;Employee&quot;,
+     main = &quot;Error variance proxy: no obvious funnel&quot;)
+library(lmtest)
+bptest(model4)</code></pre></div><div class="out"><div class="lab"><span>Console output</span></div><pre>
+	studentized Breusch-Pagan test
+
+data:  model4
+BP = 3.98, df = 3, p-value = 0.26</pre></div><figure class="plot"><div class="lab"><span>Plot output</span></div><img src="../img/m3c010-1.png" alt="R plot output for session 3.4" loading="lazy"></figure></div><aside class="call read"><b>How to read it</b><p>H₀: the errors are <strong>homoskedastic</strong>. If p &gt; 0.05, fail to reject, and the assumption holds. If p &lt; 0.05, the variance changes across observations, so transform Y (log or Box-Cox) or use robust standard errors.</p></aside></section><section class="session" id="s3-5"><p class="snum">Session 3.5</p><h2>Testing the assumptions: time-series data</h2><p>The data is 80 quarters (2006–2025) of one firm's financial ratios. The question is what drives firm value, measured by <strong>Tobin's Q</strong>.</p><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">CF_data &lt;- read.csv(paste0(url, &quot;CF_data.csv&quot;))
+dim(CF_data)
+model_CF &lt;- lm(Firm_Value_TobinsQ ~ ROA + Leverage_Ratio + Debt_Equity_Ratio + Interest_Coverage +
+                 Capital_Intensity + Current_Ratio + Policy_Interest_Rate + Sales_Growth, data = CF_data)
+round(vif(model_CF), 2)</code></pre></div><div class="out"><div class="lab"><span>Console output</span></div><pre>[1] 80 17
+                 ROA       Leverage_Ratio    Debt_Equity_Ratio    Interest_Coverage 
+               18.08                73.89                56.53                39.69 
+   Capital_Intensity        Current_Ratio Policy_Interest_Rate         Sales_Growth 
+                1.78                 1.27                 8.48                 1.67 </pre></div></div><aside class="call read"><b>How to read it</b><p>Leverage ratio and debt-to-equity are almost the same thing measured two ways, so their VIFs explode well past 10. Interest coverage, which is built from leverage, is inflated too. Drop the two leverage measures and refit.</p></aside><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">model_CF2 &lt;- lm(Firm_Value_TobinsQ ~ ROA + Interest_Coverage + Capital_Intensity +
+                  Current_Ratio + Policy_Interest_Rate + Sales_Growth, data = CF_data)
+round(vif(model_CF2), 2)
+summary(model_CF2)</code></pre></div><div class="out"><div class="lab"><span>Console output</span></div><pre>                 ROA    Interest_Coverage    Capital_Intensity        Current_Ratio 
+                3.96                 5.28                 1.70                 1.12 
+Policy_Interest_Rate         Sales_Growth 
+                2.42                 1.66 
+
+Call:
+lm(formula = Firm_Value_TobinsQ ~ ROA + Interest_Coverage + Capital_Intensity + 
+    Current_Ratio + Policy_Interest_Rate + Sales_Growth, data = CF_data)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-0.13118 -0.04031 -0.00989  0.03556  0.20456 
+
+Coefficients:
+                     Estimate Std. Error t value    Pr(&gt;|t|)    
+(Intercept)          -0.22957    0.26125   -0.88     0.38242    
+ROA                  12.81379    3.34316    3.83     0.00027 ***
+Interest_Coverage     0.04482    0.01903    2.36     0.02118 *  
+Capital_Intensity     0.06135    0.04277    1.43     0.15577    
+Current_Ratio         0.28848    0.08396    3.44     0.00098 ***
+Policy_Interest_Rate -0.00909    0.01212   -0.75     0.45576    
+Sales_Growth          0.78196    0.12624    6.19 0.000000031 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.0747 on 73 degrees of freedom
+Multiple R-squared:  0.774,	Adjusted R-squared:  0.756 
+F-statistic: 41.7 on 6 and 73 DF,  p-value: &lt;2e-16</pre></div></div><aside class="call read"><b>How to read it</b><p>Every VIF is now below 10. Interest coverage sits just above 5, in the judgement zone, and it's significant, so keep it. Sales growth, ROA and the current ratio drive firm value most clearly here.</p></aside><h3>Error mean and heteroskedasticity</h3><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">mean(resid(model_CF2))
+bptest(model_CF2)</code></pre></div><div class="out"><div class="lab"><span>Console output</span></div><pre>[1] -1.5613e-18
+
+	studentized Breusch-Pagan test
+
+data:  model_CF2
+BP = 8.86, df = 6, p-value = 0.18</pre></div></div><h3>Box-Cox: what transformation would help?</h3><p>Box-Cox searches for the power λ that makes the errors best behaved. Read off the λ at the peak: <strong>0 means take the log, 0.5 the square root, 1 means no transformation, and −1 means 1/Y</strong>.</p><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">library(MASS)
+bc &lt;- boxcox(formula(model_CF2), data = CF_data, lambda = seq(-2, 3, 0.05))
+bc$x[which.max(bc$y)]     # best lambda</code></pre></div><div class="out"><div class="lab"><span>Console output</span></div><pre>[1] 1.35</pre></div><figure class="plot"><div class="lab"><span>Plot output</span></div><img src="../img/m3c014-1.png" alt="R plot output for session 3.5" loading="lazy"></figure></div><aside class="call read"><b>How to read it</b><p>The peak is at about 1.35, but the 95% interval (the dotted lines) runs from about 0.5 to 2.2 and <strong>includes 1</strong>. No transformation is needed, which agrees with the Breusch–Pagan result.</p></aside><h3>Autocorrelation: the Durbin–Watson test</h3><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">durbinWatsonTest(model_CF2)</code></pre></div><div class="out"><div class="lab"><span>Console output</span></div><pre> lag Autocorrelation D-W Statistic p-value
+   1         0.27145        1.4548   0.004
+ Alternative hypothesis: rho != 0</pre></div></div><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">plot(resid(model_CF2), type = &quot;b&quot;, pch = 19, cex = .6, col = rust,
+     ylab = &quot;Residual&quot;, xlab = &quot;Quarter&quot;, main = &quot;Residuals over time: runs of positives and negatives&quot;)
+abline(h = 0, col = espresso, lty = 2)</code></pre></div><figure class="plot"><div class="lab"><span>Plot output</span></div><img src="../img/m3c016-1.png" alt="R plot output for session 3.5" loading="lazy"></figure></div><aside class="call read"><b>How to read it</b><p><strong>DW ≈ 2</strong> means no autocorrelation. Well <strong>below 2</strong> means positive autocorrelation and well above 2 means negative. Here DW is clearly below 2 and its p-value is under 0.05, so the errors are autocorrelated. You can see it in the chart: the residuals come in streaks instead of bouncing randomly around zero.</p></aside><aside class="call warn"><b>Watch out</b><p>This is the core problem with running OLS on time series. The fix is to <strong>test each series for stationarity first</strong> (Module 2), transform or difference them, and only then estimate. Module 4 builds models designed for exactly this.</p></aside></section>
+  <div class="pager"><a class="btn ghost" href="../module-2/">← Module 2</a><a class="btn" href="../module-4/">Module 4 →</a></div>
+  </div>
+</div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="fine" style="border:none;margin:0;padding:0">
+      <span>© 2026 XploreAI · <a href="/">xploreai.co.in</a></span>
+      <span><a href="mailto:hello@xploreai.co.in">hello@xploreai.co.in</a></span>
+    </div>
+  </div>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/r.min.js"></script>
+<script src="/courses/fda-r/course.js"></script>
+</body>
+</html>

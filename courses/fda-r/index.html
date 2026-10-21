@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Financial Data Analytics using R — a free hands-on course — XploreAI</title>
+<meta name="description" content="Learn financial data analytics in R: cleaning, returns, statistics, regression, ARIMA, VAR, VECM, ARDL, GARCH, VaR, event studies and machine learning, with runnable code and real output.">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="XploreAI">
+<meta property="og:title" content="Financial Data Analytics using R — a free hands-on course">
+<meta property="og:description" content="Learn financial data analytics in R: cleaning, returns, statistics, regression, ARIMA, VAR, VECM, ARDL, GARCH, VaR, event studies and machine learning, with runnable code and real output.">
+<meta property="og:url" content="https://xploreai.co.in/courses/fda-r/">
+<meta property="og:image" content="https://xploreai.co.in/assets/og-image.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/style.css">
+<link rel="stylesheet" href="/courses/fda-r/course.css">
+</head>
+<body>
+
+<nav>
+  <div class="wrap bar">
+    <a class="wordmark" href="/">xplore<span>ai</span></a>
+    <ul>
+      <li><a href="/#agents">Solutions</a></li>
+      <li><a href="/#stories">Success Stories</a></li>
+      <li><a href="/#subscribe">Newsletter</a></li>
+      <li><a href="/learn.html" aria-current="page">Learn AI</a></li>
+      <li><a class="btn" href="https://wa.me/919769686931?text=Hi%20XploreAI%2C%20I%27m%20interested%20in%20AI%20automation!">Get Started</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main class="fdar">
+<header class="mhero wrap">
+  <p class="crumb"><a href="/learn.html">Learn AI</a> / Courses</p>
+  <span class="pill">FREE COURSE · R · 6 MODULES · 32 SESSIONS</span>
+  <h1>Financial Data Analytics using R<i>.</i></h1>
+  <p class="lede">From your first line of R to GARCH volatility forecasts and machine-learning models on NIFTY. Every session shows the <strong>code</strong>, explains what it does, and shows the <strong>exact console output and charts</strong> it produces, so you can check your work as you follow along.</p>
+  <div class="dl"><a class="btn" href="module-1/">Start with Module 1 →</a> <a class="btn ghost" href="#data">Download the data</a></div>
+  <div class="facts">
+    <div class="card"><b>6</b><span>modules</span></div>
+    <div class="card"><b>32</b><span>sessions</span></div>
+    <div class="card"><b>126</b><span>runnable code cells</span></div>
+    <div class="card"><b>31</b><span>charts, rendered from the code</span></div>
+  </div>
+</header>
+
+<section class="hub-sec wrap" id="setup">
+  <span class="eyebrow">Before you start</span>
+  <h2 class="big">Set up in ten minutes<i>.</i></h2>
+  <p class="lede">Install <a href="https://cran.r-project.org/">R</a> first, then <a href="https://posit.co/download/rstudio-desktop/">RStudio Desktop</a>. Then paste this into the RStudio console once to install every package the course uses:</p>
+  <div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">install.packages(c(&quot;dplyr&quot;, &quot;tidyr&quot;, &quot;stringr&quot;, &quot;ggplot2&quot;, &quot;psych&quot;, &quot;urca&quot;, &quot;tseries&quot;,
+                   &quot;car&quot;, &quot;lmtest&quot;, &quot;forecast&quot;, &quot;vars&quot;, &quot;dLagM&quot;, &quot;xts&quot;, &quot;quantmod&quot;,
+                   &quot;rugarch&quot;, &quot;FinTS&quot;, &quot;TTR&quot;, &quot;caret&quot;, &quot;rpart&quot;, &quot;randomForest&quot;,
+                   &quot;e1071&quot;, &quot;neuralnet&quot;))</code></pre></div></div>
+  <p>Every script reads its data straight from this site, so there are no file paths to fix. Each module page also has a <strong>Download the R script</strong> button with all of that module's code in one file.</p>
+</section>
+
+<section class="hub-sec wrap" id="modules">
+  <span class="eyebrow">The course</span>
+  <h2 class="big">Six modules, one toolkit<i>.</i></h2>
+  <div class="hub-mods"><article class="mod"><div class="no">01<small>MODULE</small></div><div><h3><a href="module-1/">Introduction to Financial Data Analytics and R-Studio</a></h3><p>Why finance runs on data, how R and RStudio fit together, and your first real workflow, which takes a messy price file and turns it into clean daily returns.</p><ol><li><a href="module-1/#s1-1"><span>1.1</span>What financial data analytics is</a></li><li><a href="module-1/#s1-2"><span>1.2</span>R, RStudio and your first commands</a></li><li><a href="module-1/#s1-3"><span>1.3</span>The RStudio interface: scripts, console and objects</a></li><li><a href="module-1/#s1-4"><span>1.4</span>R programming basics: vectors, sequences and matrices</a></li><li><a href="module-1/#s1-5"><span>1.5</span>Importing your own data</a></li><li><a href="module-1/#s1-6"><span>1.6</span>Data cleaning I: inspecting a messy price file</a></li><li><a href="module-1/#s1-7"><span>1.7</span>Data cleaning II: fixing problems, returns and a first chart</a></li></ol><a class="btn" href="module-1/">Start module 1 →</a></div></article><article class="mod"><div class="no">02<small>MODULE</small></div><div><h3><a href="module-2/">Statistical Foundations for Financial Time Series</a></h3><p>The four moments that describe any return series, the charts that reveal them, and the one property every time-series model needs first, which is stationarity.</p><ol><li><a href="module-2/#s2-1"><span>2.1</span>Descriptive statistics I: centre and spread</a></li><li><a href="module-2/#s2-2"><span>2.2</span>Descriptive statistics II: risk, skewness and kurtosis</a></li><li><a href="module-2/#s2-3"><span>2.3</span>Descriptive statistics in R: Bitcoin spot vs futures</a></li><li><a href="module-2/#s2-4"><span>2.4</span>Graphical analysis: histograms, box plots and scatter plots</a></li><li><a href="module-2/#s2-5"><span>2.5</span>Time-series components and stationarity</a></li><li><a href="module-2/#s2-6"><span>2.6</span>Testing stationarity in R</a></li></ol><a class="btn" href="module-2/">Start module 2 →</a></div></article><article class="mod"><div class="no">03<small>MODULE</small></div><div><h3><a href="module-3/">Predictive Analytics and Applications for Data Analysis</a></h3><p>Regression is the workhorse of predictive analytics. Build simple and multiple regressions in R, read the output in three steps, then check whether the model's assumptions actually hold.</p><ol><li><a href="module-3/#s3-1"><span>3.1</span>Introduction to predictive analytics</a></li><li><a href="module-3/#s3-2"><span>3.2</span>Simple and multiple regression in R</a></li><li><a href="module-3/#s3-3"><span>3.3</span>The assumptions of the classical linear regression model</a></li><li><a href="module-3/#s3-4"><span>3.4</span>Testing the assumptions: cross-sectional data</a></li><li><a href="module-3/#s3-5"><span>3.5</span>Testing the assumptions: time-series data</a></li></ol><a class="btn" href="module-3/">Start module 3 →</a></div></article><article class="mod"><div class="no">04<small>MODULE</small></div><div><h3><a href="module-4/">Time Series Models and Forecasting in R</a></h3><p>Forecast a series from its own past with ARIMA, then test who leads whom, Bitcoin spot or futures, using the right causality framework for the data. That's VAR, VECM or ARDL, depending on stationarity.</p><ol><li><a href="module-4/#s4-1"><span>4.1</span>Time-series components and ARIMA models</a></li><li><a href="module-4/#s4-2"><span>4.2</span>ARIMA in R: forecasting airline passengers</a></li><li><a href="module-4/#s4-3"><span>4.3</span>Causality with VAR, part 1: stationarity, lags and Granger</a></li><li><a href="module-4/#s4-4"><span>4.4</span>Causality with VAR, part 2: estimating and reading the VAR</a></li><li><a href="module-4/#s4-5"><span>4.5</span>Causality with VECM: when prices share a long-run path</a></li><li><a href="module-4/#s4-6"><span>4.6</span>Causality with ARDL: when the orders of integration are mixed</a></li></ol><a class="btn" href="module-4/">Start module 4 →</a></div></article><article class="mod"><div class="no">05<small>MODULE</small></div><div><h3><a href="module-5/">Volatility Modeling and Risk Analytics</a></h3><p>Returns are only half the story. Model how NIFTY's risk changes from day to day with ARCH and GARCH, then put a rupee figure on downside risk with Value at Risk and check that figure with a backtest.</p><ol><li><a href="module-5/#s5-1"><span>5.1</span>Volatility: why the variance itself needs a model</a></li><li><a href="module-5/#s5-2"><span>5.2</span>ARCH and GARCH in R: modelling NIFTY 50&#x27;s volatility</a></li><li><a href="module-5/#s5-3"><span>5.3</span>Value at Risk and backtesting in R</a></li><li><a href="module-5/#s5-4"><span>5.4</span>The VaR framework: what it is, and what it misses</a></li></ol><a class="btn" href="module-5/">Start module 5 →</a></div></article><article class="mod"><div class="no">06<small>MODULE</small></div><div><h3><a href="module-6/">Applications of Financial Data Analytics in the Real World</a></h3><p>Put the toolkit to work on three real questions. How hard did the COVID lockdown hit NIFTY? Does Wall Street lead Dalal Street? And can machine learning call tomorrow's market direction?</p><ol><li><a href="module-6/#s6-1"><span>6.1</span>Event study: the COVID-19 lockdown and NIFTY 50</a></li><li><a href="module-6/#s6-2"><span>6.2</span>Does the US lead India? Causality between NIFTY and the S&amp;P 500</a></li><li><a href="module-6/#s6-3"><span>6.3</span>The machine learning framework for finance</a></li><li><a href="module-6/#s6-4"><span>6.4</span>Machine learning in R: predicting NIFTY&#x27;s direction</a></li></ol><a class="btn" href="module-6/">Start module 6 →</a></div></article></div>
+</section>
+
+<section class="hub-sec wrap" id="data">
+  <span class="eyebrow">Datasets</span>
+  <h2 class="big">All the data, as plain CSV<i>.</i></h2>
+  <p class="lede">Market data comes from Yahoo Finance (daily closes to 31 Dec 2025). The cleaning, salary and corporate-finance files are synthetic: they were built to show the same problems the lessons teach you to find.</p>
+  <div class="tbl"><table><thead><tr><th>File</th><th>What's in it</th><th>Source</th><th>Module</th></tr></thead><tbody><tr><td><a href="data/NIFTY50.csv" download><code>NIFTY50.csv</code></a></td><td>NIFTY 50 index, daily OHLC + volume, 2015–2025</td><td>Yahoo Finance (^NSEI)</td><td>5, 6</td></tr><tr><td><a href="data/SP500.csv" download><code>SP500.csv</code></a></td><td>S&P 500 index, daily, 2015–2025</td><td>Yahoo Finance (^GSPC)</td><td>6</td></tr><tr><td><a href="data/bitcoin.csv" download><code>bitcoin.csv</code></a></td><td>Bitcoin spot vs CME futures: prices and log returns, Dec 2017–2025</td><td>Yahoo Finance (BTC-USD, BTC=F)</td><td>2, 4</td></tr><tr><td><a href="data/portfolio_returns.csv" download><code>portfolio_returns.csv</code></a></td><td>Equal-weight portfolio of Reliance, TCS, HDFC Bank, Infosys and ICICI Bank, 2023–2025</td><td>Built from Yahoo Finance prices</td><td>5</td></tr><tr><td><a href="data/AirPassengers.csv" download><code>AirPassengers.csv</code></a></td><td>Monthly airline passengers, 1949–1960</td><td>R's built-in dataset</td><td>2, 4</td></tr><tr><td><a href="data/sample_financial_data.csv" download><code>sample_financial_data.csv</code></a></td><td>31 days of 'ABC Limited' prices with planted errors</td><td>Synthetic, for cleaning practice</td><td>1</td></tr><tr><td><a href="data/practice_data.csv" download><code>practice_data.csv</code></a></td><td>Five-row starter file</td><td>Synthetic</td><td>1</td></tr><tr><td><a href="data/salary.csv" download><code>salary.csv</code></a></td><td>24 employees: salary, rating, experience, certifications</td><td>Synthetic</td><td>3</td></tr><tr><td><a href="data/CF_data.csv" download><code>CF_data.csv</code></a></td><td>80 quarters of a firm's financial ratios and Tobin's Q</td><td>Synthetic</td><td>3</td></tr><tr><td><a href="data/SENSEX.csv" download><code>SENSEX.csv</code></a></td><td>BSE Sensex, daily, 2015–2025</td><td>Yahoo Finance (^BSESN)</td><td>Extra</td></tr><tr><td><a href="data/RELIANCE.csv" download><code>RELIANCE.csv</code></a></td><td>Reliance Industries, daily, 2015–2025</td><td>Yahoo Finance (RELIANCE.NS)</td><td>Extra</td></tr><tr><td><a href="data/USDINR.csv" download><code>USDINR.csv</code></a></td><td>US dollar / Indian rupee, daily, 2015–2025</td><td>Yahoo Finance (INR=X)</td><td>Extra</td></tr></tbody></table></div>
+  <p class="more">Also available in the same format: <a href="data/TCS.csv" download>TCS.csv</a>, <a href="data/INFY.csv" download>INFY.csv</a>, <a href="data/HDFCBANK.csv" download>HDFCBANK.csv</a>, <a href="data/ICICIBANK.csv" download>ICICIBANK.csv</a>, <a href="data/GOLD.csv" download>GOLD.csv</a>, <a href="data/CRUDE.csv" download>CRUDE.csv</a>, <a href="data/INDIAVIX.csv" download>INDIAVIX.csv</a>.</p>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="fine" style="border:none;margin:0;padding:0">
+      <span>© 2026 XploreAI · <a href="/">xploreai.co.in</a></span>
+      <span><a href="mailto:hello@xploreai.co.in">hello@xploreai.co.in</a></span>
+    </div>
+  </div>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/r.min.js"></script>
+<script src="/courses/fda-r/course.js"></script>
+</body>
+</html>

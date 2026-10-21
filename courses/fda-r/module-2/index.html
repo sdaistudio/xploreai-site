@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 2: Statistical Foundations for Financial Time Series — Financial Data Analytics using R — XploreAI</title>
+<meta name="description" content="The four moments that describe any return series, the charts that reveal them, and the one property every time-series model needs first, which is stationarity.">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="XploreAI">
+<meta property="og:title" content="Module 2: Statistical Foundations for Financial Time Series — Financial Data Analytics using R">
+<meta property="og:description" content="The four moments that describe any return series, the charts that reveal them, and the one property every time-series model needs first, which is stationarity.">
+<meta property="og:url" content="https://xploreai.co.in/courses/fda-r/module-2/">
+<meta property="og:image" content="https://xploreai.co.in/assets/og-image.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/style.css">
+<link rel="stylesheet" href="/courses/fda-r/course.css">
+</head>
+<body>
+
+<nav>
+  <div class="wrap bar">
+    <a class="wordmark" href="/">xplore<span>ai</span></a>
+    <ul>
+      <li><a href="/#agents">Solutions</a></li>
+      <li><a href="/#stories">Success Stories</a></li>
+      <li><a href="/#subscribe">Newsletter</a></li>
+      <li><a href="/learn.html" aria-current="page">Learn AI</a></li>
+      <li><a class="btn" href="https://wa.me/919769686931?text=Hi%20XploreAI%2C%20I%27m%20interested%20in%20AI%20automation!">Get Started</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main class="fdar">
+<header class="mhero wrap">
+  <p class="crumb"><a href="/learn.html">Learn AI</a> / <a href="../">Financial Data Analytics using R</a> / Module 2</p>
+  <span class="pill">MODULE 2 OF 6 · 6 SESSIONS</span>
+  <h1>Statistical Foundations for Financial Time Series<i>.</i></h1>
+  <p class="lede">The four moments that describe any return series, the charts that reveal them, and the one property every time-series model needs first, which is stationarity.</p>
+  <div class="dl"><a class="btn" href="../code/module-2.R" download>Download the R script</a> <a class="btn ghost" href="../#data">Get the data</a></div>
+</header>
+<div class="wrap layout">
+  <aside class="toc" aria-label="Sessions"><p>In this module</p><ol><li><a href="#s2-1"><span>2.1</span>Descriptive statistics I: centre and spread</a></li><li><a href="#s2-2"><span>2.2</span>Descriptive statistics II: risk, skewness and kurtosis</a></li><li><a href="#s2-3"><span>2.3</span>Descriptive statistics in R: Bitcoin spot vs futures</a></li><li><a href="#s2-4"><span>2.4</span>Graphical analysis: histograms, box plots and scatter plots</a></li><li><a href="#s2-5"><span>2.5</span>Time-series components and stationarity</a></li><li><a href="#s2-6"><span>2.6</span>Testing stationarity in R</a></li></ol></aside>
+  <div class="content">
+<section class="session" id="s2-1"><p class="snum">Session 2.1</p><h2>Descriptive statistics I: centre and spread</h2><p>Before modelling a series, describe it. Statisticians summarise a distribution with four <strong>moments</strong>:</p><div class="tbl"><table><thead><tr><th>Moment</th><th>Question</th><th>Measures</th></tr></thead><tbody><tr><td>1st: central tendency</td><td>What is a typical value?</td><td>Mean, median, mode</td></tr><tr><td>2nd: dispersion</td><td>How spread out is it?</td><td>Range, IQR, variance, SD</td></tr><tr><td>3rd: skewness</td><td>Is it symmetric?</td><td>Skewness</td></tr><tr><td>4th: kurtosis</td><td>How fat are the tails?</td><td>Kurtosis</td></tr></tbody></table></div><h3>Central tendency</h3><ul><li><strong>Mean</strong> = Σx / n: the arithmetic average. Use it for interval and ratio data.</li><li><strong>Median</strong>: the middle value of the sorted data, at position (n+1)/2. It isn't dragged around by outliers.</li><li><strong>Mode</strong>: the most frequent value. It's the only valid average for nominal data.</li></ul><p>R has <code>mean()</code> and <code>median()</code> built in, but no function for the statistical mode, so write a one-line one:</p><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">x &lt;- c(10, 11, 12, 8, 9)
+mean(x)
+median(x)          # sorted: 8 9 10 11 12, so the middle value is 10
+
+y &lt;- c(20, 30, 25, 30, 40, 30, 35)
+mode_stat &lt;- function(v) { t &lt;- table(v); as.numeric(names(t)[which.max(t)]) }
+mode_stat(y)</code></pre></div><div class="out"><div class="lab"><span>Console output</span></div><pre>[1] 10
+[1] 10
+[1] 30</pre></div></div><h3>Dispersion</h3><ul><li><strong>Range</strong> = max − min. It's simple, but uses only two points.</li><li><strong>IQR</strong> = Q3 − Q1 is the spread of the middle 50%, and it's also the basis of the outlier rule from Module 1.</li><li><strong>Quartile deviation</strong> = (Q3 − Q1) / 2.</li></ul><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">z &lt;- c(4, 9, 2, 6, 1, 12, 3, 8, 9)
+range(z)
+diff(range(z))                    # 12 - 1 = 11
+quantile(z, c(0.25, 0.5, 0.75))
+IQR(z)
+IQR(z) / 2                        # quartile deviation</code></pre></div><div class="out"><div class="lab"><span>Console output</span></div><pre>[1]  1 12
+[1] 11
+25% 50% 75% 
+  3   6   9 
+[1] 6
+[1] 3</pre></div></div></section><section class="session" id="s2-2"><p class="snum">Session 2.2</p><h2>Descriptive statistics II: risk, skewness and kurtosis</h2><h3>Variance and standard deviation</h3><p>Deviations from the mean always sum to zero, so we either take absolute values (mean absolute deviation) or square them (variance). The <strong>standard deviation</strong> is the square root of the variance. It's back in the original units, which is why finance calls it <strong>risk</strong> or <strong>volatility</strong>.</p><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">r &lt;- c(0.04, -0.01, 0.06, 0.02, -0.03, 0.05, 0.01)   # seven monthly returns
+sum(r - mean(r))                  # always (almost) exactly zero
+mean(abs(r - mean(r)))            # mean absolute deviation
+var(r)
+sd(r)</code></pre></div><div class="out"><div class="lab"><span>Console output</span></div><pre>[1] -5.2042e-18
+[1] 0.025714
+[1] 0.0010667
+[1] 0.03266</pre></div></div><aside class="call warn"><b>Watch out</b><p>R's <code>var()</code> and <code>sd()</code> divide by <strong>n − 1</strong> (the sample formula), not by n. With hundreds of daily returns the difference is negligible.</p></aside><h3>The empirical rule</h3><p>If returns are roughly normal, about <strong>68%</strong> fall within mean ± 1 SD, <strong>95%</strong> within ± 2 SD and <strong>99.7%</strong> within ± 3 SD. A stock with a mean return of 10% and an SD of 4% will usually return between 6% and 14%, and almost always between 2% and 18%.</p><h3>Coefficient of variation: risk per unit of return</h3><p>CV = SD / mean. A smaller CV means you get return more consistently for the risk you take.</p><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">stocks &lt;- data.frame(stock = c(&quot;A&quot;, &quot;B&quot;), mean_ret = c(10, 12), sd_ret = c(6, 7))
+stocks$CV &lt;- round(stocks$sd_ret / stocks$mean_ret, 3)
+stocks</code></pre></div><div class="out"><div class="lab"><span>Console output</span></div><pre>  stock mean_ret sd_ret    CV
+1     A       10      6 0.600
+2     B       12      7 0.583</pre></div></div><aside class="call read"><b>How to read it</b><p>Stock B has the higher risk (7% vs 6%), but its CV is lower (0.583 vs 0.600), so it pays more return per unit of risk.</p></aside><h3>Skewness and kurtosis</h3><div class="tbl"><table><thead><tr><th>Measure</th><th>Value</th><th>Meaning for returns</th></tr></thead><tbody><tr><td>Skewness = 0</td><td>Symmetric</td><td>Gains and losses mirror each other</td></tr><tr><td>Skewness &gt; 0</td><td>Long right tail</td><td>Occasional big gains</td></tr><tr><td>Skewness &lt; 0</td><td>Long left tail</td><td>Occasional big losses (typical of stocks)</td></tr><tr><td>Kurtosis = 3 (excess 0)</td><td>Mesokurtic</td><td>Normal tails</td></tr><tr><td>Kurtosis &gt; 3 (excess &gt; 0)</td><td>Leptokurtic</td><td>Sharp peak, <strong>fat tails</strong>, more extreme days</td></tr><tr><td>Kurtosis &lt; 3 (excess &lt; 0)</td><td>Platykurtic</td><td>Flat, thin tails</td></tr></tbody></table></div><aside class="call warn"><b>Watch out</b><p>Packages disagree on which kurtosis they report. <code>psych::describe()</code> reports <strong>excess</strong> kurtosis (compare with 0), while <code>moments::kurtosis()</code> reports <strong>raw</strong> kurtosis (compare with 3).</p></aside></section><section class="session" id="s2-3"><p class="snum">Session 2.3</p><h2>Descriptive statistics in R: Bitcoin spot vs futures</h2><p>Now on real data: daily Bitcoin <strong>spot</strong> prices against <strong>CME Bitcoin futures</strong> since futures trading began in December 2017. The returns are daily log returns.</p><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">url &lt;- &quot;https://xploreai.co.in/courses/fda-r/data/&quot;
+bitcoin &lt;- read.csv(paste0(url, &quot;bitcoin.csv&quot;))
+str(bitcoin)</code></pre></div><div class="out"><div class="lab"><span>Console output</span></div><pre>&#x27;data.frame&#x27;:	2022 obs. of  5 variables:
+ $ Date          : chr  &quot;2017-12-19&quot; &quot;2017-12-20&quot; &quot;2017-12-21&quot; &quot;2017-12-22&quot; ...
+ $ Spot_Returns  : num  -0.0725 -0.067 -0.0507 -0.1332 0.1518 ...
+ $ Future_Returns: num  -0.0483 -0.0659 -0.1058 -0.0812 0.1104 ...
+ $ Spot_Price    : num  17777 16625 15803 13832 16100 ...
+ $ Future_Price  : num  18200 17040 15330 14135 15785 ...</pre></div></div><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">mean(bitcoin$Spot_Returns)
+sd(bitcoin$Spot_Returns)
+range(bitcoin$Spot_Returns)
+summary(bitcoin[, -1])     # -1 drops the Date column</code></pre></div><div class="out"><div class="lab"><span>Console output</span></div><pre>[1] 0.00075238
+[1] 0.041472
+[1] -0.46473  0.20305
+  Spot_Returns       Future_Returns        Spot_Price      Future_Price   
+ Min.   :-0.464730   Min.   :-0.267726   Min.   :  3242   Min.   :  3145  
+ 1st Qu.:-0.016762   1st Qu.:-0.018683   1st Qu.:  9484   1st Qu.:  9475  
+ Median : 0.000883   Median : 0.000000   Median : 27287   Median : 27338  
+ Mean   : 0.000752   Mean   : 0.000755   Mean   : 37237   Mean   : 37309  
+ 3rd Qu.: 0.019809   3rd Qu.: 0.021797   3rd Qu.: 57340   3rd Qu.: 57539  
+ Max.   : 0.203047   Max.   : 0.222358   Max.   :124753   Max.   :126315  </pre></div></div><p><code>summary()</code> gives no SD, skewness or kurtosis. The <code>psych</code> package's <code>describe()</code> gives all of them at once:</p><div class="cell"><div class="code"><div class="lab"><span>R</span><span class="noeval">shown, not run here</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">install.packages(&quot;psych&quot;)</code></pre></div></div><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">library(psych)
+describe(bitcoin[, -1])</code></pre></div><div class="out"><div class="lab"><span>Console output</span></div><pre>               vars    n  mean       sd median trimmed      mad     min       max
+Spot_Returns      1 2022     0     0.04      0       0     0.03   -0.46      0.20
+Future_Returns    2 2022     0     0.04      0       0     0.03   -0.27      0.22
+Spot_Price        3 2022 37237 32227.18  27287   32556 28142.74 3242.48 124752.53
+Future_Price      4 2022 37309 32335.59  27338   32617 28217.58 3145.00 126315.00
+                   range  skew kurtosis     se
+Spot_Returns        0.67 -0.89    11.21   0.00
+Future_Returns      0.49 -0.20     4.78   0.00
+Spot_Price     121510.05  0.99    -0.07 716.69
+Future_Price   123170.00  0.99    -0.07 719.10</pre></div></div><aside class="call read"><b>How to read it</b><p>Mean daily returns are tiny (about 0.075%, so <code>describe()</code> rounds them to 0), but the <strong>SD is about 4% a day</strong>, which is very risky. <strong>Skew</strong> is negative for both return series, so crashes are bigger than rallies. <strong>Kurtosis</strong> (excess) is 11.2 for spot and 4.8 for futures, both far above 0, so the tails are fat: extreme days happen far more often than a normal distribution would predict. The <code>mad</code>, <code>trimmed</code> and <code>se</code> columns are the median absolute deviation, the 10% trimmed mean and the standard error.</p></aside></section><section class="session" id="s2-4"><p class="snum">Session 2.4</p><h2>Graphical analysis: histograms, box plots and scatter plots</h2><p>The numbers tell you the shape. Charts show it.</p><h3>Histogram: the shape of the distribution</h3><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">rust &lt;- &quot;#E2571B&quot;; espresso &lt;- &quot;#4A4238&quot;; peach &lt;- &quot;#F3C7B0&quot;
+hist(bitcoin$Spot_Returns, breaks = 80, col = rust, border = &quot;white&quot;,
+     xlab = &quot;Daily log return&quot;, ylab = &quot;Number of days&quot;,
+     main = &quot;Bitcoin spot returns: tall peak, long tails&quot;)</code></pre></div><figure class="plot"><div class="lab"><span>Plot output</span></div><img src="../img/m2c009-1.png" alt="R plot output for session 2.4" loading="lazy"></figure></div><h3>Four charts at once with par(mfrow)</h3><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">par(mfrow = c(2, 2))
+hist(bitcoin$Spot_Returns,   breaks = 60, col = rust,     border = &quot;white&quot;, main = &quot;Spot returns&quot;,   xlab = &quot;&quot;)
+hist(bitcoin$Future_Returns, breaks = 60, col = espresso, border = &quot;white&quot;, main = &quot;Futures returns&quot;, xlab = &quot;&quot;)
+hist(bitcoin$Spot_Price,     breaks = 40, col = peach,    border = &quot;white&quot;, main = &quot;Spot price&quot;,     xlab = &quot;&quot;)
+hist(bitcoin$Future_Price,   breaks = 40, col = &quot;#C9B8A3&quot;, border = &quot;white&quot;, main = &quot;Futures price&quot;,  xlab = &quot;&quot;)
+par(mfrow = c(1, 1))   # always reset afterwards</code></pre></div><figure class="plot"><div class="lab"><span>Plot output</span></div><img src="../img/m2c010-1.png" alt="R plot output for session 2.4" loading="lazy"></figure></div><h3>Box plots: outliers at a glance</h3><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">par(mfrow = c(1, 2))
+boxplot(bitcoin$Spot_Returns,   main = &quot;Spot returns&quot;,    col = peach, border = espresso, outcol = rust)
+boxplot(bitcoin$Future_Returns, main = &quot;Futures returns&quot;, col = peach, border = espresso, outcol = rust)
+par(mfrow = c(1, 1))</code></pre></div><figure class="plot"><div class="lab"><span>Plot output</span></div><img src="../img/m2c011-1.png" alt="R plot output for session 2.4" loading="lazy"></figure></div><aside class="call read"><b>How to read it</b><p>Every dot is a day outside the 1.5 × IQR fences. There are dozens on <strong>both</strong> sides, which fits the high kurtosis from <code>describe()</code>.</p></aside><h3>Scatter plot: do spot and futures move together?</h3><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">plot(bitcoin$Spot_Returns, bitcoin$Future_Returns, pch = 16, cex = .5,
+     col = adjustcolor(rust, .45), xlab = &quot;Spot return&quot;, ylab = &quot;Futures return&quot;,
+     main = &quot;Spot vs futures daily returns&quot;)
+abline(lm(Future_Returns ~ Spot_Returns, data = bitcoin), col = espresso, lwd = 2)</code></pre></div><figure class="plot"><div class="lab"><span>Plot output</span></div><img src="../img/m2c012-1.png" alt="R plot output for session 2.4" loading="lazy"></figure></div><h3>Everything in one picture: pairs.panels()</h3><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">pairs.panels(bitcoin[, -1], hist.col = rust, col = espresso, lm = TRUE, stars = TRUE)</code></pre></div><figure class="plot"><div class="lab"><span>Plot output</span></div><img src="../img/m2c013-1.png" alt="R plot output for session 2.4" loading="lazy"></figure></div><aside class="call read"><b>How to read it</b><p>The <strong>diagonal</strong> shows each variable's histogram, the <strong>lower triangle</strong> the scatter plots and the <strong>upper triangle</strong> the correlations. Spot and futures prices correlate at about 1.00 and their returns at about 0.9. Returns barely correlate with price levels. Pie and bar charts suit categorical data, so you'll rarely use them on prices.</p></aside></section><section class="session" id="s2-5"><p class="snum">Session 2.5</p><h2>Time-series components and stationarity</h2><p>A time series is observed at equally spaced, ordered points in time. It usually mixes four components:</p><div class="tbl"><table><thead><tr><th>Component</th><th>What it looks like</th><th>Example</th></tr></thead><tbody><tr><td>Trend</td><td>Long-run rise or fall</td><td>NIFTY since 2015</td></tr><tr><td>Seasonality</td><td>A pattern that repeats every year</td><td>Car sales peaking at Diwali</td></tr><tr><td>Cycle</td><td>Multi-year boom and bust</td><td>Post-2008 recovery, the COVID crash</td></tr><tr><td>Noise</td><td>Random, unpredictable shocks</td><td>Surprise news</td></tr></tbody></table></div><p>These components make each observation depend on the one before, so the series is <strong>non-stationary</strong>.</p><aside class="call concept"><b>The idea</b><p><strong>A stationary series has a constant mean and a constant variance over time.</strong> Regress one non-stationary series on another and you can get a high R² for a relationship that doesn't exist. This is called a <strong>spurious regression</strong>. The classic story is a trader whose daily P&amp;L appears to be "explained" by where a fly sits on the wall. Time-series models need stationary data.</p></aside><p>The usual fixes are a first difference (Δyₜ = yₜ − yₜ₋₁), a second difference, or a log difference (which gives log returns). The usual tests are:</p><div class="tbl"><table><thead><tr><th>Test</th><th>H₀ (null)</th><th>Stationary if…</th></tr></thead><tbody><tr><td>ADF (Augmented Dickey-Fuller)</td><td>Unit root, so non-stationary</td><td>p &lt; 0.05, or the test statistic is below the critical value</td></tr><tr><td>PP (Phillips-Perron)</td><td>Unit root, so non-stationary</td><td>p &lt; 0.05</td></tr><tr><td>KPSS</td><td><strong>Stationary</strong></td><td>p &gt; 0.05 (the logic is reversed)</td></tr></tbody></table></div><aside class="call warn"><b>Watch out</b><p>Never decide from a chart alone. A series can look flat and still fail the test. Plot it, then test it.</p></aside></section><section class="session" id="s2-6"><p class="snum">Session 2.6</p><h2>Testing stationarity in R</h2><p>The classic airline passengers series (monthly, 1949–1960) has both a trend and seasonality.</p><h3>Step 1: declare it as a time series</h3><p>A data frame isn't a time series. <code>ts()</code> tells R the start date and the <strong>frequency</strong>, meaning the number of observations per year: 12 for monthly data, 4 for quarterly, 1 for annual, about 252 for daily trading days.</p><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">AP &lt;- read.csv(paste0(url, &quot;AirPassengers.csv&quot;))
+str(AP)
+AP_T &lt;- ts(AP$Passengers, frequency = 12, start = c(1949, 1))
+str(AP_T)</code></pre></div><div class="out"><div class="lab"><span>Console output</span></div><pre>&#x27;data.frame&#x27;:	144 obs. of  2 variables:
+ $ Month     : chr  &quot;1949-01&quot; &quot;1949-02&quot; &quot;1949-03&quot; &quot;1949-04&quot; ...
+ $ Passengers: int  112 118 132 129 121 135 148 148 136 119 ...
+ Time-Series [1:144] from 1949 to 1961: 112 118 132 129 121 135 148 148 136 119 ...</pre></div></div><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">plot(AP_T, col = rust, lwd = 2, ylab = &quot;Passengers (&#x27;000)&quot;, xlab = &quot;&quot;,
+     main = &quot;Airline passengers: trend + seasonality&quot;)</code></pre></div><figure class="plot"><div class="lab"><span>Plot output</span></div><img src="../img/m2c015-1.png" alt="R plot output for session 2.6" loading="lazy"></figure></div><h3>Step 2: the ADF test with urca</h3><div class="cell"><div class="code"><div class="lab"><span>R</span><span class="noeval">shown, not run here</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">install.packages(&quot;urca&quot;)</code></pre></div></div><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">library(urca)
+model1 &lt;- ur.df(AP_T, type = &quot;none&quot;, lags = 1)
+summary(model1)</code></pre></div><div class="out"><div class="lab"><span>Console output</span></div><pre>
+############################################### 
+# Augmented Dickey-Fuller Test Unit Root Test # 
+############################################### 
+
+Test regression none 
+
+
+Call:
+lm(formula = z.diff ~ z.lag.1 - 1 + z.diff.lag)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-103.76  -16.20   -2.78   24.95   70.69 
+
+Coefficients:
+           Estimate Std. Error t value Pr(&gt;|t|)    
+z.lag.1    -0.00316    0.00898   -0.35  0.72507    
+z.diff.lag  0.31160    0.08126    3.83  0.00019 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 32.4 on 140 degrees of freedom
+Multiple R-squared:  0.0951,	Adjusted R-squared:  0.0821 
+F-statistic: 7.35 on 2 and 140 DF,  p-value: 0.00092
+
+
+Value of test-statistic is: -0.3524 
+
+Critical values for test statistics: 
+      1pct  5pct 10pct
+tau1 -2.58 -1.95 -1.62</pre></div></div><aside class="call read"><b>How to read it</b><p>Compare the <strong>test statistic</strong> (the <code>Value of test-statistic</code> line) with the <strong>5pct critical value</strong>, which is −1.95 here. The statistic is <em>above</em> the critical value (less negative), so we <strong>fail to reject H₀</strong>. The series has a unit root and is <strong>non-stationary</strong>.</p></aside><h3>Step 3: difference and test again</h3><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">AP_T_D &lt;- diff(AP_T, differences = 1)
+head(AP_T_D)             # 118-112 = 6, 132-118 = 14, ...
+plot(AP_T_D, col = rust, lwd = 1.6, ylab = &quot;Change&quot;, xlab = &quot;&quot;,
+     main = &quot;First difference: the trend is gone&quot;)
+abline(h = 0, col = espresso, lty = 2)
+model2 &lt;- ur.df(AP_T_D, type = &quot;none&quot;, lags = 1)
+summary(model2)@teststat
+model2@cval</code></pre></div><div class="out"><div class="lab"><span>Console output</span></div><pre>     Feb Mar Apr May Jun Jul
+1949   6  14  -3  -8  14  13
+             tau1
+statistic -8.6771
+      1pct  5pct 10pct
+tau1 -2.58 -1.95 -1.62</pre></div><figure class="plot"><div class="lab"><span>Plot output</span></div><img src="../img/m2c018-1.png" alt="R plot output for session 2.6" loading="lazy"></figure></div><aside class="call read"><b>How to read it</b><p>The statistic is now far below −1.95, so we <strong>reject H₀</strong>: the differenced series is <strong>stationary</strong>, and passengers are <strong>I(1)</strong> (integrated of order 1). The workflow is always <strong>declare → plot → test → difference → re-test → model</strong>.</p></aside><h3>Getting a p-value instead</h3><p><code>tseries</code> gives the same tests as p-values, which are often easier to read:</p><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">library(tseries)
+adf.test(AP_T_D)
+kpss.test(AP_T_D)</code></pre></div><div class="out"><div class="lab"><span>Console output</span></div><pre>Warning message:
+p-value smaller than printed p-value
+
+	Augmented Dickey-Fuller Test
+
+data:  AP_T_D
+Dickey-Fuller = -7.02, Lag order = 5, p-value = 0.01
+alternative hypothesis: stationary
+
+Warning message:
+p-value greater than printed p-value
+
+	KPSS Test for Level Stationarity
+
+data:  AP_T_D
+KPSS Level = 0.0146, Truncation lag parameter = 4, p-value = 0.1</pre></div></div><aside class="call tip"><b>Tip</b><p>Notice the differenced chart still fans out over time: its variance is growing. Taking <code>diff(log(AP_T))</code> fixes that too, which is why finance works with <strong>log returns</strong> rather than raw price changes.</p></aside></section>
+  <div class="pager"><a class="btn ghost" href="../module-1/">← Module 1</a><a class="btn" href="../module-3/">Module 3 →</a></div>
+  </div>
+</div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="fine" style="border:none;margin:0;padding:0">
+      <span>© 2026 XploreAI · <a href="/">xploreai.co.in</a></span>
+      <span><a href="mailto:hello@xploreai.co.in">hello@xploreai.co.in</a></span>
+    </div>
+  </div>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/r.min.js"></script>
+<script src="/courses/fda-r/course.js"></script>
+</body>
+</html>
