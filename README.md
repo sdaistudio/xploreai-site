@@ -17,6 +17,7 @@ tools/bpe-visualizer/       → BPE tokenization visualizer
 concepts/context-windows/   → "Why AI forgets" explainer (Concepts made simple)
 concepts/agent-harness/     → "What is an agent harness?" explainer (Concepts made simple)
 courses/fda-r/              → "Financial Data Analytics using R" course (Learn AI → Courses)
+courses/ai-engineering/     → "AI Engineering, in motion" study notes (Learn AI → Courses); generated, see below
 favicon.ico / favicon-32.png / apple-touch-icon.png
 CNAME                       → custom domain (xploreai.co.in)
 ```
@@ -101,6 +102,10 @@ Explainers live at `concepts/<slug>/index.html` and are listed in the **Concepts
 - `cd courses/fda-r/source && python3 build.py [N]` runs every code cell in R, captures the real console output and plots, and rewrites the module page(s), the hub page and `code/module-N.R`. It needs R plus the packages listed on the hub page.
 - `data/` holds the CSVs the code reads from `https://xploreai.co.in/courses/fda-r/data/`. Market data comes from `source/dl.py` (Yahoo Finance) and the synthetic teaching files from `source/gen_data.R`.
 - Page styles live in `course.css`, all scoped under `.fdar`.
+
+## AI Engineering study notes
+
+`courses/ai-engineering/index.html` is generated, so don't hand-edit it. The source is the single-file notes page in the separate `sdaistudio/AI-Engineering-Notes` repo (local copy: `~/Claude/Artifacts/ai-engineering-explained/`). Edit `index.html` there, then run `python3 make_site_copy.py ~/xploreai-site/courses/ai-engineering/index.html`. It adds the site head (viewport, description, Open Graph, favicon) and a "← Learn AI" link. The page carries its own styles and doesn't load `/assets/style.css`.
 
 ## Notes
 
