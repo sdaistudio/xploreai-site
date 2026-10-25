@@ -1,5 +1,20 @@
 [
   {
+    "issue": 11,
+    "slug": "issue-11",
+    "title": "Agents Become Infrastructure",
+    "dates": "18–24 Oct 2026",
+    "summary": "Thousands of AI agents do biology in 32 minutes, Anthropic's Agent Skills becomes an open Linux Foundation standard, OpenAI's Decisions API turns workflows into cheap bounded decisions — and our first Quantum section, as Quantinuum hits 99.9995% logical fidelity and Oracle opens hybrid Quantum + AI cloud access.",
+    "highlights": [
+      "Agent Skills 🔥🔥🔥🔥🔥",
+      "AI for science 🔥🔥🔥🔥🔥",
+      "Vertical AI 🔥🔥🔥🔥🔥",
+      "Alt compute 🔥🔥🔥🔥🔥",
+      "Quantum error correction ⚛️⚛️⚛️⚛️⚛️",
+      "Hybrid Quantum+AI ⚛️⚛️⚛️⚛️"
+    ]
+  },
+  {
     "issue": 10,
     "slug": "issue-10",
     "title": "Three Ways to Deploy",
