@@ -201,64 +201,9 @@ future.dl1  0.15808   0.065165  2.4258 0.015361145
 spot.dl1   -0.19761   0.064983 -3.0410 0.002388754
 future.dl2  0.38944   0.092935  4.1905 0.000029046
 spot.dl2   -0.38005   0.094252 -4.0323 0.000057305
-future.dl3  0.41006   0.112715  3.6380 0.000281651</pre></div></div><aside class="call read"><b>How to read it</b><p>The spot equation's <code>ect1</code> is <strong>positive</strong>. The long-run relation is normalised on futures (ECT = futures − 1.003 × spot), so when futures trade above spot, a positive loading pushes <strong>spot up</strong> towards futures. Both markets close the gap, but futures do most of the work (−0.60 vs +0.33). Price discovery happens mainly in spot, which is the same story the Granger test told.</p></aside><aside class="call warn"><b>Watch out</b><p>Some of this lead comes from <strong>timing</strong>. Yahoo's Bitcoin spot "close" is midnight UTC, while CME futures settle at 4 pm Chicago time, so the two closes aren't simultaneous. Always check whether a lead–lag result could just be a clock mismatch. It's the same issue you'll meet with NIFTY and the S&amp;P 500 in Session 6.2.</p></aside><aside class="call tip"><b>Tip</b><p>The lecture uses <code>tsDyn::VECM(data, lag = 5, r = 1, estim = "ML")</code>, which gives the same model with a different printout. <code>cajorls()</code> ships with <strong>urca</strong>, so there's nothing extra to install.</p></aside></section><section class="session" id="s4-6"><p class="snum">Session 4.6</p><h2>Causality with ARDL: when the orders of integration are mixed</h2><p>What if one series is I(0) and the other I(1)? Spot <strong>returns</strong> are I(0) and futures <strong>prices</strong> are I(1). VAR needs everything I(0), and VECM needs everything I(1). <strong>ARDL</strong> (autoregressive distributed lag) works with the mix, and it has two more advantages:</p><ul><li>Y and X can have <strong>different</strong> lag lengths.</li><li>The <strong>current</strong> value Xₜ can enter the model.</li></ul><p><strong>Yₜ = α + Σ φᵢ Yₜ₋ᵢ + β₀Xₜ + Σ βⱼ Xₜ₋ⱼ + εₜ</strong></p><h3>The long run: the Pesaran–Shin–Smith bounds test</h3><div class="tbl"><table><thead><tr><th>F statistic</th><th>Conclusion</th></tr></thead><tbody><tr><td>Below the I(0) lower bound</td><td>No cointegration</td></tr><tr><td>Above the I(1) upper bound</td><td>Cointegration, so check the error-correction term</td></tr><tr><td>In between</td><td>Inconclusive</td></tr></tbody></table></div><div class="cell"><div class="code"><div class="lab"><span>R</span><span class="noeval">shown, not run here</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">install.packages(&quot;dLagM&quot;)</code></pre></div></div><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">library(dLagM)
-btc &lt;- data.frame(Spot_Return = bitcoin$Spot_Returns, Future_Price = bitcoin$Future_Price)
-bound1 &lt;- ardlBound(data = btc, formula = Spot_Return ~ Future_Price, case = 3,
-                    p = data.frame(Spot_Return = 1, Future_Price = 5))</code></pre></div><div class="out"><div class="lab"><span>Console output</span></div><pre>
- Breusch-Godfrey Test for the autocorrelation in residuals:
-
-	Breusch-Godfrey test for serial correlation of order up to 1
-
-data:  modelFull$model
-LM test = 0.439, df1 = 1, df2 = 2008, p-value = 0.51
-
------------------------------------------------------- 
-
- Ljung-Box Test for the autocorrelation in residuals:
-
-	Box-Ljung test
-
-data:  res
-X-squared = 0.014, df = 1, p-value = 0.91
-
------------------------------------------------------- 
-
- Breusch-Pagan Test for the homoskedasticity of residuals:
-
-	studentized Breusch-Pagan test
-
-data:  modelFull$model
-BP = 19.9, df = 7, p-value = 0.0058
-
-The p-value of Breusch-Pagan test for the homoskedasticity of residuals:  0.0057588 &lt; 0.05!
------------------------------------------------------- 
-
- Shapiro-Wilk test of normality of residuals:
-
-	Shapiro-Wilk normality test
-
-data:  modelFull$model$residual
-W = 0.87, p-value &lt;2e-16
-
-The p-value of Shapiro-Wilk test normality of residuals:  4.9787e-38 &lt; 0.05!
------------------------------------------------------- 
-
- PESARAN, SHIN AND SMITH (2001) COINTEGRATION TEST 
-
- Observations: 2021 
- Number of Regressors (k): 1 
- Case: 3 
-
- ------------------------------------------------------ 
- -                       F-test                       - 
- ------------------------------------------------------ 
-                 &lt;------- I(0) ------------ I(1) -----&gt; 
- 10% critical value       4.04            4.78 
- 5% critical value        4.94            5.73 
- 1% critical value        6.84            7.84 
- 
-
- F-statistic = 542.336627291609 
+future.dl3  0.41006   0.112715  3.6380 0.000281651</pre></div></div><aside class="call read"><b>How to read it</b><p>The spot equation's <code>ect1</code> is <strong>positive</strong>. The long-run relation is normalised on futures (ECT = futures − 1.003 × spot), so when futures trade above spot, a positive loading pushes <strong>spot up</strong> towards futures. Both markets close the gap, but futures do most of the work (−0.60 vs +0.33). Price discovery happens mainly in spot, which is the same story the Granger test told.</p></aside><aside class="call warn"><b>Watch out</b><p>Some of this lead comes from <strong>timing</strong>. Yahoo's Bitcoin spot "close" is midnight UTC, while CME futures settle at 4 pm Chicago time, so the two closes aren't simultaneous. Always check whether a lead–lag result could just be a clock mismatch. It's the same issue you'll meet with NIFTY and the S&amp;P 500 in Session 6.2.</p></aside><aside class="call tip"><b>Tip</b><p>The lecture uses <code>tsDyn::VECM(data, lag = 5, r = 1, estim = "ML")</code>, which gives the same model with a different printout. <code>cajorls()</code> ships with <strong>urca</strong>, so there's nothing extra to install.</p></aside></section><section class="session" id="s4-6"><p class="snum">Session 4.6</p><h2>Causality with ARDL: when the orders of integration are mixed</h2><p>What if one series is I(0) and the other I(1)? Spot <strong>returns</strong> are I(0) and futures <strong>prices</strong> are I(1). VAR needs everything I(0), and VECM needs everything I(1). <strong>ARDL</strong> (autoregressive distributed lag) works with the mix, and it has two more advantages:</p><ul><li>Y and X can have <strong>different</strong> lag lengths.</li><li>The <strong>current</strong> value Xₜ can enter the model.</li></ul><p><strong>Yₜ = α + Σ φᵢ Yₜ₋ᵢ + β₀Xₜ + Σ βⱼ Xₜ₋ⱼ + εₜ</strong></p><h3>The long run: the Pesaran–Shin–Smith bounds test</h3><div class="tbl"><table><thead><tr><th>F statistic</th><th>Conclusion</th></tr></thead><tbody><tr><td>Below the I(0) lower bound</td><td>No cointegration</td></tr><tr><td>Above the I(1) upper bound</td><td>Cointegration, so check the error-correction term</td></tr><tr><td>In between</td><td>Inconclusive</td></tr></tbody></table></div><div class="cell"><div class="code"><div class="lab"><span>R</span><span class="noeval">shown, not run here</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">install.packages(&quot;dLagM&quot;)</code></pre></div></div><p>The lecture's data frame is called <code>Bitcoin</code>, with spot returns in <code>Spot_returns</code> and futures prices in <code>Future</code>. Build the same frame from the course CSV:</p><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">library(dLagM)
+Bitcoin &lt;- data.frame(Spot_returns = bitcoin$Spot_Returns, Future = bitcoin$Future_Price)</code></pre></div></div><p><code>case = 5</code> means an <strong>unrestricted intercept and an unrestricted trend</strong>. Type <code>?ardlBound</code> to see all five cases. <code>max.p</code> is the maximum lag of the <strong>cause</strong> (X) and <code>max.q</code> the maximum lag of the <strong>effect</strong> (Y).</p><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">Model_Bound &lt;- ardlBound(data = Bitcoin, formula = Spot_returns ~ Future, case = 5, max.p = 5, max.q = 1)</code></pre></div><div class="out"><div class="lab"><span>Console output</span></div><pre>… (59 earlier lines of diagnostics in your console)
+ F-statistic = 294.245037658052 
   
  ------------------------------------------------------ 
  F-statistic note: Asymptotic critical values used. 
@@ -270,12 +215,47 @@ The p-value of Shapiro-Wilk test normality of residuals:  4.9787e-38 &lt; 0.05!
 	RESET test
 
 data:  modelECM$model
-RESET = 3.88, df1 = 1, df2 = 2009, p-value = 0.049
+RESET = 4.08, df1 = 1, df2 = 2007, p-value = 0.043
 
-the p-value of RESET test:  0.049039 &lt; 0.05!
+the p-value of RESET test:  0.04349 &lt; 0.05!
 ------------------------------------------------------ 
-… (34 more lines in your console)</pre></div></div><aside class="call read"><b>How to read it</b><p><code>p</code> sets the lag of each variable: <strong>1</strong> for the effect (spot returns) and <strong>5</strong> for the cause (futures prices). Older versions of dLagM took these as separate <code>p =</code> and <code>q =</code> arguments, as in the lecture. <code>case = 3</code> means an unrestricted intercept and no trend, which suits returns that fluctuate around a constant mean. Type <code>?ardlBound</code> to see all five cases.</p><p>The <strong>F-statistic (about 542)</strong> is far above the 1% upper bound (7.84), so the series are <strong>cointegrated</strong>. In the error-correction model, <strong><code>ec.1</code> is negative and highly significant</strong>, which means <strong>long-run causality from futures prices to spot returns</strong>. The function also prints residual diagnostics (Breusch–Godfrey, Breusch–Pagan, Shapiro–Wilk and RESET) before the bounds test. Fat-tailed Bitcoin returns fail normality, which is the norm for daily financial data.</p></aside><h3>The short run: the distributed-lag model</h3><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">dlm1 &lt;- ardlDlm(x = btc$Future_Price, y = btc$Spot_Return, p = 5, q = 1)
-summary(dlm1)$coefficients</code></pre></div><div class="out"><div class="lab"><span>Console output</span></div><pre>
+------------------------------------------------------ 
+Error Correction Model Output: 
+
+Time series regression with &quot;ts&quot; data:
+Start = 5, End = 2021
+
+Call:
+dynlm(formula = as.formula(model.text), data = data)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-0.4335 -0.0125 -0.0001  0.0136  0.1798 
+
+Coefficients:
+                    Estimate   Std. Error t value    Pr(&gt;|t|)    
+(Intercept)     -0.000895147  0.001391043   -0.64      0.5200    
+ec.1            -1.129654090  0.034083994  -33.14     &lt; 2e-16 ***
+dFuture.t        0.000016803  0.000000434   38.72     &lt; 2e-16 ***
+dFuture.1        0.000003106  0.000000580    5.36 0.000000093 ***
+dFuture.2        0.000000302  0.000000572    0.53      0.5978    
+dFuture.3        0.000000154  0.000000431    0.36      0.7217    
+dFuture.4        0.000000537  0.000000430    1.25      0.2122    
+trend.t          0.000003218  0.000001195    2.69      0.0071 ** 
+dSpot_returns.1 -0.020809900  0.022352370   -0.93      0.3520    
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.0311 on 2008 degrees of freedom
+Multiple R-squared:  0.728,	Adjusted R-squared:  0.727 
+F-statistic:  671 on 8 and 2008 DF,  p-value: &lt;2e-16
+
+------------------------------------------------------ 
+Long-run coefficients: 
+ Spot_returns.1        Future.1 
+-1.129654089883 -0.000000057693 
+  </pre></div></div><aside class="call read"><b>How to read it</b><p><code>ardlBound()</code> prints residual diagnostics first (Breusch–Godfrey, Breusch–Pagan, Shapiro–Wilk), then the bounds test. Fat-tailed Bitcoin returns fail normality, which is normal for daily financial data.</p><p>The <strong>F-statistic (about 294)</strong> is far above the 1% upper I(1) bound (9.63), so the two series are <strong>cointegrated</strong>. The lecture's sample gave about 364, also far above its bound.</p><p>In the error-correction output, <strong><code>ec.1</code> is about −1.13 and highly significant</strong>: negative and significant, so there is <strong>long-run causality from futures prices to spot returns</strong>.</p></aside><h3>The short run: the distributed-lag model</h3><p><code>ardlDlm()</code> takes the cause as <code>x</code> and the effect as <code>y</code>. <code>p</code> is the number of lags of x and <code>q</code> the number of lags of y.</p><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">model_AR &lt;- ardlDlm(x = Bitcoin$Future, y = Bitcoin$Spot_returns, p = 5, q = 1)
+summary(model_AR)</code></pre></div><div class="out"><div class="lab"><span>Console output</span></div><pre>
 Time series regression with &quot;ts&quot; data:
 Start = 6, End = 2022
 
@@ -301,17 +281,86 @@ Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’
 
 Residual standard error: 0.0311 on 2009 degrees of freedom
 Multiple R-squared:  0.431,	Adjusted R-squared:  0.429 
-F-statistic:  217 on 7 and 2009 DF,  p-value: &lt;2e-16
+F-statistic:  217 on 7 and 2009 DF,  p-value: &lt;2e-16</pre></div></div><aside class="call read"><b>How to read it</b><p><strong><code>X.t</code></strong> (today's futures price) and <strong><code>X.1</code>, <code>X.2</code></strong> (its first two lags) are highly significant, so futures prices drive spot returns in the <strong>short run</strong>. Lags 3–5 aren't significant here. <strong><code>Y.1</code></strong> is spot returns' own lag, so it's the autoregressive part, not causality.</p></aside><h3>The reverse direction: spot returns → futures prices</h3><p>Swap the roles: futures prices become the effect and spot returns the cause, with 1 lag of the cause and 5 of the effect.</p><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">Model_Bound1 &lt;- ardlBound(data = Bitcoin, formula = Future ~ Spot_returns, case = 5, max.p = 1, max.q = 5)</code></pre></div><div class="out"><div class="lab"><span>Console output</span></div><pre>… (60 earlier lines of diagnostics in your console)
+  
+ ------------------------------------------------------ 
+ F-statistic note: Asymptotic critical values used. 
+ 
+------------------------------------------------------ 
 
-                  Estimate    Std. Error   t value    Pr(&gt;|t|)
-(Intercept)  0.00056362208 0.00105975073   0.53184  5.9489e-01
-X.t          0.00001683727 0.00000043422  38.77571 5.0020e-246
-X.1         -0.00001365697 0.00000066227 -20.62140  7.3988e-86
-X.2         -0.00000255375 0.00000068399  -3.73360  1.9401e-04
-X.3         -0.00000048412 0.00000058398  -0.82899  4.0721e-01
-X.4          0.00000037956 0.00000058416   0.64975  5.1593e-01
-X.5         -0.00000053133 0.00000043031  -1.23477  2.1706e-01
-Y.1         -0.15314398973 0.02214942221  -6.91413  6.3012e-12</pre></div></div><aside class="call read"><b>How to read it</b><p><strong><code>X.t</code></strong> (today's futures price) and <strong><code>X.1</code> … <code>X.5</code></strong> (its lags) are the causality terms. If they're significant, futures prices drive spot returns in the short run. <strong><code>Y.1</code></strong> is the autoregressive term.</p></aside><aside class="call concept"><b>The idea</b><p><strong>Module 4 in one line:</strong> all I(0) → <strong>Granger + VAR</strong>. All I(1) → <strong>Johansen + VECM</strong>. Mixed → <strong>ARDL</strong>. Whatever you pick, test <strong>both directions</strong>, separate the <strong>short run</strong> from the <strong>long run</strong>, and never confuse a series' own lags with causality.</p></aside></section>
+ Ramsey&#x27;s RESET Test for model specification:
+
+	RESET test
+
+data:  modelECM$model
+RESET = 39.2, df1 = 1, df2 = 2005, p-value = 0.00000000046
+
+the p-value of RESET test:  0.00000000045778 &lt; 0.05!
+------------------------------------------------------ 
+------------------------------------------------------ 
+Error Correction Model Output: 
+
+Time series regression with &quot;ts&quot; data:
+Start = 6, End = 2021
+
+Call:
+dynlm(formula = as.formula(model.text), data = data)
+
+Residuals:
+   Min     1Q Median     3Q    Max 
+ -6794   -555    -28    574   7313 
+
+Coefficients:
+                 Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)     -2.75e+01   6.26e+01   -0.44   0.6609    
+ec.1             6.77e-11   4.15e-11    1.63   0.1029    
+dSpot_returns.t  1.89e+04   6.56e+02   28.74   &lt;2e-16 ***
+dSpot_returns.1  1.33e+04   7.22e+02   18.45   &lt;2e-16 ***
+trend.t          1.55e-01   9.41e-02    1.65   0.0998 .  
+dFuture.1        5.92e-02   2.16e-02    2.74   0.0062 ** 
+dFuture.2        2.28e-01   2.20e-02   10.35   &lt;2e-16 ***
+dFuture.3        4.92e-02   1.87e-02    2.63   0.0085 ** 
+dFuture.4       -3.41e-02   1.87e-02   -1.82   0.0684 .  
+dFuture.5        6.99e-04   1.87e-02    0.04   0.9702    
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 1350 on 2006 degrees of freedom
+Multiple R-squared:  0.309,	Adjusted R-squared:  0.306 
+F-statistic: 99.7 on 9 and 2006 DF,  p-value: &lt;2e-16
+
+------------------------------------------------------ 
+Long-run coefficients: 
+      Future.1 Spot_returns.1 
+   -0.00080232 32842.68559870 
+  </pre></div></div><div class="cell"><div class="code"><div class="lab"><span>R</span><button class="copy" type="button">Copy</button></div><pre><code class="language-r">model_AR1 &lt;- ardlDlm(x = Bitcoin$Spot_returns, y = Bitcoin$Future, p = 1, q = 5)
+summary(model_AR1)</code></pre></div><div class="out"><div class="lab"><span>Console output</span></div><pre>
+Time series regression with &quot;ts&quot; data:
+Start = 6, End = 2022
+
+Call:
+dynlm(formula = as.formula(model.text), data = data, start = 1)
+
+Residuals:
+   Min     1Q Median     3Q    Max 
+ -5917   -483    -20    473   9959 
+
+Coefficients:
+              Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)    19.0374    41.1801    0.46   0.6439    
+X.t         25422.8755   655.6391   38.78  &lt; 2e-16 ***
+X.1          7748.7429   853.5222    9.08  &lt; 2e-16 ***
+Y.1             0.8096     0.0218   37.10  &lt; 2e-16 ***
+Y.2             0.1811     0.0264    6.87  8.6e-12 ***
+Y.3             0.0362     0.0227    1.60   0.1105    
+Y.4            -0.0655     0.0227   -2.89   0.0039 ** 
+Y.5             0.0385     0.0167    2.30   0.0213 *  
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 1210 on 2009 degrees of freedom
+Multiple R-squared:  0.999,	Adjusted R-squared:  0.999 
+F-statistic: 2.06e+05 on 7 and 2009 DF,  p-value: &lt;2e-16</pre></div></div><aside class="call read"><b>How to read it</b><p>The series are still cointegrated (F ≈ 249, above 9.63). But <strong><code>ec.1</code> is positive and not significant</strong> (p ≈ 0.10), so there is <strong>no long-run causality from spot returns to futures prices</strong>.</p><p>In the short run, <strong><code>X.t</code> and <code>X.1</code></strong> (today's and yesterday's spot returns) are highly significant, so spot returns do move futures prices in the short run. <strong><code>Y.1</code> … <code>Y.5</code></strong> are futures' own lags, which are autoregressive.</p><p><strong>Overall, matching the lecture:</strong> short-run causality runs <strong>both ways</strong>, and the long run runs <strong>from futures prices to spot returns</strong>.</p></aside><aside class="call tip"><b>Tip</b><p>The lecture reuses the name <code>model_AR</code> for the second model, which overwrites the first. Naming it <code>model_AR1</code> keeps both, so you can compare them side by side.</p></aside><aside class="call concept"><b>The idea</b><p><strong>Module 4 in one line:</strong> all I(0) → <strong>Granger + VAR</strong>. All I(1) → <strong>Johansen + VECM</strong>. Mixed → <strong>ARDL</strong>. Whatever you pick, test <strong>both directions</strong>, separate the <strong>short run</strong> from the <strong>long run</strong>, and never confuse a series' own lags with causality.</p></aside></section>
   <div class="pager"><a class="btn ghost" href="../module-3/">← Module 3</a><a class="btn" href="../module-5/">Module 5 →</a></div>
   </div>
 </div>

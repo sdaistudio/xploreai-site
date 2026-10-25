@@ -141,11 +141,18 @@ summary(vecm$rlm)$`Response spot.d`$coefficients[1:6, ]
 # install.packages("dLagM")
 
 library(dLagM)
-btc <- data.frame(Spot_Return = bitcoin$Spot_Returns, Future_Price = bitcoin$Future_Price)
-bound1 <- ardlBound(data = btc, formula = Spot_Return ~ Future_Price, case = 3,
-                    p = data.frame(Spot_Return = 1, Future_Price = 5))
+Bitcoin <- data.frame(Spot_returns = bitcoin$Spot_Returns, Future = bitcoin$Future_Price)
+
+Model_Bound <- ardlBound(data = Bitcoin, formula = Spot_returns ~ Future, case = 5, max.p = 5, max.q = 1)
 
 # --- The short run: the distributed-lag model ---
 
-dlm1 <- ardlDlm(x = btc$Future_Price, y = btc$Spot_Return, p = 5, q = 1)
-summary(dlm1)$coefficients
+model_AR <- ardlDlm(x = Bitcoin$Future, y = Bitcoin$Spot_returns, p = 5, q = 1)
+summary(model_AR)
+
+# --- The reverse direction: spot returns → futures prices ---
+
+Model_Bound1 <- ardlBound(data = Bitcoin, formula = Future ~ Spot_returns, case = 5, max.p = 1, max.q = 5)
+
+model_AR1 <- ardlDlm(x = Bitcoin$Spot_returns, y = Bitcoin$Future, p = 1, q = 5)
+summary(model_AR1)

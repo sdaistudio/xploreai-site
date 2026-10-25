@@ -98,7 +98,7 @@ Explainers live at `concepts/<slug>/index.html` and are listed in the **Concepts
 
 `courses/fda-r/` is a 6-module, 32-session R course listed in the **Courses** section of `learn.html`. Every page is generated, so don't hand-edit `module-N/index.html`, `img/` or `code/`:
 
-- `source/content/mN.md` — the lesson text. `## 1.2 | Title` starts a session, a ```` ```r ```` block is a code cell (options: `h=5`, `w=8`, `eval=false`), and `> [read]`, `> [tip]`, `> [warn]`, `> [concept]`, `> [try]` are callouts.
+- `source/content/mN.md` — the lesson text. `## 1.2 | Title` starts a session, a ```` ```r ```` block is a code cell (options: `h=5`, `w=8`, `eval=false`, `tail=N` to show only the last N output lines), and `> [read]`, `> [tip]`, `> [warn]`, `> [concept]`, `> [try]` are callouts.
 - `cd courses/fda-r/source && python3 build.py [N]` runs every code cell in R, captures the real console output and plots, and rewrites the module page(s), the hub page and `code/module-N.R`. It needs R plus the packages listed on the hub page.
 - `data/` holds the CSVs the code reads from `https://xploreai.co.in/courses/fda-r/data/`. Market data comes from `source/dl.py` (Yahoo Finance) and the synthetic teaching files from `source/gen_data.R`.
 - Page styles live in `course.css`, all scoped under `.fdar`.

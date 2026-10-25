@@ -119,9 +119,11 @@ def head(title, desc, url):
     return HEAD.replace("%%TITLE%%", html.escape(title)).replace("%%DESC%%", html.escape(desc)).replace("%%URL%%", url)
 
 
-def trim_output(s, maxlines=70):
+def trim_output(s, maxlines=70, tail=0):
     s = s.rstrip("\n")
     ls = s.split("\n")
+    if tail and len(ls) > tail:
+        return "\n".join([f"… ({len(ls) - tail} earlier lines of diagnostics in your console)"] + ls[-tail:])
     if len(ls) > maxlines:
         ls = ls[:maxlines] + [f"… ({len(ls) - maxlines} more lines in your console)"]
     return "\n".join(ls)
@@ -156,7 +158,7 @@ def render_module(meta, sessions, res, mods):
                 tag = '<span class="noeval">shown, not run here</span>' if skipped else ""
                 body.append(f'<div class="cell"><div class="code"><div class="lab"><span>R</span>{tag}<button class="copy" type="button">Copy</button></div>'
                             f'<pre><code class="language-r">{html.escape(b["code"])}</code></pre></div>')
-                outtxt = trim_output(r["out"]) if r["out"] and b["opts"].get("echo") != "false" else ""
+                outtxt = trim_output(r["out"], tail=int(b["opts"].get("tail", 0))) if r["out"] and b["opts"].get("echo") != "false" else ""
                 if outtxt.strip():
                     body.append(f'<div class="out"><div class="lab"><span>Console output</span></div><pre>{html.escape(outtxt)}</pre></div>')
                 for pfile in r["plots"]:
