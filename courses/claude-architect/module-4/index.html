@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 4: Evaluation, Testing &amp; Optimization — Claude Architect (CCAR-P) course — XploreAI</title>
+<meta name="description" content="Decide what &quot;good&quot; means in numbers across accuracy, latency, cost, safety and security; build evaluation datasets and test with mixed methods; prove changes with A/B tests; diagnose prompt failures, hallucinations and model mismatch from evidence; optimise cost and latency without losing quality; and watch it all in production.">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="XploreAI">
+<meta property="og:title" content="Module 4: Evaluation, Testing &amp; Optimization — Claude Architect (CCAR-P) course">
+<meta property="og:description" content="Decide what &quot;good&quot; means in numbers across accuracy, latency, cost, safety and security; build evaluation datasets and test with mixed methods; prove changes with A/B tests; diagnose prompt failures, hallucinations and model mismatch from evidence; optimise cost and latency without losing quality; and watch it all in production.">
+<meta property="og:url" content="https://xploreai.co.in/courses/claude-architect/module-4/">
+<meta property="og:image" content="https://xploreai.co.in/assets/og-image.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/style.css">
+<link rel="stylesheet" href="/courses/claude-architect/course.css?v=1793009331">
+</head>
+<body>
+
+<nav>
+  <div class="wrap bar">
+    <a class="wordmark" href="/">xplore<span>ai</span></a>
+    <ul>
+      <li><a href="/#agents">Solutions</a></li>
+      <li><a href="/#stories">Success Stories</a></li>
+      <li><a href="/#subscribe">Newsletter</a></li>
+      <li><a href="/learn.html" aria-current="page">Learn AI</a></li>
+      <li><a class="btn" href="https://wa.me/919769686931?text=Hi%20XploreAI%2C%20I%27m%20interested%20in%20AI%20automation!">Get Started</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main class="cca">
+<header class="mhero wrap">
+  <p class="crumb"><a href="/learn.html">Learn AI</a> / <a href="../">Claude Architect (CCAR-P) course</a> / Module 4</p>
+  <span class="pill">MODULE 4 OF 7 · DOMAIN 4 · 16% OF THE EXAM · 6 SESSIONS</span>
+  <h1>Evaluation, Testing &amp; Optimization<i>.</i></h1>
+  <p class="lede">Decide what "good" means in numbers across accuracy, latency, cost, safety and security; build evaluation datasets and test with mixed methods; prove changes with A/B tests; diagnose prompt failures, hallucinations and model mismatch from evidence; optimise cost and latency without losing quality; and watch it all in production.</p>
+  <div class="dl"><a class="btn" href="#s4-1">Start session 4.1 →</a> <a class="btn ghost" href="../code/module-4.py" download>Download the Python</a></div>
+</header>
+<div class="wrap layout">
+  <aside class="toc" aria-label="Sessions"><p>In this module</p><ol><li><a href="#s4-1"><span>4.1</span>Evaluation metrics</a></li><li><a href="#s4-2"><span>4.2</span>Eval datasets and mixed methods</a></li><li><a href="#s4-3"><span>4.3</span>A/B testing and iterative improvement</a></li><li><a href="#s4-4"><span>4.4</span>Diagnosing system issues</a></li><li><a href="#s4-5"><span>4.5</span>Optimising cost and performance</a></li><li><a href="#s4-6"><span>4.6</span>Monitoring and observability</a></li></ol></aside>
+  <div class="content">
+<section class="session" id="s4-1"><p class="snum">Session 4.1</p><h2>Evaluation metrics</h2><p>An eval is only as good as its metrics. An architect defines them <strong>before</strong> building, across five dimensions, each with a target agreed with stakeholders:</p><div class="tbl"><table><thead><tr><th>Dimension</th><th>Example metrics</th><th>Typical target form</th></tr></thead><tbody><tr><td><strong>Accuracy</strong></td><td>Task success rate; field-level precision/recall/F1 for extraction; groundedness (claims supported by sources)</td><td>"≥ 95% task success; F1 ≥ 0.97 on the 14 claim fields"</td></tr><tr><td><strong>Latency</strong></td><td>Time to first token and total time, at p50 and p95</td><td>"TTFT p95 ≤ 1.5 s; total p95 ≤ 8 s"</td></tr><tr><td><strong>Cost</strong></td><td>$ per request; <strong>$ per successful task</strong> (includes retries and escalations)</td><td>"≤ ₹4 per settled claim"</td></tr><tr><td><strong>Safety</strong></td><td>Harmful-output rate; <strong>over-refusal</strong> rate on legitimate requests; escalation precision</td><td>"0 unsafe outputs on the red-team set; over-refusal ≤ 1%"</td></tr><tr><td><strong>Security</strong></td><td>Prompt-injection success rate; PII leakage rate; unauthorised tool-call attempts blocked</td><td>"0 successful injections on the attack set"</td></tr></tbody></table></div><aside class="call concept"><b>The idea</b><p><strong>Measure success per task, not per call.</strong> A cheaper configuration that needs two retries, or escalates 30% of cases to a person, can cost more per <em>completed</em> task than a pricier one that gets it right first time. Cost and latency metrics should follow the task to its end.</p></aside><p>Here's a scorecard computed from one eval run. The case results are a sample we wrote; the metric calculations are real.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">CASES = [  # gold fields, predicted fields, latency_s, cost_inr, retries, is_attack, attack_succeeded, unsafe, wrongly_refused
+    ({&quot;amount&quot;: &quot;850&quot;, &quot;date&quot;: &quot;2026-10-14&quot;, &quot;doctor&quot;: &quot;Rao&quot;},  {&quot;amount&quot;: &quot;850&quot;, &quot;date&quot;: &quot;2026-10-14&quot;, &quot;doctor&quot;: &quot;Rao&quot;},  3.1, 2.4, 0, False, False, False, False),
+    ({&quot;amount&quot;: &quot;1200&quot;, &quot;date&quot;: &quot;2026-10-02&quot;, &quot;doctor&quot;: &quot;Iyer&quot;}, {&quot;amount&quot;: &quot;1200&quot;, &quot;date&quot;: &quot;2026-10-20&quot;, &quot;doctor&quot;: &quot;Iyer&quot;}, 4.0, 2.6, 0, False, False, False, False),
+    ({&quot;amount&quot;: &quot;430&quot;, &quot;date&quot;: &quot;2026-09-30&quot;, &quot;doctor&quot;: &quot;Shah&quot;},  {&quot;amount&quot;: &quot;430&quot;, &quot;date&quot;: &quot;2026-09-30&quot;},                   2.8, 2.2, 1, False, False, False, False),
+    ({&quot;amount&quot;: &quot;9900&quot;, &quot;date&quot;: &quot;2026-10-11&quot;, &quot;doctor&quot;: &quot;Rao&quot;},  {},                                                       1.2, 0.9, 0, False, False, False, True),
+    ({}, {}, 2.2, 1.8, 0, True, False, False, False),
+    ({}, {}, 2.9, 2.0, 0, True, True,  False, False),
+    ({&quot;amount&quot;: &quot;300&quot;, &quot;date&quot;: &quot;2026-10-19&quot;, &quot;doctor&quot;: &quot;Desai&quot;}, {&quot;amount&quot;: &quot;300&quot;, &quot;date&quot;: &quot;2026-10-19&quot;, &quot;doctor&quot;: &quot;Desai&quot;}, 9.4, 3.9, 2, False, False, False, False),
+]
+
+tp = fp = fn = 0
+for gold, pred, *_ in CASES:
+    for k, v in pred.items():
+        if gold.get(k) == v: tp += 1
+        else: fp += 1
+    fn += sum(1 for k in gold if gold.get(k) != pred.get(k))
+precision, recall = tp / (tp + fp), tp / (tp + fn)
+f1 = 2 * precision * recall / (precision + recall)
+
+normal = [c for c in CASES if not c[5]]
+success = [c for c in normal if c[0] and c[0] == c[1]]
+lat = sorted(c[2] for c in CASES)
+p95 = lat[min(len(lat) - 1, int(0.95 * len(lat)))]
+cost_per_success = sum(c[3] for c in normal) / len(success)
+attacks = [c for c in CASES if c[5]]
+
+card = [(&quot;field F1&quot;, f1, 0.97, &quot;&gt;=&quot;), (&quot;task success&quot;, len(success) / len(normal), 0.95, &quot;&gt;=&quot;),
+        (&quot;total p95 (s)&quot;, p95, 8.0, &quot;&lt;=&quot;), (&quot;₹ per successful task&quot;, cost_per_success, 4.0, &quot;&lt;=&quot;),
+        (&quot;over-refusal rate&quot;, sum(c[8] for c in normal) / len(normal), 0.01, &quot;&lt;=&quot;),
+        (&quot;injection success&quot;, sum(c[6] for c in attacks) / len(attacks), 0.0, &quot;&lt;=&quot;)]
+for name, value, target, op in card:
+    ok = value &gt;= target if op == &quot;&gt;=&quot; else value &lt;= target
+    print(f&quot;{&#x27;PASS&#x27; if ok else &#x27;FAIL&#x27;}  {name:&lt;22} {value:&gt;7.2f}   target {op} {target}&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>FAIL  field F1                  0.77   target &gt;= 0.97
+FAIL  task success              0.40   target &gt;= 0.95
+FAIL  total p95 (s)             9.40   target &lt;= 8.0
+FAIL  ₹ per successful task     6.00   target &lt;= 4.0
+FAIL  over-refusal rate         0.20   target &lt;= 0.01
+FAIL  injection success         0.50   target &lt;= 0.0</pre></div></div><aside class="call read"><b>How to read it</b><p>Every target fails in this small run, and each for a different reason. Field precision is high (10 of 11 extracted fields are right), but recall is only two-thirds because of a missing field and a wrongly refused document, so F1 fails. Cost per <em>successful</em> task is ₹6, even though no single call costs more than ₹3.9, because failures and retries are paid for too. And one of two injection attempts succeeded: a security failure that a pure accuracy metric would never show.</p></aside><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>A configuration costs ₹2 per call and another ₹3 per call. The cheaper one fails 35% of tasks, which then need a retry or a human. Which metric should decide between them?</p><div class="opts"><button type="button" data-ok="0">A. Cost per call</button><button type="button" data-ok="1">B. Cost per successful task, including retries and escalations</button><button type="button" data-ok="0">C. Average output length</button><button type="button" data-ok="0">D. Time to first token</button></div><p class="why" hidden>Per-call cost hides the price of failures. The cost of getting a task done, including retries and human handling, is what the business pays.</p></div><div class="quiz" data-multi="1"><p class="q"><b>Practice question</b><span class="n">Select 2</span>Which metrics belong in an evaluation of a customer-facing Claude assistant's safety and security? (Select 2)</p><div class="opts"><button type="button" data-ok="1">A. Over-refusal rate on legitimate requests</button><button type="button" data-ok="0">B. Number of tokens in the system prompt</button><button type="button" data-ok="1">C. Prompt-injection success rate on an attack set</button><button type="button" data-ok="0">D. Average model temperature</button></div><button type=button class=check>Check answer</button><p class="why" hidden>Safety covers both harmful outputs and refusing legitimate work; security covers attacks such as injection. Prompt length and sampling settings are configuration, not outcome metrics.</p></div></section><section class="session" id="s4-2"><p class="snum">Session 4.2</p><h2>Eval datasets and mixed methods</h2><p>An evaluation dataset should look like production, plus the cases production hasn't shown you yet. Build it from several sources and keep it <strong>versioned</strong> like code.</p><div class="tbl"><table><thead><tr><th>Source</th><th>Gives you</th><th>Watch out for</th></tr></thead><tbody><tr><td><strong>Golden set</strong> (expert-labelled real cases)</td><td>The reference for accuracy</td><td>Small and expensive; refresh as the domain changes</td></tr><tr><td><strong>Production samples</strong></td><td>Today's real distribution</td><td>Need labelling and PII scrubbing</td></tr><tr><td><strong>Edge cases</strong></td><td>Rare formats, ambiguous inputs, long documents</td><td>Easy to under-represent</td></tr><tr><td><strong>Adversarial / red-team</strong></td><td>Injection, jailbreaks, abuse</td><td>Keep separate so it doesn't skew accuracy scores</td></tr><tr><td><strong>Synthetic</strong> (model-generated)</td><td>Volume and coverage of rare categories</td><td>Can be unrealistic; spot-check with people</td></tr><tr><td><strong>Production failures</strong></td><td>Exactly what broke</td><td>The most valuable additions; add every incident</td></tr></tbody></table></div><p><strong>Mixed methods</strong> means using the right grader for each criterion: <strong>code</strong> for anything objective (fields, format, numbers), <strong>an LLM judge</strong> for nuanced qualities at scale (tone, faithfulness to sources), and <strong>people</strong> for high-stakes calls and for labelling the reference data that validates the judge.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">import random
+random.seed(3)
+
+POOLS = {&quot;golden&quot;: 180, &quot;production&quot;: 2_400, &quot;edge&quot;: 95, &quot;adversarial&quot;: 60, &quot;synthetic&quot;: 500, &quot;incidents&quot;: 22}
+QUOTA = {&quot;golden&quot;: 120, &quot;production&quot;: 200, &quot;edge&quot;: 60, &quot;adversarial&quot;: 60, &quot;synthetic&quot;: 40, &quot;incidents&quot;: 22}
+CATEGORIES = [&quot;outpatient&quot;, &quot;diagnostics&quot;, &quot;pharmacy&quot;, &quot;dental&quot;, &quot;maternity&quot;]
+
+dataset = []
+for source, n in QUOTA.items():
+    for i in range(min(n, POOLS[source])):
+        dataset.append({&quot;id&quot;: f&quot;{source}-{i}&quot;, &quot;source&quot;: source,
+                        &quot;category&quot;: random.choice(CATEGORIES if source != &quot;edge&quot; else CATEGORIES[3:])})
+print(f&quot;eval set v12: {len(dataset)} items&quot;)
+for source in QUOTA:
+    print(f&quot;  {source:&lt;12} {sum(d[&#x27;source&#x27;] == source for d in dataset):&gt;4}&quot;)
+by_cat = {c: sum(d[&quot;category&quot;] == c for d in dataset if d[&quot;source&quot;] != &quot;adversarial&quot;) for c in CATEGORIES}
+print(&quot;by category (excluding adversarial):&quot;, by_cat)
+
+GRADERS = {&quot;field accuracy&quot;: &quot;code&quot;, &quot;output format&quot;: &quot;code&quot;, &quot;faithful to policy text&quot;: &quot;LLM judge (validated vs human labels)&quot;,
+           &quot;tone for anxious patients&quot;: &quot;LLM judge&quot;, &quot;payout eligibility decision&quot;: &quot;human expert&quot;, &quot;injection resisted&quot;: &quot;code&quot;}
+print(&quot;\ngrading plan:&quot;)
+for criterion, method in GRADERS.items():
+    print(f&quot;  {criterion:&lt;28} → {method}&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>eval set v12: 502 items
+  golden        120
+  production    200
+  edge           60
+  adversarial    60
+  synthetic      40
+  incidents      22
+by category (excluding adversarial): {&#x27;outpatient&#x27;: 78, &#x27;diagnostics&#x27;: 69, &#x27;pharmacy&#x27;: 81, &#x27;dental&#x27;: 96, &#x27;maternity&#x27;: 118}
+
+grading plan:
+  field accuracy               → code
+  output format                → code
+  faithful to policy text      → LLM judge (validated vs human labels)
+  tone for anxious patients    → LLM judge
+  payout eligibility decision  → human expert
+  injection resisted           → code</pre></div></div><aside class="call read"><b>How to read it</b><p>All 22 incident cases are included, every one of them a real failure, while the 2,400 production samples are capped at 200 so they don't swamp the rarer slices. Edge cases skew toward dental and maternity (where the formats are hardest), so those categories are well represented. The grading plan routes each criterion to the cheapest method that can judge it reliably: code where possible, people where the stakes demand it.</p></aside><aside class="call warn"><b>Watch out</b><p>Validate any LLM judge against human labels before trusting it (agreement beyond chance, not raw agreement), and don't let the system under test grade itself. Keep the adversarial slice reported separately: mixing it into one accuracy number hides both security and quality changes.</p></aside><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>An eval set has 500 cases, all sampled at random from last month's production traffic. What is its main weakness?</p><div class="opts"><button type="button" data-ok="0">A. It's too large</button><button type="button" data-ok="1">B. It under-represents rare edge cases and contains no adversarial or past-failure cases, so it can pass while important behaviours regress</button><button type="button" data-ok="0">C. Production data can't be used for evals</button><button type="button" data-ok="0">D. It needs to be graded entirely by people</button></div><p class="why" hidden>A purely random sample mirrors common traffic but misses the rare, risky and adversarial cases where failures matter most. Mix in edge cases, red-team items and every production incident.</p></div><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>Which grading method fits each criterion best? Pick the correct pairing.</p><div class="opts"><button type="button" data-ok="0">A. Field extraction accuracy → human review of every case</button><button type="button" data-ok="1">B. JSON format validity → code; tone for anxious patients → a validated LLM judge</button><button type="button" data-ok="0">C. Payout eligibility in a regulated decision → LLM judge alone</button><button type="button" data-ok="0">D. Prompt-injection resistance → user satisfaction survey</button></div><p class="why" hidden>Objective checks belong in code; nuanced qualities at scale suit a validated LLM judge; high-stakes regulated decisions need human experts.</p></div></section><section class="session" id="s4-3"><p class="snum">Session 4.3</p><h2>A/B testing and iterative improvement</h2><p>Offline evals tell you a change <em>should</em> be better. An <strong>A/B test</strong> shows whether it <em>is</em> better with real users. Run them in that order: offline eval first (cheap, catches regressions), then a controlled online experiment.</p><figure class="flow anim" style="--n:5"><figcaption>From idea to rollout</figcaption><ol><li style="--i:0"><b>Hypothesis</b><span>"Prompt v8 reduces escalations without hurting satisfaction."</span></li><li style="--i:1"><b>Offline eval</b><span>v8 vs v7 on the versioned eval set; must not regress any slice.</span></li><li style="--i:2"><b>Design the test</b><span>Primary metric, guardrail metrics, sample size, duration, stop rules.</span></li><li style="--i:3"><b>Run</b><span>Random assignment by user (not by request), same period for both arms.</span></li><li style="--i:4"><b>Decide</b><span>Significant improvement and guardrails held? Ship. Otherwise iterate.</span></li></ol></figure><h3>How many users do you need?</h3><p>Detecting small changes takes more traffic than most people expect. Here's the standard sample-size estimate for comparing two proportions (95% confidence, 80% power).</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">import math
+
+def n_per_arm(p_base, lift_abs, z_a=1.96, z_b=0.84):
+    p2 = p_base + lift_abs
+    p_bar = (p_base + p2) / 2
+    return math.ceil(((z_a * math.sqrt(2 * p_bar * (1 - p_bar)) + z_b * math.sqrt(p_base * (1 - p_base) + p2 * (1 - p2))) / lift_abs) ** 2)
+
+for lift in (0.10, 0.05, 0.02, 0.01):
+    print(f&quot;task success 80% → {80 + lift * 100:.0f}%: {n_per_arm(0.80, lift):&gt;7,} conversations per arm&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>task success 80% → 90%:     199 conversations per arm
+task success 80% → 85%:     905 conversations per arm
+task success 80% → 82%:   6,032 conversations per arm
+task success 80% → 81%:  24,613 conversations per arm</pre></div></div><aside class="call read"><b>How to read it</b><p>Detecting a 10-point gain needs about 200 conversations per arm; detecting a 1-point gain needs nearly 25,000. If your traffic can't reach the sample size in a reasonable time, either test for a bigger effect, use a more sensitive metric, or rely on the offline eval plus careful monitoring.</p></aside><h3>Reading the result</h3><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">def two_proportion_test(success_a, n_a, success_b, n_b):
+    pa, pb = success_a / n_a, success_b / n_b
+    p = (success_a + success_b) / (n_a + n_b)
+    z = (pb - pa) / math.sqrt(p * (1 - p) * (1 / n_a + 1 / n_b))
+    p_value = math.erfc(abs(z) / math.sqrt(2))
+    return pa, pb, z, p_value
+
+results = {&quot;task success (primary)&quot;:     (1_640, 2_050, 1_712, 2_048),
+           &quot;escalation rate (guardrail)&quot;: (287, 2_050, 266, 2_048),
+           &quot;complaints (guardrail)&quot;:     (31, 2_050, 52, 2_048)}
+for metric, (sa, na, sb, nb) in results.items():
+    pa, pb, z, pv = two_proportion_test(sa, na, sb, nb)
+    verdict = &quot;significant&quot; if pv &lt; 0.05 else &quot;not significant&quot;
+    print(f&quot;{metric:&lt;28} A {pa:6.1%}  B {pb:6.1%}  z={z:+.2f}  p={pv:.3f}  {verdict}&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>task success (primary)       A  80.0%  B  83.6%  z=+2.98  p=0.003  significant
+escalation rate (guardrail)  A  14.0%  B  13.0%  z=-0.95  p=0.343  not significant
+complaints (guardrail)       A   1.5%  B   2.5%  z=+2.33  p=0.020  significant</pre></div></div><aside class="call read"><b>How to read it</b><p>Variant B's task success is significantly higher, and escalations are flat. But complaints rose significantly too, from 1.5% to 2.5%. A guardrail metric has failed, so B doesn't ship as is: read the complaint transcripts, find the cause, fix it, and re-test. That's why A/B tests carry guardrail metrics alongside the primary one.</p></aside><aside class="call tip"><b>Tip</b><p>Assign by <strong>user</strong>, not by request, so one person doesn't see both variants. Decide the sample size and stopping rule <strong>before</strong> starting; peeking daily and stopping at the first good-looking p-value inflates false positives. For model or prompt changes, also compare cost and latency per arm: a "better" variant that doubles cost needs a business decision.</p></aside><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>An A/B test shows the new prompt improves task success significantly, but a guardrail metric (complaints) also rises significantly. What should the team do?</p><div class="opts"><button type="button" data-ok="0">A. Ship it: the primary metric improved</button><button type="button" data-ok="1">B. Hold the rollout, investigate why complaints rose, fix and re-test</button><button type="button" data-ok="0">C. Stop measuring complaints</button><button type="button" data-ok="0">D. Extend the test until complaints stop being significant</button></div><p class="why" hidden>Guardrail metrics exist to catch harms that the primary metric misses. A significant guardrail regression blocks the release until it's understood.</p></div><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>A team checks its A/B test every morning and stops it the first day the p-value drops below 0.05. What's the problem?</p><div class="opts"><button type="button" data-ok="1">A. Repeatedly peeking and stopping early inflates the false-positive rate; the sample size and stopping rule should be fixed in advance</button><button type="button" data-ok="0">B. Nothing: 0.05 is the standard threshold</button><button type="button" data-ok="0">C. They should use a p-value of 0.5</button><button type="button" data-ok="0">D. A/B tests can't be used for prompts</button></div><p class="why" hidden>Each look is another chance for noise to cross the threshold. Pre-registering the sample size (or using a sequential method designed for peeking) keeps the error rate honest.</p></div></section><section class="session" id="s4-4"><p class="snum">Session 4.4</p><h2>Diagnosing system issues</h2><p>When quality drops, the cause is usually one of a few families. Diagnose from evidence, in order, before changing anything.</p><div class="tbl"><table><thead><tr><th>Symptom</th><th>Likely family</th><th>First evidence to check</th></tr></thead><tbody><tr><td>Wrong answers began right after a prompt change</td><td><strong>Prompt failure</strong></td><td>Diff the prompt versions; replay failing cases on both</td></tr><tr><td>Fluent, specific claims not supported by any source</td><td><strong>Hallucination</strong></td><td>Was the needed fact in the context? Is grounding required (citations, "not found" option)?</td></tr><tr><td>Confident wrong answers after a data or index refresh</td><td><strong>Retrieval / context</strong></td><td>What was actually retrieved for failing queries?</td></tr><tr><td>Fails on hard reasoning but fine on easy cases, or great quality but too slow</td><td><strong>Model mismatch</strong></td><td>Per-difficulty slice results; compare a stronger or faster model on the same slice</td></tr><tr><td>Errors appear only in the app, not when the request is replayed directly</td><td><strong>Integration</strong></td><td>The exact rendered request; parsing and post-processing code</td></tr></tbody></table></div><aside class="call concept"><b>The idea</b><p><strong>Hallucination usually has a context cause.</strong> Models invent plausibly when asked about things they weren't given: an internal API never documented in the prompt, a policy clause not retrieved. The fixes are architectural: provide the source, require citations or quotes, allow "I don't have that information", and verify specifics in code.</p></aside><h3>Structured error context in multi-agent systems</h3><p>When a subagent fails and reports only "error", the coordinator has to guess, and guesses cascade. A <strong>structured error</strong> gives it what it needs to decide: what was attempted, what failed (category and whether it's retryable), whether the source was <strong>checked and empty</strong> or <strong>never reached</strong>, and any partial results.</p><figure class="seq anim" style="--c:3"><figcaption>Same failure, two reports</figcaption><div class="actors"><b>Coordinator</b><b>Claims subagent</b><b>Claims DB</b></div><div class="lane"><div class="m r" style="grid-column:1/3;--s:2;--k:0"><span>get history for CLM-40417</span><i></i></div><div class="m r" style="grid-column:2/4;--s:2;--k:1"><span>query (try 1, try 2)</span><i></i></div><div class="m l reply" style="grid-column:2/4;--s:2;--k:2"><span>403 permission denied</span><i></i></div><div class="m l reply" style="grid-column:1/3;--s:2;--k:3"><span>✗ "error"  → coordinator guesses "no records"</span><i></i></div><div class="m l reply" style="grid-column:1/3;--s:2;--k:4"><span>✓ {attempted: 2 queries, category: permission, retryable: false, source_checked: false, partial: [header]}</span><i></i></div><div class="m note" style="grid-column:1/2;--k:5"><span>Uses the header, flags the gap, requests access: no false "none found"</span></div></div></figure><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">from dataclasses import dataclass, field
+
+@dataclass
+class SubagentError:
+    attempted: str
+    category: str              # transient | permission | invalid_input | not_found | business_rule
+    retryable: bool
+    source_checked: bool       # True: looked and found nothing. False: couldn&#x27;t look at all.
+    partial: list = field(default_factory=list)
+
+def coordinator_decision(e):
+    if e.category == &quot;not_found&quot; and e.source_checked:
+        return &quot;record genuinely absent: say so in the answer, don&#x27;t retry&quot;
+    if e.retryable:
+        return &quot;retry once with backoff, then try the alternative source&quot;
+    if e.category == &quot;permission&quot;:
+        return f&quot;don&#x27;t retry: use the {len(e.partial)} partial result(s), flag the gap, request access or escalate&quot;
+    return &quot;escalate with the full error context&quot;
+
+errors = [
+    SubagentError(&quot;query claims DB for CLM-40417 (2 tries)&quot;, &quot;permission&quot;, False, False, partial=[&quot;CLM-40417 header&quot;]),
+    SubagentError(&quot;search policy index for &#x27;dental rider&#x27;&quot;, &quot;not_found&quot;, False, True),
+    SubagentError(&quot;call pharmacy API&quot;, &quot;transient&quot;, True, False),
+]
+for e in errors:
+    print(f&quot;{e.attempted:&lt;42} → {coordinator_decision(e)}&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>query claims DB for CLM-40417 (2 tries)    → don&#x27;t retry: use the 1 partial result(s), flag the gap, request access or escalate
+search policy index for &#x27;dental rider&#x27;     → record genuinely absent: say so in the answer, don&#x27;t retry
+call pharmacy API                          → retry once with backoff, then try the alternative source</pre></div></div><aside class="call read"><b>How to read it</b><p>The first two errors both mean "no data", but they lead to opposite actions: the permission error means the records were never checked (so "none found" would be a false statement), while the not-found error means they were checked and genuinely don't exist. A bare "error" string makes those indistinguishable.</p></aside><aside class="call warn"><b>Watch out</b><p><strong>Don't hide retries from Claude.</strong> If your harness silently retries a failing tool three times and only then reports the failure, Claude loses the chance to try a different tool, query or approach after the <em>first</em> failure, and the user waits through every retry. Report failures as they happen, with structured context, and let the agent choose its next move (within your retry limits).</p></aside><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>A subagent reports only "error" when its database lookup fails. The coordinator writes "no matching records found" in the final report. What design change prevents this?</p><div class="opts"><button type="button" data-ok="0">A. A larger model for the coordinator</button><button type="button" data-ok="1">B. Structured error context that distinguishes "checked and empty" from "could not check", with the category, retryability and any partial results</button><button type="button" data-ok="0">C. More retries before reporting</button><button type="button" data-ok="0">D. Removing the database tool</button></div><p class="why" hidden>Without structure, an access failure looks like an empty result. Reporting what was attempted and whether the source was actually checked lets the coordinator respond correctly.</p></div><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>After a model upgrade, accuracy on easy cases is unchanged but drops sharply on multi-step reasoning cases; latency fell. What's the most likely diagnosis?</p><div class="opts"><button type="button" data-ok="0">A. A retrieval failure</button><button type="button" data-ok="1">B. Model mismatch or configuration change for the hard slice (for example, a lower default effort or a less capable model), so check per-slice results and settings</button><button type="button" data-ok="0">C. Prompt injection</button><button type="button" data-ok="0">D. A network outage</button></div><p class="why" hidden>A drop confined to hard reasoning, together with lower latency, points to less reasoning being applied. Compare the slice on the old and new configuration, including effort defaults.</p></div></section><section class="session" id="s4-5"><p class="snum">Session 4.5</p><h2>Optimising cost and performance</h2><p>Optimise in the right order: <strong>free wins first, quality trade-offs last</strong>, and re-run the eval after each change.</p><figure class="flow anim" style="--n:6"><figcaption>The optimisation ladder</figcaption><ol><li style="--i:0"><b>Measure</b><span>Where do tokens, time and money go, per route?</span></li><li style="--i:1"><b>Cache</b><span>Stable prefixes first; check cache-read tokens.</span></li><li style="--i:2"><b>Trim</b><span>Shorter history, pruned tool results, fewer retrieved chunks, smaller images.</span></li><li style="--i:3"><b>Batch</b><span>Anything nobody waits for goes to the Batches API at half price.</span></li><li style="--i:4"><b>Effort</b><span>Lower effort where evals show no loss.</span></li><li style="--i:5"><b>Model and routing</b><span>Smaller model, or a cascade that escalates only hard cases.</span></li></ol></figure><h3>A model cascade, priced out</h3><p>A <strong>cascade</strong> sends every request to a small, cheap model first and escalates to a larger one only when a check fails (low confidence, failed validation, or a hard-case classifier). Whether it pays depends on how often it escalates and how good the gate is. Figures here are illustrative.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">N = 100_000
+haiku_cost, sonnet_cost = 0.0009, 0.0180          # $ per request (illustrative token mix)
+haiku_acc_easy, haiku_acc_hard, sonnet_acc = 0.97, 0.70, 0.96
+hard_share = 0.25
+gate_catches_hard, gate_false_alarm = 0.85, 0.08  # how well the escalation check works
+
+all_sonnet_cost, all_sonnet_acc = N * sonnet_cost, sonnet_acc
+easy, hard = N * (1 - hard_share), N * hard_share
+escalated = hard * gate_catches_hard + easy * gate_false_alarm
+cascade_cost = N * haiku_cost + escalated * sonnet_cost
+correct = (easy * (1 - gate_false_alarm) * haiku_acc_easy + easy * gate_false_alarm * sonnet_acc +
+           hard * gate_catches_hard * sonnet_acc + hard * (1 - gate_catches_hard) * haiku_acc_hard)
+print(f&quot;all Sonnet: ${all_sonnet_cost:,.0f}   accuracy {all_sonnet_acc:.1%}&quot;)
+print(f&quot;cascade:    ${cascade_cost:,.0f}   accuracy {correct / N:.1%}   ({escalated / N:.0%} escalated)&quot;)
+for catch in (0.95, 0.60):
+    esc = hard * catch + easy * gate_false_alarm
+    acc = (easy * (1 - gate_false_alarm) * haiku_acc_easy + easy * gate_false_alarm * sonnet_acc +
+           hard * catch * sonnet_acc + hard * (1 - catch) * haiku_acc_hard) / N
+    print(f&quot;  if the gate caught {catch:.0%} of hard cases: ${N * haiku_cost + esc * sonnet_cost:,.0f}, accuracy {acc:.1%}&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>all Sonnet: $1,800   accuracy 96.0%
+cascade:    $580   accuracy 95.7%   (27% escalated)
+  if the gate caught 95% of hard cases: $626, accuracy 96.4%
+  if the gate caught 60% of hard cases: $468, accuracy 94.1%</pre></div></div><aside class="call read"><b>How to read it</b><p>On these numbers the cascade costs about a third as much as running everything on Sonnet, at roughly equal accuracy. Its quality rests entirely on the escalation gate: a gate that misses 40% of hard cases drops accuracy noticeably. Before building a cascade, test the simpler alternative too: the capable model at lower effort may match it with one model and one cache.</p></aside><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>A team wants to cut cost on a high-volume route. Which should they try first?</p><div class="opts"><button type="button" data-ok="0">A. Switch everything to the smallest model</button><button type="button" data-ok="1">B. Free wins: cache the stable prefix and trim unnecessary input, then measure before considering quality trade-offs</button><button type="button" data-ok="0">C. Remove the eval set to save tokens</button><button type="button" data-ok="0">D. Turn off streaming</button></div><p class="why" hidden>Caching and trimming cut cost without changing quality. Model downgrades and cascades trade quality and need evaluation, so they come after the free levers.</p></div><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>A cascade (small model first, escalate when a check fails) is proposed. What determines whether it preserves accuracy?</p><div class="opts"><button type="button" data-ok="0">A. The small model's price</button><button type="button" data-ok="1">B. How reliably the escalation gate identifies the cases the small model would get wrong</button><button type="button" data-ok="0">C. The number of tokens in the system prompt</button><button type="button" data-ok="0">D. Whether responses are streamed</button></div><p class="why" hidden>Cases the gate fails to escalate are answered by the small model, so the gate's catch rate on hard cases sets the cascade's accuracy.</p></div></section><section class="session" id="s4-6"><p class="snum">Session 4.6</p><h2>Monitoring and observability</h2><p>An eval is a snapshot; production keeps moving. Monitoring watches the live system against <strong>service level objectives (SLOs)</strong> and quality signals, and closes the loop back to the eval set.</p><div class="tbl"><table><thead><tr><th>Signal</th><th>Tells you</th><th>Typical alert</th></tr></thead><tbody><tr><td>Availability and errors (4xx/5xx, timeouts)</td><td>Is it up?</td><td>Error-budget burn rate too high</td></tr><tr><td>TTFT and total latency p95</td><td>Is it fast enough?</td><td>p95 above SLO for 15 minutes</td></tr><tr><td>Cost per request and per task, by route</td><td>Is spend on track?</td><td>Daily spend 30% above forecast</td></tr><tr><td>Online quality: sampled LLM-judge scores, user feedback, corrections</td><td>Is it still good?</td><td>Judge pass rate drops 5 points week on week</td></tr><tr><td>Behavioural: refusal rate, escalation rate, tool-error rate, cache hit rate</td><td>Has something shifted?</td><td>Cache hit rate falls below 60%</td></tr><tr><td>Input drift: topic and length mix vs the eval set</td><td>Is the eval set still representative?</td><td>Distribution shift above threshold</td></tr></tbody></table></div><figure class="seq anim" style="--c:5"><figcaption>Closing the loop from production to the eval set</figcaption><div class="actors"><b>Monitoring</b><b>On-call</b><b>Trace store</b><b>Eval set</b><b>Release</b></div><div class="lane"><div class="m r" style="grid-column:1/3;--s:2;--k:0"><span>judge pass rate down 6 points on "dental" this week</span><i></i></div><div class="m r" style="grid-column:2/4;--s:2;--k:1"><span>pull failing dental traces (model, prompt version, retrieved chunks)</span><i></i></div><div class="m l reply" style="grid-column:2/4;--s:2;--k:2"><span>cause: new dental rider PDFs never indexed</span><i></i></div><div class="m r" style="grid-column:2/5;--s:3;--k:3"><span>add 18 failing dental cases</span><i></i></div><div class="m r" style="grid-column:4/6;--s:2;--k:4"><span>re-index + prompt v9 pass old and new cases</span><i></i></div><div class="m l reply" style="grid-column:1/6;--s:5;--k:5"><span>ship; watch the same signal recover</span><i></i></div></div></figure><h3>Error budgets and burn rate</h3><p>An SLO of 99.5% successful requests per 30 days allows 0.5% failures: the <strong>error budget</strong>. Alerting on how fast the budget is being consumed (the <strong>burn rate</strong>) catches real incidents quickly without paging on every blip.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">SLO = 0.995
+budget = 1 - SLO
+hourly = [(12_000, 30), (11_800, 41), (12_400, 35), (12_100, 520), (11_900, 610), (12_300, 44)]  # (requests, failures)
+
+for hour, (req, fail) in enumerate(hourly, 1):
+    burn = (fail / req) / budget
+    action = &quot;PAGE: budget gone in ~{:.0f} h at this rate&quot;.format(30 * 24 / burn) if burn &gt; 14.4 else (&quot;ticket&quot; if burn &gt; 2 else &quot;ok&quot;)
+    print(f&quot;hour {hour}: failure rate {fail / req:6.2%}  burn rate {burn:5.1f}×  {action}&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>hour 1: failure rate  0.25%  burn rate   0.5×  ok
+hour 2: failure rate  0.35%  burn rate   0.7×  ok
+hour 3: failure rate  0.28%  burn rate   0.6×  ok
+hour 4: failure rate  4.30%  burn rate   8.6×  ticket
+hour 5: failure rate  5.13%  burn rate  10.3×  ticket
+hour 6: failure rate  0.36%  burn rate   0.7×  ok</pre></div></div><aside class="call read"><b>How to read it</b><p>A burn rate of 1 uses the budget exactly over 30 days. Hours 4 and 5 burn it at about 9× and 10×: serious, but below the commonly used fast-page threshold of 14.4× (which would exhaust a 30-day budget in about two days), so they raise a ticket rather than a page. Tune thresholds with the team that's on call; the principle is to alert on budget consumption, not on single failures.</p></aside><aside class="call tip"><b>Tip</b><p>Quality needs monitoring as much as uptime. Run a sampled online eval (an LLM judge on a slice of live traffic, validated against human labels), track human corrections, and feed every confirmed failure back into the eval set. Tools such as LangSmith bundle tracing, online evals and dashboards; OpenTelemetry tracing gives you vendor-neutral traces to build on.</p></aside><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>The system is up, fast and within budget, but users report that answers "got worse" over two months. Which monitoring was missing?</p><div class="opts"><button type="button" data-ok="0">A. Error-rate alerts</button><button type="button" data-ok="1">B. Online quality monitoring (sampled judge scores, corrections, feedback) and input-drift tracking against the eval set</button><button type="button" data-ok="0">C. Latency percentiles</button><button type="button" data-ok="0">D. Cost dashboards</button></div><p class="why" hidden>Availability, latency and cost can all look healthy while quality erodes. Sampled quality scores and drift detection catch what infrastructure metrics can't.</p></div><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>Why alert on error-budget burn rate rather than on every failed request?</p><div class="opts"><button type="button" data-ok="1">A. It pages for sustained, budget-threatening problems while ignoring isolated blips, reducing alert fatigue</button><button type="button" data-ok="0">B. It removes the need for an SLO</button><button type="button" data-ok="0">C. It measures answer quality</button><button type="button" data-ok="0">D. It makes the system faster</button></div><p class="why" hidden>Burn-rate alerts scale urgency to how quickly reliability promises are being used up, so on-call engineers respond to real incidents rather than noise.</p></div></section>
+  <div class="pager"><a class="btn ghost" href="../module-3/">← Module 3</a><a class="btn" href="../module-5/">Module 5 →</a></div>
+  </div>
+</div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="fine" style="border:none;margin:0;padding:0">
+      <span>© 2026 XploreAI · <a href="/">xploreai.co.in</a></span>
+      <span><a href="mailto:hello@xploreai.co.in">hello@xploreai.co.in</a></span>
+    </div>
+  </div>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/json.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/bash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/markdown.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/typescript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/yaml.min.js"></script>
+<script src="/courses/claude-architect/course.js?v=1793003699"></script>
+</body>
+</html>

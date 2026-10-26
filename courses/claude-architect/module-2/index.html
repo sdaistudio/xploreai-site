@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 2: Claude Models, Prompting &amp; Context Engineering — Claude Architect (CCAR-P) course — XploreAI</title>
+<meta name="description" content="Choose models on measured trade-offs and pin them, design system prompts that work as a stable, versioned component with guardrails at the edges, pick the prompting technique the problem actually needs, engineer what goes into the context window and where, and reuse prompts through caching, modules and Skills.">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="XploreAI">
+<meta property="og:title" content="Module 2: Claude Models, Prompting &amp; Context Engineering — Claude Architect (CCAR-P) course">
+<meta property="og:description" content="Choose models on measured trade-offs and pin them, design system prompts that work as a stable, versioned component with guardrails at the edges, pick the prompting technique the problem actually needs, engineer what goes into the context window and where, and reuse prompts through caching, modules and Skills.">
+<meta property="og:url" content="https://xploreai.co.in/courses/claude-architect/module-2/">
+<meta property="og:image" content="https://xploreai.co.in/assets/og-image.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/style.css">
+<link rel="stylesheet" href="/courses/claude-architect/course.css?v=1793009331">
+</head>
+<body>
+
+<nav>
+  <div class="wrap bar">
+    <a class="wordmark" href="/">xplore<span>ai</span></a>
+    <ul>
+      <li><a href="/#agents">Solutions</a></li>
+      <li><a href="/#stories">Success Stories</a></li>
+      <li><a href="/#subscribe">Newsletter</a></li>
+      <li><a href="/learn.html" aria-current="page">Learn AI</a></li>
+      <li><a class="btn" href="https://wa.me/919769686931?text=Hi%20XploreAI%2C%20I%27m%20interested%20in%20AI%20automation!">Get Started</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main class="cca">
+<header class="mhero wrap">
+  <p class="crumb"><a href="/learn.html">Learn AI</a> / <a href="../">Claude Architect (CCAR-P) course</a> / Module 2</p>
+  <span class="pill">MODULE 2 OF 7 · DOMAIN 2 · 13% OF THE EXAM · 5 SESSIONS</span>
+  <h1>Claude Models, Prompting &amp; Context Engineering<i>.</i></h1>
+  <p class="lede">Choose models on measured trade-offs and pin them, design system prompts that work as a stable, versioned component with guardrails at the edges, pick the prompting technique the problem actually needs, engineer what goes into the context window and where, and reuse prompts through caching, modules and Skills.</p>
+  <div class="dl"><a class="btn" href="#s2-1">Start session 2.1 →</a> <a class="btn ghost" href="../code/module-2.py" download>Download the Python</a></div>
+</header>
+<div class="wrap layout">
+  <aside class="toc" aria-label="Sessions"><p>In this module</p><ol><li><a href="#s2-1"><span>2.1</span>Model selection trade-offs</a></li><li><a href="#s2-2"><span>2.2</span>System prompts, templates and guardrails</a></li><li><a href="#s2-3"><span>2.3</span>Prompting techniques</a></li><li><a href="#s2-4"><span>2.4</span>Engineering the context window</a></li><li><a href="#s2-5"><span>2.5</span>Prompt reuse: caching, modules and Skills</a></li></ol></aside>
+  <div class="content">
+<section class="session" id="s2-1"><p class="snum">Session 2.1</p><h2>Model selection trade-offs</h2><p>An architect chooses a model per <strong>workload</strong>, not per company. The same application may use a small fast model for routing, a mid-tier model for most replies, and the most capable model for the hard 5%. Current Claude models (list prices per million tokens on the Claude API, input / output):</p><div class="tbl"><table><thead><tr><th>Model</th><th>Price</th><th>Context</th><th>Typical role</th></tr></thead><tbody><tr><td>Claude Fable 5.1</td><td>$10 / $50</td><td>1M</td><td>Hardest reasoning, long-horizon agents</td></tr><tr><td>Claude Opus 5.5</td><td>$4 / $20</td><td>1M</td><td>Complex reasoning, agentic coding, analysis</td></tr><tr><td>Claude Sonnet 5.5</td><td>$2 / $10</td><td>1M</td><td>High-volume production work that needs judgement</td></tr><tr><td>Claude Haiku 5.5</td><td>$0.10 / $0.50 (≤100K-token prompts)</td><td>1M</td><td>Classification, extraction, routing, sub-agents</td></tr></tbody></table></div><h3>A weighted decision, not a favourite</h3><p>Score candidate models against what this workload needs, with weights agreed with stakeholders. Scores here are illustrative; in practice they come from your eval set and load tests.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">WEIGHTS = {&quot;quality&quot;: 0.40, &quot;latency&quot;: 0.25, &quot;cost&quot;: 0.25, &quot;platform fit&quot;: 0.10}
+SCORES = {   # 1–5, from evals, load tests and procurement (illustrative)
+    &quot;Haiku 5.5&quot;:  {&quot;quality&quot;: 3, &quot;latency&quot;: 5, &quot;cost&quot;: 5, &quot;platform fit&quot;: 5},
+    &quot;Sonnet 5.5&quot;: {&quot;quality&quot;: 4, &quot;latency&quot;: 4, &quot;cost&quot;: 4, &quot;platform fit&quot;: 5},
+    &quot;Opus 5.5&quot;:   {&quot;quality&quot;: 5, &quot;latency&quot;: 3, &quot;cost&quot;: 3, &quot;platform fit&quot;: 5},
+}
+MIN_QUALITY = 4     # the eval floor this workload must clear
+
+for model, s in SCORES.items():
+    total = sum(WEIGHTS[k] * v for k, v in s.items())
+    note = &quot;&quot; if s[&quot;quality&quot;] &gt;= MIN_QUALITY else &quot;  ✗ below the quality floor: excluded whatever its score&quot;
+    print(f&quot;{model:&lt;11} weighted {total:.2f}{note}&quot;)
+
+eligible = {m: sum(WEIGHTS[k] * v for k, v in s.items()) for m, s in SCORES.items() if s[&quot;quality&quot;] &gt;= MIN_QUALITY}
+print(&quot;\nchoice:&quot;, max(eligible, key=eligible.get))</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>Haiku 5.5   weighted 4.20  ✗ below the quality floor: excluded whatever its score
+Sonnet 5.5  weighted 4.10
+Opus 5.5    weighted 4.00
+
+choice: Sonnet 5.5</pre></div></div><aside class="call read"><b>How to read it</b><p>Haiku has the highest weighted score, yet it's excluded: it doesn't clear the quality floor for this workload. Treat hard requirements (quality floor, data residency, a certified platform) as <strong>gates</strong> before weighing the soft trade-offs; otherwise a cheap, fast model can "win" a decision it should never have entered.</p></aside><h3>Time to first token</h3><p><strong>Time to first token (TTFT)</strong> is how long the user waits before anything appears; the rest follows at generation speed. It only reaches the user if you <strong>stream</strong>. Before the first token, the model must process the whole prompt, so prompt size, model choice and prompt caching all move TTFT.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">def timings(prompt_tokens, cached_tokens, output_tokens, prefill_per_1k=0.06, overhead=0.35, out_tps=70):
+    &quot;&quot;&quot;Illustrative latency model: prefill time grows with uncached prompt tokens.&quot;&quot;&quot;
+    ttft = overhead + (prompt_tokens - cached_tokens) / 1000 * prefill_per_1k
+    return ttft, ttft + output_tokens / out_tps
+
+cases = [(&quot;40K prompt, no cache, not streamed&quot;, 40_000, 0, 500, False),
+         (&quot;40K prompt, no cache, streamed&quot;,     40_000, 0, 500, True),
+         (&quot;40K prompt, 38K cached, streamed&quot;,   40_000, 38_000, 500, True)]
+for label, p, c, o, streamed in cases:
+    ttft, total = timings(p, c, o)
+    seen = ttft if streamed else total
+    print(f&quot;{label:&lt;36} first words after {seen:4.1f}s   complete after {total:4.1f}s&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>40K prompt, no cache, not streamed   first words after  9.9s   complete after  9.9s
+40K prompt, no cache, streamed       first words after  2.8s   complete after  9.9s
+40K prompt, 38K cached, streamed     first words after  0.5s   complete after  7.6s</pre></div></div><aside class="call read"><b>How to read it</b><p>Without streaming, the user waits for the whole answer (9.9 s here) even though the first token was ready at 2.8 s. Streaming shows that first token; caching the stable 38K-token prefix brings it to about half a second. The figures come from an illustrative model, but the shape holds: <strong>stream for perceived speed, cache for real speed</strong>.</p></aside><h3>Pinning and breaking changes</h3><p>A model ID names one fixed model; from the 4.6 generation on, IDs are dateless (<code>claude-sonnet-5-5</code>) but still fixed. Pin the full ID in configuration, never an alias that moves, and treat a model upgrade as a <strong>migration</strong>: newer models can remove parameters (prefill, fixed thinking budgets, non-default sampling), change defaults (Opus 5.5's effort defaults to <code>medium</code>), change tokenizers (more tokens for the same text since Opus 4.7), and change behaviour. Cloud platforms can lag the Claude API on new models and features, so check availability per platform before committing a design to it.</p><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>A routing step must classify 2 million messages a day in under 300 ms. Eval results show Haiku 5.5 meets the accuracy target. What should the architect choose?</p><div class="opts"><button type="button" data-ok="1">A. Haiku 5.5, pinned by full model ID, with the eval re-run before any model change</button><button type="button" data-ok="0">B. Opus 5.5, to be safe</button><button type="button" data-ok="0">C. Whatever model alias is newest, so it improves automatically</button><button type="button" data-ok="0">D. Sonnet 5.5, because it's the default</button></div><p class="why" hidden>The smallest model that clears the quality gate and meets latency and cost requirements is the right one. Pin it, because aliases move, and re-run evals before migrating.</p></div><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>Users of a document assistant complain it "freezes" for several seconds. Logs show TTFT of 3 s and total time of 12 s, and responses are not streamed. What change most improves perceived latency?</p><div class="opts"><button type="button" data-ok="0">A. Switch to Fable 5.1</button><button type="button" data-ok="1">B. Stream responses, and cache the stable part of the prompt to reduce TTFT further</button><button type="button" data-ok="0">C. Increase max_tokens</button><button type="button" data-ok="0">D. Remove the system prompt</button></div><p class="why" hidden>Without streaming, users experience the full 12 s. Streaming surfaces the first token at TTFT, and caching the stable prefix lowers TTFT itself.</p></div></section><section class="session" id="s2-2"><p class="snum">Session 2.2</p><h2>System prompts, templates and guardrails</h2><p>The system prompt is a <strong>component</strong>, written once and reused for every request. It carries the role, standing rules, output format and tone; the user turn carries this request's task and data. Keeping them apart keeps the system prompt <strong>stable</strong>, which is also what makes it cacheable.</p><figure class="anatomy anim"><div class="legend"><button type="button" class="part role" data-part="role">role</button><button type="button" class="part context" data-part="context">context</button><button type="button" class="part constraints" data-part="constraints">constraints</button><button type="button" class="part format" data-part="format">format</button><button type="button" class="part tone" data-part="tone">tone</button><button type="button" class="part fallback" data-part="fallback">fallback</button></div><pre><mark class="part role" data-part="role">You are the claims assistant for Sahyadri Health Insurance. You help claims staff, not policyholders.</mark>
+
+<mark class="part context" data-part="context">Staff use your drafts to settle outpatient claims. Every payout is decided by a licensed adjuster; you prepare, never decide.</mark>
+
+<mark class="part constraints" data-part="constraints">Handle outpatient claims only. For inpatient, maternity or disputed claims, reply &quot;Route to senior adjuster&quot; with a one-line reason. Use only the policy text and documents provided; if a needed fact is missing, list it under &quot;Missing&quot; instead of assuming.</mark>
+
+<mark class="part format" data-part="format">Return: Summary (3 sentences), Eligibility (each policy clause checked: met / not met / unclear, with the page), Missing, Recommended next step.</mark>
+
+<mark class="part tone" data-part="tone">Neutral and precise. Never speculate about fraud; flag inconsistencies factually.</mark>
+
+<mark class="part fallback" data-part="fallback">If the documents contradict each other, don&#x27;t pick one: quote both and mark the clause &quot;unclear&quot;.</mark></pre><figcaption>Tap a label to highlight that part of the prompt.</figcaption></figure><aside class="call concept"><b>The idea</b><p><strong>Guardrails in the prompt are about scope and edges.</strong> State what the assistant handles and what it doesn't; what to do when a request is out of scope (decline, ask, hand off); and what to do when information is missing, so the model has an option other than guessing. These guide behaviour. Controls that must <em>always</em> hold (no payouts, no data leaving a region) belong outside the model (Module 5).</p></aside><h3>Templates, variables and versions</h3><p>A production prompt is a <strong>template</strong> plus <strong>runtime variables</strong>. Version the template like code; log the version with every call. Here's a small renderer that refuses to send a prompt with a missing variable, keeps user content inside tags, and checks the template covers the guardrail elements a reviewer expects.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">import hashlib, re
+
+TEMPLATES = {
+    &quot;claims-assistant@v7&quot;: &quot;&quot;&quot;You are the claims assistant for {insurer}. You help claims staff, not policyholders.
+Handle outpatient claims only; for anything else reply &quot;Route to senior adjuster&quot; with a reason.
+If a needed fact is missing, list it under &quot;Missing&quot; instead of assuming.
+If documents contradict each other, quote both and mark the clause &quot;unclear&quot;.
+Return: Summary, Eligibility, Missing, Recommended next step.&quot;&quot;&quot;,
+}
+GUARDRAIL_CHECKS = {
+    &quot;scope stated&quot;:            r&quot;\bonly\b&quot;,
+    &quot;out-of-scope behaviour&quot;:  r&quot;for anything else|out of scope|route to&quot;,
+    &quot;missing-information rule&quot;: r&quot;missing&quot;,
+    &quot;conflict rule&quot;:           r&quot;contradict&quot;,
+    &quot;output format&quot;:           r&quot;\breturn\b|format&quot;,
+}
+
+def render(template_id, variables, user_docs):
+    tpl = TEMPLATES[template_id]
+    needed = set(re.findall(r&quot;{(\w+)}&quot;, tpl))
+    missing = needed - set(variables)
+    if missing:
+        raise ValueError(f&quot;refusing to send: missing variables {sorted(missing)}&quot;)
+    system = tpl.format(**variables)
+    user = &quot;\n&quot;.join(f&#x27;&lt;document name=&quot;{n}&quot;&gt;\n{t}\n&lt;/document&gt;&#x27; for n, t in user_docs.items())
+    return {&quot;system&quot;: system, &quot;user&quot;: user,
+            &quot;_log&quot;: {&quot;template&quot;: template_id, &quot;sha&quot;: hashlib.sha256(tpl.encode()).hexdigest()[:8]}}
+
+tpl = TEMPLATES[&quot;claims-assistant@v7&quot;]
+for check, pattern in GUARDRAIL_CHECKS.items():
+    print(f&quot;{&#x27;✓&#x27; if re.search(pattern, tpl, re.I) else &#x27;✗&#x27;} {check}&quot;)
+
+req = render(&quot;claims-assistant@v7&quot;, {&quot;insurer&quot;: &quot;Sahyadri Health Insurance&quot;}, {&quot;bill.pdf&quot;: &quot;OPD consult ₹1,200&quot;})
+print(&quot;\nlogged with the call:&quot;, req[&quot;_log&quot;])
+try:
+    render(&quot;claims-assistant@v7&quot;, {}, {})
+except ValueError as e:
+    print(&quot;blocked:&quot;, e)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>✓ scope stated
+✓ out-of-scope behaviour
+✓ missing-information rule
+✓ conflict rule
+✓ output format
+
+logged with the call: {&#x27;template&#x27;: &#x27;claims-assistant@v7&#x27;, &#x27;sha&#x27;: &#x27;28a8d15c&#x27;}
+blocked: refusing to send: missing variables [&#x27;insurer&#x27;]</pre></div></div><aside class="call tip"><b>Tip</b><p>Write rules as what to do, with the reason ("plain sentences, because replies go by WhatsApp"), not lists of prohibitions. Claude generalises from the reason to cases you didn't list. And keep personas honest: a persona changes tone and focus, not what the system is allowed to do.</p></aside><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>A team edits the system prompt directly in production whenever a stakeholder asks for a tweak. Output quality varies week to week and nobody can explain a bad answer from last month. What should the architect introduce?</p><div class="opts"><button type="button" data-ok="0">A. A longer system prompt</button><button type="button" data-ok="1">B. Prompt versioning: templates in version control, changes reviewed and evaluated before release, and the template version logged with every call</button><button type="button" data-ok="0">C. A bigger model</button><button type="button" data-ok="0">D. Few-shot examples</button></div><p class="why" hidden>Untracked prompt edits are untested production changes with no history. Versioned templates with evals and per-call logging make behaviour reproducible and explainable.</p></div><div class="quiz" data-multi="1"><p class="q"><b>Practice question</b><span class="n">Select 2</span>Which belong in the system prompt rather than the user turn? (Select 2)</p><div class="opts"><button type="button" data-ok="1">A. The assistant's scope and what to do with out-of-scope requests</button><button type="button" data-ok="0">B. Today's uploaded claim documents</button><button type="button" data-ok="1">C. The required output format</button><button type="button" data-ok="0">D. The current timestamp</button></div><button type=button class=check>Check answer</button><p class="why" hidden>Standing role, rules and format belong in the stable system prompt. Per-request documents and volatile values like timestamps belong in the user turn, which also keeps the system prompt cacheable.</p></div></section><section class="session" id="s2-3"><p class="snum">Session 2.3</p><h2>Prompting techniques</h2><div class="tbl"><table><thead><tr><th>Technique</th><th>What it is</th><th>Reach for it when</th></tr></thead><tbody><tr><td><strong>Zero-shot</strong></td><td>Clear instructions, no examples</td><td>The task is common and well specified: always start here</td></tr><tr><td><strong>Few-shot</strong></td><td>Instructions plus a few worked examples</td><td>Output format or judgement on ambiguous cases stays inconsistent <strong>despite</strong> clear instructions</td></tr><tr><td><strong>Chain-of-thought</strong></td><td>The model reasons before answering</td><td>Multi-condition or multi-step problems where skipping a step causes errors</td></tr></tbody></table></div><figure class="flow anim" style="--n:4"><figcaption>Choosing a technique, in order</figcaption><ol><li style="--i:0"><b>Start zero-shot</b><span>Clear, specific instructions with the reason behind them.</span></li><li style="--i:1"><b>Inconsistent format or judgement?</b><span>Add 2–4 targeted examples, each fixing a different failure.</span></li><li style="--i:2"><b>Errors from skipped conditions?</b><span>Ask for reasoning first, or raise effort so built-in thinking does it.</span></li><li style="--i:3"><b>Still failing?</b><span>Decompose into a chain of simpler steps (Module 1).</span></li></ol></figure><h3>Few-shot: targeted, not random</h3><p>Study material for this exam recommends <strong>2–4 targeted examples</strong>. Fewer gives Claude too little to generalise from; more spends context on examples instead of work. "Targeted" is the important word: each example should demonstrate a <strong>different</strong> ambiguity or failure mode the instructions alone didn't resolve. Three situations call for them:</p><ul><li>Output <strong>format</strong> varies across runs despite explicit format instructions.</li><li><strong>Borderline cases</strong> (which tool, which category) are handled differently each time.</li><li><strong>Extraction</strong> returns empty fields when the source states them in unusual forms.</li></ul><p>Here's example selection done deliberately: from a pool of candidate examples, pick the smallest set that covers every failure mode seen in testing.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">FAILURE_MODES = {&quot;citation inline&quot;, &quot;citation in bibliography&quot;, &quot;date as words&quot;, &quot;two claims in one letter&quot;, &quot;no amount stated&quot;}
+POOL = {   # candidate example → failure modes it demonstrates
+    &quot;ex01 simple bill, all fields clean&quot;:          set(),
+    &quot;ex02 inline citation of policy clause&quot;:       {&quot;citation inline&quot;},
+    &quot;ex03 clause cited only in bibliography&quot;:      {&quot;citation in bibliography&quot;},
+    &quot;ex04 &#x27;fifth of March&#x27;, two claims in one&quot;:    {&quot;date as words&quot;, &quot;two claims in one letter&quot;},
+    &quot;ex05 estimate letter with no amount&quot;:         {&quot;no amount stated&quot;},
+    &quot;ex06 inline citation, date as words&quot;:         {&quot;citation inline&quot;, &quot;date as words&quot;},
+}
+
+chosen, uncovered = [], set(FAILURE_MODES)
+while uncovered:
+    best = max(POOL, key=lambda e: len(POOL[e] &amp; uncovered))
+    if not POOL[best] &amp; uncovered: break
+    chosen.append(best); uncovered -= POOL[best]
+print(f&quot;{len(chosen)} examples cover all {len(FAILURE_MODES)} failure modes:&quot;)
+for c in chosen: print(&quot;  &quot;, c, sorted(POOL[c]))
+print(&quot;never chosen (adds nothing new):&quot;, [e for e in POOL if e not in chosen])</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>4 examples cover all 5 failure modes:
+   ex04 &#x27;fifth of March&#x27;, two claims in one [&#x27;date as words&#x27;, &#x27;two claims in one letter&#x27;]
+   ex02 inline citation of policy clause [&#x27;citation inline&#x27;]
+   ex03 clause cited only in bibliography [&#x27;citation in bibliography&#x27;]
+   ex05 estimate letter with no amount [&#x27;no amount stated&#x27;]
+never chosen (adds nothing new): [&#x27;ex01 simple bill, all fields clean&#x27;, &#x27;ex06 inline citation, date as words&#x27;]</pre></div></div><aside class="call read"><b>How to read it</b><p>Four examples cover all five failure modes, inside the 2–4 range, and the "clean, simple" example is never picked: it teaches nothing the instructions don't. The same logic applies when an example set grows over time: prune examples that duplicate a failure mode another already covers.</p></aside><h3>Chain-of-thought</h3><p>Asking the model to reason before answering helps on problems with several conditions (a refund rule with four tests, a diagnosis with several factors). Keep the instruction <strong>general</strong> ("work through each condition before deciding") unless the task has a required order; a long hand-written procedure often reasons worse than a short instruction. Current Claude models can also reason with built-in <strong>adaptive thinking</strong>, controlled by effort, rather than in the visible output. When you do want visible reasoning, separate it from the result with tags so code reads only the answer:</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">reply = &quot;&quot;&quot;&lt;thinking&gt;
+Order date 2 Oct, request 20 Oct: within 30 days. Category: footwear, eligible.
+Opened: yes, but footwear allows opened returns. Discount: 40%, and the policy excludes items over 30% off.
+&lt;/thinking&gt;
+&lt;answer&gt;{&quot;eligible&quot;: false, &quot;reason&quot;: &quot;discount over 30% (40%)&quot;}&lt;/answer&gt;&quot;&quot;&quot;
+
+def answer_only(text):
+    m = re.search(r&quot;&lt;answer&gt;\s*(.*?)\s*&lt;/answer&gt;&quot;, text, re.S)
+    if not m:
+        raise ValueError(&quot;no &lt;answer&gt; block: treat as a failed response, don&#x27;t parse the reasoning&quot;)
+    return m.group(1)
+
+print(&quot;app reads:   &quot;, answer_only(reply))
+print(&quot;audit keeps: &quot;, len(re.search(r&quot;&lt;thinking&gt;(.*?)&lt;/thinking&gt;&quot;, reply, re.S).group(1).split()), &quot;words of reasoning&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>app reads:    {&quot;eligible&quot;: false, &quot;reason&quot;: &quot;discount over 30% (40%)&quot;}
+audit keeps:  30 words of reasoning</pre></div></div><aside class="call read"><b>How to read it</b><p>The fourth condition (the discount) is the one a direct answer would most likely skip; stating each condition first forces it to be checked. The app parses only the answer, and the reasoning is kept for audit, which is useful in regulated decisions where you must show how an outcome was reached.</p></aside><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>A classifier has explicit category definitions, but borderline messages flip between two categories from run to run. Which technique is most appropriate?</p><div class="opts"><button type="button" data-ok="0">A. Longer instructions repeated three times</button><button type="button" data-ok="1">B. Add 2–4 targeted few-shot examples that show how borderline cases should be classified</button><button type="button" data-ok="0">C. Chain-of-thought with a 20-step procedure</button><button type="button" data-ok="0">D. Switch to zero-shot</button></div><p class="why" hidden>Instructions already exist; what's missing is a demonstration of the judgement on ambiguous cases. A few targeted examples resolve exactly that.</p></div><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>When is chain-of-thought most likely to improve results?</p><div class="opts"><button type="button" data-ok="0">A. For translating a single sentence</button><button type="button" data-ok="1">B. For a decision that depends on checking several conditions, where skipping one leads to errors</button><button type="button" data-ok="0">C. For returning a fixed greeting</button><button type="button" data-ok="0">D. For reducing latency</button></div><p class="why" hidden>Reasoning first makes the model address each condition before committing. It adds tokens and latency, so it's wasted on simple tasks.</p></div></section><section class="session" id="s2-4"><p class="snum">Session 2.4</p><h2>Engineering the context window</h2><p>The context window is a budget shared by the system prompt, tool definitions, history, retrieved material and the reply. More isn't better: past a point, accuracy and recall fall as the window fills. Context engineering decides <strong>what goes in, in what form, and where</strong>.</p><h3>Where things go: long material first, question last</h3><p>Models attend most strongly to the beginning and end of long contexts; material in the middle is more easily under-weighted (the <strong>lost-in-the-middle</strong> effect). Anthropic's guidance is to put long documents at the <strong>top</strong> and the question, instructions and examples at the <strong>bottom</strong>; its testing found this can improve response quality by up to 30%.</p><figure class="seq anim" style="--c:2"><figcaption>Assembling a long-context request</figcaption><div class="actors"><b>Your app</b><b>Request</b></div><div class="lane"><div class="m r" style="grid-column:1/3;--s:2;--k:0"><span>system: role, rules, format (stable)</span><i></i></div><div class="m r" style="grid-column:1/3;--s:2;--k:1"><span>&lt;documents&gt; long material, each tagged with source &lt;/documents&gt;</span><i></i></div><div class="m r" style="grid-column:1/3;--s:2;--k:2"><span>&lt;case_facts&gt; the facts that must not be lost &lt;/case_facts&gt;</span><i></i></div><div class="m r" style="grid-column:1/3;--s:2;--k:3"><span>&lt;question&gt; the actual ask, last &lt;/question&gt;</span><i></i></div><div class="m note" style="grid-column:2/3;--k:4"><span>Question and key facts sit where attention is strongest</span></div></div></figure><h3>Case facts: protecting precision from summarisation</h3><p>Long conversations and agent runs get compressed: history is summarised to make room, and <strong>summaries are lossy</strong>. Exact figures turn into approximations, dates into "early January". A <strong>case facts block</strong> keeps the details that must stay exact (amounts, dates, IDs, commitments) in a small structured block that's carried forward <strong>verbatim</strong> on every turn, outside whatever gets summarised.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">history = &quot;Customer Meera Iyer, policy SHI-77120. Agreed refund ₹8,999.50 on 14 Jan 2026 for claim CLM-40417, to be paid by 21 Jan.&quot;
+
+def lossy_summary(text):
+    &quot;&quot;&quot;Stand-in for repeated summarisation: each pass keeps the gist and drops precision.&quot;&quot;&quot;
+    text = re.sub(r&quot;₹([\d,]+)\.\d\d&quot;, lambda m: &quot;about ₹&quot; + format(round(int(m.group(1).replace(&quot;,&quot;, &quot;&quot;)), -3), &quot;,&quot;), text)
+    text = re.sub(r&quot;on \d{1,2} Jan 2026&quot;, &quot;in mid-January&quot;, text)
+    text = re.sub(r&quot;by \d{1,2} Jan&quot;, &quot;by late January&quot;, text)
+    return text.replace(&quot;claim CLM-40417&quot;, &quot;the claim&quot;).replace(&quot;policy SHI-77120&quot;, &quot;her policy&quot;)
+
+CASE_FACTS = {&quot;customer&quot;: &quot;Meera Iyer&quot;, &quot;policy&quot;: &quot;SHI-77120&quot;, &quot;claim&quot;: &quot;CLM-40417&quot;,
+              &quot;refund_amount&quot;: &quot;₹8,999.50&quot;, &quot;agreed_on&quot;: &quot;2026-01-14&quot;, &quot;pay_by&quot;: &quot;2026-01-21&quot;}
+
+after = lossy_summary(history)
+print(&quot;summary after compression:\n &quot;, after)
+print(&quot;\ncase facts block carried every turn:&quot;)
+print(&quot;  &lt;case_facts&gt;&quot; + &quot;; &quot;.join(f&quot;{k}={v}&quot; for k, v in CASE_FACTS.items()) + &quot;&lt;/case_facts&gt;&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>summary after compression:
+  Customer Meera Iyer, her policy. Agreed refund about ₹9,000 in mid-January for the claim, to be paid by late January.
+
+case facts block carried every turn:
+  &lt;case_facts&gt;customer=Meera Iyer; policy=SHI-77120; claim=CLM-40417; refund_amount=₹8,999.50; agreed_on=2026-01-14; pay_by=2026-01-21&lt;/case_facts&gt;</pre></div></div><aside class="call read"><b>How to read it</b><p>After compression, the summary still reads well, but the refund is "about ₹9,000", the dates are "mid-January" and "late January", and the claim and policy IDs are gone: exactly the details a payout or a complaint depends on. The case facts block costs a few dozen tokens and keeps them exact, however many times the history is summarised.</p></aside><h3>Trim verbose tool results</h3><p>APIs return whole objects when the task needs three fields. Every extra token crowds the window, buries the useful data and slows the request. Trim at the tool boundary, before results enter the context.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">import json
+
+raw = {&quot;status&quot;: 200, &quot;request_id&quot;: &quot;a8f3-77c1&quot;, &quot;pagination&quot;: {&quot;page&quot;: 1, &quot;pages&quot;: 1, &quot;per_page&quot;: 50},
+       &quot;data&quot;: {&quot;member&quot;: {&quot;id&quot;: &quot;SHI-77120&quot;, &quot;name&quot;: &quot;Meera Iyer&quot;, &quot;dob&quot;: &quot;1979-03-05&quot;, &quot;address&quot;: {&quot;line1&quot;: &quot;12 Palm Grove&quot;, &quot;city&quot;: &quot;Pune&quot;, &quot;pin&quot;: &quot;411001&quot;},
+                &quot;plan&quot;: {&quot;code&quot;: &quot;OPD-GOLD&quot;, &quot;opd_limit&quot;: 25000, &quot;opd_used&quot;: 17800, &quot;copay_pct&quot;: 10, &quot;network&quot;: [&quot;Ruby Hall&quot;, &quot;Jehangir&quot;],
+                         &quot;riders&quot;: [{&quot;code&quot;: &quot;DENTAL&quot;, &quot;limit&quot;: 5000}, {&quot;code&quot;: &quot;VISION&quot;, &quot;limit&quot;: 3000}]},
+                &quot;claims_history&quot;: [{&quot;id&quot;: f&quot;CLM-{40000 + i}&quot;, &quot;amount&quot;: 900 + i * 37, &quot;status&quot;: &quot;settled&quot;} for i in range(40)],
+                &quot;audit&quot;: {&quot;created&quot;: &quot;2019-04-01&quot;, &quot;updated&quot;: &quot;2026-10-20&quot;, &quot;by&quot;: &quot;sys&quot;}}}}
+
+def trim_for_eligibility(r):
+    m = r[&quot;data&quot;][&quot;member&quot;]; p = m[&quot;plan&quot;]
+    return {&quot;member_id&quot;: m[&quot;id&quot;], &quot;plan&quot;: p[&quot;code&quot;], &quot;opd_remaining&quot;: p[&quot;opd_limit&quot;] - p[&quot;opd_used&quot;],
+            &quot;copay_pct&quot;: p[&quot;copay_pct&quot;], &quot;recent_claims&quot;: [c[&quot;id&quot;] for c in m[&quot;claims_history&quot;][-3:]]}
+
+def approx_tokens(obj): return len(json.dumps(obj)) // 4
+trimmed = trim_for_eligibility(raw)
+print(f&quot;raw result:     ~{approx_tokens(raw):,} tokens&quot;)
+print(f&quot;trimmed result: ~{approx_tokens(trimmed):,} tokens  {trimmed}&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>raw result:     ~717 tokens
+trimmed result: ~36 tokens  {&#x27;member_id&#x27;: &#x27;SHI-77120&#x27;, &#x27;plan&#x27;: &#x27;OPD-GOLD&#x27;, &#x27;opd_remaining&#x27;: 7200, &#x27;copay_pct&#x27;: 10, &#x27;recent_claims&#x27;: [&#x27;CLM-40037&#x27;, &#x27;CLM-40038&#x27;, &#x27;CLM-40039&#x27;]}</pre></div></div><aside class="call tip"><b>Tip</b><p>Trim to what the <em>task</em> needs, and compute derived values (remaining limit) in code rather than asking the model to do arithmetic on raw fields. If a later step might need more, return an ID it can use to fetch details on demand rather than everything up front.</p></aside><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>In a long support conversation, the assistant later quotes a refund of "about ₹9,000" when ₹8,999.50 was agreed. History is being summarised to stay within the window. What's the best fix?</p><div class="opts"><button type="button" data-ok="0">A. Turn off summarisation and let the context grow without limit</button><button type="button" data-ok="1">B. Keep a case facts block with exact amounts, dates and IDs, carried verbatim on every turn outside the summarised history</button><button type="button" data-ok="0">C. Ask the model to "be precise"</button><button type="button" data-ok="0">D. Use a model with a larger window</button></div><p class="why" hidden>Summarisation is lossy by design. A small structured block of critical facts preserves precision cheaply, whatever happens to the rest of the history.</p></div><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>A prompt places the user's question first, followed by 60 pages of contract text. Answers miss details from the middle of the document. Which change follows Anthropic's guidance?</p><div class="opts"><button type="button" data-ok="0">A. Put the question in the middle of the document</button><button type="button" data-ok="1">B. Put the long document at the top (tagged) and the question and instructions at the end</button><button type="button" data-ok="0">C. Split the question into ten questions</button><button type="button" data-ok="0">D. Remove the XML tags</button></div><p class="why" hidden>Long content first and the query last improves long-context answers. Tags around each document also help the model keep sections apart.</p></div></section><section class="session" id="s2-5"><p class="snum">Session 2.5</p><h2>Prompt reuse: caching, modules and Skills</h2><p>Three reuse strategies, at different levels:</p><div class="tbl"><table><thead><tr><th>Strategy</th><th>Reuses</th><th>Saves</th></tr></thead><tbody><tr><td><strong>Prompt caching</strong></td><td>The exact prefix of a request, across requests</td><td>Cost and TTFT on repeated stable content</td></tr><tr><td><strong>Modular prompts</strong></td><td>Pieces of prompts (role, format, policy, examples) across features</td><td>Maintenance; consistency; and they're cache-friendly if stable pieces go first</td></tr><tr><td><strong>Skills</strong></td><td>Packaged instructions and scripts the model loads when relevant</td><td>Context: only descriptions are always loaded; bodies load on demand</td></tr></tbody></table></div><h3>Prefix ordering decides what can be cached</h3><p>Requests are assembled in a fixed order: <strong>tools, then system, then messages</strong>. Caching reuses an identical prefix up to a breakpoint, and a change at any level invalidates that level and everything after it. So stable content goes first, and anything that varies (the user's question, retrieved results, timestamps) goes last.</p><figure class="seq anim" style="--c:3"><figcaption>Request 2 reuses request 1&#x27;s prefix</figcaption><div class="actors"><b>Your app</b><b>Claude API</b><b>Prompt cache</b></div><div class="lane"><div class="m r" style="grid-column:1/3;--s:2;--k:0"><span>request 1: [tools][system + policy ⟵ breakpoint][question A]</span><i></i></div><div class="m r" style="grid-column:2/4;--s:2;--k:1"><span>write tools + system + policy (≈1.25× input price)</span><i></i></div><div class="m l reply" style="grid-column:1/3;--s:2;--k:2"><span>answer A</span><i></i></div><div class="m r" style="grid-column:1/3;--s:2;--k:3"><span>request 2: identical [tools][system + policy] + [question B]</span><i></i></div><div class="m l reply" style="grid-column:2/4;--s:2;--k:4"><span>prefix found: read at ≈0.1× price, no re-processing</span><i></i></div><div class="m l reply" style="grid-column:1/3;--s:2;--k:5"><span>answer B, sooner (lower time to first token)</span><i></i></div></div></figure><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">p_in = 2.00                                  # Claude Sonnet 5.5 input, $/MTok
+TOOLS, POLICY, QUESTION = 3_000, 8_000, 150  # tokens
+
+def run(layout, n=1_000):
+    &quot;&quot;&quot;Return (cost of input tokens, cache hit rate) for n requests with this layout.&quot;&quot;&quot;
+    cost, hits = 0.0, 0
+    for i in range(n):
+        if layout == &quot;timestamp in system prompt&quot;:
+            cached = 0                                         # prefix differs every request
+        elif layout == &quot;tools edited per request&quot;:
+            cached = 0                                         # first block changes: nothing after it survives
+        else:                                                  # stable tools + system first, question last
+            cached = TOOLS + POLICY if i &gt; 0 else 0
+        uncached = TOOLS + POLICY + QUESTION - cached
+        write = (TOOLS + POLICY) * 0.25 if (layout == &quot;stable prefix, question last&quot; and i == 0) else 0
+        cost += (uncached + write + cached * 0.10) * p_in / 1e6
+        hits += cached &gt; 0
+    return cost, hits / n
+
+for layout in [&quot;timestamp in system prompt&quot;, &quot;tools edited per request&quot;, &quot;stable prefix, question last&quot;]:
+    cost, rate = run(layout)
+    print(f&quot;{layout:&lt;32} input cost for 1,000 requests ${cost:6.2f}   cache hits {rate:.0%}&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>timestamp in system prompt       input cost for 1,000 requests $ 22.30   cache hits 0%
+tools edited per request         input cost for 1,000 requests $ 22.30   cache hits 0%
+stable prefix, question last     input cost for 1,000 requests $  2.53   cache hits 100%</pre></div></div><aside class="call read"><b>How to read it</b><p>This is the exam guide's own sample scenario: an 8,000-token system prompt and policy on every request, a short varying question after it. Ordering the static parts first and caching them cuts input cost by nearly 90% here and shrinks TTFT. Truncating the policy loses required content, downsizing the model risks quality, and moving the policy into few-shot examples doesn't create a reusable prefix.</p></aside><aside class="call warn"><b>Watch out</b><p>Two placements break caching silently: a timestamp or request ID early in the system prompt, and tool definitions that change between requests (or are serialised in a different order). Put the breakpoint on the <strong>last block that's identical</strong> across the requests you want to share a cache, and check <code>cache_read_input_tokens</code> in responses to confirm it's working.</p></aside><h3>Modular prompts and when Skills take over</h3><p>A modular prompt is assembled from reusable pieces: role and behaviour, output format, reference material, examples, and the task input. Your code chooses which pieces each request needs. That works well for a handful of tasks; as specialised instruction sets multiply, either your selection logic grows, or you send everything every time and pay for it. <strong>Skills</strong> move that selection to the model: each skill's short description is always visible, and its full instructions load only when a task matches.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">MODULES = {&quot;role.claims&quot;: 350, &quot;format.eligibility&quot;: 180, &quot;policy.outpatient&quot;: 8_000, &quot;policy.dental&quot;: 2_400,
+           &quot;policy.vision&quot;: 1_900, &quot;examples.extraction&quot;: 1_200, &quot;examples.letters&quot;: 900}
+NEEDS = {&quot;outpatient eligibility&quot;: [&quot;role.claims&quot;, &quot;format.eligibility&quot;, &quot;policy.outpatient&quot;, &quot;examples.extraction&quot;],
+         &quot;dental eligibility&quot;:     [&quot;role.claims&quot;, &quot;format.eligibility&quot;, &quot;policy.dental&quot;, &quot;examples.extraction&quot;],
+         &quot;missing-document letter&quot;: [&quot;role.claims&quot;, &quot;examples.letters&quot;]}
+
+everything = sum(MODULES.values())
+for task, mods in NEEDS.items():
+    print(f&quot;{task:&lt;25} assembled {sum(MODULES[m] for m in mods):&gt;6,} tokens   vs send-everything {everything:,}&quot;)
+skills_baseline = 7 * 100
+print(f&quot;\nas Skills: ~{skills_baseline} tokens of descriptions always loaded; each task loads only its own bodies&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>outpatient eligibility    assembled  9,730 tokens   vs send-everything 14,930
+dental eligibility        assembled  4,130 tokens   vs send-everything 14,930
+missing-document letter   assembled  1,250 tokens   vs send-everything 14,930
+
+as Skills: ~700 tokens of descriptions always loaded; each task loads only its own bodies</pre></div></div><aside class="call exam"><b>Exam lens</b><p>Prompt reuse questions usually hinge on <em>what</em> is being reused. Same long prefix on every request → caching with stable-first ordering. Same instruction blocks across many features → modular prompts. Many specialised procedures, each needed occasionally → Skills, so only descriptions occupy the context until one is needed.</p></aside><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>An application sends the same 8,000-token system prompt and policy document on every request, followed by a short, varying user message. Latency and cost are both concerns. Which optimisation most directly addresses both?</p><div class="opts"><button type="button" data-ok="0">A. Truncate the policy document to its first 1,000 tokens</button><button type="button" data-ok="0">B. Switch to the smallest available model regardless of task fit</button><button type="button" data-ok="1">C. Place the static system prompt and policy before the dynamic content and enable prompt caching</button><button type="button" data-ok="0">D. Move the policy document into a few-shot example block</button></div><p class="why" hidden>Stable content first plus caching lets the repeated prefix be reused, cutting both per-request cost and time to first token without discarding required context.</p></div><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>A team has 40 specialised procedures (each 2,000–6,000 tokens), and any given request needs at most one or two. What's the most context-efficient way to make them available?</p><div class="opts"><button type="button" data-ok="0">A. Put all 40 in the system prompt and cache it</button><button type="button" data-ok="1">B. Package them as Skills, so only short descriptions are always loaded and the relevant procedure loads on demand</button><button type="button" data-ok="0">C. Ask users to paste the procedure they need</button><button type="button" data-ok="0">D. Fine-tune a model on all 40</button></div><p class="why" hidden>Skills load progressively: descriptions are cheap and always present, full instructions load only when a task matches. Caching 40 procedures still fills the context on every request.</p></div></section>
+  <div class="pager"><a class="btn ghost" href="../module-1/">← Module 1</a><a class="btn" href="../module-3/">Module 3 →</a></div>
+  </div>
+</div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="fine" style="border:none;margin:0;padding:0">
+      <span>© 2026 XploreAI · <a href="/">xploreai.co.in</a></span>
+      <span><a href="mailto:hello@xploreai.co.in">hello@xploreai.co.in</a></span>
+    </div>
+  </div>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/json.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/bash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/markdown.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/typescript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/yaml.min.js"></script>
+<script src="/courses/claude-architect/course.js?v=1793003699"></script>
+</body>
+</html>

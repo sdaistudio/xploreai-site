@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 6: Stakeholder Communication &amp; Lifecycle Management — Claude Architect (CCAR-P) course — XploreAI</title>
+<meta name="description" content="Architecture is a social job too. Run discovery that produces numbers rather than adjectives, explain decisions and trade-offs in each audience&#x27;s terms, write SLAs you can actually measure and keep feedback flowing, document so the build team never has to guess, and carry the solution through discovery, design, handoff, monitoring and iteration.">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="XploreAI">
+<meta property="og:title" content="Module 6: Stakeholder Communication &amp; Lifecycle Management — Claude Architect (CCAR-P) course">
+<meta property="og:description" content="Architecture is a social job too. Run discovery that produces numbers rather than adjectives, explain decisions and trade-offs in each audience&#x27;s terms, write SLAs you can actually measure and keep feedback flowing, document so the build team never has to guess, and carry the solution through discovery, design, handoff, monitoring and iteration.">
+<meta property="og:url" content="https://xploreai.co.in/courses/claude-architect/module-6/">
+<meta property="og:image" content="https://xploreai.co.in/assets/og-image.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/style.css">
+<link rel="stylesheet" href="/courses/claude-architect/course.css?v=1793009331">
+</head>
+<body>
+
+<nav>
+  <div class="wrap bar">
+    <a class="wordmark" href="/">xplore<span>ai</span></a>
+    <ul>
+      <li><a href="/#agents">Solutions</a></li>
+      <li><a href="/#stories">Success Stories</a></li>
+      <li><a href="/#subscribe">Newsletter</a></li>
+      <li><a href="/learn.html" aria-current="page">Learn AI</a></li>
+      <li><a class="btn" href="https://wa.me/919769686931?text=Hi%20XploreAI%2C%20I%27m%20interested%20in%20AI%20automation!">Get Started</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main class="cca">
+<header class="mhero wrap">
+  <p class="crumb"><a href="/learn.html">Learn AI</a> / <a href="../">Claude Architect (CCAR-P) course</a> / Module 6</p>
+  <span class="pill">MODULE 6 OF 7 · DOMAIN 6 · 14% OF THE EXAM · 5 SESSIONS</span>
+  <h1>Stakeholder Communication &amp; Lifecycle Management<i>.</i></h1>
+  <p class="lede">Architecture is a social job too. Run discovery that produces numbers rather than adjectives, explain decisions and trade-offs in each audience's terms, write SLAs you can actually measure and keep feedback flowing, document so the build team never has to guess, and carry the solution through discovery, design, handoff, monitoring and iteration.</p>
+  <div class="dl"><a class="btn" href="#s6-1">Start session 6.1 →</a> <a class="btn ghost" href="../code/module-6.py" download>Download the Python</a></div>
+</header>
+<div class="wrap layout">
+  <aside class="toc" aria-label="Sessions"><p>In this module</p><ol><li><a href="#s6-1"><span>6.1</span>Structured discovery</a></li><li><a href="#s6-2"><span>6.2</span>Communicating decisions and trade-offs</a></li><li><a href="#s6-3"><span>6.3</span>Feedback loops and SLAs</a></li><li><a href="#s6-4"><span>6.4</span>Architecture documentation and implementation guidance</a></li><li><a href="#s6-5"><span>6.5</span>The solution life cycle</a></li></ol></aside>
+  <div class="content">
+<section class="session" id="s6-1"><p class="snum">Session 6.1</p><h2>Structured discovery</h2><p>Discovery finds out <strong>what problem is being solved, for whom, and what a good outcome looks like in numbers</strong>. It ends when the problem and success measures are written down and the stakeholders agree with them, not when the first demo works.</p><h3>Who to talk to, and what they care about</h3><p>Different stakeholders see different parts of the problem, and have different power to help or block. Map them early.</p><div class="tbl"><table><thead><tr><th>Stakeholder</th><th>Typically cares about</th><th>Ask them</th></tr></thead><tbody><tr><td>Executive sponsor</td><td>Business outcome, cost, risk, timeline</td><td>"What would make this a success in a year?"</td></tr><tr><td>Process owner / operations</td><td>Throughput, exceptions, staffing</td><td>"Walk me through the last ten cases. Where does time go?"</td></tr><tr><td>End users</td><td>Usefulness, trust, effort</td><td>"What would make you stop using it?"</td></tr><tr><td>Subject-matter experts</td><td>Correctness in edge cases</td><td>"Which cases do new staff get wrong?"</td></tr><tr><td>Security, privacy, legal, compliance</td><td>Data, access, regulation, liability</td><td>"What data may never leave which boundary?"</td></tr><tr><td>IT / platform</td><td>Integration, operations, support</td><td>"Who runs it at 2 a.m.?"</td></tr></tbody></table></div><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">STAKEHOLDERS = [  # name, power 1–5, interest 1–5, main concern
+    (&quot;CFO (sponsor)&quot;, 5, 4, &quot;cost per claim, payback&quot;),
+    (&quot;Head of claims operations&quot;, 4, 5, &quot;cycle time, staffing&quot;),
+    (&quot;Claims adjusters&quot;, 2, 5, &quot;trust, extra review work&quot;),
+    (&quot;CISO&quot;, 5, 2, &quot;PHI handling, vendor risk&quot;),
+    (&quot;Legal &amp; compliance&quot;, 4, 3, &quot;IRDAI rules, audit trail&quot;),
+    (&quot;Customer service team&quot;, 2, 2, &quot;fewer &#x27;where is my claim&#x27; calls&quot;),
+]
+
+def quadrant(power, interest):
+    if power &gt;= 4 and interest &gt;= 4: return &quot;manage closely&quot;
+    if power &gt;= 4:                   return &quot;keep satisfied&quot;
+    if interest &gt;= 4:                return &quot;keep informed&quot;
+    return &quot;monitor&quot;
+
+for name, p, i, concern in sorted(STAKEHOLDERS, key=lambda s: (-s[1], -s[2])):
+    print(f&quot;{quadrant(p, i):&lt;15} {name:&lt;28} {concern}&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>manage closely  CFO (sponsor)                cost per claim, payback
+keep satisfied  CISO                         PHI handling, vendor risk
+manage closely  Head of claims operations    cycle time, staffing
+keep satisfied  Legal &amp; compliance           IRDAI rules, audit trail
+keep informed   Claims adjusters             trust, extra review work
+monitor         Customer service team        fewer &#x27;where is my claim&#x27; calls</pre></div></div><aside class="call read"><b>How to read it</b><p>The CISO has high power but low day-to-day interest: easy to under-engage until a late security review blocks the launch. "Keep satisfied" means bringing them the data-flow diagram in week two, not week twelve. The adjusters have little formal power but decide adoption, which the business case in Module 1 showed is what drives the return.</p></aside><h3>Discovery that produces numbers</h3><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">QUESTIONS = {  # area: (question, answer or None, critical?)
+    &quot;process&quot;:     (&quot;Current steps and handoffs for a claim&quot;, &quot;7 steps; 3 handoffs; doc review takes 40%&quot;, True),
+    &quot;volume&quot;:      (&quot;Claims per day, peak vs average&quot;, &quot;6,000/month; Monday peak 2.3×&quot;, True),
+    &quot;baseline&quot;:    (&quot;Current cycle time and error rate&quot;, &quot;9 days median; 6% rework&quot;, True),
+    &quot;success&quot;:     (&quot;Target outcome, in numbers&quot;, &quot;median under 5 days; accuracy ≥97% on fields&quot;, True),
+    &quot;data&quot;:        (&quot;Where documents live; formats; languages&quot;, &quot;S3 PDFs; English, Hindi, Marathi&quot;, True),
+    &quot;constraints&quot;: (&quot;Regulatory, residency, retention&quot;, None, True),
+    &quot;decision&quot;:    (&quot;Who may approve payouts&quot;, &quot;licensed adjusters only&quot;, True),
+    &quot;exceptions&quot;:  (&quot;Which cases must always go to people&quot;, None, False),
+    &quot;integration&quot;: (&quot;Systems to read from / write to&quot;, &quot;core claims system (read), document store&quot;, False),
+}
+answered = [k for k, (_, a, _) in QUESTIONS.items() if a]
+blocking = [k for k, (_, a, crit) in QUESTIONS.items() if a is None and crit]
+print(f&quot;answered {len(answered)}/{len(QUESTIONS)}&quot;)
+print(&quot;blocking design (critical, unanswered):&quot;, blocking or &quot;none&quot;)
+print(&quot;open but not blocking:&quot;, [k for k, (_, a, c) in QUESTIONS.items() if a is None and not c])</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>answered 7/9
+blocking design (critical, unanswered): [&#x27;constraints&#x27;]
+open but not blocking: [&#x27;exceptions&#x27;]</pre></div></div><aside class="call read"><b>How to read it</b><p>Discovery isn't finished: constraints (regulation, residency, retention) are unanswered, and that's a critical gap. Designing before it's answered risks rework when legal finally weighs in. Note how every answered question is a number or a named fact, never "faster" or "better".</p></aside><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>Three weeks before launch, the security team blocks a Claude solution because PHI flows to a logging vendor without an agreement. What discovery failure caused this?</p><div class="opts"><button type="button" data-ok="0">A. The model choice</button><button type="button" data-ok="1">B. A high-power stakeholder (security) wasn't engaged early, and data-handling constraints weren't captured as requirements during discovery</button><button type="button" data-ok="0">C. Missing few-shot examples</button><button type="button" data-ok="0">D. Too many end-user interviews</button></div><p class="why" hidden>Security and compliance constraints belong in discovery. Engaging high-power, low-day-to-day-interest stakeholders early ("keep satisfied") prevents late blocking reviews.</p></div><div class="quiz" data-multi="1"><p class="q"><b>Practice question</b><span class="n">Select 2</span>Which discovery outputs are most useful for designing a Claude solution? (Select 2)</p><div class="opts"><button type="button" data-ok="1">A. A measured baseline (e.g. 9-day median cycle time, 6% rework)</button><button type="button" data-ok="0">B. A statement that the process should be "more efficient"</button><button type="button" data-ok="1">C. Agreed success criteria in numbers (e.g. median under 5 days, field accuracy ≥ 97%)</button><button type="button" data-ok="0">D. A list of preferred AI vendors</button></div><button type=button class=check>Check answer</button><p class="why" hidden>Baselines and numeric targets let you design, evaluate and later prove the solution's value. Adjectives can't be measured, and vendor preferences come after requirements.</p></div></section><section class="session" id="s6-2"><p class="snum">Session 6.2</p><h2>Communicating decisions and trade-offs</h2><p>Every significant architecture decision has alternatives and costs. Record it in an <strong>architecture decision record (ADR)</strong>: what was decided, why, what else was considered, and what it costs. ADRs make decisions reviewable, keep them from being relitigated every month, and tell future teams what would make them worth revisiting.</p><div class="cell file"><div class="code"><div class="lab"><span>docs/adr/0007-workflow-not-agent-for-claims-intake.md</span><button class="copy" type="button">Copy</button></div><pre><code class="language-markdown"># ADR 0007: Use a fixed workflow, not an autonomous agent, for claims intake
+
+Status: Accepted (2026-10-21) · Owner: Claims platform architect
+
+## Context
+6,000 claims/month; steps are fixed (extract → validate → draft → adjuster approves).
+Requirements: field accuracy ≥ 97%, p95 ≤ 11 s per document pack, every payout approved by an adjuster.
+
+## Decision
+Implement as a workflow: Claude Sonnet 5.5 (pinned) for extraction and drafting with structured outputs;
+validation and routing in code; adjuster approval in the existing claims UI.
+
+## Alternatives considered
+- Augmented LLM (single call): 93% accuracy in eval: below the 97% floor.
+- Autonomous agent: 97% accuracy but ~6× the cost and p95 of 48 s; harder to audit.
+
+## Consequences
++ ≈ $15,300/month less model spend than the agent design ($3,060 vs $18,360); predictable, auditable steps.
+− New claim types need a code change, not just a prompt change.
+Revisit if: claim types become open-ended, or the workflow&#x27;s accuracy falls below 97% on the eval set.</code></pre></div></div><h3>Same decision, different audiences</h3><p>Explain the decision in each audience's currency. Executives want outcomes, cost and risk; security wants data flows and controls; engineers want interfaces and constraints; operations wants runbooks and failure modes. Here's one decision record rendered for three audiences.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">DECISION = {
+    &quot;what&quot;: &quot;fixed workflow on Claude Sonnet 5.5, adjuster approves every payout&quot;,
+    &quot;outcome&quot;: &quot;median settle time 9 → under 5 days&quot;, &quot;cost&quot;: &quot;≈ $3,060 a month in model usage&quot;,
+    &quot;rejected&quot;: &quot;autonomous agent: same accuracy, about 6× the cost and 4× slower&quot;,
+    &quot;risk&quot;: &quot;a new claim type needs a code change, about 2 weeks&quot;,
+    &quot;data&quot;: &quot;documents stay in the India region; PHI redacted from logs; no data used for training&quot;,
+    &quot;controls&quot;: &quot;no payout tool; per-user authorisation; audit trail with model and prompt versions&quot;,
+    &quot;interfaces&quot;: &quot;POST /claims/{id}/extract returns the 14-field schema v3; p95 ≤ 11 s; retries 2×&quot;,
+}
+VIEWS = {
+    &quot;executive&quot;: [&quot;what&quot;, &quot;outcome&quot;, &quot;cost&quot;, &quot;rejected&quot;, &quot;risk&quot;],
+    &quot;security&quot;:  [&quot;what&quot;, &quot;data&quot;, &quot;controls&quot;],
+    &quot;engineering&quot;: [&quot;what&quot;, &quot;interfaces&quot;, &quot;risk&quot;, &quot;rejected&quot;],
+}
+for audience, fields in VIEWS.items():
+    print(f&quot;── for {audience}&quot;)
+    for f in fields:
+        print(f&quot;   {f}: {DECISION[f]}&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>── for executive
+   what: fixed workflow on Claude Sonnet 5.5, adjuster approves every payout
+   outcome: median settle time 9 → under 5 days
+   cost: ≈ $3,060 a month in model usage
+   rejected: autonomous agent: same accuracy, about 6× the cost and 4× slower
+   risk: a new claim type needs a code change, about 2 weeks
+── for security
+   what: fixed workflow on Claude Sonnet 5.5, adjuster approves every payout
+   data: documents stay in the India region; PHI redacted from logs; no data used for training
+   controls: no payout tool; per-user authorisation; audit trail with model and prompt versions
+── for engineering
+   what: fixed workflow on Claude Sonnet 5.5, adjuster approves every payout
+   interfaces: POST /claims/{id}/extract returns the 14-field schema v3; p95 ≤ 11 s; retries 2×
+   risk: a new claim type needs a code change, about 2 weeks
+   rejected: autonomous agent: same accuracy, about 6× the cost and 4× slower</pre></div></div><aside class="call tip"><b>Tip</b><p>Lead with the recommendation and the one or two numbers that justify it; put the detail in an appendix. State trade-offs plainly, including what you're giving up. Stakeholders trust an architect who names the costs more than one who only sells the benefits. And be honest about Claude's limits: it can be confidently wrong; people stay accountable for decisions.</p></aside><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>An architect must explain why the team chose a workflow over an autonomous agent. What should go in the decision record?</p><div class="opts"><button type="button" data-ok="0">A. Only the chosen design, to keep it short</button><button type="button" data-ok="1">B. The context and requirements, the decision, the alternatives considered with their measured results, the consequences (positive and negative), and when to revisit</button><button type="button" data-ok="0">C. The model's architecture and training details</button><button type="button" data-ok="0">D. A list of every prompt</button></div><p class="why" hidden>An ADR captures why a decision was made and what it costs, so it can be reviewed, defended and revisited when conditions change.</p></div><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>The CFO asks whether to approve the AI claims project. Which framing is most effective?</p><div class="opts"><button type="button" data-ok="0">A. A detailed walkthrough of the retrieval pipeline and prompt templates</button><button type="button" data-ok="1">B. The recommendation, the expected outcome and cost in numbers, the main risk, and the alternative that was rejected and why</button><button type="button" data-ok="0">C. A live demo only</button><button type="button" data-ok="0">D. The full list of evaluation cases</button></div><p class="why" hidden>Executives decide on outcomes, cost and risk. Technical detail belongs in the appendix or the engineering view.</p></div></section><section class="session" id="s6-3"><p class="snum">Session 6.3</p><h2>Feedback loops and SLAs</h2><h3>SLIs, SLOs and SLAs</h3><div class="tbl"><table><thead><tr><th>Term</th><th>What it is</th><th>Example</th></tr></thead><tbody><tr><td><strong>SLI</strong> (indicator)</td><td>A measurement, defined precisely</td><td>Share of requests answered successfully; p95 total latency measured at the API gateway</td></tr><tr><td><strong>SLO</strong> (objective)</td><td>A target for an SLI over a period</td><td>99.5% successful over a calendar month; p95 ≤ 8 s</td></tr><tr><td><strong>SLA</strong> (agreement)</td><td>An SLO written into a contract <strong>with a consequence</strong></td><td>Below 99.5% → 10% service credit for the month</td></tr></tbody></table></div><p>A workable SLA names the indicator and how it's calculated, the target and period, the <strong>exclusions</strong> (planned maintenance, misuse, customer-side outages), who reports it and how often, and the consequence. Latency targets need a <strong>percentile</strong> and a <strong>measurement point</strong>; averages hide the slow requests users complain about.</p><aside class="call concept"><b>The idea</b><p><strong>Quality is harder to promise than uptime.</strong> Availability and latency can be measured on every request. Output quality can't be fully observed in real time, so quality commitments are usually expressed as <strong>evaluated</strong> targets (e.g. "≥ 95% on the agreed eval set, re-run monthly and after every change"), backed by sampled review in production. Don't sign an SLA on a number nobody measures.</p></aside><p>Here's a month's SLA report computed from daily figures, with exclusions applied as the contract defines them.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">DAYS = [  # requests, failures, p95_ms, maintenance_window?
+    *[(40_000, 120, 6_200, False)] * 26,
+    (40_000, 2_900, 9_800, False),      # incident: provider overload
+    (38_000, 140, 6_400, True),         # planned maintenance (excluded)
+    (41_000, 110, 6_100, False), (39_500, 135, 7_900, False),
+]
+SLO_SUCCESS, SLO_P95 = 0.995, 8_000
+counted = [d for d in DAYS if not d[3]]
+reqs = sum(d[0] for d in counted); fails = sum(d[1] for d in counted)
+success = 1 - fails / reqs
+p95_breach_days = sum(d[2] &gt; SLO_P95 for d in counted)
+
+print(f&quot;success rate (excl. maintenance): {success:.3%}  target {SLO_SUCCESS:.1%}  → {&#x27;MET&#x27; if success &gt;= SLO_SUCCESS else &#x27;MISSED&#x27;}&quot;)
+print(f&quot;days with p95 &gt; {SLO_P95:,} ms: {p95_breach_days} of {len(counted)}&quot;)
+credit = 0.10 if success &lt; SLO_SUCCESS else 0.0
+print(f&quot;service credit due: {credit:.0%}&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>success rate (excl. maintenance): 99.460%  target 99.5%  → MISSED
+days with p95 &gt; 8,000 ms: 1 of 29
+service credit due: 10%</pre></div></div><aside class="call read"><b>How to read it</b><p>One bad day (a provider overload) pulls the month's success rate to 99.46%, just under the 99.5% objective, so a 10% credit is due. The maintenance day doesn't count, because the contract excludes it. That one day was also the only latency breach. The design lessons: an availability SLA on top of an external model provider needs fallbacks (another region or platform, or a degraded mode), and the SLO you promise must sit below what your dependencies can deliver.</p></aside><h3>The stakeholder feedback loop</h3><p>Collect feedback → decide what to change → change it → <strong>tell people what happened</strong>. Without the last step, people stop giving feedback. Combine <strong>implicit</strong> signals (thumbs down, edited drafts, abandoned sessions, hand-offs to people) with <strong>explicit</strong> ones (expert reviews, structured reports from support teams). A single report is a lead, not a measurement: group and count before acting.</p><figure class="seq anim" style="--c:4"><figcaption>The feedback loop, closed</figcaption><div class="actors"><b>Users and experts</b><b>Product owner</b><b>Eval set</b><b>Release</b></div><div class="lane"><div class="m r" style="grid-column:1/3;--s:2;--k:0"><span>thumbs-down, edited drafts, expert reviews, support reports</span><i></i></div><div class="m note" style="grid-column:2/3;--k:1"><span>Group and count: 5× wrong amount, 4× missed exception</span></div><div class="m r" style="grid-column:2/4;--s:2;--k:2"><span>add the failing cases (they fail today)</span><i></i></div><div class="m r" style="grid-column:3/5;--s:2;--k:3"><span>fix passes old and new cases</span><i></i></div><div class="m l reply" style="grid-column:1/5;--s:4;--k:4"><span>"You reported X; here's what changed"</span><i></i></div></div></figure><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">REPORTS = [&quot;wrong amount&quot;, &quot;too long&quot;, &quot;wrong amount&quot;, &quot;missed hospitalisation exception&quot;, &quot;slow&quot;, &quot;wrong amount&quot;,
+           &quot;too long&quot;, &quot;missed hospitalisation exception&quot;, &quot;missed hospitalisation exception&quot;, &quot;slow&quot;, &quot;wrong amount&quot;,
+           &quot;tone too formal&quot;, &quot;missed hospitalisation exception&quot;, &quot;wrong amount&quot;]
+TRAFFIC = 6_000
+from collections import Counter
+counts = Counter(REPORTS)
+for issue, n in counts.most_common():
+    action = &quot;add failing cases to eval set; fix&quot; if n &gt;= 4 else (&quot;watch&quot; if n &gt;= 2 else &quot;log&quot;)
+    print(f&quot;{n:&gt;3}  {issue:&lt;34} {n / TRAFFIC:.2%} of claims   → {action}&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>  5  wrong amount                       0.08% of claims   → add failing cases to eval set; fix
+  4  missed hospitalisation exception   0.07% of claims   → add failing cases to eval set; fix
+  2  too long                           0.03% of claims   → watch
+  2  slow                               0.03% of claims   → watch
+  1  tone too formal                    0.02% of claims   → log</pre></div></div><aside class="call read"><b>How to read it</b><p>"Wrong amount" and the missed hospitalisation exception dominate, and each becomes a set of eval cases before any fix. The one "tone too formal" report is logged, not acted on: one memorable complaint and a widespread problem look the same in an inbox until you count. Close the loop by telling the reporters what changed.</p></aside><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>A client wants an SLA promising "AI answers are 99% accurate". What should the architect propose instead?</p><div class="opts"><button type="button" data-ok="0">A. Accept it, since accuracy is easy to measure in production</button><button type="button" data-ok="1">B. An evaluated quality target (e.g. ≥ 95% on an agreed, versioned eval set, re-run monthly and after changes) plus sampled production review, alongside measurable availability and latency SLOs</button><button type="button" data-ok="0">C. No quality commitment at all</button><button type="button" data-ok="0">D. An average-latency SLA only</button></div><p class="why" hidden>Real-time accuracy can't be measured on every response, so quality commitments should rest on an agreed evaluation method. Availability and latency are measured directly.</p></div><div class="quiz" data-multi="1"><p class="q"><b>Practice question</b><span class="n">Select 2</span>Which elements make a latency SLA workable? (Select 2)</p><div class="opts"><button type="button" data-ok="1">A. A percentile (e.g. p95) and the measurement point (e.g. at the API gateway)</button><button type="button" data-ok="0">B. An average across all requests</button><button type="button" data-ok="1">C. Defined exclusions (e.g. planned maintenance) and the consequence of missing the target</button><button type="button" data-ok="0">D. A promise that the model will never be slow</button></div><button type=button class=check>Check answer</button><p class="why" hidden>Percentiles reflect what users experience, the measurement point removes ambiguity, and exclusions plus consequences turn an objective into an agreement.</p></div></section><section class="session" id="s6-4"><p class="snum">Session 6.4</p><h2>Architecture documentation and implementation guidance</h2><p>Two documents, two jobs. <strong>Architecture documentation</strong> explains how the system is designed: components and responsibilities, the request flow, integrations and data sources, boundaries, and the constraints it must meet. <strong>Implementation guidance</strong> tells the build team what to do: the order of work, the interfaces and formats others depend on, configuration that must match, standards, and, crucially, <strong>which decisions are fixed and which they can make locally</strong>.</p><p>AI systems need items that generic templates miss:</p><div class="tbl"><table><thead><tr><th>Item</th><th>Why it matters</th></tr></thead><tbody><tr><td>Model and <strong>exact version</strong> called, per route</td><td>Behaviour, cost and limits depend on it</td></tr><tr><td>Where prompts and templates live, and how they're versioned</td><td>Prompts are logic; changes are releases</td></tr><tr><td>How context is assembled: retrieval sources, filters, what's included per request</td><td>Most quality issues trace to context</td></tr><tr><td>Eval set, metrics and <strong>thresholds</strong> to meet</td><td>Defines "done" and gates future changes</td></tr><tr><td>Fallback behaviour when the model or a tool fails</td><td>Keeps SLAs and user trust</td></tr><tr><td>Human review and approval points</td><td>Governance and accountability</td></tr><tr><td>Owner after handoff</td><td>A system without an owner stops being maintained</td></tr></tbody></table></div><div class="cell file"><div class="code"><div class="lab"><span>docs/implementation-guidance.md (excerpt)</span><button class="copy" type="button">Copy</button></div><pre><code class="language-markdown">## Fixed decisions (change only via ADR)
+- Model: claude-sonnet-5-5 for extraction and drafting; claude-haiku-5-5 for routing. Pinned in config/models.yaml.
+- Output: structured outputs against schemas/claim_fields.v3.json. No free-text parsing.
+- Payouts: never callable by the AI path. Adjuster approval via the claims UI only.
+
+## Team decisions (local)
+- Internal module structure, test framework, logging library.
+
+## Build order
+1. Ingestion + chunking (heading-aware) + index with access metadata.
+2. Extraction route + eval harness (eval/claims_v12, 502 items). Gate: F1 ≥ 0.97.
+3. Draft route + adjuster UI integration. Gate: adjuster acceptance ≥ 85% in pilot.
+4. Monitoring: traces with model + prompt version; burn-rate alerts; sampled judge.
+
+## Failure behaviour
+- Model 429/5xx: retry 2× with backoff, then queue and show &quot;processing, about 15 min&quot;.
+- Validation failure: one retry with the error; then route to manual review.</code></pre></div></div><p>Here's a completeness check for a design document, the kind of gate worth running before handoff.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">REQUIRED_SECTIONS = [&quot;components&quot;, &quot;request flow&quot;, &quot;integrations&quot;, &quot;constraints&quot;, &quot;model and version&quot;,
+                     &quot;prompt location and versioning&quot;, &quot;context assembly&quot;, &quot;eval set and thresholds&quot;,
+                     &quot;fallback behaviour&quot;, &quot;human review points&quot;, &quot;owner&quot;]
+doc = &quot;&quot;&quot;# Claims assistant: architecture
+## Components ... ## Request flow ... ## Integrations ... ## Constraints ...
+## Model and version: claude-sonnet-5-5 ... ## Context assembly ... ## Eval set and thresholds ...
+## Human review points ...&quot;&quot;&quot;
+
+present = [s for s in REQUIRED_SECTIONS if s in doc.lower()]
+missing = [s for s in REQUIRED_SECTIONS if s not in present]
+print(f&quot;{len(present)}/{len(REQUIRED_SECTIONS)} sections present&quot;)
+print(&quot;missing before handoff:&quot;, missing)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>8/11 sections present
+missing before handoff: [&#x27;prompt location and versioning&#x27;, &#x27;fallback behaviour&#x27;, &#x27;owner&#x27;]</pre></div></div><aside class="call read"><b>How to read it</b><p>The design document covers the system well but omits three things a build and run team needs: where prompts live and how they're versioned, what happens when the model or a tool fails, and who owns the system after handoff. The last one is the most expensive to discover late.</p></aside><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>A build team keeps asking whether they may change the output schema, the model, or the test framework. What's missing from the implementation guidance?</p><div class="opts"><button type="button" data-ok="0">A. More architecture diagrams</button><button type="button" data-ok="1">B. A clear split between fixed decisions (schema, model, changeable only via ADR) and local decisions the team can make (test framework)</button><button type="button" data-ok="0">C. A longer system prompt</button><button type="button" data-ok="0">D. The executive summary</button></div><p class="why" hidden>Implementation guidance should state which decisions are settled and which are the team's, so nobody has to guess or wait.</p></div><div class="quiz" data-multi="1"><p class="q"><b>Practice question</b><span class="n">Select 2</span>Which items does architecture documentation for a Claude system need that a generic template often misses? (Select 2)</p><div class="opts"><button type="button" data-ok="1">A. The exact model version per route and how prompts are versioned</button><button type="button" data-ok="0">B. The company's logo guidelines</button><button type="button" data-ok="1">C. The eval set and the thresholds the system must meet</button><button type="button" data-ok="0">D. The CEO's preferred AI vendor</button></div><button type=button class=check>Check answer</button><p class="why" hidden>Model versions, prompt management and evaluation thresholds define the system's behaviour and its quality gate.</p></div></section><section class="session" id="s6-5"><p class="snum">Session 6.5</p><h2>The solution life cycle</h2><p>An AI solution moves through five phases. Each produces what the next one needs, and the last feeds back into the first: it's a cycle, not a project plan.</p><figure class="flow anim" style="--n:5"><figcaption>Life-cycle phases and their exit criteria</figcaption><ol><li style="--i:0"><b>Discovery</b><span>Exit: problem, users, baseline and numeric success measures written down and agreed.</span></li><li style="--i:1"><b>Design</b><span>Exit: architecture, model and prompting approach, cost and latency estimates, and the evaluation plan.</span></li><li style="--i:2"><b>Handoff</b><span>Exit: docs, implementation guidance, eval set, fixed vs local decisions, and a named owner.</span></li><li style="--i:3"><b>Monitoring</b><span>From first real traffic: quality vs eval criteria, errors, latency, cost, review load, with thresholds.</span></li><li style="--i:4"><b>Iteration</b><span>Failures become eval cases; changes go through evals; model upgrades are migrations.</span></li></ol></figure><figure class="seq anim" style="--c:3"><figcaption>Handoff: what moves from architect to the owning team</figcaption><div class="actors"><b>Architect</b><b>Build team</b><b>Run team (owner)</b></div><div class="lane"><div class="m r" style="grid-column:1/3;--s:2;--k:0"><span>architecture docs, implementation guidance, ADRs, eval set v12</span><i></i></div><div class="m l reply" style="grid-column:1/3;--s:2;--k:1"><span>questions resolved; fixed vs local decisions clear</span><i></i></div><div class="m r" style="grid-column:2/4;--s:2;--k:2"><span>system, runbooks, dashboards, alert thresholds</span><i></i></div><div class="m r" style="grid-column:1/4;--s:3;--k:3"><span>monitoring plan, iteration triggers, model migration policy</span><i></i></div><div class="m note" style="grid-column:3/4;--k:4"><span>Owns the system from here, including its feedback loop</span></div></div></figure><h3>Iteration triggers</h3><p>Monitoring is only useful if crossing a threshold <em>does</em> something. Define, at handoff, which signals trigger which action.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">TRIGGERS = [  # metric, current, threshold, direction, action
+    (&quot;eval pass rate (monthly re-run)&quot;, 0.952, 0.95, &quot;below&quot;, &quot;investigate; block releases until restored&quot;),
+    (&quot;judge pass rate, live sample&quot;, 0.91, 0.93, &quot;below&quot;, &quot;pull failing traces; add cases; fix&quot;),
+    (&quot;human review load (items/day)&quot;, 610, 540, &quot;above&quot;, &quot;recalibrate thresholds or add reviewers&quot;),
+    (&quot;cost per settled claim (₹)&quot;, 3.4, 4.0, &quot;above&quot;, &quot;check cache hits and retries&quot;),
+    (&quot;days to model deprecation&quot;, 75, 90, &quot;below&quot;, &quot;start migration: evals on the successor model&quot;),
+]
+for metric, cur, thr, direction, action in TRIGGERS:
+    fired = cur &lt; thr if direction == &quot;below&quot; else cur &gt; thr
+    print(f&quot;{&#x27;FIRED&#x27; if fired else &#x27;ok   &#x27;}  {metric:&lt;32} {cur:&lt;7} ({direction} {thr})  {action if fired else &#x27;&#x27;}&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>ok     eval pass rate (monthly re-run)  0.952   (below 0.95)  
+FIRED  judge pass rate, live sample     0.91    (below 0.93)  pull failing traces; add cases; fix
+FIRED  human review load (items/day)    610     (above 540)  recalibrate thresholds or add reviewers
+ok     cost per settled claim (₹)       3.4     (above 4.0)  
+FIRED  days to model deprecation        75      (below 90)  start migration: evals on the successor model</pre></div></div><aside class="call read"><b>How to read it</b><p>Three triggers fire: live quality is slipping, reviewers are over capacity, and the pinned model is within 90 days of deprecation, so the migration (evals on the successor, prompt re-tuning, staged rollout) starts now, not in week twelve. The monthly eval still passes, which is exactly why a live quality signal is needed alongside it.</p></aside><h3>Configuration management across the life cycle</h3><p>Behaviour is set by configuration as much as by code: the <strong>model version</strong> (pinned, never an alias), the <strong>prompt version</strong> (templates in version control, logged per call), and, for teams using Claude Code, <strong>CLAUDE.md</strong> (shared instructions) and <strong>settings.json</strong> (enforced permissions and settings). Changes to any of them are releases: reviewed, evaluated, and recorded.</p><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>At handoff, which item is most often missing and most costly later?</p><div class="opts"><button type="button" data-ok="0">A. An extra architecture diagram</button><button type="button" data-ok="1">B. A named owner for the running system, with the monitoring plan and iteration triggers they're responsible for</button><button type="button" data-ok="0">C. A larger eval set</button><button type="button" data-ok="0">D. A new logo</button></div><p class="why" hidden>Without an owner, alerts go unanswered, feedback isn't acted on and the system degrades. Ownership is part of the handoff, not an afterthought.</p></div><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>The provider announces that the pinned model will be retired in 75 days. Which life-cycle response is correct?</p><div class="opts"><button type="button" data-ok="0">A. Switch the model ID the week before retirement</button><button type="button" data-ok="1">B. Treat it as a migration: evaluate the successor on the eval set, re-tune prompts and settings, roll out gradually, and keep the old version ready to roll back until it retires</button><button type="button" data-ok="0">C. Do nothing; the provider will migrate automatically</button><button type="button" data-ok="0">D. Remove the eval set to speed things up</button></div><p class="why" hidden>Model changes alter behaviour, cost and parameters. Planned migrations with evals and staged rollout avoid surprises; last-minute switches don't.</p></div></section>
+  <div class="pager"><a class="btn ghost" href="../module-5/">← Module 5</a><a class="btn" href="../module-7/">Module 7 →</a></div>
+  </div>
+</div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="fine" style="border:none;margin:0;padding:0">
+      <span>© 2026 XploreAI · <a href="/">xploreai.co.in</a></span>
+      <span><a href="mailto:hello@xploreai.co.in">hello@xploreai.co.in</a></span>
+    </div>
+  </div>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/json.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/bash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/markdown.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/typescript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/yaml.min.js"></script>
+<script src="/courses/claude-architect/course.js?v=1793003699"></script>
+</body>
+</html>

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 7: Developer Productivity &amp; Operational Enablement — Claude Architect (CCAR-P) course — XploreAI</title>
+<meta name="description" content="Make Claude Code work the same way for a whole team (with instructions, rules, skills, settings and MCP servers each at the right scope), build AI-assisted workflows into the delivery pipeline and measure whether they actually help, and use Claude safely to debug and resolve operational incidents.">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="XploreAI">
+<meta property="og:title" content="Module 7: Developer Productivity &amp; Operational Enablement — Claude Architect (CCAR-P) course">
+<meta property="og:description" content="Make Claude Code work the same way for a whole team (with instructions, rules, skills, settings and MCP servers each at the right scope), build AI-assisted workflows into the delivery pipeline and measure whether they actually help, and use Claude safely to debug and resolve operational incidents.">
+<meta property="og:url" content="https://xploreai.co.in/courses/claude-architect/module-7/">
+<meta property="og:image" content="https://xploreai.co.in/assets/og-image.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/style.css">
+<link rel="stylesheet" href="/courses/claude-architect/course.css?v=1793009331">
+</head>
+<body>
+
+<nav>
+  <div class="wrap bar">
+    <a class="wordmark" href="/">xplore<span>ai</span></a>
+    <ul>
+      <li><a href="/#agents">Solutions</a></li>
+      <li><a href="/#stories">Success Stories</a></li>
+      <li><a href="/#subscribe">Newsletter</a></li>
+      <li><a href="/learn.html" aria-current="page">Learn AI</a></li>
+      <li><a class="btn" href="https://wa.me/919769686931?text=Hi%20XploreAI%2C%20I%27m%20interested%20in%20AI%20automation!">Get Started</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main class="cca">
+<header class="mhero wrap">
+  <p class="crumb"><a href="/learn.html">Learn AI</a> / <a href="../">Claude Architect (CCAR-P) course</a> / Module 7</p>
+  <span class="pill">MODULE 7 OF 7 · DOMAIN 7 · 7% OF THE EXAM · 3 SESSIONS</span>
+  <h1>Developer Productivity &amp; Operational Enablement<i>.</i></h1>
+  <p class="lede">Make Claude Code work the same way for a whole team (with instructions, rules, skills, settings and MCP servers each at the right scope), build AI-assisted workflows into the delivery pipeline and measure whether they actually help, and use Claude safely to debug and resolve operational incidents.</p>
+  <div class="dl"><a class="btn" href="#s7-1">Start session 7.1 →</a> <a class="btn ghost" href="../code/module-7.py" download>Download the Python</a></div>
+</header>
+<div class="wrap layout">
+  <aside class="toc" aria-label="Sessions"><p>In this module</p><ol><li><a href="#s7-1"><span>7.1</span>Configuring Claude Code for teams</a></li><li><a href="#s7-2"><span>7.2</span>AI-assisted developer workflows</a></li><li><a href="#s7-3"><span>7.3</span>Debugging and operations</a></li></ol></aside>
+  <div class="content">
+<section class="session" id="s7-1"><p class="snum">Session 7.1</p><h2>Configuring Claude Code for teams</h2><p>When Claude Code behaves differently for two developers on the same repository, the cause is almost always <strong>configuration scope</strong>: an instruction in one person's user file, a rule that loads only in one folder, a setting nobody committed. An architect designs the team configuration deliberately.</p><div class="tbl"><table><thead><tr><th>Need</th><th>Put it in</th><th>Scope</th><th>Loads</th></tr></thead><tbody><tr><td>Organisation-wide rules and security baseline</td><td><strong>Managed</strong> policy (CLAUDE.md and settings deployed by IT)</td><td>Everyone; can't be overridden</td><td>Always</td></tr><tr><td>Standards for the whole repository</td><td><strong>Project <code>CLAUDE.md</code></strong> (committed)</td><td>The team</td><td>Every session</td></tr><tr><td>Conventions for one folder</td><td><strong>Directory <code>CLAUDE.md</code></strong></td><td>The team</td><td>When Claude works on files in that folder</td></tr><tr><td>Conventions for a <em>kind</em> of file, wherever it lives</td><td><strong>Path-scoped rule</strong> in <code>.claude/rules/</code> with <code>paths:</code></td><td>The team</td><td>When Claude reads or edits a matching file</td></tr><tr><td>A procedure used occasionally</td><td><strong>Skill</strong> (<code>.claude/skills/&lt;name&gt;/SKILL.md</code>)</td><td>The team</td><td>Description always; body when used</td></tr><tr><td>Permissions, model, hooks, env</td><td><strong><code>.claude/settings.json</code></strong> (committed)</td><td>The team</td><td>Enforced by Claude Code</td></tr><tr><td>Shared MCP servers</td><td><strong><code>.mcp.json</code></strong> (committed; secrets as env vars)</td><td>The team</td><td>When approved</td></tr><tr><td>Personal preferences</td><td><strong>User</strong> <code>~/.claude/CLAUDE.md</code>, local settings</td><td>Just you</td><td>Always, for you</td></tr></tbody></table></div><h3>Directory CLAUDE.md or path-scoped rule?</h3><p>The deciding question is <strong>where the targeted files live</strong>. If they're neatly inside one folder (everything in <code>services/payments/</code>), a directory CLAUDE.md fits. If they're scattered (test files next to source files across dozens of folders, every <code>*.sql</code> migration, every React component), a path-scoped rule with a glob reaches all of them without duplicating instructions.</p><div class="cell file"><div class="code"><div class="lab"><span>.claude/rules/tests.md</span><button class="copy" type="button">Copy</button></div><pre><code class="language-markdown">---
+paths: [&quot;**/*.test.ts&quot;, &quot;**/*.spec.ts&quot;]
+---
+# Test conventions
+- One behaviour per test; name tests &quot;does X when Y&quot;.
+- Use the factories in test/factories; never hard-code patient data.
+- Mock the Claude API with test/fakes/claude.ts. Tests must never call the real API.</code></pre></div></div><h3>Why scope matters for the token budget</h3><p>CLAUDE.md files and unscoped rules load at the start of every session, and they cost context (and adherence) whether or not they're relevant. Anthropic's guidance is to keep each CLAUDE.md concise (on the order of 200 lines); path-scoped rules load only when matching files are touched. Here's one session's cost under two layouts.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">import fnmatch
+
+SECTIONS = {  # instruction set: (tokens, paths it applies to; None = everywhere)
+    &quot;core standards&quot;:        (900,   None),
+    &quot;API conventions&quot;:       (1_400, [&quot;services/*/api/*.py&quot;]),
+    &quot;test conventions&quot;:      (1_100, [&quot;*.test.ts&quot;, &quot;*.spec.ts&quot;]),
+    &quot;Terraform checklist&quot;:   (2_600, [&quot;infra/*.tf&quot;]),
+    &quot;React components&quot;:      (1_800, [&quot;web/src/components/*.tsx&quot;]),
+    &quot;SQL migrations&quot;:        (1_200, [&quot;db/migrations/*.sql&quot;]),
+}
+touched = [&quot;web/src/components/Button.tsx&quot;, &quot;web/src/components/Button.test.ts&quot;, &quot;web/src/styles.css&quot;]
+
+monolithic = sum(t for t, _ in SECTIONS.values())
+scoped = 0
+for name, (tokens, paths) in SECTIONS.items():
+    if paths is None or any(fnmatch.fnmatch(f, p) or fnmatch.fnmatch(f.split(&quot;/&quot;)[-1], p) for f in touched for p in paths):
+        scoped += tokens
+        print(f&quot;loaded   {name:&lt;20} {tokens:&gt;6,}&quot;)
+    else:
+        print(f&quot;skipped  {name:&lt;20} {tokens:&gt;6,}&quot;)
+print(f&quot;\none big CLAUDE.md: {monolithic:,} tokens every session   path-scoped rules: {scoped:,} this session&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>loaded   core standards          900
+skipped  API conventions       1,400
+loaded   test conventions      1,100
+skipped  Terraform checklist   2,600
+loaded   React components      1,800
+skipped  SQL migrations        1,200
+
+one big CLAUDE.md: 9,000 tokens every session   path-scoped rules: 3,800 this session</pre></div></div><aside class="call read"><b>How to read it</b><p>A front-end session loads the core standards, the React rules and the test rules: 3,800 tokens instead of 9,000. The Terraform checklist, API and SQL conventions never enter the context because no matching file was touched. Fewer irrelevant instructions also means better adherence to the relevant ones.</p></aside><h3>Skills for procedures, <code>context: fork</code> for noisy ones</h3><p>Universal standards belong in CLAUDE.md; <strong>task-specific procedures</strong> (a security audit, a release checklist, a performance investigation) belong in <strong>skills</strong>, which load only when needed. A skill with <code>context: fork</code> in its front matter runs in a <strong>separate subagent</strong>: the skill body becomes that subagent's task, it doesn't see the conversation history, and only its result returns. Use it for work that would otherwise flood the main conversation with intermediate steps: scanning hundreds of files, trying several approaches.</p><div class="cell file"><div class="code"><div class="lab"><span>.claude/skills/dependency-audit/SKILL.md</span><button class="copy" type="button">Copy</button></div><pre><code class="language-markdown">---
+name: dependency-audit
+description: Audit project dependencies for known vulnerabilities, licence problems and outdated majors. Use when asked to audit, check or review dependencies.
+context: fork
+allowed-tools: Read, Grep, Glob, Bash(npm audit *), Bash(pip-audit *)
+---
+Run the audit tools for every package manifest in the repository.
+Group findings by severity. For each critical or high finding give the package,
+installed and fixed versions, and whether it is reachable from production code.
+Return a table and at most 5 recommended actions. Do not modify any files.</code></pre></div></div><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>Test files live next to their source files across 40 folders. The team wants test conventions applied whenever Claude works on any test file. What's the best place for them?</p><div class="opts"><button type="button" data-ok="0">A. A CLAUDE.md in each of the 40 folders</button><button type="button" data-ok="1">B. A path-scoped rule in <code>.claude/rules/</code> with <code>paths</code> globs matching the test files</button><button type="button" data-ok="0">C. The user-level CLAUDE.md of each developer</button><button type="button" data-ok="0">D. The project CLAUDE.md, so they load in every session</button></div><p class="why" hidden>Scattered files of one kind are exactly what path globs are for: one rule, no duplication, and it loads only when a matching file is touched. A root CLAUDE.md would spend those tokens on every session.</p></div><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>One developer's Claude Code follows the team's naming conventions; another's ignores them. What should be checked first?</p><div class="opts"><button type="button" data-ok="0">A. Which model each developer uses</button><button type="button" data-ok="1">B. Where the conventions are written: if they're in one person's user-level CLAUDE.md or local settings, move them to the committed project configuration</button><button type="button" data-ok="0">C. Whether the second developer's internet is slower</button><button type="button" data-ok="0">D. Whether skills are enabled</button></div><p class="why" hidden>Inconsistent behaviour across developers almost always points to configuration scope. Team conventions must live in committed, shared files.</p></div></section><section class="session" id="s7-2"><p class="snum">Session 7.2</p><h2>AI-assisted developer workflows</h2><p>Claude Code improves developer workflows in three places: <strong>in the editor and terminal</strong> (interactive work), <strong>in the pipeline</strong> (headless runs in CI), and <strong>across the team</strong> (shared skills, commands and plugins). The architect's job is to choose where it helps, put the guardrails in, and <strong>measure</strong> the effect.</p><figure class="seq anim" style="--c:5"><figcaption>AI-assisted pull request pipeline</figcaption><div class="actors"><b>Developer</b><b>Claude Code (local)</b><b>CI</b><b>Claude reviewer (headless)</b><b>Human reviewer</b></div><div class="lane"><div class="m r" style="grid-column:1/3;--s:2;--k:0"><span>implement issue #214 (plan mode first, then edits)</span><i></i></div><div class="m l reply" style="grid-column:1/3;--s:2;--k:1"><span>diff + tests passing</span><i></i></div><div class="m r" style="grid-column:1/4;--s:3;--k:2"><span>push branch, open PR</span><i></i></div><div class="m r" style="grid-column:3/5;--s:2;--k:3"><span>claude -p "review this diff" --output-format json --json-schema findings.json</span><i></i></div><div class="m note" style="grid-column:4/5;--k:4"><span>Separate session: sees the diff, CLAUDE.md and review standards, not the author's reasoning</span></div><div class="m l reply" style="grid-column:3/5;--s:2;--k:5"><span>structured findings → inline PR comments; high severity fails the check</span><i></i></div><div class="m r" style="grid-column:3/6;--s:3;--k:6"><span>PR with AI findings attached</span><i></i></div><div class="m l reply" style="grid-column:1/6;--s:5;--k:7"><span>approve or request changes (people own the merge)</span><i></i></div></div></figure><div class="tbl"><table><thead><tr><th>Mode</th><th>Answers</th><th>Use for</th></tr></thead><tbody><tr><td><strong>Headless</strong> (<code>claude -p</code>)</td><td>Is a person at the keyboard?</td><td>CI jobs, scheduled tasks, scripts</td></tr><tr><td><strong>Streaming output</strong> (<code>--output-format stream-json</code>)</td><td>How is output delivered?</td><td>Live logs, other programs consuming events</td></tr><tr><td><strong>Auto / permission modes</strong></td><td>Who approves each action?</td><td>Less prompting in trusted, sandboxed runs; never a substitute for deny rules and isolation</td></tr></tbody></table></div><aside class="call tip"><b>Tip</b><p>Keep generation and review in <strong>separate sessions</strong>: a session that wrote the code tends to agree with its own reasoning. Give the CI reviewer the team's standards through CLAUDE.md and a review skill, request structured output, and bound the run (<code>--max-turns</code>, a narrow <code>--allowedTools</code>).</p></aside><h3>Measuring whether it helps</h3><p>"Developers like it" isn't a business case. Measure delivery outcomes before and after, and the quality of the AI's own contributions. The numbers below are a sample team's; the calculations are real.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">BEFORE = {&quot;PR cycle time (h, median)&quot;: 31.0, &quot;review wait (h, median)&quot;: 14.0, &quot;escaped defects / 100 PRs&quot;: 4.2, &quot;PRs per dev-week&quot;: 3.1}
+AFTER  = {&quot;PR cycle time (h, median)&quot;: 22.5, &quot;review wait (h, median)&quot;: 6.5,  &quot;escaped defects / 100 PRs&quot;: 4.6, &quot;PRs per dev-week&quot;: 3.6}
+LOWER_IS_BETTER = {&quot;PR cycle time (h, median)&quot;, &quot;review wait (h, median)&quot;, &quot;escaped defects / 100 PRs&quot;}
+
+for metric in BEFORE:
+    b, a = BEFORE[metric], AFTER[metric]
+    change = (a - b) / b
+    better = (change &lt; 0) == (metric in LOWER_IS_BETTER)
+    print(f&quot;{metric:&lt;28} {b:&gt;6} → {a:&lt;6} {change:+.0%}  {&#x27;better&#x27; if better else &#x27;WORSE&#x27;}&quot;)
+
+findings = {&quot;accepted by humans&quot;: 312, &quot;dismissed as wrong&quot;: 141, &quot;dismissed as noise/nit&quot;: 210}
+total = sum(findings.values())
+print(f&quot;\nAI review findings: {findings[&#x27;accepted by humans&#x27;] / total:.0%} accepted, &quot;
+      f&quot;{findings[&#x27;dismissed as wrong&#x27;] / total:.0%} wrong, {findings[&#x27;dismissed as noise/nit&#x27;] / total:.0%} noise&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>PR cycle time (h, median)      31.0 → 22.5   -27%  better
+review wait (h, median)        14.0 → 6.5    -54%  better
+escaped defects / 100 PRs       4.2 → 4.6    +10%  WORSE
+PRs per dev-week                3.1 → 3.6    +16%  better
+
+AI review findings: 47% accepted, 21% wrong, 32% noise</pre></div></div><aside class="call read"><b>How to read it</b><p>Cycle time and review waits fell sharply and throughput rose, but escaped defects crept up and over half of the AI review's findings were dismissed. The next step isn't "more AI" or "less AI"; it's tuning: tighten the review skill to skip nits, require evidence for each finding, and add the escaped defects to the reviewer's eval set. Watch the defect rate as the guardrail metric.</p></aside><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>A CI job runs Claude Code to review PRs, using the same session that generated the code. Reviews rarely find problems. What change is most likely to help?</p><div class="opts"><button type="button" data-ok="0">A. Use a larger model in the same session</button><button type="button" data-ok="1">B. Run the review as a separate headless session with only the diff, CLAUDE.md and the review standards</button><button type="button" data-ok="0">C. Ask the generating session to be more critical</button><button type="button" data-ok="0">D. Turn off structured output</button></div><p class="why" hidden>The generating session carries its own reasoning and tends to confirm it. A fresh session reviews like an independent colleague.</p></div><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>After rolling out AI-assisted coding, cycle time falls 27% but escaped defects rise. What should the architect recommend?</p><div class="opts"><button type="button" data-ok="0">A. Declare success based on cycle time</button><button type="button" data-ok="0">B. Remove AI assistance entirely</button><button type="button" data-ok="1">C. Treat defects as a guardrail metric: investigate the escaped defects, strengthen review and tests where they slipped through, and re-measure</button><button type="button" data-ok="0">D. Stop measuring defects</button></div><p class="why" hidden>Productivity gains that raise defects can cost more than they save. Investigating, adding the cases to the reviewer's evals and re-measuring keeps the gain and fixes the regression.</p></div></section><section class="session" id="s7-3"><p class="snum">Session 7.3</p><h2>Debugging and operations</h2><p>Claude is a strong partner in operations work: reading logs and traces faster than a person, correlating events, drafting hypotheses, and following runbooks. It needs the same discipline as any other agent: <strong>read-only access</strong> during diagnosis, runbooks as <strong>skills</strong>, and <strong>people</strong> approving any change to production.</p><figure class="seq anim" style="--c:5"><figcaption>Incident triage with Claude, safely</figcaption><div class="actors"><b>On-call engineer</b><b>Claude Code</b><b>Observability (read-only)</b><b>Runbook skill</b><b>Production</b></div><div class="lane"><div class="m r" style="grid-column:1/3;--s:2;--k:0"><span>"Checkout errors since 14:05. Triage."</span><i></i></div><div class="m r" style="grid-column:2/4;--s:2;--k:1"><span>query logs, traces, deploy history (MCP, read scopes only)</span><i></i></div><div class="m l reply" style="grid-column:2/4;--s:2;--k:2"><span>error clusters, first-seen times, recent deploys</span><i></i></div><div class="m r" style="grid-column:2/5;--s:3;--k:3"><span>load "checkout-5xx" procedure</span><i></i></div><div class="m l reply" style="grid-column:1/3;--s:2;--k:4"><span>top hypothesis + evidence + proposed rollback command</span><i></i></div><div class="m r" style="grid-column:1/6;--s:5;--k:5"><span>runs the rollback after review (a person executes)</span><i></i></div><div class="m note" style="grid-column:5/6;--k:6"><span>Claude has no production write access: hooks and permissions enforce it</span></div></div></figure><h3>Turning a log flood into a hypothesis</h3><p>A practical first step in any incident is grouping thousands of log lines into a handful of <strong>signatures</strong>: normalise away IDs and numbers, count, and line them up against deploy times. Here it is on a synthetic incident log.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">import re
+from collections import Counter, defaultdict
+
+LOGS = [
+    &quot;14:01:12 INFO checkout ok order=88121 ms=412&quot;,
+    &quot;14:03:40 WARN payments slow ms=2210 order=88140&quot;,
+    &quot;14:05:03 DEPLOY checkout v2.31.0 (commit 7f3c2e1: &#x27;switch tax service client to async&#x27;)&quot;,
+    *[f&quot;14:{5 + i // 6:02d}:{10 + (i * 7) % 50:02d} ERROR checkout TaxClientTimeout after 3000ms order={88200 + i}&quot; for i in range(42)],
+    *[f&quot;14:{6 + i // 3:02d}:{10 + (i * 11) % 50:02d} ERROR checkout NullPointer in CartTotal line 118 cart={5500 + i}&quot; for i in range(9)],
+    &quot;14:09:44 WARN payments slow ms=2050 order=88310&quot;,
+    &quot;14:12:30 ERROR auth TokenExpired user=1201&quot;,
+]
+
+def secs(t): h, m, s = map(int, t.split(&quot;:&quot;)); return h * 3600 + m * 60 + s
+
+def signature(line):
+    msg = line.split(&quot; &quot;, 2)[2]
+    return re.sub(r&quot;\b\d+(ms)?\b&quot;, &quot;&lt;n&gt;&quot;, re.sub(r&quot;=\S+&quot;, &quot;=&lt;id&gt;&quot;, msg))
+
+deploys = [(l[:8], l[16:]) for l in LOGS if &quot; DEPLOY &quot; in l]
+errors = sorted((l for l in LOGS if &quot; ERROR &quot; in l), key=lambda l: secs(l[:8]))
+groups, first_seen = Counter(), {}
+for l in errors:
+    sig = signature(l)
+    groups[sig] += 1
+    first_seen.setdefault(sig, l[:8])
+
+print(&quot;deploys:&quot;, deploys)
+for sig, n in groups.most_common():
+    near = [d for t, d in deploys if 0 &lt;= secs(first_seen[sig]) - secs(t) &lt;= 300]   # began within 5 min of a deploy
+    print(f&quot;{n:&gt;3}×  first {first_seen[sig]}  {sig}&quot;)
+    if near: print(f&quot;       began within 5 min of deploy: {near[-1]}&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>deploys: [(&#x27;14:05:03&#x27;, &quot;checkout v2.31.0 (commit 7f3c2e1: &#x27;switch tax service client to async&#x27;)&quot;)]
+ 42×  first 14:05:10  checkout TaxClientTimeout after &lt;n&gt; order=&lt;id&gt;
+       began within 5 min of deploy: checkout v2.31.0 (commit 7f3c2e1: &#x27;switch tax service client to async&#x27;)
+  9×  first 14:06:10  checkout NullPointer in CartTotal line &lt;n&gt; cart=&lt;id&gt;
+       began within 5 min of deploy: checkout v2.31.0 (commit 7f3c2e1: &#x27;switch tax service client to async&#x27;)
+  1×  first 14:12:30  auth TokenExpired user=&lt;id&gt;</pre></div></div><aside class="call read"><b>How to read it</b><p>Fifty-odd error lines collapse into three signatures. The two big ones (tax-client timeouts and a null pointer in the cart total) both start within a minute or two of the 14:05 deploy that switched the tax client to async; the single auth error starts seven minutes later with no matching change, so it isn't linked: unrelated noise. That's a strong, evidence-backed hypothesis to hand to the on-call engineer, who decides whether to roll back. The analysis is the kind of work Claude does quickly; the production decision stays with a person.</p></aside><h3>Operational guardrails for AI-assisted ops</h3><div class="tbl"><table><thead><tr><th>Practice</th><th>Why</th></tr></thead><tbody><tr><td>Read-only MCP servers and credentials for observability during triage</td><td>Diagnosis never needs write access; an injected instruction in a log line can't cause harm</td></tr><tr><td>Runbooks as skills</td><td>Consistent procedures, loaded only when relevant</td></tr><tr><td>Deny rules and PreToolUse hooks for production commands</td><td>"Never touch production" enforced, not requested</td></tr><tr><td>Everything Claude ran recorded in the incident timeline</td><td>Post-incident review and audit</td></tr><tr><td>Post-incident: add the failure to evals, runbooks and alerts</td><td>The organisation learns, not just the person on call</td></tr></tbody></table></div><aside class="call warn"><b>Watch out</b><p>Logs and tickets are <strong>untrusted input</strong>: they can contain text written by users or attackers. An incident-triage agent that can also run commands is a prompt-injection target. Keep triage read-only, and route any action through a person or a tightly scoped, approved tool.</p></aside><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>A team wants Claude to help during production incidents. Which configuration is most appropriate?</p><div class="opts"><button type="button" data-ok="0">A. Full production admin credentials so it can fix problems quickly</button><button type="button" data-ok="1">B. Read-only access to logs, traces and deploy history; runbooks as skills; production changes executed by a person after review, with deny rules enforcing it</button><button type="button" data-ok="0">C. No access at all; paste logs manually</button><button type="button" data-ok="0">D. Auto mode with production access, since the classifier blocks risky actions</button></div><p class="why" hidden>Diagnosis needs reading, not writing. Least privilege, runbooks and human-executed changes give speed without handing production to an agent that reads untrusted text.</p></div><div class="quiz" data-multi="1"><p class="q"><b>Practice question</b><span class="n">Select 2</span>During triage, thousands of error lines appear after a deploy. Which approaches help Claude produce a useful hypothesis quickly? (Select 2)</p><div class="opts"><button type="button" data-ok="1">A. Normalise and group log lines into signatures, then count them</button><button type="button" data-ok="0">B. Paste every raw log line into one prompt</button><button type="button" data-ok="1">C. Correlate each signature's first appearance with deploy and configuration-change times</button><button type="button" data-ok="0">D. Ask Claude to guess without logs</button></div><button type=button class=check>Check answer</button><p class="why" hidden>Grouping turns a flood into a few patterns, and timing against changes points to likely causes. Raw dumps waste context and bury the signal.</p></div></section>
+  <div class="pager"><a class="btn ghost" href="../module-6/">← Module 6</a><a class="btn" href="../">Course home →</a></div>
+  </div>
+</div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="fine" style="border:none;margin:0;padding:0">
+      <span>© 2026 XploreAI · <a href="/">xploreai.co.in</a></span>
+      <span><a href="mailto:hello@xploreai.co.in">hello@xploreai.co.in</a></span>
+    </div>
+  </div>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/json.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/bash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/markdown.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/typescript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/yaml.min.js"></script>
+<script src="/courses/claude-architect/course.js?v=1793003699"></script>
+</body>
+</html>
