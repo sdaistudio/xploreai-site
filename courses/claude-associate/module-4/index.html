@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 4: Workflow Integration and Solution Design — Claude Associate (CCAO-F) course — XploreAI</title>
+<meta name="description" content="Move from answering questions to improving how work gets done. Use Claude to analyse requirements, research and plan, support solution design, fit into existing workflows or redesign them, and explain honestly to stakeholders what it can and can&#x27;t do.">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="XploreAI">
+<meta property="og:title" content="Module 4: Workflow Integration and Solution Design — Claude Associate (CCAO-F) course">
+<meta property="og:description" content="Move from answering questions to improving how work gets done. Use Claude to analyse requirements, research and plan, support solution design, fit into existing workflows or redesign them, and explain honestly to stakeholders what it can and can&#x27;t do.">
+<meta property="og:url" content="https://xploreai.co.in/courses/claude-associate/module-4/">
+<meta property="og:image" content="https://xploreai.co.in/assets/og-image.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/style.css">
+<link rel="stylesheet" href="/courses/claude-associate/course.css?v=1792991628">
+</head>
+<body>
+
+<nav>
+  <div class="wrap bar">
+    <a class="wordmark" href="/">xplore<span>ai</span></a>
+    <ul>
+      <li><a href="/#agents">Solutions</a></li>
+      <li><a href="/#stories">Success Stories</a></li>
+      <li><a href="/#subscribe">Newsletter</a></li>
+      <li><a href="/learn.html" aria-current="page">Learn AI</a></li>
+      <li><a class="btn" href="https://wa.me/919769686931?text=Hi%20XploreAI%2C%20I%27m%20interested%20in%20AI%20automation!">Get Started</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main class="cca">
+<header class="mhero wrap">
+  <p class="crumb"><a href="/learn.html">Learn AI</a> / <a href="../">Claude Associate (CCAO-F) course</a> / Module 4</p>
+  <span class="pill">MODULE 4 OF 7 · DOMAIN 4 · 16% OF THE EXAM · 5 SESSIONS</span>
+  <h1>Workflow Integration and Solution Design<i>.</i></h1>
+  <p class="lede">Move from answering questions to improving how work gets done. Use Claude to analyse requirements, research and plan, support solution design, fit into existing workflows or redesign them, and explain honestly to stakeholders what it can and can't do.</p>
+  <div class="dl"><a class="btn" href="#s4-1">Start session 4.1 →</a> <a class="btn ghost" href="../code/module-4.py" download>Download the Python</a></div>
+</header>
+<div class="wrap layout">
+  <aside class="toc" aria-label="Sessions"><p>In this module</p><ol><li><a href="#s4-1"><span>4.1</span>Analysing requirements and use cases</a></li><li><a href="#s4-2"><span>4.2</span>Research, planning and process optimisation</a></li><li><a href="#s4-3"><span>4.3</span>Supporting solution design</a></li><li><a href="#s4-4"><span>4.4</span>Augmenting or redesigning a workflow</a></li><li><a href="#s4-5"><span>4.5</span>Communicating value and limits</a></li></ol></aside>
+  <div class="content">
+<section class="session" id="s4-1"><p class="snum">Session 4.1</p><h2>Analysing requirements and use cases</h2><p>Before deciding <em>how</em> to use Claude, be clear on <em>what problem</em> you're solving and <em>whether Claude is the right tool</em>. A good use case for an Associate is one that's frequent, takes real time, and produces text or analysis a person can check.</p><p>Claude is useful at this stage in two ways: it can help you <strong>draw out requirements</strong> (by asking the questions you forgot), and it can help you <strong>assess use cases</strong> against criteria.</p><figure class="screen chat anim"><div class="bar"><i></i><i></i><i></i><span>Claude as a requirements interviewer</span></div><div class="thread"><div class="msg you"><span class="who">You</span><div class="bub"><p>Our front desk wants "an AI to handle patient messages". Before we build anything, interview me to pin down the requirements. Ask one question at a time, and stop after the most important five.</p></div></div><div class="msg claude"><span class="who">Claude</span><div class="bub"><p>Let's start with the scope. Which kinds of patient messages should this cover: booking and rescheduling, questions about treatment, billing, complaints, or all of these?</p></div></div><div class="msg you"><span class="who">You</span><div class="bub"><p>Booking, rescheduling and simple questions like timings and location. Not clinical questions.</p></div></div><div class="msg claude"><span class="who">Claude</span><div class="bub"><p>Good, that's a clear boundary. Second question: when a message is clinical or unclear, who should it go to, and how quickly do they need to see it?</p></div></div><div class="msg note"><span class="who"></span><div class="bub"><p>Five questions later, you have scope, escalation rules, volume, languages and success measures, before anything has been built.</p></div></div></div><figcaption>Illustrative screen. Real replies vary from run to run.</figcaption></figure><aside class="call concept"><b>The idea</b><p><strong>Separate the need from the proposed solution.</strong> "We need an AI chatbot" is a solution. The need might be "patients wait too long for replies on WhatsApp". Starting from the need opens better options, which might be a template library, a Claude-drafted reply that staff approve, or a change of opening hours.</p></aside><h3>Turning a request into requirements</h3><div class="pcard"><div class="lab"><span>✎ Requirements from a vague request</span><button class="copy" type="button">Copy</button></div><pre><code>Here is a request from our operations manager:
+&quot;We spend too long on weekly reports. Can AI fix it?&quot;
+
+Help me turn this into requirements. Produce:
+1. The underlying problem, in one sentence
+2. Questions I should ask the manager before deciding anything (no more than six)
+3. Possible approaches, from smallest change to biggest
+4. What success would look like, in measurable terms
+
+Don&#x27;t recommend a tool yet.</code></pre></div><h3>Which use cases first?</h3><p>Teams usually have more ideas than time. A simple scoring of <strong>value</strong> (how often and how long) against <strong>fit</strong> (how well it suits Claude and how safe it is) makes the choice explicit. The weights here are a sensible starting point, not a standard.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">use_cases = [
+    # name,                         times/week, minutes each, checkable output?, sensitive data?, needs live system access?
+    (&quot;Draft replies to booking queries&quot;,  120,  4, True,  False, False),
+    (&quot;Weekly operations report&quot;,            1, 180, True,  False, False),
+    (&quot;Summarise patient feedback monthly&quot;,  0.25, 300, True, False, False),
+    (&quot;Answer clinical questions&quot;,          40,  6, False, True,  False),
+    (&quot;Auto-update the booking system&quot;,    150,  2, True,  False, True),
+]
+
+rows = []
+for name, per_week, minutes, checkable, sensitive, live in use_cases:
+    hours_month = per_week * minutes * 4.3 / 60
+    fit = 3 + (1 if checkable else -2) - (2 if sensitive else 0) - (2 if live else 0)
+    rows.append((hours_month * max(fit, 0), name, hours_month, fit, live))
+
+for score, name, hours, fit, live in sorted(rows, reverse=True):
+    note = &quot; (needs integration: escalate to a developer)&quot; if live else &quot;&quot;
+    print(f&quot;{name:&lt;36} {hours:5.1f} h/month  fit {fit:+d}  priority {score:6.1f}{note}&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>Draft replies to booking queries      34.4 h/month  fit +4  priority  137.6
+Weekly operations report              12.9 h/month  fit +4  priority   51.6
+Auto-update the booking system        21.5 h/month  fit +2  priority   43.0 (needs integration: escalate to a developer)
+Summarise patient feedback monthly     5.4 h/month  fit +4  priority   21.5
+Answer clinical questions             17.2 h/month  fit -1  priority    0.0</pre></div></div><aside class="call read"><b>How to read it</b><p>Drafting booking replies wins: it's frequent, the output is easy to check, and it needs no special access. The weekly report saves far less time but fits well. Clinical answers score zero: they involve sensitive data and can't be safely checked by front-desk staff, so they're out of scope, not just low priority. Updating the booking system automatically saves real time, but it needs live system access, which is integration work for a developer or Claude Architect, not something an Associate builds alone.</p></aside><aside class="call exam"><b>Exam lens</b><p>The exam guide describes Associates as people who <strong>recognise limitations and escalate</strong> more complex or technical implementations. In scenario questions, an answer that involves building integrations, APIs or agents yourself is often the wrong one for an Associate. Identifying the need and handing it to the right specialist is the right one.</p></aside><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>A manager says, "We need AI to fix our slow invoice approvals." What is the best first step?</p><div class="opts"><button type="button" data-ok="0">A. Set up a Claude Project immediately and start drafting approvals</button><button type="button" data-ok="1">B. Clarify the underlying problem: where approvals get stuck, how many there are, and what "fixed" would look like</button><button type="button" data-ok="0">C. Recommend the most capable model</button><button type="button" data-ok="0">D. Tell the manager AI can't help with approvals</button></div><p class="why" hidden>Requirements analysis starts with understanding the real problem and measurable success. Jumping to a tool risks solving the wrong problem.</p></div><div class="quiz" data-multi="1"><p class="q"><b>Practice question</b><span class="n">Select 2</span>Which TWO features make a task a strong first use case for an Associate using Claude? (Select 2)</p><div class="opts"><button type="button" data-ok="1">A. It happens often and takes meaningful time</button><button type="button" data-ok="1">B. Its output is something a person can readily check</button><button type="button" data-ok="0">C. It requires direct, automatic changes to a live company database</button><button type="button" data-ok="0">D. It involves giving patients medical advice</button></div><button type=button class=check>Check answer</button><p class="why" hidden>Frequent, time-consuming tasks with checkable output give value with manageable risk. Live system changes need technical integration (escalate), and medical advice needs qualified professionals.</p></div></section><section class="session" id="s4-2"><p class="snum">Session 4.2</p><h2>Research, planning and process optimisation</h2><p>Claude can help you understand a process, research how others handle it, plan a change and find where time is lost. Its role here is <strong>analyst and planner</strong>: you supply the facts about your organisation, and it supplies structure, options and questions.</p><figure class="flow anim" style="--n:5"><figcaption>Optimising a process with Claude</figcaption><ol><li style="--i:0"><b>Map</b><span>Describe the current steps, who does them and how long each takes</span></li><li style="--i:1"><b>Measure</b><span>Find the waits and the slowest steps</span></li><li style="--i:2"><b>Research</b><span>Look up how others solve the same bottleneck</span></li><li style="--i:3"><b>Redesign</b><span>Draft a new process; check it against constraints</span></li><li style="--i:4"><b>Plan</b><span>Sequence the change: pilot, measure, roll out</span></li></ol></figure><h3>Mapping a process</h3><div class="pcard"><div class="lab"><span>✎ Process mapping</span><button class="copy" type="button">Copy</button></div><pre><code>Here&#x27;s how a new patient booking works today (notes below, written by our front-desk lead).
+
+Turn this into a numbered process map. For each step give: who does it, roughly how long it takes, and how long the patient waits before the next step.
+
+Then identify the two steps that add the most delay, and explain why in one sentence each. Don&#x27;t propose solutions yet.</code></pre></div><aside class="call tip"><b>Tip</b><p>Ask for the analysis before the solutions. If you ask for both at once, the solutions tend to anchor on the first problem mentioned rather than the biggest one.</p></aside><h3>Finding the bottleneck</h3><p>The numbers below describe a new-patient booking process. The code adds up working time and waiting time, finds the biggest delay, then compares a redesigned version where Claude drafts the replies and a person approves them. Note the review time has been added, not ignored.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">current = [  # step, minutes of work, minutes the patient waits after it
+    (&quot;Read WhatsApp enquiry&quot;,        2,   0),
+    (&quot;Check dentist availability&quot;,   5,  30),
+    (&quot;Write reply with slots&quot;,       6, 120),
+    (&quot;Patient picks slot&quot;,           0, 180),
+    (&quot;Confirm and send forms&quot;,       8,  60),
+]
+redesigned = [
+    (&quot;Read WhatsApp enquiry&quot;,        2,   0),
+    (&quot;Check dentist availability&quot;,   5,   0),
+    (&quot;Claude drafts reply; staff review&quot;, 2, 10),
+    (&quot;Patient picks slot&quot;,           0, 180),
+    (&quot;Claude drafts confirmation; staff review&quot;, 2, 10),
+]
+
+def summarise(name, steps):
+    work = sum(w for _, w, _ in steps)
+    wait = sum(t for _, _, t in steps)
+    worst = max(steps, key=lambda s: s[2])
+    print(f&quot;{name:&lt;11} work {work:3d} min | waiting {wait:4d} min | total {(work + wait) / 60:4.1f} h | longest wait: &#x27;{worst[0]}&#x27; ({worst[2]} min)&quot;)
+
+summarise(&quot;current&quot;, current)
+summarise(&quot;redesigned&quot;, redesigned)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>current     work  21 min | waiting  390 min | total  6.8 h | longest wait: &#x27;Patient picks slot&#x27; (180 min)
+redesigned  work  11 min | waiting  200 min | total  3.5 h | longest wait: &#x27;Patient picks slot&#x27; (180 min)</pre></div></div><aside class="call read"><b>How to read it</b><p>Staff work drops from 21 to 11 minutes per booking, and the patient's total time falls from about 6.8 hours to 3.5. But the biggest delay in both versions is the patient choosing a slot, which Claude doesn't touch. That's a useful finding in itself: the next improvement might be offering a booking link instead of a reply to wait for, which is a process change, not an AI one.</p></aside><aside class="call warn"><b>Watch out</b><p>Claude's research is a starting point. When it describes how other organisations handle something, or quotes a statistic, verify the important parts (Module 2) before they go into a proposal.</p></aside><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>Claude helped map a process and found that the longest delay is customers waiting for an approval email from a manager. What is the best interpretation?</p><div class="opts"><button type="button" data-ok="0">A. Claude should write the approval emails faster</button><button type="button" data-ok="1">B. The bottleneck is the approval step itself, so options include changing who approves or what needs approval, not just faster drafting</button><button type="button" data-ok="0">C. The process map must be wrong</button><button type="button" data-ok="0">D. Switch to a more capable model</button></div><p class="why" hidden>Process analysis should target the real bottleneck. When the delay is a human decision, the fix is usually a process change. Faster drafting doesn't shorten a wait for approval.</p></div></section><section class="session" id="s4-3"><p class="snum">Session 4.3</p><h2>Supporting solution design</h2><p>Once you know the need, Claude can help design a solution: options, trade-offs, a first version, and improvements based on feedback. The exam expects you to use Claude to <strong>support</strong> design, development and iteration, not to hand over judgment.</p><figure class="flow anim" style="--n:5"><figcaption>Design and iterate</figcaption><ol><li style="--i:0"><b>Options</b><span>Ask for three approaches, from simple to ambitious</span></li><li style="--i:1"><b>Trade-offs</b><span>Compare effort, risk, cost and fit</span></li><li style="--i:2"><b>Prototype</b><span>Build the simplest version that tests the idea</span></li><li style="--i:3"><b>Feedback</b><span>Try it with real users and real cases</span></li><li style="--i:4"><b>Iterate</b><span>Change one thing at a time; keep what works</span></li></ol></figure><figure class="screen chat anim"><div class="bar"><i></i><i></i><i></i><span>Exploring options before committing</span></div><div class="thread"><div class="msg you"><span class="who">You</span><div class="bub"><p>We want patients to get a reminder the day before their appointment, with a way to reschedule. Give me three approaches, from the simplest to the most automated, with what each needs from our team.</p></div></div><div class="msg claude"><span class="who">Claude</span><div class="bub"><p>Here are three, from least to most effort:</p><ul><li>Manual with templates: staff send a pre-written WhatsApp message each evening from the booking list. Needs: a template and 20 minutes a day.</li><li>Claude-assisted batch: each evening, paste tomorrow's bookings into a Project and get personalised messages to send. Needs: a Project with instructions; a staff member to review and send.</li><li>Fully automated: the booking system sends reminders and handles replies. Needs: a developer, integration with your booking system and WhatsApp's business tools.</li></ul></div></div><div class="msg note"><span class="who"></span><div class="bub"><p>The third option is integration work: an Associate would scope it and escalate it, not build it.</p></div></div></div><figcaption>Illustrative screen. Real replies vary from run to run.</figcaption></figure><h3>Tracing requirements to the design</h3><p>A common design failure is quietly dropping a requirement. Tracing each requirement to the part of the solution that meets it makes gaps obvious.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">requirements = {
+    &quot;R1&quot;: &quot;Reminder sent the day before&quot;,
+    &quot;R2&quot;: &quot;Patient can reschedule from the message&quot;,
+    &quot;R3&quot;: &quot;Messages in English, Hindi or Marathi&quot;,
+    &quot;R4&quot;: &quot;No clinical details in the message&quot;,
+    &quot;R5&quot;: &quot;Staff can see who confirmed&quot;,
+}
+design = {   # part of the Claude-assisted batch design -&gt; requirements it meets
+    &quot;Evening batch in the &#x27;Reminders&#x27; Project&quot;: [&quot;R1&quot;],
+    &quot;Template with booking link&quot;:              [&quot;R1&quot;, &quot;R2&quot;],
+    &quot;Project instruction: language from booking record&quot;: [&quot;R3&quot;],
+    &quot;Project instruction: only date, time, clinic, link&quot;: [&quot;R4&quot;],
+}
+
+covered = {r for parts in design.values() for r in parts}
+for rid, text in requirements.items():
+    by = [part for part, rs in design.items() if rid in rs]
+    print(f&quot;{rid} {text:&lt;40} {&#x27;covered by: &#x27; + &#x27;; &#x27;.join(by) if by else &#x27;NOT COVERED&#x27;}&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>R1 Reminder sent the day before             covered by: Evening batch in the &#x27;Reminders&#x27; Project; Template with booking link
+R2 Patient can reschedule from the message  covered by: Template with booking link
+R3 Messages in English, Hindi or Marathi    covered by: Project instruction: language from booking record
+R4 No clinical details in the message       covered by: Project instruction: only date, time, clinic, link
+R5 Staff can see who confirmed              NOT COVERED</pre></div></div><aside class="call read"><b>How to read it</b><p>Four of five requirements are met. R5, staff seeing who confirmed, isn't covered by any part of the design: the batch sends messages, but replies come back to WhatsApp, not into a list. That's the kind of gap that's cheap to spot now and expensive to discover after rollout. Options: add a step where replies are pasted back into the Project for a summary, or accept it as a known limitation and say so.</p></aside><aside class="call tip"><b>Tip</b><p>Iterate like you did with prompts (Module 1): change one thing, test with real cases, keep what works. A pilot with one clinic for two weeks teaches more than a perfect plan.</p></aside><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>When using Claude to support solution design, what is the most appropriate role for Claude?</p><div class="opts"><button type="button" data-ok="0">A. Make the final decision on which solution to adopt</button><button type="button" data-ok="1">B. Generate options and trade-offs, draft prototypes, and help analyse feedback, while people make the decisions</button><button type="button" data-ok="0">C. Only check spelling in the final design document</button><button type="button" data-ok="0">D. Build integrations with company systems directly</button></div><p class="why" hidden>Claude supports design by widening the options and speeding up drafting and analysis. Decisions stay with people, and integration work is escalated to technical specialists.</p></div></section><section class="session" id="s4-4"><p class="snum">Session 4.4</p><h2>Augmenting or redesigning a workflow</h2><p>There are two broad ways to bring Claude into existing work:</p><div class="tbl"><table><thead><tr><th>Approach</th><th>What changes</th><th>Example</th><th>Trade-off</th></tr></thead><tbody><tr><td>Augment</td><td>The same workflow, with Claude speeding up a step</td><td>Staff still write the weekly report, but Claude drafts it from their notes</td><td>Quick to start, modest gains</td></tr><tr><td>Redesign</td><td>The workflow itself is rebuilt around what Claude does well</td><td>Teams submit updates in a fixed format; a Project turns them into the report; the manager reviews</td><td>More setup and change management, bigger gains</td></tr></tbody></table></div><div class="compare anim neutral"><div class="side weak"><div class="lab"><span>Augment</span><button class="copy" type="button">Copy</button></div><pre><code>Monday: each clinic manager emails notes as usual.
+Ops lead pastes the notes into Claude: &quot;Draft this week&#x27;s report.&quot;
+Ops lead edits the draft for 40 minutes, then sends it.</code></pre></div><div class="side strong"><div class="lab"><span>Redesign</span><button class="copy" type="button">Copy</button></div><pre><code>Friday: each clinic fills in a 5-field update form.
+Monday: ops lead pastes the forms into the &quot;Weekly report&quot; Project, which has the template and rules.
+Ops lead reviews for 15 minutes, then sends it.</code></pre></div></div><aside class="call concept"><b>The idea</b><p><strong>Augment first, redesign once you've learned.</strong> Augmenting a step shows you where Claude helps and where it struggles, with little risk. That evidence is what justifies, and shapes, a redesign.</p></aside><h3>When does a redesign pay back?</h3><p>Redesigning costs setup time (forms, instructions, training) before it saves time. The calculation below compares the two over twelve weeks, using hours as the cost.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">weeks = 12
+baseline   = 3.0                     # hours a week, writing the report by hand
+augment    = {&quot;setup&quot;: 1.0, &quot;weekly&quot;: 1.6}    # Claude drafts; ops lead edits
+redesign   = {&quot;setup&quot;: 8.0, &quot;weekly&quot;: 0.6}    # forms + Project + training; review only
+
+def cumulative(plan):
+    return [plan[&quot;setup&quot;] + plan[&quot;weekly&quot;] * w for w in range(1, weeks + 1)]
+
+aug, red, base = cumulative(augment), cumulative(redesign), [baseline * w for w in range(1, weeks + 1)]
+for w in (1, 2, 4, 6, 8, 12):
+    print(f&quot;week {w:&gt;2}: by hand {base[w-1]:5.1f} h | augment {aug[w-1]:5.1f} h | redesign {red[w-1]:5.1f} h&quot;)
+breakeven = next(w for w in range(1, weeks + 1) if red[w-1] &lt;= aug[w-1])
+print(f&quot;\nredesign overtakes augment in week {breakeven}; saved vs by-hand after {weeks} weeks: &quot;
+      f&quot;augment {base[-1] - aug[-1]:.1f} h, redesign {base[-1] - red[-1]:.1f} h&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>week  1: by hand   3.0 h | augment   2.6 h | redesign   8.6 h
+week  2: by hand   6.0 h | augment   4.2 h | redesign   9.2 h
+week  4: by hand  12.0 h | augment   7.4 h | redesign  10.4 h
+week  6: by hand  18.0 h | augment  10.6 h | redesign  11.6 h
+week  8: by hand  24.0 h | augment  13.8 h | redesign  12.8 h
+week 12: by hand  36.0 h | augment  20.2 h | redesign  15.2 h
+
+redesign overtakes augment in week 7; saved vs by-hand after 12 weeks: augment 15.8 h, redesign 20.8 h</pre></div></div><aside class="call read"><b>How to read it</b><p>Augmenting saves time from week one. The redesign starts behind because of its 8 hours of setup, overtakes the augmented version in week 7, and by week 12 has saved 5 hours more. For a report that runs every week for a year, the redesign clearly wins. For a short-lived process, augmenting is the better choice. The numbers are illustrative; the shape of the trade-off is the lesson.</p></aside><aside class="call warn"><b>Watch out</b><p>Redesign changes people's jobs and habits. Involve the people who do the work, explain what changes and why, and keep a human review step. A redesign that saves the ops lead time but adds unexplained forms for clinic managers may just move the work around.</p></aside><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>A team has never used Claude for its monthly board report. What is usually the best way to start?</p><div class="opts"><button type="button" data-ok="1">A. Augment the existing process (for example, Claude drafts from the usual inputs) and learn where it helps before redesigning</button><button type="button" data-ok="0">B. Redesign the whole reporting process before trying Claude at all</button><button type="button" data-ok="0">C. Fully automate the report so no one needs to review it</button><button type="button" data-ok="0">D. Wait until the process is perfect before involving Claude</button></div><p class="why" hidden>Augmenting first is low-risk and produces evidence about what works, which then guides any redesign. Removing human review from a board report would be inappropriate.</p></div></section><section class="session" id="s4-5"><p class="snum">Session 4.5</p><h2>Communicating value and limits</h2><p>Part of the Associate role is explaining Claude to colleagues and managers: what it does well, what it doesn't, and what it's worth. Overselling damages trust faster than underselling.</p><h3>What to say, and what to avoid</h3><div class="tbl"><table><thead><tr><th>Do</th><th>Avoid</th></tr></thead><tbody><tr><td>"Claude drafts the report; Priya reviews it, saving about 2 hours a week"</td><td>"AI writes our reports now"</td></tr><tr><td>"It's good at summarising and drafting; we verify facts and figures"</td><td>"It's always accurate"</td></tr><tr><td>"It doesn't have access to our booking system; that would need a developer"</td><td>Implying it can do things it can't</td></tr><tr><td>"In the pilot, X; we'll know more after Y"</td><td>Promising results before measuring</td></tr></tbody></table></div><figure class="screen chat anim"><div class="bar"><i></i><i></i><i></i><span>Briefing a sceptical stakeholder</span></div><div class="thread"><div class="msg you"><span class="who">You</span><div class="bub"><p>The clinic owner asked me: "Is this AI thing safe to use with patients?" Help me draft a short, honest answer.</p></div></div><div class="msg claude"><span class="who">Claude</span><div class="bub"><p>Here's a draft:</p><p>"We're using Claude to draft routine messages (booking confirmations and reminders), and a staff member reviews every message before it's sent. It doesn't make clinical decisions and doesn't have access to patient records. We remove personal details before using it for analysis, in line with our data policy. In the four-week pilot, it saved about 6 front-desk hours a week, with no complaints. The main limitation is that it can occasionally get details wrong, which is why every message is checked."</p></div></div><div class="msg note"><span class="who"></span><div class="bub"><p>Value, safeguards and limits in five sentences, with nothing promised beyond the evidence.</p></div></div></div><figcaption>Illustrative screen. Real replies vary from run to run.</figcaption></figure><h3>An honest value estimate</h3><p>Value estimates are guesses until measured, so give a range, not a single number, and include the costs: the plan's cost and the time people spend reviewing. All the figures below are illustrative assumptions.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">hourly_cost = 450            # ₹ per staff hour, fully loaded (illustrative)
+seats, seat_cost = 3, 2_500  # ₹ per seat per month (illustrative assumption, not a quoted price)
+scenarios = {                # hours saved per week, hours of review added per week
+    &quot;cautious&quot;: (4, 2.0),
+    &quot;expected&quot;: (8, 2.5),
+    &quot;optimistic&quot;: (12, 3.0),
+}
+for name, (saved, review) in scenarios.items():
+    net_hours = (saved - review) * 4.3
+    value = net_hours * hourly_cost - seats * seat_cost
+    print(f&quot;{name:&lt;11} net {net_hours:5.1f} h/month -&gt; net value ₹{value:8,.0f} a month&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>cautious    net   8.6 h/month -&gt; net value ₹  -3,630 a month
+expected    net  23.6 h/month -&gt; net value ₹   3,142 a month
+optimistic  net  38.7 h/month -&gt; net value ₹   9,915 a month</pre></div></div><aside class="call read"><b>How to read it</b><p>The cautious case <em>loses</em> money, about ₹3,600 a month, once review time and seats are counted; the expected case gains about ₹3,100 and the optimistic one about ₹9,900. That spread is the honest message: with about 2½ hours of review a week, the pilot pays only if it saves more than about 6½ hours a week, so measure that first. Presenting the range, with review time visible, is more convincing than a single optimistic figure, and it tells stakeholders exactly what has to be true for the investment to pay. Replace the assumptions with your own measured numbers after a pilot.</p></aside><aside class="call exam"><b>Exam lens</b><p>Questions in this area reward <strong>balanced, evidence-based</strong> communication: clear about value, explicit about limitations and safeguards, and honest about what still needs human oversight or technical work.</p></aside><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>A director asks whether Claude can "replace" the team that writes customer emails. Which response best communicates value and limits?</p><div class="opts"><button type="button" data-ok="0">A. "Yes, it can replace them completely."</button><button type="button" data-ok="0">B. "No, AI isn't useful for writing emails."</button><button type="button" data-ok="1">C. "It can draft most routine emails quickly, which could free the team for complex cases, but drafts still need review for accuracy and tone."</button><button type="button" data-ok="0">D. "It depends; let's not discuss it until the technology is perfect."</button></div><p class="why" hidden>A balanced answer states the realistic value, the limitation and the safeguard. Overclaiming and dismissing both mislead stakeholders.</p></div><div class="quiz" data-multi="1"><p class="q"><b>Practice question</b><span class="n">Select 2</span>When presenting the expected benefit of a Claude pilot to management, which TWO practices are most appropriate? (Select 2)</p><div class="opts"><button type="button" data-ok="1">A. Give a range of outcomes and state the assumptions behind them</button><button type="button" data-ok="1">B. Include the time people will spend reviewing Claude's output</button><button type="button" data-ok="0">C. Use only the most optimistic estimate to secure approval</button><button type="button" data-ok="0">D. Leave out limitations so the proposal sounds stronger</button></div><button type=button class=check>Check answer</button><p class="why" hidden>Honest value communication shows assumptions, ranges and all costs, including review time. Optimistic-only estimates and hidden limitations erode trust when reality differs.</p></div></section>
+  <div class="pager"><a class="btn ghost" href="../module-3/">← Module 3</a><a class="btn" href="../module-5/">Module 5 →</a></div>
+  </div>
+</div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="fine" style="border:none;margin:0;padding:0">
+      <span>© 2026 XploreAI · <a href="/">xploreai.co.in</a></span>
+      <span><a href="mailto:hello@xploreai.co.in">hello@xploreai.co.in</a></span>
+    </div>
+  </div>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+<script src="/courses/claude-associate/course.js?v=1792985350"></script>
+</body>
+</html>

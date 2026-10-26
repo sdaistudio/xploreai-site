@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 1: Prompting and Task Execution — Claude Associate (CCAO-F) course — XploreAI</title>
+<meta name="description" content="Write prompts that work first time, break big jobs into steps, improve a prompt on purpose rather than by luck, and choose the right approach for analysis, research, drafting or brainstorming.">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="XploreAI">
+<meta property="og:title" content="Module 1: Prompting and Task Execution — Claude Associate (CCAO-F) course">
+<meta property="og:description" content="Write prompts that work first time, break big jobs into steps, improve a prompt on purpose rather than by luck, and choose the right approach for analysis, research, drafting or brainstorming.">
+<meta property="og:url" content="https://xploreai.co.in/courses/claude-associate/module-1/">
+<meta property="og:image" content="https://xploreai.co.in/assets/og-image.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/style.css">
+<link rel="stylesheet" href="/courses/claude-associate/course.css?v=1792991628">
+</head>
+<body>
+
+<nav>
+  <div class="wrap bar">
+    <a class="wordmark" href="/">xplore<span>ai</span></a>
+    <ul>
+      <li><a href="/#agents">Solutions</a></li>
+      <li><a href="/#stories">Success Stories</a></li>
+      <li><a href="/#subscribe">Newsletter</a></li>
+      <li><a href="/learn.html" aria-current="page">Learn AI</a></li>
+      <li><a class="btn" href="https://wa.me/919769686931?text=Hi%20XploreAI%2C%20I%27m%20interested%20in%20AI%20automation!">Get Started</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main class="cca">
+<header class="mhero wrap">
+  <p class="crumb"><a href="/learn.html">Learn AI</a> / <a href="../">Claude Associate (CCAO-F) course</a> / Module 1</p>
+  <span class="pill">MODULE 1 OF 7 · DOMAIN 1 · 14% OF THE EXAM · 4 SESSIONS</span>
+  <h1>Prompting and Task Execution<i>.</i></h1>
+  <p class="lede">Write prompts that work first time, break big jobs into steps, improve a prompt on purpose rather than by luck, and choose the right approach for analysis, research, drafting or brainstorming.</p>
+  <div class="dl"><a class="btn" href="#s1-1">Start session 1.1 →</a> <a class="btn ghost" href="../code/module-1.py" download>Download the Python</a></div>
+</header>
+<div class="wrap layout">
+  <aside class="toc" aria-label="Sessions"><p>In this module</p><ol><li><a href="#s1-1"><span>1.1</span>Anatomy of an effective prompt</a></li><li><a href="#s1-2"><span>1.2</span>Decomposing complex tasks</a></li><li><a href="#s1-3"><span>1.3</span>Iterating to a better output</a></li><li><a href="#s1-4"><span>1.4</span>Prompting by task type</a></li></ol></aside>
+  <div class="content">
+<section class="session" id="s1-1"><p class="snum">Session 1.1</p><h2>Anatomy of an effective prompt</h2><p>Anthropic's own advice starts with one idea: treat Claude like a <strong>brilliant new colleague who knows nothing about your organisation</strong>. They are fast and capable, but they don't know your customers, your format, your standards or why the task matters. Everything they need has to be in the request.</p><p>A quick test from Anthropic's guidance: show your prompt to a colleague with no background on the task. If they would be confused about what to produce, Claude will be too.</p><h3>The parts of a strong prompt</h3><p>Not every prompt needs every part, but strong business prompts usually combine most of these. Tap a label to highlight that part.</p><figure class="anatomy anim"><div class="legend"><button type="button" class="part role" data-part="role">role</button><button type="button" class="part task" data-part="task">task</button><button type="button" class="part context" data-part="context">context</button><button type="button" class="part format" data-part="format">format</button><button type="button" class="part constraints" data-part="constraints">constraints</button><button type="button" class="part tone" data-part="tone">tone</button></div><pre><mark class="part role" data-part="role">You are the operations lead for a chain of three dental clinics in Mumbai.</mark>
+
+<mark class="part task" data-part="task">Write a short message to patients announcing that our Bandra clinic will open on Sundays from 1 March.</mark>
+
+<mark class="part context" data-part="context">Many of our patients are working professionals who struggle to visit on weekdays. Sunday hours are 10 am to 4 pm, and the first month is a trial: we will keep it only if bookings justify it.</mark>
+
+<mark class="part format" data-part="format">Format: one WhatsApp message, under 80 words, with the booking link on its own line at the end: https://example.com/book</mark>
+
+<mark class="part constraints" data-part="constraints">Don&#x27;t promise that Sunday hours are permanent. Don&#x27;t mention the other two clinics.</mark>
+
+<mark class="part tone" data-part="tone">Tone: warm and plain, no exclamation marks.</mark></pre><figcaption>Tap a label to highlight that part of the prompt.</figcaption></figure><div class="tbl"><table><thead><tr><th>Part</th><th>What it gives Claude</th><th>Ask yourself</th></tr></thead><tbody><tr><td>Role</td><td>A point of view and the right level of expertise</td><td>Who would do this well?</td></tr><tr><td>Task</td><td>The one thing to produce</td><td>Could someone else tell when it's done?</td></tr><tr><td>Context</td><td>Why it matters, who it's for, background facts</td><td>What would a new colleague need to know?</td></tr><tr><td>Format</td><td>Length, structure, where it will be used</td><td>What should the output look like?</td></tr><tr><td>Constraints</td><td>What to avoid or never do</td><td>What would make it unusable?</td></tr><tr><td>Examples</td><td>A model of the result you want</td><td>Is there a good past example to copy the style of?</td></tr></tbody></table></div><aside class="call concept"><b>The idea</b><p><strong>Explain the why, not just the rule.</strong> Anthropic's guidance shows that giving the reason behind an instruction helps Claude generalise. "Never use ellipses" works less well than "This will be read aloud by a text-to-speech engine, so never use ellipses, because it can't pronounce them."</p></aside><h3>Weak versus strong</h3><div class="compare anim"><div class="side weak"><div class="lab"><span>Vague request</span><button class="copy" type="button">Copy</button></div><pre><code>Write something about our Sunday opening.</code></pre></div><div class="side strong"><div class="lab"><span>Specific request</span><button class="copy" type="button">Copy</button></div><pre><code>You are the operations lead for a chain of three dental clinics in Mumbai.
+
+Write a WhatsApp message (under 80 words) telling patients that the Bandra clinic opens on Sundays, 10 am to 4 pm, from 1 March.
+
+Context: many patients are working professionals who can&#x27;t come on weekdays. It&#x27;s a one-month trial, so don&#x27;t say it&#x27;s permanent.
+
+End with the booking link on its own line: https://example.com/book
+Tone: warm and plain, no exclamation marks.</code></pre></div></div><p>The vague version leaves Claude to guess the channel, length, audience, dates and what to leave out. It will produce <em>something</em>, but you will spend the time you saved rewriting it.</p><figure class="screen chat anim"><div class="bar"><i></i><i></i><i></i><span>Sunday opening message</span></div><div class="thread"><div class="msg you"><span class="who">You</span><div class="bub"><p>You are the operations lead for a chain of three dental clinics in Mumbai. Write a WhatsApp message (under 80 words) telling patients that the Bandra clinic opens on Sundays, 10 am to 4 pm, from 1 March. It's a one-month trial, so don't say it's permanent. End with the booking link on its own line: https://example.com/book. Tone: warm and plain, no exclamation marks.</p></div></div><div class="msg claude"><span class="who">Claude</span><div class="bub"><p>Good news for busy weekdays: from 1 March, our Bandra clinic will also be open on Sundays, 10 am to 4 pm. We're trying Sunday hours for one month to see how well they suit you, so if a weekend visit is easier, now is a good time to book.</p><p>https://example.com/book</p></div></div></div><figcaption>Illustrative screen. Real replies vary from run to run.</figcaption></figure><h3>Say what to do, not only what not to do</h3><p>Anthropic recommends phrasing format instructions positively. "Do not use markdown" is weaker than "Write in smoothly flowing prose paragraphs." Negative instructions tell Claude what to avoid but not what to aim for.</p><h3>A prompt template you can reuse</h3><p>When the same kind of request comes up often, keep a template and fill in the blanks. The short Python below builds a structured prompt from its parts, using XML tags to keep each part separate, as Anthropic recommends for prompts that mix instructions, context and input.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">def build_prompt(role, task, context=&quot;&quot;, output_format=&quot;&quot;, constraints=(), example=&quot;&quot;):
+    &quot;&quot;&quot;Assemble a structured prompt. Empty parts are simply left out.&quot;&quot;&quot;
+    parts = [role, &quot;&quot;, f&quot;&lt;task&gt;\n{task}\n&lt;/task&gt;&quot;]
+    if context:
+        parts.append(f&quot;&lt;context&gt;\n{context}\n&lt;/context&gt;&quot;)
+    if output_format:
+        parts.append(f&quot;&lt;format&gt;\n{output_format}\n&lt;/format&gt;&quot;)
+    if constraints:
+        rules = &quot;\n&quot;.join(f&quot;- {c}&quot; for c in constraints)
+        parts.append(f&quot;&lt;constraints&gt;\n{rules}\n&lt;/constraints&gt;&quot;)
+    if example:
+        parts.append(f&quot;&lt;example&gt;\n{example}\n&lt;/example&gt;&quot;)
+    return &quot;\n&quot;.join(parts)
+
+prompt = build_prompt(
+    role=&quot;You are the operations lead for a chain of three dental clinics in Mumbai.&quot;,
+    task=&quot;Write a WhatsApp message to our patients announcing Sunday hours at the Bandra clinic.&quot;,
+    context=&quot;Sunday hours are 10 am to 4 pm from 1 March, as a one-month trial.&quot;,
+    output_format=&quot;Under 80 words. Booking link on its own final line.&quot;,
+    constraints=[&quot;Don&#x27;t say the hours are permanent.&quot;, &quot;No exclamation marks.&quot;],
+)
+print(prompt)
+print(f&quot;\n({len(prompt.split())} words)&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>You are the operations lead for a chain of three dental clinics in Mumbai.
+
+&lt;task&gt;
+Write a WhatsApp message to our patients announcing Sunday hours at the Bandra clinic.
+&lt;/task&gt;
+&lt;context&gt;
+Sunday hours are 10 am to 4 pm from 1 March, as a one-month trial.
+&lt;/context&gt;
+&lt;format&gt;
+Under 80 words. Booking link on its own final line.
+&lt;/format&gt;
+&lt;constraints&gt;
+- Don&#x27;t say the hours are permanent.
+- No exclamation marks.
+&lt;/constraints&gt;
+
+(72 words)</pre></div></div><aside class="call read"><b>How to read it</b><p>The output is the exact text you would paste into Claude. Each part sits in its own tag, so Claude can't confuse the background (context) with the instruction (task). The <code>example</code> part was left empty, so it was simply left out.</p></aside><h3>A quick self-check</h3><p>Before sending an important prompt, check it covers the basics. This small checker looks for each part in a prompt's text. It's a rough heuristic, not a grade, but it catches the most common gap: a missing format or audience.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">import re
+
+CHECKS = {
+    &quot;role&quot;:        r&quot;\byou are\b|\bact as\b|\bas (?:an?|the) \w+&quot;,
+    &quot;task&quot;:        r&quot;\b(write|draft|summari[sz]e|analy[sz]e|list|create|compare|explain|review|plan)\b&quot;,
+    &quot;audience&quot;:    r&quot;\b(for|to) (?:our |the )?(patients|customers|team|board|managers?|clients?|staff|students)\b|\baudience\b&quot;,
+    &quot;format&quot;:      r&quot;\b(words?|bullets?|table|paragraphs?|email|whatsapp|json|slides?|headings?|format)\b&quot;,
+    &quot;constraints&quot;: r&quot;\b(don&#x27;t|do not|never|avoid|only|must|without)\b&quot;,
+    &quot;example&quot;:     r&quot;&lt;example&gt;|for example|e\.g\.&quot;,
+}
+
+def check(prompt):
+    found = {k: bool(re.search(p, prompt, re.I)) for k, p in CHECKS.items()}
+    missing = [k for k, ok in found.items() if not ok]
+    return sum(found.values()), missing
+
+vague = &quot;Write something about our Sunday opening.&quot;
+for name, text in [(&quot;vague&quot;, vague), (&quot;structured&quot;, prompt)]:
+    score, missing = check(text)
+    print(f&quot;{name:&lt;11} covers {score}/6 parts | missing: {&#x27;, &#x27;.join(missing) or &#x27;nothing&#x27;}&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>vague       covers 1/6 parts | missing: role, audience, format, constraints, example
+structured  covers 5/6 parts | missing: example</pre></div></div><aside class="call read"><b>How to read it</b><p>The vague prompt has a task verb and nothing else. The structured one covers five of six parts; it has no example, which is fine for a short message. For a recurring task, such as a monthly report, adding one good past example is often the biggest single improvement.</p></aside><aside class="call exam"><b>Exam lens</b><p>Expect scenario questions where you choose the <em>best</em> revision of a weak prompt. The strongest answer usually adds missing context (audience, purpose, format) rather than just adding words like "please be detailed".</p></aside><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>A marketing manager asks Claude to "write a product description" and gets a generic result. Which change is most likely to improve it?</p><div class="opts"><button type="button" data-ok="0">A. Ask Claude to try harder and be more creative</button><button type="button" data-ok="1">B. Add who the buyers are, where the description will appear, its length, and the product's key differences</button><button type="button" data-ok="0">C. Switch to a longer prompt by repeating the request several times</button><button type="button" data-ok="0">D. Ask Claude to rate its own description out of 10</button></div><p class="why" hidden>Generic output usually means missing context. Audience, placement, length and differentiators give Claude what a new colleague would need. Repetition, pep talk and self-ratings don't add information.</p></div><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>Which instruction is phrased in the way Anthropic recommends for controlling format?</p><div class="opts"><button type="button" data-ok="0">A. "Do not use bullet points or headings."</button><button type="button" data-ok="1">B. "Write the summary as three short prose paragraphs."</button><button type="button" data-ok="0">C. "NEVER EVER use markdown."</button><button type="button" data-ok="0">D. "Format it nicely."</button></div><p class="why" hidden>Telling Claude what to do ("three short prose paragraphs") works better than only saying what not to do, and is far more specific than "format it nicely".</p></div></section><section class="session" id="s1-2"><p class="snum">Session 1.2</p><h2>Decomposing complex tasks</h2><p>Some requests are too big or too mixed for one prompt: "Analyse last quarter's patient feedback, find the top problems, propose fixes, and write a summary for the owners." That's four jobs, each needing different thinking. Asking for all of it at once tends to give a shallow version of each.</p><p><strong>Task decomposition</strong> means splitting the job into steps, each with a clear input and output, and checking the result of each before moving on.</p><figure class="flow anim" style="--n:5"><figcaption>One big request, decomposed</figcaption><ol><li style="--i:0"><b>Extract</b><span>Pull every complaint from the feedback export into a list</span></li><li style="--i:1"><b>Categorise</b><span>Group complaints into themes and count them</span></li><li style="--i:2"><b>Prioritise</b><span>Rank themes by frequency and impact on patients</span></li><li style="--i:3"><b>Propose</b><span>Suggest one or two fixes for each top theme</span></li><li style="--i:4"><b>Summarise</b><span>Write a one-page brief for the clinic owners</span></li></ol></figure><h3>Two ways to decompose</h3><div class="tbl"><table><thead><tr><th>Approach</th><th>How it works</th><th>Best when</th></tr></thead><tbody><tr><td>Numbered steps in one prompt</td><td>List the steps in order inside a single request</td><td>The task is moderate and you just need Claude to be thorough and orderly</td></tr><tr><td>A chain of prompts</td><td>Send each step as its own message, checking each output before the next</td><td>Each step needs checking or editing, or a later step depends on getting an earlier one right</td></tr></tbody></table></div><p>Anthropic notes that Claude now handles a lot of multistep reasoning by itself, so you don't need to chain everything. Chaining is still worth it when you want to <strong>inspect the intermediate results</strong>, or enforce a fixed sequence.</p><aside class="call concept"><b>The idea</b><p><strong>The most useful chain is draft → review → refine.</strong> Ask for a draft; then, in a new step, ask Claude to review that draft against your criteria; then ask it to revise using the review. Each step is visible, so you can catch problems early.</p></aside><figure class="screen chat anim"><div class="bar"><i></i><i></i><i></i><span>A three-step chain</span></div><div class="thread"><div class="msg you"><span class="who">You</span><div class="bub"><p>Here are 120 patient feedback comments from January (pasted below). Step 1 only: list every distinct complaint as a short phrase, with how many comments mention it. Don't suggest fixes yet.</p></div></div><div class="msg claude"><span class="who">Claude</span><div class="bub"><p>Here are the 9 distinct complaints, most frequent first:</p><ul><li>Waiting time past appointment slot: 31</li><li>Difficulty getting through on the phone: 22</li><li>Unclear billing for treatment plans: 14</li><li>(6 more, listed below)</li></ul></div></div><div class="msg you"><span class="who">You</span><div class="bub"><p>Good. Step 2: for the top three, suggest one practical fix each that a three-clinic chain could try within a month, with what it would cost in staff time.</p></div></div><div class="msg claude"><span class="who">Claude</span><div class="bub"><p>1. Waiting time: stagger new-patient slots so they don't cluster at 10 am...</p></div></div><div class="msg note"><span class="who"></span><div class="bub"><p>You check each step before moving on. If the counts in step 1 looked wrong, you'd fix them before building on them.</p></div></div></div><figcaption>Illustrative screen. Real replies vary from run to run.</figcaption></figure><h3>Writing the steps as a prompt</h3><div class="pcard"><div class="lab"><span>✎ Decomposed request in one prompt</span><button class="copy" type="button">Copy</button></div><pre><code>I&#x27;m attaching last quarter&#x27;s patient feedback export.
+
+Work through these steps in order, and show the result of each step under its own heading:
+1. List every distinct complaint, with how many comments mention it.
+2. Group the complaints into no more than five themes.
+3. Rank the themes by how many patients they affect.
+4. For the top three themes, suggest one fix each that we could try within a month.
+5. Write a one-page summary for the clinic owners.
+
+If any comment is unclear, list it at the end under &quot;Couldn&#x27;t classify&quot; rather than guessing.</code></pre></div><aside class="call tip"><b>Tip</b><p>The last line matters. Giving Claude an explicit place to put things it isn't sure about ("Couldn't classify") makes it less likely to force an unclear item into the wrong group.</p></aside><h3>Check that a plan hangs together</h3><p>A decomposition only works if each step has what it needs. This Python describes the plan above as data, then checks that every step's inputs are produced by an earlier step: the same check you do in your head when planning a chain.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">plan = [
+    (&quot;Extract&quot;,    [&quot;feedback export&quot;],     &quot;complaint list&quot;),
+    (&quot;Categorise&quot;, [&quot;complaint list&quot;],      &quot;themes&quot;),
+    (&quot;Prioritise&quot;, [&quot;themes&quot;],              &quot;ranked themes&quot;),
+    (&quot;Propose&quot;,    [&quot;ranked themes&quot;],       &quot;fixes&quot;),
+    (&quot;Summarise&quot;,  [&quot;ranked themes&quot;, &quot;fixes&quot;, &quot;owner priorities&quot;], &quot;owner brief&quot;),
+]
+
+available = {&quot;feedback export&quot;}          # what we have before step 1
+for k, (step, needs, makes) in enumerate(plan, start=1):
+    missing = [n for n in needs if n not in available]
+    status = &quot;ok&quot; if not missing else f&quot;MISSING {&#x27;, &#x27;.join(missing)}&quot;
+    print(f&quot;step {k} {step:&lt;11} needs {&#x27;, &#x27;.join(needs):&lt;40} -&gt; {makes:&lt;14} {status}&quot;)
+    available.add(makes)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>step 1 Extract     needs feedback export                          -&gt; complaint list ok
+step 2 Categorise  needs complaint list                           -&gt; themes         ok
+step 3 Prioritise  needs themes                                   -&gt; ranked themes  ok
+step 4 Propose     needs ranked themes                            -&gt; fixes          ok
+step 5 Summarise   needs ranked themes, fixes, owner priorities   -&gt; owner brief    MISSING owner priorities</pre></div></div><aside class="call read"><b>How to read it</b><p>Steps 1 to 4 are fine. Step 5 needs "owner priorities", which no earlier step produces and which we never provided. Without them, Claude would have to guess what the owners care about. The fix is to add that context to the step 5 prompt (for example, "the owners' priorities this year are patient retention and reducing phone load"), or to ask the owners first.</p></aside><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>When is splitting a task into a chain of separate prompts most clearly worth the extra effort?</p><div class="opts"><button type="button" data-ok="0">A. Whenever a task has more than one sentence</button><button type="button" data-ok="1">B. When you need to check or correct an intermediate result before later steps build on it</button><button type="button" data-ok="0">C. When you want Claude to respond faster</button><button type="button" data-ok="0">D. Only when using the most capable model</button></div><p class="why" hidden>Chaining pays off when intermediate results need inspection, because later steps depend on them. For simple tasks, numbered steps in one prompt are enough.</p></div></section><section class="session" id="s1-3"><p class="snum">Session 1.3</p><h2>Iterating to a better output</h2><p>The first output is a starting point. Good prompt users improve it deliberately: they know what "good" looks like before they start, change one thing at a time, and check each version against the same standard.</p><p>Anthropic's prompting guide assumes three things before you start: clear <strong>success criteria</strong>, a way to <strong>test</strong> against them, and a <strong>first draft</strong> prompt to improve.</p><figure class="flow anim" style="--n:5"><figcaption>The iteration loop</figcaption><ol><li style="--i:0"><b>Define success</b><span>Write 3–5 concrete criteria the output must meet</span></li><li style="--i:1"><b>Draft the prompt</b><span>Start simple, with the parts from session 1.1</span></li><li style="--i:2"><b>Run and compare</b><span>Check the output against every criterion</span></li><li style="--i:3"><b>Change one thing</b><span>Add context, an example or a format rule, not everything at once</span></li><li style="--i:4"><b>Repeat</b><span>Stop when every criterion passes on several inputs</span></li></ol></figure><h3>Common fixes, and when to use them</h3><div class="tbl"><table><thead><tr><th>Symptom</th><th>Likely cause</th><th>Try</th></tr></thead><tbody><tr><td>Right content, wrong shape</td><td>Format not specified</td><td>State length, structure and destination</td></tr><tr><td>Generic, could apply to anyone</td><td>Missing context</td><td>Add audience, purpose and specifics</td></tr><tr><td>Inconsistent style across runs</td><td>No model to copy</td><td>Add 3–5 examples in <code>&lt;example&gt;</code> tags</td></tr><tr><td>Mixes up your data and your instructions</td><td>Unstructured prompt</td><td>Wrap each part in XML tags</td></tr><tr><td>Misses steps on complex tasks</td><td>Too much at once</td><td>Decompose (session 1.2) or ask it to think step by step first</td></tr><tr><td>Overconfident claims</td><td>Nothing asks for caution</td><td>Ask it to flag uncertainty and cite sources (Module 2)</td></tr></tbody></table></div><aside class="call concept"><b>The idea</b><p><strong>Examples are one of the most reliable ways to steer output.</strong> Anthropic suggests 3–5 examples that are <em>relevant</em> (close to your real case), <em>diverse</em> (cover edge cases, so Claude doesn't copy one example's quirks) and <em>structured</em> (wrapped in <code>&lt;example&gt;</code> tags so they are clearly separate from instructions).</p></aside><div class="compare anim"><div class="side weak"><div class="lab"><span>Version 1</span><button class="copy" type="button">Copy</button></div><pre><code>Summarise this customer complaint for our support log.</code></pre></div><div class="side strong"><div class="lab"><span>Version 2: added format and an example</span><button class="copy" type="button">Copy</button></div><pre><code>Summarise this customer complaint for our support log in exactly this format:
+
+&lt;example&gt;
+Issue: Charged twice for one cleaning appointment
+Customer wants: Refund of the duplicate charge
+Urgency: Medium (no health impact, money owed)
+&lt;/example&gt;
+
+Keep each line under 15 words. If the customer&#x27;s request is unclear, write &quot;Customer wants: unclear, ask&quot;.</code></pre></div></div><h3>Test outputs against your criteria</h3><p>When you write criteria precisely, many of them can be checked automatically. Below, three versions of a log summary (written by hand here to stand in for Claude's outputs) are checked against the same four criteria. The checks are real code, so the results are what this page's build actually produced.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">outputs = {
+    &quot;v1 (no format)&quot;: &quot;The customer, who visited on Tuesday, says she was charged twice for a &quot;
+                      &quot;cleaning and is quite upset about it and would like the money back soon.&quot;,
+    &quot;v2 (format only)&quot;: &quot;Issue: Charged twice for cleaning\nCustomer wants: Refund\n&quot;
+                                        &quot;Urgency: Medium&quot;,
+    &quot;v3 (format + example)&quot;: &quot;Issue: Charged twice for one cleaning appointment\n&quot;
+                             &quot;Customer wants: Refund of the duplicate charge\n&quot;
+                             &quot;Urgency: Medium (no health impact, money owed)&quot;,
+}
+
+def criteria(text):
+    lines = text.splitlines()
+    wants = next((l for l in lines if l.startswith(&quot;Customer wants:&quot;)), &quot;&quot;)
+    return {
+        &quot;has 3 labelled lines&quot;: [l.split(&quot;:&quot;)[0] for l in lines] == [&quot;Issue&quot;, &quot;Customer wants&quot;, &quot;Urgency&quot;],
+        &quot;each line &lt; 15 words&quot;: all(len(l.split()) &lt; 15 for l in lines),
+        &quot;urgency has a reason&quot;: &quot;(&quot; in text.split(&quot;Urgency:&quot;)[-1] if &quot;Urgency:&quot; in text else False,
+        &quot;refund is specific&quot;:   any(w in wants for w in (&quot;duplicate&quot;, &quot;twice&quot;)),
+    }
+
+for name, text in outputs.items():
+    c = criteria(text)
+    passed = sum(c.values())
+    print(f&quot;{name:&lt;34} {passed}/4  &quot; + &quot;  &quot;.join((&quot;✓ &quot; if ok else &quot;✗ &quot;) + k for k, ok in c.items()))</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>v1 (no format)                     0/4  ✗ has 3 labelled lines  ✗ each line &lt; 15 words  ✗ urgency has a reason  ✗ refund is specific
+v2 (format only)                   2/4  ✓ has 3 labelled lines  ✓ each line &lt; 15 words  ✗ urgency has a reason  ✗ refund is specific
+v3 (format + example)              4/4  ✓ has 3 labelled lines  ✓ each line &lt; 15 words  ✓ urgency has a reason  ✓ refund is specific</pre></div></div><aside class="call read"><b>How to read it</b><p>Version 1 fails everything: it reads well, but it isn't in the shape the support log needs. Version 2 fixes the shape but gives a vague refund line and an unexplained urgency. Version 3, with an example to copy, passes all four. Writing criteria this concretely ("each line under 15 words") is what makes improvement measurable instead of a matter of taste.</p></aside><aside class="call warn"><b>Watch out</b><p>Test on more than one input. A prompt tuned on a single complaint can fail on the next one. Keep a handful of varied real cases (an angry one, a confusing one, one in Hinglish) and re-check them whenever you change the prompt.</p></aside><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>A prompt produces summaries in a slightly different structure each time. What is the most effective next change?</p><div class="opts"><button type="button" data-ok="0">A. Ask Claude to "be consistent"</button><button type="button" data-ok="1">B. Add a few examples of the exact structure, wrapped in example tags</button><button type="button" data-ok="0">C. Rewrite the whole prompt from scratch with a new approach</button><button type="button" data-ok="0">D. Ask for a longer summary</button></div><p class="why" hidden>Examples are one of the most reliable ways to fix inconsistent structure. Changing one targeted thing also lets you see whether it helped.</p></div><div class="quiz" data-multi="1"><p class="q"><b>Practice question</b><span class="n">Select 2</span>Before iterating on a prompt, which TWO things should you have? (Select 2)</p><div class="opts"><button type="button" data-ok="1">A. Clear success criteria for the output</button><button type="button" data-ok="1">B. A few test inputs to check each version against</button><button type="button" data-ok="0">C. The most expensive model available</button><button type="button" data-ok="0">D. A prompt at least 500 words long</button></div><button type=button class=check>Check answer</button><p class="why" hidden>Iteration needs a standard (criteria) and evidence (test inputs). Model choice and prompt length don't tell you whether a change helped.</p></div></section><section class="session" id="s1-4"><p class="snum">Session 1.4</p><h2>Prompting by task type</h2><p>The exam asks you to adapt your approach to the kind of task: <strong>analysis</strong>, <strong>research</strong>, <strong>drafting</strong> or <strong>brainstorming</strong>. Each one goes wrong in a different way, so each needs a different emphasis.</p><div class="tbl"><table><thead><tr><th>Task type</th><th>What good looks like</th><th>Typical failure</th><th>What to add to the prompt</th></tr></thead><tbody><tr><td>Analysis</td><td>Conclusions traced to the data</td><td>Confident claims the data doesn't support</td><td>Provide the data, ask it to show reasoning and state assumptions</td></tr><tr><td>Research</td><td>Accurate, current, sourced facts</td><td>Out-of-date or invented facts and citations</td><td>Use Research or web search, ask for sources, verify the key ones</td></tr><tr><td>Drafting</td><td>The right voice, length and audience</td><td>Generic tone, wrong length</td><td>Audience, purpose, tone, format, a sample of your style</td></tr><tr><td>Brainstorming</td><td>Many varied, usable options</td><td>Ten versions of the same idea</td><td>Ask for quantity and variety, set constraints, then narrow</td></tr></tbody></table></div><figure class="flow anim" style="--n:4"><figcaption>Brainstorm wide, then narrow</figcaption><ol><li style="--i:0"><b>Diverge</b><span>"Give 15 ideas, each different in approach"</span></li><li style="--i:1"><b>Constrain</b><span>"Remove any that need new staff or cost over ₹50,000"</span></li><li style="--i:2"><b>Compare</b><span>"Score the rest on effort and likely impact"</span></li><li style="--i:3"><b>Choose</b><span>"Develop the top two into one-paragraph proposals"</span></li></ol></figure><h3>Analysis: ask for the reasoning</h3><p>For analysis, give Claude the data itself rather than a description of it, and ask it to show its working. Anthropic's guidance notes that letting Claude think through a problem before answering can improve results on complex tasks, and it makes the reasoning available for you to check.</p><div class="pcard"><div class="lab"><span>✎ Analysis prompt</span><button class="copy" type="button">Copy</button></div><pre><code>Attached is our appointment data for October (one row per booking: date, clinic, treatment, booked_via, attended).
+
+Question: which booking channel has the highest no-show rate, and is the difference big enough to act on?
+
+First, work through the numbers step by step: count bookings and no-shows by channel and compute the rate for each. Then give your answer in two sentences. State any assumption you make, and say if a channel has too few bookings to judge.</code></pre></div><h3>Research: sources, then verification</h3><p>For questions about current facts, regulations or anything after the model's training data, use a feature that searches the web, such as Claude's Research mode or web search, and ask for sources. Then check the sources that matter yourself (Module 2 goes deeper).</p><figure class="screen chat anim"><div class="bar"><i></i><i></i><i></i><span>Research with sources</span></div><div class="thread"><div class="msg you"><span class="who">You</span><div class="bub"><p>Using web search, what are the current rules in India for sending appointment reminders by WhatsApp to patients? Cite your sources, and flag anything you're unsure about.</p></div></div><div class="msg claude"><span class="who">Claude</span><div class="bub"><p>Here's what I found, with sources for each point. I've marked one area as uncertain, because the most recent guidance I found was from a secondary source rather than the regulator itself...</p></div></div><div class="msg note"><span class="who"></span><div class="bub"><p>Treat this as a starting point. Before relying on it, open the cited sources and check the key claims, especially anything legal.</p></div></div></div><figcaption>Illustrative screen. Real replies vary from run to run.</figcaption></figure><h3>Drafting and brainstorming: two prompts compared</h3><div class="compare anim"><div class="side weak"><div class="lab"><span>Brainstorming, too narrow</span><button class="copy" type="button">Copy</button></div><pre><code>Give me an idea to reduce no-shows.</code></pre></div><div class="side strong"><div class="lab"><span>Brainstorming, wide then focused</span><button class="copy" type="button">Copy</button></div><pre><code>Give 12 ideas to reduce no-shows at a three-clinic dental chain in Mumbai. Make them genuinely different: include ideas about reminders, scheduling, pricing, communication and patient experience.
+
+Then mark the 3 that need no new staff and could start within two weeks.</code></pre></div></div><h3>A strategy picker</h3><p>Here is the same advice as a small Python helper: given a request, it guesses the task type from keywords and suggests what to add. A real assistant would be smarter, but the point is the mapping, which you should know by heart for the exam.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">STRATEGY = {
+    &quot;analysis&quot;:      (&quot;analy|why did|trend|compare|which .* (?:highest|lowest)|data&quot;,
+                      &quot;attach the data; ask for step-by-step reasoning and stated assumptions&quot;),
+    &quot;research&quot;:      (&quot;research|latest|current|regulation|rules|what are the|find out&quot;,
+                      &quot;use Research or web search; ask for sources; verify key claims&quot;),
+    &quot;drafting&quot;:      (&quot;write|draft|email|message|letter|post|announce&quot;,
+                      &quot;give audience, purpose, tone, length and a sample of your style&quot;),
+    &quot;brainstorming&quot;: (&quot;ideas|brainstorm|ways to|options|suggest&quot;,
+                      &quot;ask for many varied options, add constraints, then narrow down&quot;),
+}
+import re
+
+def strategy(request):
+    for kind, (pattern, advice) in STRATEGY.items():
+        if re.search(pattern, request, re.I):
+            return kind, advice
+    return &quot;unclear&quot;, &quot;say what kind of output you want before anything else&quot;
+
+for req in [&quot;Why did no-shows rise at Bandra in October?&quot;,
+            &quot;What are the current rules on WhatsApp reminders?&quot;,
+            &quot;Draft an email to patients about new Sunday hours&quot;,
+            &quot;Give me ideas to fill empty afternoon slots&quot;,
+            &quot;Help me with the clinic&quot;]:
+    kind, advice = strategy(req)
+    print(f&quot;{req:&lt;52} -&gt; {kind:&lt;13} {advice}&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>Why did no-shows rise at Bandra in October?          -&gt; analysis      attach the data; ask for step-by-step reasoning and stated assumptions
+What are the current rules on WhatsApp reminders?    -&gt; research      use Research or web search; ask for sources; verify key claims
+Draft an email to patients about new Sunday hours    -&gt; drafting      give audience, purpose, tone, length and a sample of your style
+Give me ideas to fill empty afternoon slots          -&gt; brainstorming ask for many varied options, add constraints, then narrow down
+Help me with the clinic                              -&gt; unclear       say what kind of output you want before anything else</pre></div></div><aside class="call read"><b>How to read it</b><p>Four of the five requests map cleanly. The last, "Help me with the clinic", matches nothing, which is the most important result: when you can't tell what kind of task a request is, Claude can't either. Clarify the task first.</p></aside><aside class="call exam"><b>Exam lens</b><p>A common question pattern: a scenario describes a task (for example, "summarise current regulations for the compliance team") and asks for the best approach. Look for the answer that matches the task type: for research, that means sourcing and verification; for drafting, audience and format; for brainstorming, breadth before selection.</p></aside><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>A team lead wants a list of current government subsidies for small healthcare businesses, to share with the finance team. What is the best approach?</p><div class="opts"><button type="button" data-ok="0">A. Ask Claude in a normal chat and forward the answer</button><button type="button" data-ok="1">B. Use a web-search or Research feature, ask for sources, and verify the key items against the official pages before sharing</button><button type="button" data-ok="0">C. Ask Claude to brainstorm possible subsidies</button><button type="button" data-ok="0">D. Ask for the answer as a table so it looks authoritative</button></div><p class="why" hidden>This is a research task about current facts, so it needs live sources and verification. A plain chat may rely on outdated training data, brainstorming invites invention, and a table doesn't make it more accurate.</p></div><div class="quiz" data-multi="1"><p class="q"><b>Practice question</b><span class="n">Select 2</span>Brainstormed ideas keep coming back as small variations of the same idea. Which TWO prompt changes help most? (Select 2)</p><div class="opts"><button type="button" data-ok="1">A. Ask for a specific number of ideas and require different approaches or categories</button><button type="button" data-ok="1">B. Generate broadly first, then apply constraints in a second step to narrow down</button><button type="button" data-ok="0">C. Ask for fewer ideas so each is better</button><button type="button" data-ok="0">D. Remove all context so Claude isn't biased</button></div><button type=button class=check>Check answer</button><p class="why" hidden>Variety comes from explicitly asking for different approaches and a larger set, then narrowing with constraints. Fewer ideas or less context usually makes the results narrower and more generic.</p></div></section>
+  <div class="pager"><a class="btn ghost" href="../">← Course home</a><a class="btn" href="../module-2/">Module 2 →</a></div>
+  </div>
+</div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="fine" style="border:none;margin:0;padding:0">
+      <span>© 2026 XploreAI · <a href="/">xploreai.co.in</a></span>
+      <span><a href="mailto:hello@xploreai.co.in">hello@xploreai.co.in</a></span>
+    </div>
+  </div>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+<script src="/courses/claude-associate/course.js?v=1792985350"></script>
+</body>
+</html>

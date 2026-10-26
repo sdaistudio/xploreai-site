@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 5: Configuration and Knowledge Management — Claude Associate (CCAO-F) course — XploreAI</title>
+<meta name="description" content="Set Claude up once so every chat starts right. Configure Projects with instructions and knowledge, manage uploaded files and connectors such as Google Drive and Gmail, write strong system-level instructions, and keep it all current as things change.">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="XploreAI">
+<meta property="og:title" content="Module 5: Configuration and Knowledge Management — Claude Associate (CCAO-F) course">
+<meta property="og:description" content="Set Claude up once so every chat starts right. Configure Projects with instructions and knowledge, manage uploaded files and connectors such as Google Drive and Gmail, write strong system-level instructions, and keep it all current as things change.">
+<meta property="og:url" content="https://xploreai.co.in/courses/claude-associate/module-5/">
+<meta property="og:image" content="https://xploreai.co.in/assets/og-image.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/style.css">
+<link rel="stylesheet" href="/courses/claude-associate/course.css?v=1792991628">
+</head>
+<body>
+
+<nav>
+  <div class="wrap bar">
+    <a class="wordmark" href="/">xplore<span>ai</span></a>
+    <ul>
+      <li><a href="/#agents">Solutions</a></li>
+      <li><a href="/#stories">Success Stories</a></li>
+      <li><a href="/#subscribe">Newsletter</a></li>
+      <li><a href="/learn.html" aria-current="page">Learn AI</a></li>
+      <li><a class="btn" href="https://wa.me/919769686931?text=Hi%20XploreAI%2C%20I%27m%20interested%20in%20AI%20automation!">Get Started</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main class="cca">
+<header class="mhero wrap">
+  <p class="crumb"><a href="/learn.html">Learn AI</a> / <a href="../">Claude Associate (CCAO-F) course</a> / Module 5</p>
+  <span class="pill">MODULE 5 OF 7 · DOMAIN 5 · 12% OF THE EXAM · 4 SESSIONS</span>
+  <h1>Configuration and Knowledge Management<i>.</i></h1>
+  <p class="lede">Set Claude up once so every chat starts right. Configure Projects with instructions and knowledge, manage uploaded files and connectors such as Google Drive and Gmail, write strong system-level instructions, and keep it all current as things change.</p>
+  <div class="dl"><a class="btn" href="#s5-1">Start session 5.1 →</a> <a class="btn ghost" href="../code/module-5.py" download>Download the Python</a></div>
+</header>
+<div class="wrap layout">
+  <aside class="toc" aria-label="Sessions"><p>In this module</p><ol><li><a href="#s5-1"><span>5.1</span>Configuring a Project</a></li><li><a href="#s5-2"><span>5.2</span>Knowledge files and connectors</a></li><li><a href="#s5-3"><span>5.3</span>Writing system-level instructions</a></li><li><a href="#s5-4"><span>5.4</span>Maintaining configurations</a></li></ol></aside>
+  <div class="content">
+<section class="session" id="s5-1"><p class="snum">Session 5.1</p><h2>Configuring a Project</h2><p>A <strong>Project</strong> is a workspace with three things that apply to every chat inside it: <strong>instructions</strong> (how Claude should behave), <strong>knowledge</strong> (files it can draw on) and its own <strong>chat history and memory</strong>. Configuring a Project well is how an Associate turns good one-off prompts into a dependable, repeatable tool.</p><p>According to Anthropic's help article:</p><ul><li>Projects are available on <strong>all plans</strong>; Free users can create up to five.</li><li>You create one from the Projects page with <strong>+ New Project</strong>, then add a name and description. <strong>Claude can't see the name or description</strong>: anything Claude needs must go in the instructions or knowledge.</li><li><strong>Instructions</strong> apply to every chat in the Project.</li><li><strong>Knowledge</strong> is used across all chats in the Project.</li><li><strong>Chats don't share context with each other</strong> unless the information is added to the Project knowledge.</li><li>On <strong>Team and Enterprise</strong> plans, Projects can be kept private or shared, with members given <strong>Can view</strong> (use it, chat, but not change it) or <strong>Can edit</strong> (change instructions and knowledge) access.</li></ul><figure class="screen panel anim"><div class="bar"><i></i><i></i><i></i><span>Project: Patient communications (simplified)</span></div><div class="rows"><div class="row"><span class="k">Instructions</span><div class="v"><p>You write messages to patients for a three-clinic dental chain in Mumbai. Use plain English, under 120 words, warm and direct. Use prices and timings only from the knowledge files; if something isn't there, say "please confirm with the clinic".</p></div></div><div class="row"><span class="k">Knowledge</span><div class="v"><ul><li>Price sheet — 2026-03.pdf</li><li>Clinic timings and addresses.docx</li><li>Brand voice guide.pdf</li><li>Message templates (approved).docx</li></ul></div></div><div class="row"><span class="k">Visibility</span><div class="v"><p>Shared with organisation</p></div></div><div class="row"><span class="k">Members</span><div class="v"><ul><li>Ops lead (Can edit)</li><li>Front-desk team (Can view)</li></ul></div></div><div class="row"><span class="k">Memory</span><div class="v"><p>Project memory only ("Use account memory" off)</p></div></div></div><figcaption>Illustrative screen, simplified. Labels in the real app may differ.</figcaption></figure><figure class="flow anim" style="--n:5"><figcaption>Setting up a Project</figcaption><ol><li style="--i:0"><b>Define the job</b><span>One clear purpose per Project</span></li><li style="--i:1"><b>Write instructions</b><span>Role, audience, rules, format, what to do when unsure</span></li><li style="--i:2"><b>Add knowledge</b><span>Current, curated files: one version of each</span></li><li style="--i:3"><b>Set access</b><span>Who can use it, and who can change it</span></li><li style="--i:4"><b>Test</b><span>Run real requests; fix the instructions, not each answer</span></li></ol></figure><aside class="call concept"><b>The idea</b><p><strong>One Project, one job.</strong> A Project for "everything marketing" mixes instructions and files that conflict. Separate Projects for "Patient communications" and "Social media plans" keep each one's instructions focused and its knowledge relevant.</p></aside><h3>Check a configuration before you share it</h3><p>A small script can catch common configuration mistakes before colleagues start relying on a Project. This one checks that the instructions point Claude at the knowledge, that only one version of each document is loaded, and that the knowledge isn't padded with files the job doesn't need.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">import re
+
+instructions = (&quot;You write messages to patients for a three-clinic dental chain in Mumbai. &quot;
+                &quot;Use plain English, under 120 words, warm and direct. Use prices and timings only &quot;
+                &quot;from the knowledge files; if something isn&#x27;t there, say &#x27;please confirm with the clinic&#x27;.&quot;)
+knowledge = [&quot;Price sheet - 2026-03.pdf&quot;, &quot;Price sheet - 2025-11.pdf&quot;, &quot;Clinic timings and addresses.docx&quot;,
+             &quot;Brand voice guide.pdf&quot;, &quot;Message templates (approved).docx&quot;, &quot;Staff salaries 2026.xlsx&quot;]
+
+def base_name(f):     # &quot;Price sheet - 2026-03.pdf&quot; -&gt; &quot;price sheet&quot;
+    return re.sub(r&quot;[\s\-–]*\d{4}-\d{2}.*$|\.\w+$&quot;, &quot;&quot;, f).strip().lower()
+
+checks = []
+checks.append((&quot;instructions mention the knowledge&quot;, &quot;knowledge&quot; in instructions.lower()))
+checks.append((&quot;says what to do when unsure&quot;, &quot;confirm&quot; in instructions.lower() or &quot;not sure&quot; in instructions.lower()))
+names = [base_name(f) for f in knowledge]
+dupes = sorted({n for n in names if names.count(n) &gt; 1})
+checks.append((f&quot;one version of each file (duplicates: {&#x27;, &#x27;.join(dupes) or &#x27;none&#x27;})&quot;, not dupes))
+sensitive = [f for f in knowledge if re.search(r&quot;salar|payroll|password|aadhaar|pan card&quot;, f, re.I)]
+checks.append((f&quot;no sensitive files (found: {&#x27;, &#x27;.join(sensitive) or &#x27;none&#x27;})&quot;, not sensitive))
+
+for label, ok in checks:
+    print((&quot;✓ &quot; if ok else &quot;✗ &quot;) + label)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>✓ instructions mention the knowledge
+✓ says what to do when unsure
+✗ one version of each file (duplicates: price sheet)
+✗ no sensitive files (found: Staff salaries 2026.xlsx)</pre></div></div><aside class="call read"><b>How to read it</b><p>The instructions are in good shape. The knowledge isn't: there are two price sheets, so Claude may quote last November's prices, and a staff salaries file that has nothing to do with patient messages and shouldn't be in a shared Project at all. Remove the old price sheet and the salaries file before sharing. Module 6 covers why sensitive data needs this care.</p></aside><aside class="call exam"><b>Exam lens</b><p>Remember the detail that trips people up: <strong>Claude can't see a Project's name or description.</strong> If a scenario relies on the description to guide Claude, the fix is to move that guidance into the instructions.</p></aside><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>A team set up a Project with a detailed description explaining the tone to use, but Claude ignores it. What is the most likely fix?</p><div class="opts"><button type="button" data-ok="0">A. Rename the Project to include the word "tone"</button><button type="button" data-ok="1">B. Move the tone guidance into the Project instructions, which apply to every chat</button><button type="button" data-ok="0">C. Switch to a more capable model</button><button type="button" data-ok="0">D. Start every chat by pasting the description</button></div><p class="why" hidden>Claude can't see a Project's name or description. Guidance about behaviour belongs in the Project instructions.</p></div><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>On a Team plan, the front-desk staff should use a shared Project but not change its instructions or files. Which access fits?</p><div class="opts"><button type="button" data-ok="1">A. Can view</button><button type="button" data-ok="0">B. Can edit</button><button type="button" data-ok="0">C. Make the Project private to the ops lead</button><button type="button" data-ok="0">D. Give them their own copies of the files</button></div><p class="why" hidden>"Can view" lets members see the Project and chat in it without editing its instructions or knowledge. "Can edit" would let them change the configuration.</p></div></section><section class="session" id="s5-2"><p class="snum">Session 5.2</p><h2>Knowledge files and connectors</h2><h3>Curating knowledge</h3><p>Project knowledge is only as good as what you put in. Every file in the knowledge competes for Claude's attention, and outdated or conflicting files produce outdated or conflicting answers.</p><div class="tbl"><table><thead><tr><th>Good practice</th><th>Why</th></tr></thead><tbody><tr><td>Upload <strong>current</strong> versions only</td><td>Old prices or policies get quoted as if they're current</td></tr><tr><td>One version of each document</td><td>Two versions force Claude to guess which is right</td></tr><tr><td><strong>Descriptive file names</strong> with dates</td><td>You (and Claude) can tell what each file is and how fresh it is</td></tr><tr><td>Only what the job needs</td><td>Irrelevant files dilute answers and widen data exposure</td></tr><tr><td>Clean, text-based documents</td><td>Text is read reliably; scanned images of text are harder</td></tr></tbody></table></div><aside class="call tip"><b>Tip</b><p>Remember RAG mode (Module 3): when knowledge is large, Claude searches it for relevant passages instead of reading everything. Clear file names and headings help it find the right passage. If an answer misses something, name the file in your question.</p></aside><h3>Auditing a knowledge set</h3><p>Here is a quick audit of a Project's knowledge list: flagging stale files, superseded versions and very large files that might be better split or summarised.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">from datetime import date
+
+today = date(2026, 10, 26)
+files = [  # name, last updated, pages
+    (&quot;Price sheet&quot;,                   date(2026, 9, 30),   2),
+    (&quot;Price sheet (old)&quot;,             date(2025, 11, 1),   2),
+    (&quot;Clinic timings and addresses&quot;,  date(2026, 6, 15),   1),
+    (&quot;Brand voice guide&quot;,             date(2024, 2, 10),  14),
+    (&quot;Treatment FAQ&quot;,                 date(2025, 8, 20),  38),
+    (&quot;Annual report 2023 (full)&quot;,     date(2024, 4, 5),  220),
+]
+
+for name, updated, pages in files:
+    age = (today - updated).days
+    flags = []
+    if &quot;old&quot; in name.lower():
+        flags.append(&quot;superseded: remove&quot;)
+    elif age &gt; 365:
+        flags.append(f&quot;{age // 30} months old: review&quot;)
+    if pages &gt; 100:
+        flags.append(&quot;very large: does the job need all of it?&quot;)
+    print(f&quot;{name:&lt;30} updated {updated}  {pages:&gt;3} pp  {&#x27;; &#x27;.join(flags) or &#x27;ok&#x27;}&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>Price sheet                    updated 2026-09-30    2 pp  ok
+Price sheet (old)              updated 2025-11-01    2 pp  superseded: remove
+Clinic timings and addresses   updated 2026-06-15    1 pp  ok
+Brand voice guide              updated 2024-02-10   14 pp  32 months old: review
+Treatment FAQ                  updated 2025-08-20   38 pp  14 months old: review
+Annual report 2023 (full)      updated 2024-04-05  220 pp  31 months old: review; very large: does the job need all of it?</pre></div></div><aside class="call read"><b>How to read it</b><p>Two files are fine. The old price sheet should simply go. The brand voice guide is over two and a half years old, so it's worth checking it still reflects how the clinics speak. The 220-page annual report is probably the wrong document for a patient-messages Project: a one-page summary, or nothing, would serve better. The Treatment FAQ, at 14 months, is also due a check that its answers still match what the clinics offer.</p></aside><h3>Connectors</h3><p><strong>Connectors</strong> let Claude reach into other apps and services, read your data there and, with permission, take actions. Anthropic's help articles describe the Google Workspace connectors, available to all users of Claude and Claude Desktop:</p><div class="tbl"><table><thead><tr><th>Connector</th><th>What Claude can do (per Anthropic's help article)</th></tr></thead><tbody><tr><td>Gmail</td><td>Search and read email; draft; send, reply and forward (asks for approval each time by default)</td></tr><tr><td>Google Calendar</td><td>View events, find mutual availability, create and update events, respond to invitations</td></tr><tr><td>Google Drive</td><td>Search and read Docs, Sheets, Slides, PDFs and Office files; add Drive files to chats; upload and organise files</td></tr></tbody></table></div><p>Key rules from the same articles:</p><ul><li>You <strong>authenticate with your own account</strong>, and Claude can only reach what <strong>you</strong> already have permission to see.</li><li>On <strong>Team and Enterprise</strong> plans, an <strong>Owner</strong> must enable these connectors for the organisation first.</li><li>Turn connectors on or off per chat from the <strong>+</strong> menu, under <strong>Connectors</strong>.</li><li>Google Docs added to a chat or Project <strong>stay in sync</strong> with the latest version in Drive. Drive files can be added to the knowledge of <strong>private</strong> Projects only, not shared ones.</li><li>Actions such as sending email or sharing files ask for <strong>your approval</strong> before they run, by default.</li></ul><figure class="screen chat anim"><div class="bar"><i></i><i></i><i></i><span>Using connectors with approval</span></div><div class="thread"><div class="msg you"><span class="who">You</span><div class="bub"><p>Find the email from Dr Shah last week about the new X-ray machine, check my calendar for a free hour on Thursday, and draft a reply proposing that slot.</p></div></div><div class="msg claude"><span class="who">Claude</span><div class="bub"><p>I found Dr Shah's email from 21 October ("New X-ray unit — training"). Your Thursday is free from 2 pm to 3 pm. Here's a draft reply proposing that time. Would you like me to save it as a Gmail draft, or send it?</p></div></div><div class="msg note"><span class="who"></span><div class="bub"><p>Claude read the email and calendar with your permissions, and it asks before sending anything.</p></div></div></div><figcaption>Illustrative screen. Real replies vary from run to run.</figcaption></figure><aside class="call warn"><b>Watch out</b><p>Connectors widen what Claude can see, so connect only what the task needs and check what's being retrieved. A connector brings your organisation's data into the conversation, and your data policies (Module 6) apply to it.</p></aside><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>A colleague says Claude found a confidential HR file through the Google Drive connector. What does Anthropic's documentation say about this?</p><div class="opts"><button type="button" data-ok="0">A. Claude can access any file in the company's Drive</button><button type="button" data-ok="1">B. Claude can only reach files the connected user already has permission to see, so the user must already have had access</button><button type="button" data-ok="0">C. Connectors bypass Google permissions for convenience</button><button type="button" data-ok="0">D. Drive files can never be read by Claude</button></div><p class="why" hidden>Connectors mirror the user's existing permissions. If Claude found the file, the connected account could already open it, which is a permissions issue to raise with the Drive owner.</p></div><div class="quiz" data-multi="1"><p class="q"><b>Practice question</b><span class="n">Select 2</span>Which TWO statements about Project knowledge are good practice? (Select 2)</p><div class="opts"><button type="button" data-ok="1">A. Keep only the current version of each document</button><button type="button" data-ok="1">B. Use descriptive file names that include dates</button><button type="button" data-ok="0">C. Upload every document the team has, in case it's useful</button><button type="button" data-ok="0">D. Keep old and new versions so Claude can choose</button></div><button type=button class=check>Check answer</button><p class="why" hidden>Current, single-version, clearly named files give consistent answers. Uploading everything, or several versions, leads to outdated or conflicting responses and wider data exposure.</p></div></section><section class="session" id="s5-3"><p class="snum">Session 5.3</p><h2>Writing system-level instructions</h2><p>Project instructions work like a standing brief that applies to every chat: a <strong>system-level instruction</strong>. They're where you put everything that should be true of <em>every</em> answer, so users don't have to repeat it.</p><p>A strong set of instructions usually covers:</p><figure class="anatomy anim"><div class="legend"><button type="button" class="part role" data-part="role">role</button><button type="button" class="part task" data-part="task">task</button><button type="button" class="part context" data-part="context">context</button><button type="button" class="part constraints" data-part="constraints">constraints</button><button type="button" class="part format" data-part="format">format</button><button type="button" class="part fallback" data-part="fallback">fallback</button></div><pre><mark class="part role" data-part="role">You support the front-desk team of a three-clinic dental chain in Mumbai.</mark>
+
+<mark class="part task" data-part="task">Your job is to draft replies to patient messages about bookings, timings, prices and directions.</mark>
+
+<mark class="part context" data-part="context">Patients are mostly working professionals and families. Many write in Hinglish; reply in the language they used. The knowledge files hold the current price sheet, clinic timings, and approved templates.</mark>
+
+<mark class="part constraints" data-part="constraints">Use prices and timings only from the knowledge files. Never give medical advice: if a message describes pain, swelling or a clinical question, reply only that a dentist will call back, and mark the draft URGENT.</mark>
+
+<mark class="part format" data-part="format">Keep replies under 120 words. End with the clinic&#x27;s phone number. Use no more than one emoji.</mark>
+
+<mark class="part fallback" data-part="fallback">If you aren&#x27;t sure of a detail, write &quot;[please confirm]&quot; in its place rather than guessing.</mark></pre><figcaption>Tap a label to highlight that part of the prompt.</figcaption></figure><aside class="call concept"><b>The idea</b><p><strong>Write instructions for the cases that go wrong.</strong> Anthropic's prompting guidance applies here too: be clear and direct, explain why, and say what to do rather than only what not to do. The highest-value lines in Project instructions are usually about edge cases: what to do when information is missing, when a request is out of scope, or when something needs a human.</p></aside><div class="compare anim"><div class="side weak"><div class="lab"><span>Weak instructions</span><button class="copy" type="button">Copy</button></div><pre><code>Be helpful and professional. Don&#x27;t make mistakes. NEVER give wrong prices!!! Keep it short.</code></pre></div><div class="side strong"><div class="lab"><span>Strong instructions</span><button class="copy" type="button">Copy</button></div><pre><code>You draft replies for our front desk. Use prices only from the price sheet in the knowledge files. If a price isn&#x27;t listed, write &quot;[please confirm]&quot; instead of estimating, because a wrong price causes complaints at the counter.
+
+Keep replies under 120 words: patients read them on their phones.</code></pre></div></div><p>The weak version expresses wishes ("don't make mistakes") without telling Claude <em>how</em>. The strong version names the source, the fallback, the reason and a measurable length.</p><h3>An instruction linter</h3><p>These checks look for common weaknesses in instructions: vague words that give Claude nothing to act on, shouting in capitals, and missing essentials such as a fallback for uncertainty.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">import re
+
+def lint(text):
+    issues = []
+    vague = [w for w in (&quot;helpful&quot;, &quot;professional&quot;, &quot;good&quot;, &quot;nice&quot;, &quot;appropriate&quot;, &quot;don&#x27;t make mistakes&quot;)
+             if w in text.lower()]
+    if vague:
+        issues.append(f&quot;vague wording with no action attached: {&#x27;, &#x27;.join(vague)}&quot;)
+    shouting = re.findall(r&quot;\b[A-Z]{4,}\b&quot;, text)
+    if shouting or &quot;!!&quot; in text:
+        issues.append(&quot;capitals/exclamation marks instead of a reason&quot;)
+    if not re.search(r&quot;\b(if|when)\b.*\b(unsure|not sure|isn&#x27;t|missing|not listed)\b&quot;, text, re.I):
+        issues.append(&quot;no rule for missing or uncertain information&quot;)
+    if not re.search(r&quot;\b\d+\s*(words|lines|sentences)\b&quot;, text, re.I):
+        issues.append(&quot;no measurable length&quot;)
+    if not re.search(r&quot;knowledge|price sheet|attached|file&quot;, text, re.I):
+        issues.append(&quot;doesn&#x27;t say which sources to use&quot;)
+    return issues
+
+weak = &quot;Be helpful and professional. Don&#x27;t make mistakes. NEVER give wrong prices!!! Keep it short.&quot;
+strong = (&quot;You draft replies for our front desk. Use prices only from the price sheet in the knowledge files. &quot;
+          &quot;If a price isn&#x27;t listed, write [please confirm] instead of estimating, because a wrong price causes &quot;
+          &quot;complaints at the counter. Keep replies under 120 words: patients read them on their phones.&quot;)
+for name, text in [(&quot;weak&quot;, weak), (&quot;strong&quot;, strong)]:
+    found = lint(text)
+    print(f&quot;{name}: {len(found)} issue(s)&quot;)
+    for i in found:
+        print(f&quot;   - {i}&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>weak: 5 issue(s)
+   - vague wording with no action attached: helpful, professional, don&#x27;t make mistakes
+   - capitals/exclamation marks instead of a reason
+   - no rule for missing or uncertain information
+   - no measurable length
+   - doesn&#x27;t say which sources to use
+strong: 0 issue(s)</pre></div></div><aside class="call read"><b>How to read it</b><p>The weak instructions trip all five checks: vague wishes, capitals in place of a reason, no fallback, no measurable length and no named source. The strong version passes all five. A linter like this can't judge whether instructions are <em>right</em> for your business, but it catches the habits that make instructions unreliable.</p></aside><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>Which line is the strongest addition to a Project's instructions?</p><div class="opts"><button type="button" data-ok="0">A. "Always be accurate."</button><button type="button" data-ok="0">B. "NEVER EVER guess!!!"</button><button type="button" data-ok="1">C. "If the knowledge files don't contain the answer, say so and suggest who to ask, rather than guessing."</button><button type="button" data-ok="0">D. "Be as helpful as possible."</button></div><p class="why" hidden>It tells Claude exactly what to do in the situation that most often causes errors. The others express a wish without an action.</p></div></section><section class="session" id="s5-4"><p class="snum">Session 5.4</p><h2>Maintaining configurations</h2><p>A Project is never finished. Prices change, policies update, templates improve, and team members join and leave. The exam expects you to <strong>inform, maintain and update</strong> configurations, knowledge sources and instructions over time.</p><figure class="flow anim" style="--n:5"><figcaption>Keeping a Project healthy</figcaption><ol><li style="--i:0"><b>Own it</b><span>Name one person responsible for each Project</span></li><li style="--i:1"><b>Log changes</b><span>Record what changed in instructions or knowledge, and why</span></li><li style="--i:2"><b>Re-test</b><span>Run the same test requests after every change</span></li><li style="--i:3"><b>Review on a schedule</b><span>Check files and instructions monthly or quarterly</span></li><li style="--i:4"><b>Tell users</b><span>Announce changes that affect how people use it</span></li></ol></figure><div class="tbl"><table><thead><tr><th>Trigger</th><th>What to update</th></tr></thead><tbody><tr><td>New price sheet or policy</td><td>Replace the knowledge file; remove the old one</td></tr><tr><td>Repeated corrections from users</td><td>Add a rule to the instructions</td></tr><tr><td>New team or role using it</td><td>Review access (Can view / Can edit)</td></tr><tr><td>A connector is no longer needed</td><td>Disconnect it</td></tr><tr><td>A model or feature changes</td><td>Re-run your test requests</td></tr></tbody></table></div><h3>What changed between versions?</h3><p>When a knowledge file is updated, it helps to see exactly what changed, both to update any instructions that mention it and to tell users. Python's built-in <code>difflib</code> shows line-by-line differences:</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">import difflib
+
+old = &quot;&quot;&quot;Consultation: Rs 500
+Scaling &amp; polishing: Rs 1,800
+Root canal (molar): Rs 9,500
+Teeth whitening: Rs 12,000&quot;&quot;&quot;.splitlines()
+
+new = &quot;&quot;&quot;Consultation: Rs 500
+Scaling &amp; polishing: Rs 2,000
+Root canal (molar): Rs 9,500
+Clear aligners (consultation): Rs 1,000&quot;&quot;&quot;.splitlines()
+
+for line in difflib.unified_diff(old, new, &quot;price-sheet-2026-03&quot;, &quot;price-sheet-2026-10&quot;, lineterm=&quot;&quot;, n=0):
+    print(line)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>--- price-sheet-2026-03
++++ price-sheet-2026-10
+@@ -2 +2 @@
+-Scaling &amp; polishing: Rs 1,800
++Scaling &amp; polishing: Rs 2,000
+@@ -4 +4 @@
+-Teeth whitening: Rs 12,000
++Clear aligners (consultation): Rs 1,000</pre></div></div><aside class="call read"><b>How to read it</b><p>Lines starting with <code>-</code> were removed and lines with <code>+</code> were added. Scaling went up from ₹1,800 to ₹2,000, teeth whitening disappeared, and clear-aligner consultations were added. Each change has a follow-up: check the message templates for the old scaling price, check whether any instruction or template still mentions whitening, and tell the front desk about aligners.</p></aside><h3>Re-testing after a change</h3><p>Keep a small set of <strong>test requests</strong> with the facts each answer must contain. After every change to instructions or knowledge, run them again in the Project and tick them off. Here the expected facts are checked against answers pasted back from Claude (written here as stand-ins):</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">tests = {
+    &quot;How much is scaling?&quot;:                [&quot;2,000&quot;],
+    &quot;Are you open on Sunday in Bandra?&quot;:   [&quot;10&quot;, &quot;4&quot;],
+    &quot;Do you do teeth whitening?&quot;:          [&quot;please confirm&quot;],
+}
+answers = {   # pasted back from the Project after the October update (illustrative)
+    &quot;How much is scaling?&quot;: &quot;Scaling and polishing is Rs 2,000 at all our clinics.&quot;,
+    &quot;Are you open on Sunday in Bandra?&quot;: &quot;Yes, Bandra is open on Sundays from 10 am to 4 pm.&quot;,
+    &quot;Do you do teeth whitening?&quot;: &quot;Teeth whitening is Rs 12,000.&quot;,
+}
+for q, must in tests.items():
+    ok = all(m.lower() in answers[q].lower() for m in must)
+    print(f&quot;{&#x27;pass&#x27; if ok else &#x27;FAIL&#x27;}  {q:&lt;36} expects {must}&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>pass  How much is scaling?                 expects [&#x27;2,000&#x27;]
+pass  Are you open on Sunday in Bandra?    expects [&#x27;10&#x27;, &#x27;4&#x27;]
+FAIL  Do you do teeth whitening?           expects [&#x27;please confirm&#x27;]</pre></div></div><aside class="call read"><b>How to read it</b><p>Two tests pass. The whitening answer fails: it still quotes the old ₹12,000 price, even though whitening was removed from the new sheet. That's the signal to look for a leftover source, such as an old template or a second file in the knowledge, and fix the configuration rather than correcting answers one at a time.</p></aside><aside class="call exam"><b>Exam lens</b><p>Maintenance questions usually reward the <strong>systematic</strong> answer: update the source (the knowledge file or the instructions), remove what's outdated, re-test, and communicate the change, rather than fixing individual answers by hand.</p></aside><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>After a price change, staff notice a Project still sometimes quotes old prices. What is the best fix?</p><div class="opts"><button type="button" data-ok="0">A. Ask staff to correct each reply by hand</button><button type="button" data-ok="1">B. Replace the price file in the knowledge, remove any old versions or templates that contain old prices, then re-test with standard questions</button><button type="button" data-ok="0">C. Add "use new prices" to the end of each chat</button><button type="button" data-ok="0">D. Create a new Project every time prices change</button></div><p class="why" hidden>The root cause is outdated knowledge. Updating the source, removing old versions and re-testing fixes it for everyone, every time.</p></div><div class="quiz" data-multi="1"><p class="q"><b>Practice question</b><span class="n">Select 2</span>Which TWO practices help keep a shared Project reliable over time? (Select 2)</p><div class="opts"><button type="button" data-ok="1">A. Naming an owner who reviews the instructions and knowledge on a schedule</button><button type="button" data-ok="1">B. Keeping a short log of changes and re-running test requests after each one</button><button type="button" data-ok="0">C. Letting every user edit the instructions whenever they like</button><button type="button" data-ok="0">D. Never changing a Project once it works</button></div><button type=button class=check>Check answer</button><p class="why" hidden>Ownership, a change log and re-testing keep a configuration accurate as things change. Unmanaged edits cause drift, and never updating lets the knowledge go stale.</p></div></section>
+  <div class="pager"><a class="btn ghost" href="../module-4/">← Module 4</a><a class="btn" href="../module-6/">Module 6 →</a></div>
+  </div>
+</div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="fine" style="border:none;margin:0;padding:0">
+      <span>© 2026 XploreAI · <a href="/">xploreai.co.in</a></span>
+      <span><a href="mailto:hello@xploreai.co.in">hello@xploreai.co.in</a></span>
+    </div>
+  </div>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+<script src="/courses/claude-associate/course.js?v=1792985350"></script>
+</body>
+</html>

@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 2: Output Evaluation and Validation — Claude Associate (CCAO-F) course — XploreAI</title>
+<meta name="description" content="The biggest exam domain. Judge whether Claude&#x27;s output is accurate and complete, catch hallucinations, inconsistencies and bias, check facts properly, know when a human must review, and shape the result and its format for the people who will use it.">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="XploreAI">
+<meta property="og:title" content="Module 2: Output Evaluation and Validation — Claude Associate (CCAO-F) course">
+<meta property="og:description" content="The biggest exam domain. Judge whether Claude&#x27;s output is accurate and complete, catch hallucinations, inconsistencies and bias, check facts properly, know when a human must review, and shape the result and its format for the people who will use it.">
+<meta property="og:url" content="https://xploreai.co.in/courses/claude-associate/module-2/">
+<meta property="og:image" content="https://xploreai.co.in/assets/og-image.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/style.css">
+<link rel="stylesheet" href="/courses/claude-associate/course.css?v=1792991628">
+</head>
+<body>
+
+<nav>
+  <div class="wrap bar">
+    <a class="wordmark" href="/">xplore<span>ai</span></a>
+    <ul>
+      <li><a href="/#agents">Solutions</a></li>
+      <li><a href="/#stories">Success Stories</a></li>
+      <li><a href="/#subscribe">Newsletter</a></li>
+      <li><a href="/learn.html" aria-current="page">Learn AI</a></li>
+      <li><a class="btn" href="https://wa.me/919769686931?text=Hi%20XploreAI%2C%20I%27m%20interested%20in%20AI%20automation!">Get Started</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main class="cca">
+<header class="mhero wrap">
+  <p class="crumb"><a href="/learn.html">Learn AI</a> / <a href="../">Claude Associate (CCAO-F) course</a> / Module 2</p>
+  <span class="pill">MODULE 2 OF 7 · DOMAIN 2 · 21% OF THE EXAM · 6 SESSIONS</span>
+  <h1>Output Evaluation and Validation<i>.</i></h1>
+  <p class="lede">The biggest exam domain. Judge whether Claude's output is accurate and complete, catch hallucinations, inconsistencies and bias, check facts properly, know when a human must review, and shape the result and its format for the people who will use it.</p>
+  <div class="dl"><a class="btn" href="#s2-1">Start session 2.1 →</a> <a class="btn ghost" href="../code/module-2.py" download>Download the Python</a></div>
+</header>
+<div class="wrap layout">
+  <aside class="toc" aria-label="Sessions"><p>In this module</p><ol><li><a href="#s2-1"><span>2.1</span>Accuracy and completeness</a></li><li><a href="#s2-2"><span>2.2</span>Hallucinations, inconsistencies and bias</a></li><li><a href="#s2-3"><span>2.3</span>Fact-checking techniques</a></li><li><a href="#s2-4"><span>2.4</span>When a human must review</a></li><li><a href="#s2-5"><span>2.5</span>Editing for the audience</a></li><li><a href="#s2-6"><span>2.6</span>Choosing the output format</a></li></ol></aside>
+  <div class="content">
+<section class="session" id="s2-1"><p class="snum">Session 2.1</p><h2>Accuracy and completeness</h2><p>Claude's writing is fluent, and fluent text <em>sounds</em> right. Evaluating output means separating how good it reads from how good it is. Two questions come first:</p><ul><li><strong>Is it accurate?</strong> Every fact, number, name and date matches the source or reality.</li><li><strong>Is it complete?</strong> It does everything the request asked, nothing important is left out, and it doesn't quietly answer a slightly different question.</li></ul><figure class="flow anim" style="--n:5"><figcaption>Reviewing an output, in order</figcaption><ol><li style="--i:0"><b>Re-read the request</b><span>What exactly was asked, for whom, in what form?</span></li><li style="--i:1"><b>Check coverage</b><span>Is every part of the request answered?</span></li><li style="--i:2"><b>Check facts</b><span>Numbers, names, dates and claims against the source</span></li><li style="--i:3"><b>Check reasoning</b><span>Do the conclusions follow from the evidence given?</span></li><li style="--i:4"><b>Check fit</b><span>Right length, tone and format for the audience?</span></li></ol></figure><aside class="call concept"><b>The idea</b><p><strong>Completeness is checked against the request, not against the output.</strong> An output can be internally excellent and still miss half the brief. Keep the original request open beside the output and tick off each requirement.</p></aside><h3>A meeting summary, checked</h3><p>You ask Claude to summarise a 40-minute project meeting "with every decision, and each action with an owner and a deadline". Here is a reply to check:</p><div class="ccard"><div class="lab"><span>Meeting summary</span><em class="illus">Illustrative example, not a recorded output</em></div><div class="body"><p><strong>Decisions</strong></p><ul><li>Launch the WhatsApp reminder pilot at the Andheri clinic first.</li><li>Keep the current SMS reminders running during the pilot.</li></ul><p><strong>Actions</strong></p><ul><li>Priya to draft the reminder message templates by 12 March.</li><li>Rahul to get a quote from the WhatsApp Business provider.</li><li>Front-desk team to collect patients' opt-in consent.</li></ul></div></div><p>It reads well. But the request asked for an owner <em>and</em> a deadline on every action. Checking that by eye is easy to skip; checking it in code is not:</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">import re
+
+summary = &quot;&quot;&quot;Decisions
+- Launch the WhatsApp reminder pilot at the Andheri clinic first.
+- Keep the current SMS reminders running during the pilot.
+Actions
+- Priya to draft the reminder message templates by 12 March.
+- Rahul to get a quote from the WhatsApp Business provider.
+- Front-desk team to collect patients&#x27; opt-in consent.&quot;&quot;&quot;
+
+actions = summary.split(&quot;Actions&quot;)[1].strip().splitlines()
+DATE = r&quot;\b(by|before|on)\s+\d{1,2}\s+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\w*&quot;
+for a in actions:
+    owner = re.match(r&quot;-\s*([A-Z][\w-]*(?:\s+team)?)\s+to\b&quot;, a)
+    deadline = re.search(DATE, a)
+    flags = [] if deadline else [&quot;no deadline&quot;]
+    print(f&quot;{&#x27;ok &#x27; if not flags else &#x27;FIX&#x27;} {a[2:60]:&lt;58} owner: {owner.group(1) if owner else &#x27;?&#x27;:&lt;16} {&#x27;, &#x27;.join(flags)}&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>ok  Priya to draft the reminder message templates by 12 March. owner: Priya            
+FIX Rahul to get a quote from the WhatsApp Business provider.  owner: Rahul            no deadline
+FIX Front-desk team to collect patients&#x27; opt-in consent.       owner: Front-desk team  no deadline</pre></div></div><aside class="call read"><b>How to read it</b><p>Only one of three actions meets the brief. Rahul's quote and the consent work have owners but no deadlines, so either the meeting set none (worth flagging to the organiser) or Claude dropped them. You can't tell which from the summary: go back to the transcript.</p></aside><aside class="call tip"><b>Tip</b><p>Build the check into the prompt itself: "If an action has no deadline in the transcript, write <em>deadline: not set</em> rather than leaving it out." Then a missing deadline becomes visible instead of silent.</p></aside><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>Claude's summary of a supplier contract is clear and well organised. What is the most important next step before relying on it?</p><div class="opts"><button type="button" data-ok="0">A. Ask Claude whether it is confident in the summary</button><button type="button" data-ok="1">B. Compare the summary's key terms (dates, amounts, obligations) against the contract itself</button><button type="button" data-ok="0">C. Ask Claude to make the summary shorter</button><button type="button" data-ok="0">D. Share it, since it is well organised</button></div><p class="why" hidden>Good organisation shows nothing about accuracy. Key terms have to be checked against the source document. Claude's self-reported confidence is not a reliable accuracy signal.</p></div></section><section class="session" id="s2-2"><p class="snum">Session 2.2</p><h2>Hallucinations, inconsistencies and bias</h2><h3>Hallucinations</h3><p>A <strong>hallucination</strong> is content that sounds plausible but isn't true or isn't supported: an invented statistic, a citation to a report that doesn't exist, a subsection number that's nearly right, a quote nobody said. Hallucinations are most likely when Claude is asked for specific details it doesn't have: exact figures, citations, recent events, niche facts or details of your own organisation.</p><div class="tbl"><table><thead><tr><th>Higher risk</th><th>Lower risk</th></tr></thead><tbody><tr><td>Exact numbers, dates, citations and quotes</td><td>General explanations of well-known ideas</td></tr><tr><td>Recent events and current rules</td><td>Rewording text you supplied</td></tr><tr><td>Facts about your organisation it wasn't given</td><td>Summarising a document you attached</td></tr><tr><td>"Give me 10 sources on…"</td><td>"Using only the attached report…"</td></tr></tbody></table></div><p>Anthropic's guidance gives practical ways to reduce them:</p><ul><li><strong>Allow "I don't know".</strong> Explicitly permit Claude to say it lacks the information. This alone can greatly reduce invented answers.</li><li><strong>Ground it in quotes.</strong> For long documents, ask Claude to pull out the exact quotes it relies on first, then answer only from those quotes.</li><li><strong>Restrict to the documents.</strong> Tell it to use only the material you provided, not its general knowledge.</li><li><strong>Ask for citations, then verify them.</strong> Have it support each claim with a quote; if it can't find one, it must withdraw the claim.</li></ul><div class="pcard"><div class="lab"><span>✎ A grounded request</span><button class="copy" type="button">Copy</button></div><pre><code>Using only the attached clinic policy document, answer: how long must we keep patient X-ray records?
+
+First, quote the exact sentence(s) from the policy that answer this. Then give the answer in one sentence, citing the section.
+
+If the policy doesn&#x27;t cover this, say &quot;The policy doesn&#x27;t say&quot; rather than giving a general answer.</code></pre></div><h3>Inconsistencies</h3><p>One signal of hallucination is <strong>inconsistency</strong>: ask the same question several times (or in slightly different words) and compare. Facts that are really in the source tend to come back the same; invented details tend to change. Anthropic calls this <em>best-of-N verification</em>.</p><p>Below, three answers to the same question (written here to stand in for three runs) are compared automatically. The code pulls out every number and percentage and flags any that don't agree.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">import re
+from collections import Counter
+
+runs = [
+    &quot;The policy requires X-ray records to be kept for 10 years, and 5 years for routine notes.&quot;,
+    &quot;X-ray records must be retained for 10 years; routine clinical notes for 5 years.&quot;,
+    &quot;Keep X-ray records for 7 years and routine notes for 5 years, per section 4.2.&quot;,
+]
+
+def facts(text):
+    return re.findall(r&quot;\b\d+(?:\.\d+)?\s*(?:years?|%|days?)|section\s+\d+(?:\.\d+)*&quot;, text, re.I)
+
+table = [facts(r) for r in runs]
+for k, f in enumerate(table, 1):
+    print(f&quot;run {k}: {f}&quot;)
+
+all_facts = Counter(x.lower() for f in table for x in set(f))
+print(&quot;\nagree in every run:&quot;, [x for x, c in all_facts.items() if c == len(runs)])
+print(&quot;disagree or appear once:&quot;, [x for x, c in all_facts.items() if c &lt; len(runs)])</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>run 1: [&#x27;10 years&#x27;, &#x27;5 years&#x27;]
+run 2: [&#x27;10 years&#x27;, &#x27;5 years&#x27;]
+run 3: [&#x27;7 years&#x27;, &#x27;5 years&#x27;, &#x27;section 4.2&#x27;]
+
+agree in every run: [&#x27;5 years&#x27;]
+disagree or appear once: [&#x27;10 years&#x27;, &#x27;7 years&#x27;, &#x27;section 4.2&#x27;]</pre></div></div><aside class="call read"><b>How to read it</b><p>All three runs agree on 5 years for routine notes, so that's probably drawn from the document. The X-ray figure flips between 10 and 7 years, and one run cites a "section 4.2" the others never mention. Those are exactly the details to verify in the source before anyone acts on them. Agreement doesn't prove a fact is right; disagreement strongly suggests one isn't.</p></aside><h3>Bias</h3><p>Outputs can also be <strong>biased</strong>: one-sided, stereotyped, or skewed towards whatever was most common in the data or the prompt. Watch for:</p><ul><li><strong>Stereotyped language</strong>, such as job ads that use words associated with one gender or age group.</li><li><strong>One-sided framing</strong>, where only the benefits (or only the risks) are presented.</li><li><strong>Over-representation</strong>, where a summary of feedback that reflects the loudest comments rather than the most common ones.</li><li><strong>Assumptions about people</strong> based on names, locations or other cues.</li></ul><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">CODED = {
+    &quot;masculine-coded&quot;: [&quot;aggressive&quot;, &quot;dominant&quot;, &quot;competitive&quot;, &quot;rockstar&quot;, &quot;ninja&quot;, &quot;fearless&quot;, &quot;assertive&quot;],
+    &quot;age-coded&quot;:       [&quot;young&quot;, &quot;energetic&quot;, &quot;digital native&quot;, &quot;fresh graduate&quot;, &quot;recent graduate&quot;],
+}
+draft = (&quot;We want a young, energetic front-desk rockstar who thrives in a competitive, &quot;
+         &quot;fast-paced clinic and is fearless with difficult patients.&quot;)
+
+for kind, words in CODED.items():
+    hits = [w for w in words if w in draft.lower()]
+    print(f&quot;{kind:&lt;16} {len(hits)} found: {&#x27;, &#x27;.join(hits) or &#x27;-&#x27;}&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>masculine-coded  3 found: competitive, rockstar, fearless
+age-coded        2 found: young, energetic</pre></div></div><aside class="call read"><b>How to read it</b><p>Five coded words in two sentences. Each one is common in job ads, but together they signal "young and competitive", which can put off good applicants and, in some places, raise legal concerns. A word list like this is a crude first pass, not a fairness audit. Ask Claude to rewrite with neutral, skill-based language, then read it again yourself.</p></aside><aside class="call exam"><b>Exam lens</b><p>Questions in this domain often give a confident-sounding output and ask what to do. The right answer is almost never "trust it because it sounds sure" or "ask Claude how confident it is". It's usually verifying against an authoritative source, or restricting Claude to supplied documents.</p></aside><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>Which request is MOST likely to produce hallucinated details?</p><div class="opts"><button type="button" data-ok="0">A. "Reword this paragraph to sound friendlier."</button><button type="button" data-ok="0">B. "Summarise the attached report in five bullet points."</button><button type="button" data-ok="1">C. "List ten published studies, with authors and years, on WhatsApp reminders reducing no-shows."</button><button type="button" data-ok="0">D. "Explain what a no-show rate is."</button></div><p class="why" hidden>Requests for many specific citations, authors and years are classic hallucination territory, especially without a search tool. Rewording, summarising supplied text and explaining a general idea are much lower risk.</p></div><div class="quiz" data-multi="1"><p class="q"><b>Practice question</b><span class="n">Select 2</span>You ask Claude the same factual question three times and get the same date twice and a different date once. What does this suggest? (Select 2)</p><div class="opts"><button type="button" data-ok="1">A. The date may not be reliably supported, so it should be checked against a source</button><button type="button" data-ok="1">B. Inconsistency across runs is a useful warning sign of hallucination</button><button type="button" data-ok="0">C. The majority answer is guaranteed to be correct</button><button type="button" data-ok="0">D. Claude is malfunctioning and should not be used</button></div><button type=button class=check>Check answer</button><p class="why" hidden>Disagreement between runs is a red flag that calls for verification. Agreement, even two out of three, doesn't prove correctness.</p></div></section><section class="session" id="s2-3"><p class="snum">Session 2.3</p><h2>Fact-checking techniques</h2><p>Fact-checking means confirming each important claim against an <strong>authoritative source</strong>: the original document, the regulator's own website, your system of record. It does not mean asking Claude whether it's sure.</p><figure class="flow anim" style="--n:5"><figcaption>A practical fact-check</figcaption><ol><li style="--i:0"><b>List the claims</b><span>Pull out every checkable statement: numbers, names, dates, rules</span></li><li style="--i:1"><b>Rank by risk</b><span>Check first what would cause harm or embarrassment if wrong</span></li><li style="--i:2"><b>Find the source</b><span>Go to the primary source, not a summary of it</span></li><li style="--i:3"><b>Compare exactly</b><span>Match wording, figures and dates, not just the general idea</span></li><li style="--i:4"><b>Fix or remove</b><span>Correct the claim, or delete it if it can't be supported</span></li></ol></figure><h3>Let Claude help, but don't let it mark its own work</h3><p>Claude can do a lot of the legwork: extracting the claims, finding quotes in documents you provide, and flagging statements it can't support. Anthropic's recommended pattern is to ask Claude to find a supporting quote for each claim after drafting, and to remove any claim it can't support.</p><figure class="screen chat anim"><div class="bar"><i></i><i></i><i></i><span>Claims checked against a source</span></div><div class="thread"><div class="msg you"><span class="who">You</span><div class="bub"><p>Here's our draft patient newsletter and the clinic's official fee schedule (both attached). For each factual claim in the newsletter, quote the line in the fee schedule that supports it. If there's no supporting line, say "NOT SUPPORTED".</p></div></div><div class="msg claude"><span class="who">Claude</span><div class="bub"><p>1. "Scaling and polishing now costs ₹1,800": supported. Fee schedule: "Scaling &amp; polishing (full mouth) – ₹1,800".</p><p>2. "Consultations are free on Sundays": NOT SUPPORTED. The fee schedule lists consultations at ₹500 and says nothing about Sundays.</p><p>3. "Teeth whitening is 20% off in March": NOT SUPPORTED. The schedule doesn't mention offers.</p></div></div><div class="msg note"><span class="who"></span><div class="bub"><p>The two unsupported claims might still be true (an offer may live in another document), but someone has to confirm them before printing.</p></div></div></div><figcaption>Illustrative screen. Real replies vary from run to run.</figcaption></figure><h3>Checking claims against a source, in code</h3><p>The same idea, mechanically. For each claim, the code looks for the source line that shares the most important words with it, and checks whether the numbers match. It's a rough tool (it doesn't understand meaning), but it quickly shows which claims have no support at all.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">import re
+
+source = &quot;&quot;&quot;Scaling &amp; polishing (full mouth): Rs 1,800
+Consultation (any clinic, any day): Rs 500
+Root canal treatment (molar): Rs 9,500
+X-ray (single, digital): Rs 350&quot;&quot;&quot;
+
+claims = [
+    &quot;Scaling and polishing costs Rs 1,800.&quot;,
+    &quot;A molar root canal costs Rs 8,500.&quot;,
+    &quot;Consultations are free on Sundays.&quot;,
+    &quot;A digital X-ray is Rs 350.&quot;,
+]
+
+def words(s):   # lower-case words of 3+ letters, plural &quot;s&quot; dropped, filler removed
+    return {w.rstrip(&quot;s&quot;) for w in re.findall(r&quot;[a-z]{3,}&quot;, s.lower())} - {&quot;cost&quot;, &quot;the&quot;, &quot;are&quot;, &quot;and&quot;, &quot;any&quot;}
+def numbers(s): return set(re.findall(r&quot;\d[\d,]*&quot;, s))
+
+for c in claims:
+    best = max(source.splitlines(), key=lambda line: len(words(c) &amp; words(line)))
+    overlap = words(c) &amp; words(best)
+    if not overlap:
+        verdict = &quot;NO SOURCE LINE&quot;
+    elif numbers(c) and numbers(c) != numbers(best):
+        verdict = f&quot;NUMBER MISMATCH (source says {&#x27;, &#x27;.join(numbers(best))})&quot;
+    elif not numbers(c) and &quot;free&quot; in c.lower():
+        verdict = &quot;CHECK: source gives a price, claim says free&quot;
+    else:
+        verdict = &quot;supported&quot;
+    print(f&quot;{c:&lt;38} -&gt; {verdict}&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>Scaling and polishing costs Rs 1,800.  -&gt; supported
+A molar root canal costs Rs 8,500.     -&gt; NUMBER MISMATCH (source says 9,500)
+Consultations are free on Sundays.     -&gt; CHECK: source gives a price, claim says free
+A digital X-ray is Rs 350.             -&gt; supported</pre></div></div><aside class="call read"><b>How to read it</b><p>Two claims match their source lines exactly. The root canal claim found the right line but the wrong price (₹8,500 against ₹9,500), the kind of near-miss that's easy to read past. The "free on Sundays" claim matches the consultation line, but the source gives a price, not "free". Simple checks catch the mechanical errors; a person still decides what the right wording is.</p></aside><h3>Rules for verifying citations</h3><ul><li><strong>Open the citation.</strong> Confirm the source exists and says what's claimed. A real-looking URL or section number proves nothing until you've seen it.</li><li><strong>Prefer primary sources.</strong> The regulator's notice beats a news article about it; your billing system beats an email about prices.</li><li><strong>Check the date.</strong> Rules, prices and names change. Confirm the source is current.</li><li><strong>Watch for near-misses.</strong> Right document, wrong clause; right figure, wrong year.</li></ul><aside class="call warn"><b>Watch out</b><p>Asking Claude to "double-check its facts" without giving it a source mostly produces the same answer, more confidently. Verification needs something outside the conversation to check against.</p></aside><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>Claude's research summary cites "Section 12(3)" of a new regulation. What is the best way to validate this before it goes to the compliance team?</p><div class="opts"><button type="button" data-ok="0">A. Ask Claude to confirm the section number is correct</button><button type="button" data-ok="0">B. Check that the section number looks plausible for that regulation</button><button type="button" data-ok="1">C. Open the official regulation text and confirm Section 12(3) exists and says what the summary claims</button><button type="button" data-ok="0">D. Remove the section number so the summary is less specific</button></div><p class="why" hidden>Specific-looking citations are a common form of hallucination. Validating means checking the authoritative source itself. Self-confirmation isn't independent, and deleting detail avoids the problem without solving it.</p></div></section><section class="session" id="s2-4"><p class="snum">Session 2.4</p><h2>When a human must review</h2><p>Not every output needs the same scrutiny. A brainstorm of team-lunch ideas needs none; a letter telling a patient about a diagnosis needs an expert. The skill the exam tests is <strong>matching the level of review to the risk</strong>.</p><div class="tbl"><table><thead><tr><th>Factor</th><th>Lower review</th><th>Higher review</th></tr></thead><tbody><tr><td>Stakes</td><td>Internal draft, easy to fix</td><td>Money, health, legal, safety or reputation</td></tr><tr><td>Audience</td><td>You or your team</td><td>Customers, patients, regulators, the public</td></tr><tr><td>Reversibility</td><td>Can be corrected later</td><td>Hard to undo once sent or acted on</td></tr><tr><td>Expertise needed</td><td>General knowledge</td><td>Medical, legal, financial or technical judgment</td></tr><tr><td>Source quality</td><td>Grounded in documents you gave it</td><td>From general knowledge or the web</td></tr></tbody></table></div><figure class="flow anim" style="--n:4"><figcaption>Four levels of review</figcaption><ol><li style="--i:0"><b>Use as is</b><span>Low stakes, internal, easily corrected: e.g. brainstorms, first drafts for yourself</span></li><li style="--i:1"><b>Spot-check</b><span>Check a sample and the key facts: e.g. routine internal summaries</span></li><li style="--i:2"><b>Full review</b><span>Read everything before use: e.g. anything sent to customers</span></li><li style="--i:3"><b>Expert sign-off</b><span>A qualified person approves: e.g. medical, legal, financial or regulatory content</span></li></ol></figure><h3>A routing rule you could write down</h3><p>Teams often turn this judgment into a simple, written rule so it's applied consistently. Here is one, as a scoring function, applied to six everyday requests.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">def review_level(stakes, external, irreversible, expert_topic, grounded):
+    &quot;&quot;&quot;stakes: 0 low, 1 medium, 2 high. Other arguments are True/False.&quot;&quot;&quot;
+    if expert_topic and stakes &gt;= 1:
+        return &quot;expert sign-off&quot;
+    score = stakes * 2 + external * 2 + irreversible + (not grounded)
+    if score &gt;= 4:  return &quot;full review&quot;
+    if score &gt;= 2:  return &quot;spot-check&quot;
+    return &quot;use as is&quot;
+
+tasks = [
+    (&quot;Brainstorm team-lunch venues&quot;,                   0, False, False, False, False),
+    (&quot;Summarise our own meeting notes for the team&quot;,   0, False, False, False, True),
+    (&quot;Draft a WhatsApp offer to all patients&quot;,         1, True,  True,  False, True),
+    (&quot;Answer a patient&#x27;s question about a medicine&quot;,   2, True,  True,  True,  False),
+    (&quot;Summarise a new tax rule for the finance team&quot;,  1, False, False, True,  False),
+    (&quot;Turn our price list into a website table&quot;,       1, True,  False, False, True),
+]
+for name, *f in tasks:
+    print(f&quot;{name:&lt;48} -&gt; {review_level(*f)}&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>Brainstorm team-lunch venues                     -&gt; use as is
+Summarise our own meeting notes for the team     -&gt; use as is
+Draft a WhatsApp offer to all patients           -&gt; full review
+Answer a patient&#x27;s question about a medicine     -&gt; expert sign-off
+Summarise a new tax rule for the finance team    -&gt; expert sign-off
+Turn our price list into a website table         -&gt; full review</pre></div></div><aside class="call read"><b>How to read it</b><p>The brainstorm and the meeting summary need little or no review. The patient offer is external and can't be unsent, so it gets a full read. The medicine question and the tax rule need someone qualified, because both are expert topics with real consequences. The point isn't these exact weights: it's that a written rule makes the decision consistent and explainable.</p></aside><aside class="call concept"><b>The idea</b><p><strong>Escalation is part of the role.</strong> The exam guide describes the Associate as someone who recognises limitations and escalates more complex or technical work. Knowing when to hand off to an expert, a developer or a Claude Architect is a skill, not a failure.</p></aside><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>Which output most clearly needs review by a qualified professional before use?</p><div class="opts"><button type="button" data-ok="0">A. An internal list of ideas for a team offsite</button><button type="button" data-ok="0">B. A first draft of a blog post you will edit yourself</button><button type="button" data-ok="1">C. A reply to a patient explaining whether two medicines can be taken together</button><button type="button" data-ok="0">D. A summary of your own notes from yesterday</button></div><p class="why" hidden>Medical advice to a patient is high-stakes, external, hard to undo and needs professional expertise. The other outputs are internal, low-stakes or will be edited anyway.</p></div></section><section class="session" id="s2-5"><p class="snum">Session 2.5</p><h2>Editing for the audience</h2><p>The same facts need different words for different readers. A clinic's new booking system means "API integration and slot logic" to the developer, "fewer missed calls and a 15% cut in front-desk time" to the owner, and "book in two taps on WhatsApp" to patients. Part of evaluating output is asking: <strong>is this right for the person reading it?</strong></p><div class="tbl"><table><thead><tr><th>Audience</th><th>Usually wants</th><th>Edit for</th></tr></thead><tbody><tr><td>Executives and owners</td><td>The decision, the impact, the cost</td><td>Lead with the conclusion; one page; numbers</td></tr><tr><td>Specialists</td><td>Accuracy and detail</td><td>Precise terms, method, caveats</td></tr><tr><td>Customers and patients</td><td>What it means for them, what to do</td><td>Plain words, short sentences, a clear next step</td></tr><tr><td>Regulators and auditors</td><td>Evidence and compliance</td><td>Exact references, no claims you can't support</td></tr></tbody></table></div><h3>One update, three versions</h3><div class="compare anim neutral"><div class="side weak"><div class="lab"><span>For the clinic owners</span><button class="copy" type="button">Copy</button></div><pre><code>Recommendation: roll out WhatsApp booking to all three clinics in April.
+
+The Andheri pilot cut missed calls by 38% and freed about 6 front-desk hours a week. Set-up cost is ₹45,000 per clinic, recovered in roughly four months through fewer no-shows.
+
+Decision needed by 20 March.</code></pre></div><div class="side strong"><div class="lab"><span>For patients</span><button class="copy" type="button">Copy</button></div><pre><code>You can now book your dental appointment on WhatsApp.
+
+Send &quot;Hi&quot; to 98XXX XXXXX, pick a time, and you&#x27;re done. You&#x27;ll get a reminder the day before.
+
+Prefer to call? Our phone line hasn&#x27;t changed.</code></pre></div></div><div class="pcard"><div class="lab"><span>✎ Adapting for an audience</span><button class="copy" type="button">Copy</button></div><pre><code>Rewrite the attached project update for our patients.
+
+They are not technical, and many read on their phones. Use short sentences and everyday words, no more than 60 words in total, and end with exactly what they should do next.
+
+Leave out costs, staffing and internal metrics: patients don&#x27;t need them.</code></pre></div><h3>Measuring readability</h3><p>A simple way to compare versions is a <strong>readability score</strong>. The Flesch Reading Ease formula uses sentence length and syllables per word: higher means easier to read (60–70 is plain English; below 30 is hard going). Here it is from scratch, applied to a technical and a patient version of the same message.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">import re
+
+def syllables(word):
+    word = word.lower()
+    groups = re.findall(r&quot;[aeiouy]+&quot;, word)
+    n = len(groups) - (1 if word.endswith(&quot;e&quot;) and len(groups) &gt; 1 else 0)
+    return max(n, 1)
+
+def flesch(text):
+    sentences = max(len(re.findall(r&quot;[.!?]+&quot;, text)), 1)
+    words = re.findall(r&quot;[A-Za-z&#x27;]+&quot;, text)
+    syl = sum(syllables(w) for w in words)
+    return 206.835 - 1.015 * (len(words) / sentences) - 84.6 * (syl / len(words)), len(words) / sentences
+
+technical = (&quot;The implementation integrates the scheduling application programming interface with the &quot;
+             &quot;WhatsApp Business platform, enabling automated appointment confirmation and configurable &quot;
+             &quot;reminder notifications.&quot;)
+patient = (&quot;You can now book on WhatsApp. Send Hi, pick a time, and you are done. &quot;
+           &quot;We will remind you the day before.&quot;)
+
+for name, text in [(&quot;technical&quot;, technical), (&quot;patient&quot;, patient)]:
+    score, wps = flesch(text)
+    print(f&quot;{name:&lt;10} reading ease {score:6.1f}   words per sentence {wps:4.1f}&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>technical  reading ease  -56.2   words per sentence 21.0
+patient    reading ease  103.3   words per sentence  7.3</pre></div></div><aside class="call read"><b>How to read it</b><p>The technical sentence scores far below zero, which means very hard to read: one 21-word sentence packed with long words. The patient version scores above 100, which is very easy reading: short sentences and short words. Scores like this are approximate (the syllable counter is a heuristic), but they're a fast, objective check that an output fits a general audience. Specialists can handle a lower score; patients shouldn't have to.</p></aside><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>Claude produced an accurate, detailed technical summary of a system change. It now needs to go to senior leadership. What is the most appropriate edit?</p><div class="opts"><button type="button" data-ok="0">A. Send the technical summary, since it is accurate</button><button type="button" data-ok="1">B. Lead with the decision and business impact, keep it brief, and move technical detail to an appendix</button><button type="button" data-ok="0">C. Remove all numbers so it is easier to read</button><button type="button" data-ok="0">D. Make it longer so it seems more thorough</button></div><p class="why" hidden>Executives need the conclusion, impact and decision up front. Accuracy is necessary but not enough: the output must also suit its audience. Removing numbers or padding the text makes it worse.</p></div></section><section class="session" id="s2-6"><p class="snum">Session 2.6</p><h2>Choosing the output format</h2><p>The exam guide names three kinds of output format to choose from: <strong>inline</strong> replies in the chat, <strong>artifacts</strong>, and <strong>structured data</strong>. Choosing well makes the result easier to use, check and reuse.</p><div class="tbl"><table><thead><tr><th>Format</th><th>What it is</th><th>Choose it when</th></tr></thead><tbody><tr><td>Inline</td><td>A normal reply in the conversation</td><td>Quick answers, explanations, short text you'll read once</td></tr><tr><td>Artifact</td><td>Substantial, self-contained content in its own panel beside the chat, which you can edit, reuse and share</td><td>Documents, reports, code, diagrams, small interactive tools, anything you'll iterate on</td></tr><tr><td>Structured data</td><td>A table, CSV or JSON with fixed fields</td><td>Data going into a spreadsheet, a system or another step of a workflow</td></tr></tbody></table></div><p>According to Anthropic's help article on artifacts, Claude typically creates one when the content is substantial, self-contained and likely to be reused, such as a document, a single-page website, an SVG image, a diagram or an interactive component. You can also simply ask for one.</p><figure class="flow anim" style="--n:4"><figcaption>Picking a format</figcaption><ol><li style="--i:0"><b>Read once?</b><span>Inline answer</span></li><li style="--i:1"><b>Will you edit, reuse or share it?</b><span>Ask for an artifact</span></li><li style="--i:2"><b>Will a system or spreadsheet use it?</b><span>Ask for structured data with named fields</span></li><li style="--i:3"><b>Needs checking line by line?</b><span>A table makes gaps and errors easy to spot</span></li></ol></figure><h3>Asking for structured data</h3><p>When output feeds another tool, specify the exact fields and what to do when information is missing. Otherwise, each run may name things differently.</p><div class="pcard"><div class="lab"><span>✎ Structured extraction</span><button class="copy" type="button">Copy</button></div><pre><code>From each patient enquiry below, extract the details as JSON, one object per enquiry, with exactly these keys:
+
+- &quot;name&quot;: the patient&#x27;s name, or null if not given
+- &quot;treatment&quot;: one of &quot;cleaning&quot;, &quot;filling&quot;, &quot;root canal&quot;, &quot;braces&quot;, &quot;other&quot;
+- &quot;preferred_date&quot;: in YYYY-MM-DD format, or null if not given
+- &quot;urgent&quot;: true only if the patient mentions pain or swelling
+
+Return only the JSON array, with no other text.</code></pre></div><div class="ccard"><div class="lab"><span>Structured reply</span><em class="illus">Illustrative example, not a recorded output</em></div><div class="body"><p>[</p><p>  {"name": "Anita Desai", "treatment": "cleaning", "preferred_date": "2026-03-14", "urgent": false},</p><p>  {"name": null, "treatment": "root canal", "preferred_date": "next week", "urgent": true}</p><p>]</p></div></div><p>Even with clear instructions, check structured output before you load it anywhere. Here is that check in Python, run against the reply above:</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">import json, re
+
+reply = &#x27;&#x27;&#x27;[
+  {&quot;name&quot;: &quot;Anita Desai&quot;, &quot;treatment&quot;: &quot;cleaning&quot;, &quot;preferred_date&quot;: &quot;2026-03-14&quot;, &quot;urgent&quot;: false},
+  {&quot;name&quot;: null, &quot;treatment&quot;: &quot;root canal&quot;, &quot;preferred_date&quot;: &quot;next week&quot;, &quot;urgent&quot;: true}
+]&#x27;&#x27;&#x27;
+
+ALLOWED = {&quot;cleaning&quot;, &quot;filling&quot;, &quot;root canal&quot;, &quot;braces&quot;, &quot;other&quot;}
+records = json.loads(reply)                       # step 1: is it valid JSON at all?
+for k, r in enumerate(records, 1):
+    problems = []
+    if set(r) != {&quot;name&quot;, &quot;treatment&quot;, &quot;preferred_date&quot;, &quot;urgent&quot;}:
+        problems.append(f&quot;unexpected keys {sorted(r)}&quot;)
+    if r.get(&quot;treatment&quot;) not in ALLOWED:
+        problems.append(f&quot;treatment &#x27;{r.get(&#x27;treatment&#x27;)}&#x27; not allowed&quot;)
+    d = r.get(&quot;preferred_date&quot;)
+    if d is not None and not re.fullmatch(r&quot;\d{4}-\d{2}-\d{2}&quot;, d):
+        problems.append(f&quot;date &#x27;{d}&#x27; is not YYYY-MM-DD&quot;)
+    if not isinstance(r.get(&quot;urgent&quot;), bool):
+        problems.append(&quot;urgent is not true/false&quot;)
+    print(f&quot;record {k}: &quot; + (&quot;ok&quot; if not problems else &quot;; &quot;.join(problems)))</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>record 1: ok
+record 2: date &#x27;next week&#x27; is not YYYY-MM-DD</pre></div></div><aside class="call read"><b>How to read it</b><p>The reply is valid JSON and has the right fields, so it would <em>look</em> fine in a quick glance. But record 2's date is "next week", which isn't in the format asked for and would break a booking system expecting a real date. Validating structured output against the rules you set catches this before it reaches the system. The fix belongs in the prompt: "if the patient gives a relative date such as 'next week', set preferred_date to null and copy their words into a 'notes' field".</p></aside><aside class="call exam"><b>Exam lens</b><p>Match the format to what happens next. If a scenario says the output will be imported into a spreadsheet or tool, the answer is structured data with defined fields. If it will be edited and shared as a document, an artifact. If it's a quick answer, inline.</p></aside><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>A team needs Claude to turn 200 customer emails into rows for a tracking spreadsheet with consistent columns. Which output approach is best?</p><div class="opts"><button type="button" data-ok="0">A. A friendly inline summary of the emails</button><button type="button" data-ok="0">B. A long report in an artifact</button><button type="button" data-ok="1">C. Structured data with named fields and rules for missing values, then a check before importing</button><button type="button" data-ok="0">D. Ten separate chats, one for each batch of emails, with no fixed format</button></div><p class="why" hidden>Data going into a spreadsheet needs consistent, named fields and a rule for missing values, then validation before import. Prose summaries and reports don't load cleanly into columns.</p></div><div class="quiz" data-multi="1"><p class="q"><b>Practice question</b><span class="n">Select 2</span>Which TWO situations are good reasons to ask for an artifact rather than an inline reply? (Select 2)</p><div class="opts"><button type="button" data-ok="1">A. You're drafting a policy document you'll revise several times and share with your manager</button><button type="button" data-ok="1">B. You want a small interactive calculator to reuse with your team</button><button type="button" data-ok="0">C. You want a one-line answer to "what time zone is Singapore in?"</button><button type="button" data-ok="0">D. You're asking Claude to explain a term you didn't understand</button></div><button type=button class=check>Check answer</button><p class="why" hidden>Artifacts suit substantial, self-contained content you'll edit, reuse or share. Quick answers and explanations work best inline.</p></div></section>
+  <div class="pager"><a class="btn ghost" href="../module-1/">← Module 1</a><a class="btn" href="../module-3/">Module 3 →</a></div>
+  </div>
+</div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="fine" style="border:none;margin:0;padding:0">
+      <span>© 2026 XploreAI · <a href="/">xploreai.co.in</a></span>
+      <span><a href="mailto:hello@xploreai.co.in">hello@xploreai.co.in</a></span>
+    </div>
+  </div>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+<script src="/courses/claude-associate/course.js?v=1792985350"></script>
+</body>
+</html>

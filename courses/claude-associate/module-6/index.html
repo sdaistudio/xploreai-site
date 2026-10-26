@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 6: Governance, Risk, and Responsible Use — Claude Associate (CCAO-F) course — XploreAI</title>
+<meta name="description" content="Use Claude in ways that are allowed, safe and fair. Tell appropriate from inappropriate uses, protect sensitive and regulated data, follow your organisation&#x27;s AI policy, and think through the ethical side of putting AI into people&#x27;s work and lives.">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="XploreAI">
+<meta property="og:title" content="Module 6: Governance, Risk, and Responsible Use — Claude Associate (CCAO-F) course">
+<meta property="og:description" content="Use Claude in ways that are allowed, safe and fair. Tell appropriate from inappropriate uses, protect sensitive and regulated data, follow your organisation&#x27;s AI policy, and think through the ethical side of putting AI into people&#x27;s work and lives.">
+<meta property="og:url" content="https://xploreai.co.in/courses/claude-associate/module-6/">
+<meta property="og:image" content="https://xploreai.co.in/assets/og-image.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/style.css">
+<link rel="stylesheet" href="/courses/claude-associate/course.css?v=1792991628">
+</head>
+<body>
+
+<nav>
+  <div class="wrap bar">
+    <a class="wordmark" href="/">xplore<span>ai</span></a>
+    <ul>
+      <li><a href="/#agents">Solutions</a></li>
+      <li><a href="/#stories">Success Stories</a></li>
+      <li><a href="/#subscribe">Newsletter</a></li>
+      <li><a href="/learn.html" aria-current="page">Learn AI</a></li>
+      <li><a class="btn" href="https://wa.me/919769686931?text=Hi%20XploreAI%2C%20I%27m%20interested%20in%20AI%20automation!">Get Started</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main class="cca">
+<header class="mhero wrap">
+  <p class="crumb"><a href="/learn.html">Learn AI</a> / <a href="../">Claude Associate (CCAO-F) course</a> / Module 6</p>
+  <span class="pill">MODULE 6 OF 7 · DOMAIN 6 · 15% OF THE EXAM · 4 SESSIONS</span>
+  <h1>Governance, Risk, and Responsible Use<i>.</i></h1>
+  <p class="lede">Use Claude in ways that are allowed, safe and fair. Tell appropriate from inappropriate uses, protect sensitive and regulated data, follow your organisation's AI policy, and think through the ethical side of putting AI into people's work and lives.</p>
+  <div class="dl"><a class="btn" href="#s6-1">Start session 6.1 →</a> <a class="btn ghost" href="../code/module-6.py" download>Download the Python</a></div>
+</header>
+<div class="wrap layout">
+  <aside class="toc" aria-label="Sessions"><p>In this module</p><ol><li><a href="#s6-1"><span>6.1</span>Appropriate and inappropriate uses</a></li><li><a href="#s6-2"><span>6.2</span>Data sensitivity and privacy</a></li><li><a href="#s6-3"><span>6.3</span>Following AI policy and governance</a></li><li><a href="#s6-4"><span>6.4</span>Ethical implications</a></li></ol></aside>
+  <div class="content">
+<section class="session" id="s6-1"><p class="snum">Session 6.1</p><h2>Appropriate and inappropriate uses</h2><p>Some uses of Claude are fine as they are, some need safeguards, and some aren't allowed at all. Anthropic's <strong>Usage Policy</strong> sets the outer boundary; your organisation's own policy usually narrows it further.</p><p>The Usage Policy has three layers:</p><ul><li><strong>Universal usage standards</strong> that apply to everyone. They cover areas such as breaking the law, compromising computer systems, weapons, inciting violence, compromising privacy, harming children, disinformation, fraud, surveillance and sexually explicit content.</li><li><strong>High-risk use case requirements</strong>, for when Claude contributes to decisions in sensitive areas.</li><li><strong>Additional guidelines</strong>, for example that consumer-facing chatbots must tell users they're talking to AI.</li></ul><h3>High-risk areas</h3><p>The policy names 11 high-risk areas: <strong>legal, medical, finance, credit, insurance, housing, employment, education and credentials, healthcare access, public benefits and services, and legal status and adjudication</strong>. When AI is used to give advice or make recommendations about people in these areas, two requirements apply:</p><div class="tbl"><table><thead><tr><th>Requirement</th><th>What it means in practice</th></tr></thead><tbody><tr><td>Qualified human in the loop</td><td>A qualified person meaningfully reviews the recommendation, and can change it, before it's delivered or used</td></tr><tr><td>Disclosure</td><td>The person affected is clearly told AI was used (you don't have to name the tool)</td></tr></tbody></table></div><figure class="flow anim" style="--n:5"><figcaption>Is this use appropriate?</figcaption><ol><li style="--i:0"><b>Allowed at all?</b><span>Check Anthropic's Usage Policy and your organisation's policy</span></li><li style="--i:1"><b>High-risk area?</b><span>Legal, medical, financial, employment, housing, education…</span></li><li style="--i:2"><b>If yes: safeguards</b><span>Qualified human review before use, and disclosure to the person affected</span></li><li style="--i:3"><b>Data allowed?</b><span>Only data the policy permits (session 6.2)</span></li><li style="--i:4"><b>Proceed, or escalate</b><span>When in doubt, ask your AI governance or compliance contact</span></li></ol></figure><aside class="call concept"><b>The idea</b><p><strong>Same tool, different risk.</strong> Using Claude to draft a job advert is low-risk. Using it to rank which candidates to reject is employment, a high-risk area: it needs a qualified person making the real decision and candidates told that AI was involved. The difference is what the output is used <em>for</em>.</p></aside><h3>A use-case triage</h3><p>This triage applies the layers above to some everyday requests. It's a teaching tool built from the policy's structure, not a legal check: real decisions go to whoever owns AI governance in your organisation.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">PROHIBITED = [&quot;impersonate&quot;, &quot;fake reviews&quot;, &quot;track my employee&#x27;s personal phone&quot;, &quot;phishing&quot;, &quot;deepfake&quot;]
+HIGH_RISK = {&quot;medical&quot;: [&quot;diagnos&quot;, &quot;dosage&quot;, &quot;treatment plan&quot;], &quot;employment&quot;: [&quot;reject candidates&quot;, &quot;rank candidates&quot;, &quot;promotion&quot;],
+             &quot;credit&quot;: [&quot;loan&quot;, &quot;credit&quot;], &quot;insurance&quot;: [&quot;insurance claim&quot;], &quot;legal&quot;: [&quot;legal advice&quot;, &quot;court&quot;],
+             &quot;education&quot;: [&quot;grade students&quot;, &quot;exam result&quot;]}
+
+def triage(request):
+    r = request.lower()
+    if any(p in r for p in PROHIBITED):
+        return &quot;not allowed&quot;
+    areas = [a for a, words in HIGH_RISK.items() if any(w in r for w in words)]
+    if areas:
+        return f&quot;high-risk ({&#x27;, &#x27;.join(areas)}): qualified human review + disclosure&quot;
+    return &quot;allowed: normal review&quot;
+
+for req in [&quot;Draft a job advert for a dental assistant&quot;,
+            &quot;Rank candidates and reject the bottom half automatically&quot;,
+            &quot;Write five fake reviews for our clinic&quot;,
+            &quot;Summarise this patient&#x27;s symptoms into a draft treatment plan for the dentist&quot;,
+            &quot;Brainstorm names for our newsletter&quot;,
+            &quot;Decide whether to approve this patient&#x27;s EMI loan application&quot;]:
+    print(f&quot;{req:&lt;78} -&gt; {triage(req)}&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>Draft a job advert for a dental assistant                                      -&gt; allowed: normal review
+Rank candidates and reject the bottom half automatically                       -&gt; high-risk (employment): qualified human review + disclosure
+Write five fake reviews for our clinic                                         -&gt; not allowed
+Summarise this patient&#x27;s symptoms into a draft treatment plan for the dentist  -&gt; high-risk (medical): qualified human review + disclosure
+Brainstorm names for our newsletter                                            -&gt; allowed: normal review
+Decide whether to approve this patient&#x27;s EMI loan application                  -&gt; high-risk (credit): qualified human review + disclosure</pre></div></div><aside class="call read"><b>How to read it</b><p>Drafting an advert and brainstorming names are routine. Fake reviews are deceptive, which the policy prohibits outright. Ranking and rejecting candidates (employment), a draft treatment plan (medical) and a loan decision (credit) are all high-risk: Claude can help prepare them, but a qualified person must make the actual decision, and the people affected should be told AI was involved. Note the treatment plan is fine as a <em>draft for the dentist</em>; it would not be fine sent straight to the patient.</p></aside><aside class="call exam"><b>Exam lens</b><p>Look for the <strong>purpose</strong> in a scenario. If Claude's output feeds a decision about a person's health, job, money, housing, education or legal status, the right answer includes qualified human review and disclosure. If the request is deceptive or harmful, the right answer is to decline, not to find a workaround.</p></aside><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>An HR coordinator wants Claude to screen 300 CVs and automatically email rejections to the lowest-scoring 200. What is the most appropriate response?</p><div class="opts"><button type="button" data-ok="0">A. Proceed, since it saves a lot of time</button><button type="button" data-ok="1">B. Use Claude only to help organise and summarise CVs, with a qualified person making and owning every rejection decision, and tell candidates AI was used in the process</button><button type="button" data-ok="0">C. Proceed but use the most capable model so the rankings are accurate</button><button type="button" data-ok="0">D. Ask Claude whether its rankings are fair</button></div><p class="why" hidden>Employment is a high-risk area. Anthropic's Usage Policy requires qualified human review of AI-assisted recommendations and disclosure to the people affected. A better model or Claude's own fairness assessment doesn't replace human judgment.</p></div></section><section class="session" id="s6-2"><p class="snum">Session 6.2</p><h2>Data sensitivity and privacy</h2><p>Before sharing anything with Claude, ask: <strong>what kind of data is this, and what am I allowed to do with it?</strong> The exam guide's own sample question is about this: a spreadsheet of customer names and account numbers, under a policy that restricts regulated personal data. The right move is to remove or anonymise the identifiers before uploading.</p><div class="tbl"><table><thead><tr><th>Data type</th><th>Examples</th><th>Typical handling</th></tr></thead><tbody><tr><td>Public</td><td>Published price lists, press releases</td><td>Generally fine to use</td></tr><tr><td>Internal</td><td>Meeting notes, process documents</td><td>Allowed in approved tools</td></tr><tr><td>Confidential</td><td>Contracts, financials, strategy</td><td>Only in approved, business-grade tools, if policy allows</td></tr><tr><td>Personal data</td><td>Names, phone numbers, emails, addresses</td><td>Minimise; anonymise where possible</td></tr><tr><td>Sensitive / regulated</td><td>Health records, ID numbers, bank details, children's data</td><td>Often prohibited, or only with specific approval and safeguards</td></tr></tbody></table></div><p>Privacy laws, such as India's Digital Personal Data Protection Act, 2023 or the EU's GDPR, set rules for personal data. You don't need to be a lawyer, but you do need to know your organisation's rules and when to ask.</p><h3>How your chats are used</h3><p>Anthropic's terms differ by plan. On <strong>consumer plans (Free, Pro and Max)</strong>, Anthropic's 2025 update lets you choose in your settings whether your chats can be used to train its models. If you allow it, data is kept for up to five years; if you don't, the standard 30-day retention applies. <strong>Commercial plans</strong> (Team, Enterprise and the API) are covered by separate commercial terms. Check the current terms and your organisation's agreement rather than assuming. And remember memory and incognito chats from Module 3.</p><aside class="call warn"><b>Watch out</b><p><strong>"Tell Claude not to remember it" is not a data control.</strong> Instructions in a chat don't change how data is stored or retained. If policy says certain data can't be shared, the control is not sharing it: remove it, anonymise it, or use an approved route.</p></aside><h3>Redacting before you upload</h3><p>Removing direct identifiers is often the step that makes an analysis possible within policy. This script replaces names, phone numbers, emails, Aadhaar-style ID numbers and PAN numbers with labelled placeholders, and keeps the mapping locally so results can be linked back if needed. That is <strong>pseudonymisation</strong>: the data is safer to share, but you still hold the key.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">import re
+
+rows = [
+    &quot;Anita Desai, +91 98200 12345, anita.d@example.com, Aadhaar 4521 8890 1234, missed 3 appointments&quot;,
+    &quot;Rahul Mehta, 9819011223, rahul@example.in, PAN ABCPM1234K, outstanding balance Rs 4,500&quot;,
+    &quot;Sara Khan, +91-99300-45678, sara.k@example.com, missed 1 appointment&quot;,
+]
+PATTERNS = [
+    (&quot;EMAIL&quot;,   r&quot;[\w.+-]+@[\w-]+\.[\w.]+&quot;),
+    (&quot;AADHAAR&quot;, r&quot;\b\d{4}\s?\d{4}\s?\d{4}\b&quot;),
+    (&quot;PAN&quot;,     r&quot;\b[A-Z]{5}\d{4}[A-Z]\b&quot;),
+    (&quot;PHONE&quot;,   r&quot;(?:\+91[\s-]?)?\b[6-9]\d{4}[\s-]?\d{5}\b&quot;),
+    (&quot;NAME&quot;,    r&quot;^[A-Z][a-z]+ [A-Z][a-z]+&quot;),
+]
+key, counts = {}, {}
+
+def redact(text):
+    for label, pattern in PATTERNS:
+        def swap(m):
+            counts[label] = counts.get(label, 0) + 1
+            token = f&quot;[{label}_{counts[label]}]&quot;
+            key[token] = m.group(0)
+            return token
+        text = re.sub(pattern, swap, text)
+    return text
+
+safe = [redact(r) for r in rows]
+print(&quot;\n&quot;.join(safe))
+print(f&quot;\nreplaced {len(key)} identifiers; the key stays on your machine, e.g. [NAME_2] -&gt; {key[&#x27;[NAME_2]&#x27;]}&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>[NAME_1], [PHONE_1], [EMAIL_1], Aadhaar [AADHAAR_1], missed 3 appointments
+[NAME_2], [PHONE_2], [EMAIL_2], PAN [PAN_1], outstanding balance Rs 4,500
+[NAME_3], [PHONE_3], [EMAIL_3], missed 1 appointment
+
+replaced 11 identifiers; the key stays on your machine, e.g. [NAME_2] -&gt; Rahul Mehta</pre></div></div><aside class="call read"><b>How to read it</b><p>What's left (missed appointments and balances, linked to placeholders) is enough to analyse patterns without exposing who the patients are. Two cautions. Regular expressions only catch the formats you anticipated: a name written mid-sentence, or an address, would slip through, so always eyeball the result. And pseudonymised data can still identify people when combined with other details, such as a rare treatment in a small town. When in doubt, aggregate first (counts and averages) and share only that.</p></aside><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>A project manager wants Claude to analyse a spreadsheet of customer names and account numbers for payment trends. Policy restricts sharing regulated personal data. What is the most appropriate action?</p><div class="opts"><button type="button" data-ok="0">A. Upload it, since the analysis is internal</button><button type="button" data-ok="1">B. Remove or anonymise the names and account numbers before uploading, consistent with policy</button><button type="button" data-ok="0">C. Upload it and tell Claude not to retain the data</button><button type="button" data-ok="0">D. Abandon the analysis</button></div><p class="why" hidden>Removing or anonymising the identifiers lets the analysis go ahead within policy. Asking the model not to retain data isn't a policy control, and abandoning the task is unnecessary.</p></div><div class="quiz" data-multi="1"><p class="q"><b>Practice question</b><span class="n">Select 2</span>Which TWO statements about data and Claude are accurate? (Select 2)</p><div class="opts"><button type="button" data-ok="1">A. On Anthropic's consumer plans, users choose in their settings whether chats can be used for model training</button><button type="button" data-ok="1">B. Removing direct identifiers is a common way to make an analysis possible within policy</button><button type="button" data-ok="0">C. Instructing Claude to forget data guarantees it isn't retained</button><button type="button" data-ok="0">D. Pseudonymised data can never identify anyone</button></div><button type=button class=check>Check answer</button><p class="why" hidden>Consumer-plan users control the training setting, and redaction or anonymisation is a standard safeguard. Chat instructions don't change retention, and pseudonymised data can sometimes be re-identified by combining details.</p></div></section><section class="session" id="s6-3"><p class="snum">Session 6.3</p><h2>Following AI policy and governance</h2><p>Most organisations that adopt Claude publish an <strong>AI policy</strong>: which tools are approved, what data can go into them, which uses need approval, and who to ask. Associates are expected to follow it, and to help others follow it.</p><div class="tbl"><table><thead><tr><th>A typical AI policy covers</th><th>Example rule</th></tr></thead><tbody><tr><td>Approved tools</td><td>"Use the company's Claude Team workspace, not personal accounts, for work"</td></tr><tr><td>Data classes</td><td>"No restricted data; confidential data only in approved Projects"</td></tr><tr><td>Use cases needing approval</td><td>"Anything customer-facing or in HR needs sign-off"</td></tr><tr><td>Human review</td><td>"AI-drafted external communications are reviewed before sending"</td></tr><tr><td>Disclosure</td><td>"Tell customers when they're chatting with AI"</td></tr><tr><td>Ownership and escalation</td><td>"Report incidents to the AI governance lead"</td></tr></tbody></table></div><p>Admins also have controls in business plans that support the policy. Earlier modules covered some: owners enable connectors (Module 5) and memory (Module 3) for Team and Enterprise organisations, and Projects can be private or shared with Can view / Can edit access.</p><h3>Checking a request against policy</h3><p>The rules below are an example policy of the kind many organisations use: a data class and a tool together decide what's allowed. The checker applies it to four requests.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">TOOL_APPROVED_FOR = {   # tool -&gt; highest data class it is approved for (example policy)
+    &quot;personal Claude account&quot;: &quot;public&quot;,
+    &quot;company Claude Team workspace&quot;: &quot;confidential&quot;,
+    &quot;company Claude Team, &#x27;Finance&#x27; Project (restricted access)&quot;: &quot;restricted&quot;,
+}
+ORDER = [&quot;public&quot;, &quot;internal&quot;, &quot;confidential&quot;, &quot;restricted&quot;]
+
+def allowed(tool, data_class, customer_facing=False):
+    ok = ORDER.index(data_class) &lt;= ORDER.index(TOOL_APPROVED_FOR[tool])
+    verdict = &quot;allowed&quot; if ok else &quot;NOT allowed: use an approved tool or reduce the data&quot;
+    if ok and customer_facing:
+        verdict += &quot;; needs human review before sending&quot;
+    return verdict
+
+requests = [
+    (&quot;personal Claude account&quot;, &quot;public&quot;, False, &quot;Rewrite our published FAQ&quot;),
+    (&quot;personal Claude account&quot;, &quot;internal&quot;, False, &quot;Summarise this week&#x27;s team meeting notes&quot;),
+    (&quot;company Claude Team workspace&quot;, &quot;confidential&quot;, True, &quot;Draft a reply to a supplier dispute&quot;),
+    (&quot;company Claude Team workspace&quot;, &quot;restricted&quot;, False, &quot;Analyse the payroll file&quot;),
+]
+for tool, cls, facing, what in requests:
+    print(f&quot;{what:&lt;42} [{cls:&lt;12}] via {tool:&lt;31} -&gt; {allowed(tool, cls, facing)}&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>Rewrite our published FAQ                  [public      ] via personal Claude account         -&gt; allowed
+Summarise this week&#x27;s team meeting notes   [internal    ] via personal Claude account         -&gt; NOT allowed: use an approved tool or reduce the data
+Draft a reply to a supplier dispute        [confidential] via company Claude Team workspace   -&gt; allowed; needs human review before sending
+Analyse the payroll file                   [restricted  ] via company Claude Team workspace   -&gt; NOT allowed: use an approved tool or reduce the data</pre></div></div><aside class="call read"><b>How to read it</b><p>The published FAQ is public, so a personal account is fine. Internal meeting notes are not, under this policy, even though nothing in them looks secret: the rule is about the tool, not how the content feels. The supplier reply is allowed in the company workspace but needs review because it's going outside. Payroll is restricted, so it belongs only in the finance Project with restricted access. Your own organisation's rules will differ; the habit of checking the data class <em>and</em> the tool is what transfers.</p></aside><aside class="call tip"><b>Tip</b><p>If your organisation doesn't yet have an AI policy, that's a gap worth raising rather than a licence to do anything. Suggest a short one covering approved tools, data classes, review and disclosure.</p></aside><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>A colleague wants to paste internal sales figures into their personal Claude account because "the company workspace is slow today". Policy approves only the company workspace for internal data. What should you advise?</p><div class="opts"><button type="button" data-ok="0">A. Go ahead this once, since it's only internal data</button><button type="button" data-ok="1">B. Use the approved company workspace, even if it's slower, and report the performance issue</button><button type="button" data-ok="0">C. Use the personal account but delete the chat afterwards</button><button type="button" data-ok="0">D. Use an incognito chat in the personal account</button></div><p class="why" hidden>Policy defines which tool is approved for which data. Deleting the chat or using incognito doesn't make an unapproved tool approved. The right path is the approved tool, plus raising the performance problem.</p></div></section><section class="session" id="s6-4"><p class="snum">Session 6.4</p><h2>Ethical implications</h2><p>Following rules is the minimum. Responsible use also means thinking about how AI affects the people on the other end: customers, patients, candidates and colleagues.</p><div class="tbl"><table><thead><tr><th>Principle</th><th>The question to ask</th><th>Example practice</th></tr></thead><tbody><tr><td>Fairness</td><td>Could this treat some groups worse than others?</td><td>Check outcomes by group; review biased language (Module 2)</td></tr><tr><td>Transparency</td><td>Do people know AI was involved?</td><td>Disclose AI use, especially in decisions or customer chats</td></tr><tr><td>Accountability</td><td>Who answers for the result?</td><td>A named person owns every AI-assisted decision</td></tr><tr><td>Human oversight</td><td>Can a person catch and correct mistakes?</td><td>Review before anything consequential is sent or decided</td></tr><tr><td>Privacy</td><td>Is personal data minimised and protected?</td><td>Redact, aggregate, use approved tools (6.2)</td></tr><tr><td>Avoiding over-reliance</td><td>Are people still thinking for themselves?</td><td>Treat outputs as drafts; keep skills and judgment in the team</td></tr></tbody></table></div><figure class="screen chat anim"><div class="bar"><i></i><i></i><i></i><span>Talking through an ethical concern</span></div><div class="thread"><div class="msg you"><span class="who">You</span><div class="bub"><p>Our marketing team wants Claude to write patient testimonials "in the style of real patients" for the website, to save time collecting real ones. Is that OK?</p></div></div><div class="msg claude"><span class="who">Claude</span><div class="bub"><p>I'd advise against it. Testimonials presented as coming from real patients, but written by AI, would mislead people deciding about their health care, and invented reviews may also break advertising and consumer-protection rules. A better option: I can help you write a short message asking recent patients for feedback, and then help edit the real responses you get, with their permission to publish them.</p></div></div><div class="msg note"><span class="who"></span><div class="bub"><p>Claude declines the deceptive part and offers an honest route to the same goal.</p></div></div></div><figcaption>Illustrative screen. Real replies vary from run to run.</figcaption></figure><h3>Checking outcomes for fairness</h3><p>When Claude helps with decisions about people, check the <strong>outcomes</strong> by group, not just the intent. One widely used rule of thumb, from US employment guidance, is the "four-fifths rule": if one group's selection rate is below 80% of the highest group's rate, the difference deserves investigation. Here it is applied to an AI-assisted interview shortlist.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">shortlist = {  # group: (applicants, shortlisted)
+    &quot;Group A&quot;: (120, 48),
+    &quot;Group B&quot;: (80, 22),
+    &quot;Group C&quot;: (40, 15),
+}
+rates = {g: s / n for g, (n, s) in shortlist.items()}
+top = max(rates.values())
+for g, r in rates.items():
+    ratio = r / top
+    flag = &quot;investigate&quot; if ratio &lt; 0.8 else &quot;ok&quot;
+    print(f&quot;{g}: {rates[g]:.0%} shortlisted, {ratio:.2f} of the highest rate -&gt; {flag}&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>Group A: 40% shortlisted, 1.00 of the highest rate -&gt; ok
+Group B: 28% shortlisted, 0.69 of the highest rate -&gt; investigate
+Group C: 38% shortlisted, 0.94 of the highest rate -&gt; ok</pre></div></div><aside class="call read"><b>How to read it</b><p>Group A is shortlisted at 40% and Group C at about 38%: close enough. Group B's 28% is only about 0.69 of Group A's rate, below the four-fifths line, so it needs a closer look. That isn't proof of unfairness (the groups may differ in relevant ways), but it's a signal that a person must review what is driving the gap before the shortlist is used. This is why high-risk uses need qualified human oversight.</p></aside><aside class="call concept"><b>The idea</b><p><strong>The most important question comes first: should this be done at all?</strong> Frameworks and checks help, but they don't replace judgment about whether a task is appropriate. Raising a concern early, before something is built, is part of the job.</p></aside><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>A team uses Claude to help shortlist loan applicants. One group's approval rate is much lower than others'. What is the most responsible next step?</p><div class="opts"><button type="button" data-ok="0">A. Keep using the shortlist, since Claude didn't see the group information</button><button type="button" data-ok="1">B. Pause and have a qualified person investigate what drives the difference before decisions are made</button><button type="button" data-ok="0">C. Ask Claude to make the approval rates equal</button><button type="button" data-ok="0">D. Remove the group information from the report so the gap isn't visible</button></div><p class="why" hidden>A large outcome gap in a high-risk area needs human investigation. Bias can arise even when group data isn't used directly. Forcing equal rates without understanding the cause, or hiding the gap, are not responsible answers.</p></div><div class="quiz" data-multi="1"><p class="q"><b>Practice question</b><span class="n">Select 2</span>Which TWO practices reflect responsible use of Claude in customer-facing work? (Select 2)</p><div class="opts"><button type="button" data-ok="1">A. Telling customers when they are interacting with AI</button><button type="button" data-ok="1">B. Having a named person accountable for AI-assisted decisions that affect customers</button><button type="button" data-ok="0">C. Publishing AI-written reviews presented as real customers' words</button><button type="button" data-ok="0">D. Removing human review once outputs look good for a week</button></div><button type=button class=check>Check answer</button><p class="why" hidden>Transparency and accountability are core responsible-use practices; Anthropic's Usage Policy requires consumer-facing chatbots to disclose that users are talking to AI. Fake reviews are deceptive, and a short good run doesn't justify removing oversight.</p></div></section>
+  <div class="pager"><a class="btn ghost" href="../module-5/">← Module 5</a><a class="btn" href="../module-7/">Module 7 →</a></div>
+  </div>
+</div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="fine" style="border:none;margin:0;padding:0">
+      <span>© 2026 XploreAI · <a href="/">xploreai.co.in</a></span>
+      <span><a href="mailto:hello@xploreai.co.in">hello@xploreai.co.in</a></span>
+    </div>
+  </div>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+<script src="/courses/claude-associate/course.js?v=1792985350"></script>
+</body>
+</html>
