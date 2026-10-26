@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 5: Model Selection and Optimization — Claude Developer (CCDV-F) course — XploreAI</title>
+<meta name="description" content="How a model turns a prompt into text, token by token; what thinking, effort and fast mode change; when examples beat instructions; how the SDKs and streaming connections work; and how to choose between Opus, Sonnet and Haiku, survive model upgrades, and model what it all costs.">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="XploreAI">
+<meta property="og:title" content="Module 5: Model Selection and Optimization — Claude Developer (CCDV-F) course">
+<meta property="og:description" content="How a model turns a prompt into text, token by token; what thinking, effort and fast mode change; when examples beat instructions; how the SDKs and streaming connections work; and how to choose between Opus, Sonnet and Haiku, survive model upgrades, and model what it all costs.">
+<meta property="og:url" content="https://xploreai.co.in/courses/claude-developer/module-5/">
+<meta property="og:image" content="https://xploreai.co.in/assets/og-image.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/style.css">
+<link rel="stylesheet" href="/courses/claude-developer/course.css?v=1792998013">
+</head>
+<body>
+
+<nav>
+  <div class="wrap bar">
+    <a class="wordmark" href="/">xplore<span>ai</span></a>
+    <ul>
+      <li><a href="/#agents">Solutions</a></li>
+      <li><a href="/#stories">Success Stories</a></li>
+      <li><a href="/#subscribe">Newsletter</a></li>
+      <li><a href="/learn.html" aria-current="page">Learn AI</a></li>
+      <li><a class="btn" href="https://wa.me/919769686931?text=Hi%20XploreAI%2C%20I%27m%20interested%20in%20AI%20automation!">Get Started</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main class="cca">
+<header class="mhero wrap">
+  <p class="crumb"><a href="/learn.html">Learn AI</a> / <a href="../">Claude Developer (CCDV-F) course</a> / Module 5</p>
+  <span class="pill">MODULE 5 OF 8 · DOMAIN 5 · 16.8% OF THE EXAM · 6 SESSIONS</span>
+  <h1>Model Selection and Optimization<i>.</i></h1>
+  <p class="lede">How a model turns a prompt into text, token by token; what thinking, effort and fast mode change; when examples beat instructions; how the SDKs and streaming connections work; and how to choose between Opus, Sonnet and Haiku, survive model upgrades, and model what it all costs.</p>
+  <div class="dl"><a class="btn" href="#s5-1">Start session 5.1 →</a> <a class="btn ghost" href="../code/module-5.py" download>Download the Python</a></div>
+</header>
+<div class="wrap layout">
+  <aside class="toc" aria-label="Sessions"><p>In this module</p><ol><li><a href="#s5-1"><span>5.1</span>How an LLM generates text</a></li><li><a href="#s5-2"><span>5.2</span>Thinking, effort and fast mode</a></li><li><a href="#s5-3"><span>5.3</span>Zero-, one- and few-shot</a></li><li><a href="#s5-4"><span>5.4</span>SDKs, REST and websockets</a></li><li><a href="#s5-5"><span>5.5</span>Opus, Sonnet or Haiku</a></li><li><a href="#s5-6"><span>5.6</span>Token budgets and cost models</a></li></ol></aside>
+  <div class="content">
+<section class="session" id="s5-1"><p class="snum">Session 5.1</p><h2>How an LLM generates text</h2><h3>Tokens</h3><p>A <strong>token</strong> is the unit a model reads and writes: often a whole common word, sometimes part of a rare word, sometimes punctuation. Billing, limits and the context window are all counted in tokens, not words or characters. A rough rule for English is <strong>about 4 characters, or ¾ of a word, per token</strong>; other languages and scripts often need more tokens for the same idea.</p><p>Here's a toy tokenizer to show the idea: greedy longest-match against a small vocabulary. Real tokenizers learn vocabularies of tens of thousands of pieces, but behave the same way: common words stay whole, rare ones split.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">VOCAB = {&quot;the&quot;, &quot;cat&quot;, &quot;sat&quot;, &quot;un&quot;, &quot;believ&quot;, &quot;able&quot;, &quot;appoint&quot;, &quot;ment&quot;, &quot;s&quot;, &quot;clinic&quot;, &quot; &quot;, &quot;.&quot;, &quot;!&quot;,
+         &quot;re&quot;, &quot;schedul&quot;, &quot;ing&quot;, &quot;tele&quot;, &quot;consult&quot;, &quot;a&quot;, &quot;b&quot;, &quot;c&quot;, &quot;d&quot;, &quot;e&quot;, &quot;i&quot;, &quot;l&quot;, &quot;n&quot;, &quot;o&quot;, &quot;t&quot;, &quot;u&quot;, &quot;v&quot;}
+
+def tokenize(text):
+    out, i, text = [], 0, text.lower()
+    while i &lt; len(text):
+        for j in range(len(text), i, -1):          # longest piece in the vocabulary first
+            if text[i:j] in VOCAB:
+                out.append(text[i:j]); i = j; break
+        else:
+            out.append(text[i]); i += 1           # unknown character: its own token
+    return [t for t in out if t != &quot; &quot;]
+
+for s in [&quot;The cat sat.&quot;, &quot;Unbelievable!&quot;, &quot;Rescheduling teleconsult appointments&quot;]:
+    toks = tokenize(s)
+    print(f&quot;{s:&lt;40} {len(toks)} tokens  {toks}&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>The cat sat.                             4 tokens  [&#x27;the&#x27;, &#x27;cat&#x27;, &#x27;sat&#x27;, &#x27;.&#x27;]
+Unbelievable!                            4 tokens  [&#x27;un&#x27;, &#x27;believ&#x27;, &#x27;able&#x27;, &#x27;!&#x27;]
+Rescheduling teleconsult appointments    8 tokens  [&#x27;re&#x27;, &#x27;schedul&#x27;, &#x27;ing&#x27;, &#x27;tele&#x27;, &#x27;consult&#x27;, &#x27;appoint&#x27;, &#x27;ment&#x27;, &#x27;s&#x27;]</pre></div></div><aside class="call warn"><b>Watch out</b><p>Character rules of thumb are for quick estimates only. Token counts also change between model generations: Anthropic's tokenizer introduced with Claude Opus 4.7 produces roughly 1 to 1.35 times as many tokens for the same text as earlier models. For real numbers, use the <strong>token counting endpoint</strong> (<code>client.messages.count_tokens(...)</code>) with the model you'll actually call.</p></aside><h3>The context window is one shared budget</h3><p>The <strong>context window</strong> is everything the model can consider in one request: system prompt, tools, history, documents, tool results, <em>and</em> the reply it's about to write. Current Claude models have a 1M-token window and can write up to 128K tokens in one reply, but every request still has to fit.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">WINDOW = 1_000_000
+parts = {&quot;system prompt&quot;: 3_500, &quot;tool definitions&quot;: 4_200, &quot;conversation history&quot;: 61_000,
+         &quot;retrieved documents&quot;: 140_000, &quot;tool results&quot;: 38_000}
+used = sum(parts.values())
+max_tokens = 32_000
+for k, v in parts.items():
+    print(f&quot;{k:&lt;22} {v:&gt;9,}&quot;)
+print(f&quot;{&#x27;input total&#x27;:&lt;22} {used:&gt;9,}  ({used / WINDOW:.1%} of the window)&quot;)
+print(f&quot;{&#x27;reserved for reply&#x27;:&lt;22} {max_tokens:&gt;9,}&quot;)
+print(f&quot;{&#x27;headroom&#x27;:&lt;22} {WINDOW - used - max_tokens:&gt;9,}&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>system prompt              3,500
+tool definitions           4,200
+conversation history      61,000
+retrieved documents      140,000
+tool results              38,000
+input total              246,700  (24.7% of the window)
+reserved for reply        32,000
+headroom                 721,300</pre></div></div><aside class="call tip"><b>Tip</b><p>Fitting in the window isn't the goal; the useful question is whether everything in it <em>helps</em>. Long, stale context dilutes attention and costs money on every turn (Module 6). Trim, summarise and retrieve only what's needed.</p></aside><h3>Next-token generation</h3><p>The model doesn't plan a whole reply and then type it out. It predicts <strong>one token at a time</strong>, each based on everything before it (the prompt plus what it has already written), then repeats until it stops. This is called autoregressive generation. Two consequences matter for developers: text can be streamed as it's produced, and early tokens steer everything after them.</p><figure class="seq anim" style="--c:2"><figcaption>Autoregressive generation: one token per step</figcaption><div class="actors"><b>Context so far</b><b>Model</b></div><div class="lane"><div class="m r" style="grid-column:1/3;--s:2;--k:0"><span>"The best way to learn a language is to practise"</span><i></i></div><div class="m l reply" style="grid-column:1/3;--s:2;--k:1"><span>+ " daily"</span><i></i></div><div class="m r" style="grid-column:1/3;--s:2;--k:2"><span>"... is to practise daily"</span><i></i></div><div class="m l reply" style="grid-column:1/3;--s:2;--k:3"><span>+ "."</span><i></i></div><div class="m r" style="grid-column:1/3;--s:2;--k:4"><span>"... is to practise daily."</span><i></i></div><div class="m l reply" style="grid-column:1/3;--s:2;--k:5"><span>end of turn (stop)</span><i></i></div></div></figure><p>At each step the model produces a probability for every possible next token, and <strong>sampling</strong> picks one. Two classic controls shape that choice:</p><ul><li><strong>Temperature</strong> sharpens (low) or flattens (high) the probabilities before sampling.</li><li><strong>Top-p</strong> (nucleus sampling) keeps only the smallest set of top tokens whose probabilities add up to <em>p</em>.</li></ul><p>Here are both applied to one real-looking step: the next word after "The best way to learn a language is to practise".</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">import math, random
+
+logits = {&quot;daily&quot;: 3.1, &quot;often&quot;: 2.4, &quot;speaking&quot;: 2.0, &quot;with&quot;: 1.6, &quot;online&quot;: 0.9, &quot;backwards&quot;: -1.5}
+
+def probs(logits, temperature):
+    exps = {t: math.exp(v / temperature) for t, v in logits.items()}
+    z = sum(exps.values())
+    return {t: e / z for t, e in exps.items()}
+
+def nucleus(p, top_p):
+    kept, total = [], 0.0
+    for t, v in sorted(p.items(), key=lambda kv: -kv[1]):
+        kept.append(t); total += v
+        if total &gt;= top_p: break
+    return kept
+
+for T in (0.3, 1.0, 1.8):
+    p = probs(logits, T)
+    print(f&quot;temperature {T}: &quot; + &quot;  &quot;.join(f&quot;{t} {v:.0%}&quot; for t, v in p.items()))
+print(&quot;\ntop-p 0.9 at temperature 1.0 keeps:&quot;, nucleus(probs(logits, 1.0), 0.9))
+
+rng = random.Random(11)
+p = probs(logits, 1.0)
+draws = [rng.choices(list(p), weights=list(p.values()))[0] for _ in range(8)]
+print(&quot;8 samples at temperature 1.0:      &quot;, draws)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>temperature 0.3: daily 89%  often 9%  speaking 2%  with 1%  online 0%  backwards 0%
+temperature 1.0: daily 46%  often 23%  speaking 15%  with 10%  online 5%  backwards 0%
+temperature 1.8: daily 33%  often 22%  speaking 18%  with 14%  online 10%  backwards 3%
+
+top-p 0.9 at temperature 1.0 keeps: [&#x27;daily&#x27;, &#x27;often&#x27;, &#x27;speaking&#x27;, &#x27;with&#x27;]
+8 samples at temperature 1.0:       [&#x27;daily&#x27;, &#x27;often&#x27;, &#x27;with&#x27;, &#x27;often&#x27;, &#x27;often&#x27;, &#x27;often&#x27;, &#x27;daily&#x27;, &#x27;often&#x27;]</pre></div></div><aside class="call read"><b>How to read it</b><p>At 0.3, "daily" takes almost all the probability; at 1.8 even "backwards" gets a real chance. Top-p 0.9 drops the long tail before sampling. Eight draws from the same distribution give three different words: that's <strong>non-determinism</strong> from sampling, in miniature.</p></aside><aside class="call warn"><b>Watch out</b><p><strong>What's changed on current models.</strong> Claude 4.7 and later models accept <code>temperature</code>, <code>top_p</code> and <code>top_k</code> only at their default values, and from API version <code>2026-10-21</code> sending any of them returns a 400 error on every model. So on today's Claude you don't tune sampling: you get consistency from <strong>clear instructions, examples, structured outputs and lower effort</strong>. Learn the concepts (the exam lists them), but don't design a new app around a temperature knob.</p></aside><h3>Non-determinism: design for it</h3><p>Identical requests can give different outputs. Sampling is one cause; tiny numerical differences in large-scale parallel computation are another. It's a property to design around, not a bug to fix.</p><ul><li>Don't trust one passing run: test with enough cases, and repeat important ones.</li><li>Constrain the output: schemas and structured outputs leave less room for variation to matter.</li><li>Validate in code: check the shape and the facts that matter, every time.</li><li>Log the exact input, model and prompt version, so any output can be investigated.</li></ul><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>A team's integration test calls Claude once and checks the reply. It passes locally but fails about one run in ten in CI. What is the most appropriate response?</p><div class="opts"><button type="button" data-ok="0">A. Set temperature to 0 so the output is identical every time</button><button type="button" data-ok="1">B. Treat variation as expected: test against criteria and structure rather than exact text, run enough cases, and constrain the output format</button><button type="button" data-ok="0">C. Retry the test until it passes</button><button type="button" data-ok="0">D. Switch to a larger model, which is deterministic</button></div><p class="why" hidden>LLM outputs vary across runs, and on current Claude models sampling parameters can't be lowered anyway. Tests should check properties (fields present, facts correct, format valid) across enough cases, and the app should constrain output with schemas. Retry-until-pass hides real failures.</p></div><div class="quiz" data-multi="1"><p class="q"><b>Practice question</b><span class="n">Select 2</span>Which statements about tokens and the context window are true? (Select 2)</p><div class="opts"><button type="button" data-ok="1">A. The model's reply counts against the same context window as the input</button><button type="button" data-ok="0">B. One token is always exactly one word</button><button type="button" data-ok="1">C. The same text can be a different number of tokens on different model generations</button><button type="button" data-ok="0">D. The API remembers earlier turns, so history doesn't use the window</button></div><button type=button class=check>Check answer</button><p class="why" hidden>Input and output share one budget, and tokenizers change between generations (Opus 4.7's tokenizer uses roughly 1–1.35× the tokens of earlier ones). Tokens aren't words, and the API is stateless, so history is resent and counted every turn.</p></div></section><section class="session" id="s5-2"><p class="snum">Session 5.2</p><h2>Thinking, effort and fast mode</h2><p>Four controls trade speed, cost and depth of reasoning against each other. They're easy to mix up, so be precise about what each one changes.</p><div class="tbl"><table><thead><tr><th>Control</th><th>What it changes</th><th>Use when</th><th>Don't use when</th></tr></thead><tbody><tr><td><strong>Adaptive thinking</strong></td><td>Claude decides per request whether, and how much, to reason before answering</td><td>Most work on current models: it's the default on Opus 5.5 and Sonnet 5.5</td><td>(It's on by default; you tune it with effort)</td></tr><tr><td><strong>Extended thinking</strong></td><td>The older name for reasoning before answering; on current models it's adaptive, and the fixed <code>budget_tokens</code> setting is deprecated or rejected</td><td>Hard multi-step reasoning, analysis, code</td><td>Simple lookups: it adds latency and output tokens</td></tr><tr><td><strong>Effort</strong> (<code>low</code> … <code>max</code>)</td><td>How thorough Claude is overall: thinking depth, number of tool calls, length</td><td>Tune per route: <code>low</code> for chat and classification, <code>high</code>/<code>xhigh</code> for hard coding and agents</td><td>Don't set <code>max</code> by default; raise it only when measurement shows a gain</td></tr><tr><td><strong>Fast mode</strong> (research preview)</td><td>The <em>same Opus model</em> generating output up to about 2.5× faster, at premium prices</td><td>Latency-critical work that needs Opus-level quality</td><td>Cheap, simple, high-volume tasks: use Haiku instead</td></tr></tbody></table></div><aside class="call warn"><b>Watch out</b><p>Some study material describes "fast mode" as the cheap option for simple tasks. In the Claude API it's the opposite: fast mode makes <strong>Opus</strong> faster and <strong>costs more</strong> (on Claude Opus 5.5, $8 / $40 per million tokens instead of $4 / $20). For cheap and quick, choose a smaller model or lower effort.</p></aside><h3>Effort in practice</h3><div class="cell"><div class="code"><div class="lab"><span>Python</span><span class="noeval">shown, not run here</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">response = client.messages.create(
+    model=&quot;claude-sonnet-5-5&quot;,
+    max_tokens=16000,
+    output_config={&quot;effort&quot;: &quot;low&quot;},        # low | medium | high | xhigh | max
+    messages=[{&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;Classify this message: billing, booking or clinical?\n\n&quot; + text}],
+)</code></pre></div></div><p>Defaults differ by model, so set effort explicitly rather than inheriting it: <strong>Claude Opus 5.5 and Claude Haiku 5.5 default to <code>medium</code></strong>; most other current models default to <code>high</code>. Lower effort means fewer and more consolidated tool calls, less preamble and terser answers. Judge cost <strong>per completed task</strong>, not per request: a cheaper call that needs extra turns or retries isn't cheaper.</p><p>Here's a per-route policy as a small function, applied to six routes in one app:</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">def pick_options(route):
+    hard, waiting, volume = route[&quot;hard&quot;], route[&quot;user_waiting&quot;], route[&quot;per_day&quot;]
+    if hard and waiting and route.get(&quot;latency_critical&quot;):
+        return &quot;Opus 5.5, effort high, fast mode (premium price: check it pays)&quot;
+    if hard:
+        return &quot;Opus 5.5, effort high or xhigh, adaptive thinking&quot;
+    if volume &gt; 10_000 and not waiting:
+        return &quot;Haiku 5.5, effort low, via the Batches API&quot;
+    if volume &gt; 10_000:
+        return &quot;Haiku 5.5, effort low&quot;
+    return &quot;Sonnet 5.5, effort medium&quot;
+
+routes = [
+    (&quot;FAQ chat replies&quot;,                dict(hard=False, user_waiting=True,  per_day=40_000)),
+    (&quot;Overnight tagging of reviews&quot;,    dict(hard=False, user_waiting=False, per_day=200_000)),
+    (&quot;Contract risk analysis&quot;,          dict(hard=True,  user_waiting=False, per_day=60)),
+    (&quot;Agentic bug fixing in CI&quot;,        dict(hard=True,  user_waiting=False, per_day=30)),
+    (&quot;Live triage for on-call doctors&quot;, dict(hard=True,  user_waiting=True,  per_day=300, latency_critical=True)),
+    (&quot;Weekly report drafting&quot;,          dict(hard=False, user_waiting=True,  per_day=25)),
+]
+for name, r in routes:
+    print(f&quot;{name:&lt;33} → {pick_options(r)}&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>FAQ chat replies                  → Haiku 5.5, effort low
+Overnight tagging of reviews      → Haiku 5.5, effort low, via the Batches API
+Contract risk analysis            → Opus 5.5, effort high or xhigh, adaptive thinking
+Agentic bug fixing in CI          → Opus 5.5, effort high or xhigh, adaptive thinking
+Live triage for on-call doctors   → Opus 5.5, effort high, fast mode (premium price: check it pays)
+Weekly report drafting            → Sonnet 5.5, effort medium</pre></div></div><aside class="call tip"><b>Tip</b><p>These are starting points to measure, not answers. Anthropic's own guidance is that on newer models, a capable model at <em>lower</em> effort often matches an older one at high effort, so test "same model, lower effort" before building a multi-model cascade.</p></aside><h3>Fast mode, priced out</h3><p>Fast mode needs the beta flag <code>fast-mode-2026-02-01</code> and <code>speed: "fast"</code> on the request, and it's only on the Claude API (not Bedrock, Vertex or Foundry, and not with batches). Here's what it costs for one long Opus reply. The baseline speed is a placeholder to make the arithmetic concrete; measure your own.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">out_tokens, in_tokens = 3_000, 20_000
+baseline_tps = 60                       # PLACEHOLDER output tokens/second; measure your own
+for label, p_in, p_out, speedup in [(&quot;standard&quot;, 4, 20, 1.0), (&quot;fast mode&quot;, 8, 40, 2.5)]:
+    cost = (in_tokens * p_in + out_tokens * p_out) / 1e6
+    secs = out_tokens / (baseline_tps * speedup)
+    speed = &quot;baseline&quot; if speedup == 1 else f&quot;up to {speedup}× faster&quot;
+    print(f&quot;Opus 5.5 {label:&lt;10} ${cost:.3f} per reply   ~{secs:.0f}s to generate ({speed})&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>Opus 5.5 standard   $0.140 per reply   ~50s to generate (baseline)
+Opus 5.5 fast mode  $0.280 per reply   ~20s to generate (up to 2.5× faster)</pre></div></div><div class="cell"><div class="code"><div class="lab"><span>Python</span><span class="noeval">shown, not run here</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">response = client.beta.messages.create(
+    model=&quot;claude-opus-5-5&quot;, max_tokens=8000,
+    speed=&quot;fast&quot;, betas=[&quot;fast-mode-2026-02-01&quot;],
+    messages=[{&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: triage_case}],
+)
+print(response.usage.speed)        # confirms which speed was used</code></pre></div></div><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>A bulk job tags 500,000 product reviews into five categories. Nobody is waiting, and cost matters most. Which configuration fits best?</p><div class="opts"><button type="button" data-ok="0">A. Opus 5.5 with fast mode</button><button type="button" data-ok="0">B. Opus 5.5 at <code>max</code> effort</button><button type="button" data-ok="1">C. A small model such as Haiku 5.5 at low effort, sent through the Batches API</button><button type="button" data-ok="0">D. Sonnet 5.5 with streaming</button></div><p class="why" hidden>Simple, high-volume, latency-tolerant work wants the cheapest adequate model, low effort and the 50% batch discount. Fast mode raises the price to buy speed; <code>max</code> effort buys depth this task doesn't need; streaming helps a waiting user, and nobody is waiting.</p></div><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>What does fast mode change on a Claude API request?</p><div class="opts"><button type="button" data-ok="0">A. It switches the request to a smaller, cheaper model</button><button type="button" data-ok="0">B. It turns off thinking</button><button type="button" data-ok="1">C. It runs the same Opus model with faster output generation, at premium prices</button><button type="button" data-ok="0">D. It lowers <code>max_tokens</code> automatically</button></div><p class="why" hidden>Fast mode is a speed option on supported Opus models: same model, up to about 2.5× output speed, higher price per token. It's for latency-critical work that still needs Opus quality.</p></div></section><section class="session" id="s5-3"><p class="snum">Session 5.3</p><h2>Zero-, one- and few-shot</h2><p>How many <strong>examples</strong> you put in a prompt is a design choice:</p><div class="tbl"><table><thead><tr><th>Approach</th><th>Examples</th><th>Works well when</th></tr></thead><tbody><tr><td><strong>Zero-shot</strong></td><td>None; instructions only</td><td>The task is common and clearly described</td></tr><tr><td><strong>One-shot</strong></td><td>One</td><td>You need to show a format or tone that's hard to describe</td></tr><tr><td><strong>Few-shot</strong> (multi-shot)</td><td>Several, usually 3–5</td><td>You need consistency: classification labels, a house style, tricky edge cases</td></tr></tbody></table></div><div class="compare anim"><div class="side weak"><div class="lab"><span>Zero-shot</span><button class="copy" type="button">Copy</button></div><pre><code>Classify the patient message as BOOKING, BILLING,
+CLINICAL or OTHER. Reply with the label only.
+
+Message: &quot;Can I move Thursday&#x27;s appointment
+to the evening?&quot;</code></pre></div><div class="side strong"><div class="lab"><span>Few-shot</span><button class="copy" type="button">Copy</button></div><pre><code>Classify the patient message as BOOKING, BILLING,
+CLINICAL or OTHER. Reply with the label only.
+
+&lt;examples&gt;
+&lt;example&gt;&lt;message&gt;Why was I charged twice?&lt;/message&gt;&lt;label&gt;BILLING&lt;/label&gt;&lt;/example&gt;
+&lt;example&gt;&lt;message&gt;The rash is spreading since yesterday&lt;/message&gt;&lt;label&gt;CLINICAL&lt;/label&gt;&lt;/example&gt;
+&lt;example&gt;&lt;message&gt;Is there parking near the Andheri clinic?&lt;/message&gt;&lt;label&gt;OTHER&lt;/label&gt;&lt;/example&gt;
+&lt;example&gt;&lt;message&gt;Book me with Dr Rao next week, and is the follow-up free?&lt;/message&gt;&lt;label&gt;BOOKING&lt;/label&gt;&lt;/example&gt;
+&lt;/examples&gt;
+
+Message: &quot;Can I move Thursday&#x27;s appointment
+to the evening?&quot;</code></pre></div></div><aside class="call concept"><b>The idea</b><p>Examples are powerful, and they teach <em>everything</em> they contain: length, tone, wording, even the order of labels. Make them <strong>relevant</strong> (like real inputs), <strong>diverse</strong> (cover the categories and the hard cases), and <strong>wrapped in tags</strong> (<code>&lt;example&gt;</code>) so Claude can tell them apart from the instructions. The fourth example above deliberately shows how a mixed message is labelled.</p></aside><p>Before sending a few-shot prompt, it's worth checking the examples themselves. Here's a small linter, run on two candidate example sets.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">from collections import Counter
+
+def lint_examples(examples, labels):
+    issues = []
+    counts = Counter(lbl for _, lbl in examples)
+    missing = [l for l in labels if l not in counts]
+    if missing: issues.append(f&quot;no example for {missing}&quot;)
+    if counts and max(counts.values()) &gt; len(examples) / 2:
+        issues.append(f&quot;skewed towards {counts.most_common(1)[0][0]} ({counts.most_common(1)[0][1]}/{len(examples)})&quot;)
+    lengths = [len(m.split()) for m, _ in examples]
+    if max(lengths) - min(lengths) &lt; 3:
+        issues.append(&quot;all examples are the same length: Claude may copy it&quot;)
+    if len({m.lower() for m, _ in examples}) &lt; len(examples):
+        issues.append(&quot;duplicate examples&quot;)
+    return issues or [&quot;looks balanced&quot;]
+
+LABELS = [&quot;BOOKING&quot;, &quot;BILLING&quot;, &quot;CLINICAL&quot;, &quot;OTHER&quot;]
+set_a = [(&quot;Book me for Monday&quot;, &quot;BOOKING&quot;), (&quot;Move my Friday slot&quot;, &quot;BOOKING&quot;),
+         (&quot;Cancel my booking&quot;, &quot;BOOKING&quot;), (&quot;Why was I charged twice?&quot;, &quot;BILLING&quot;)]
+set_b = [(&quot;Why was I charged twice?&quot;, &quot;BILLING&quot;), (&quot;The rash is spreading since yesterday&quot;, &quot;CLINICAL&quot;),
+         (&quot;Is there parking near the Andheri clinic?&quot;, &quot;OTHER&quot;),
+         (&quot;Book me with Dr Rao next week, and is the follow-up free?&quot;, &quot;BOOKING&quot;)]
+
+def to_prompt(examples):
+    return &quot;&lt;examples&gt;\n&quot; + &quot;\n&quot;.join(f&quot;&lt;example&gt;&lt;message&gt;{m}&lt;/message&gt;&lt;label&gt;{l}&lt;/label&gt;&lt;/example&gt;&quot;
+                                      for m, l in examples) + &quot;\n&lt;/examples&gt;&quot;
+
+print(&quot;set A:&quot;, lint_examples(set_a, LABELS))
+print(&quot;set B:&quot;, lint_examples(set_b, LABELS))
+print(&quot;\n&quot; + to_prompt(set_b))</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>set A: [&quot;no example for [&#x27;CLINICAL&#x27;, &#x27;OTHER&#x27;]&quot;, &#x27;skewed towards BOOKING (3/4)&#x27;, &#x27;all examples are the same length: Claude may copy it&#x27;]
+set B: [&#x27;looks balanced&#x27;]
+
+&lt;examples&gt;
+&lt;example&gt;&lt;message&gt;Why was I charged twice?&lt;/message&gt;&lt;label&gt;BILLING&lt;/label&gt;&lt;/example&gt;
+&lt;example&gt;&lt;message&gt;The rash is spreading since yesterday&lt;/message&gt;&lt;label&gt;CLINICAL&lt;/label&gt;&lt;/example&gt;
+&lt;example&gt;&lt;message&gt;Is there parking near the Andheri clinic?&lt;/message&gt;&lt;label&gt;OTHER&lt;/label&gt;&lt;/example&gt;
+&lt;example&gt;&lt;message&gt;Book me with Dr Rao next week, and is the follow-up free?&lt;/message&gt;&lt;label&gt;BOOKING&lt;/label&gt;&lt;/example&gt;
+&lt;/examples&gt;</pre></div></div><aside class="call tip"><b>Tip</b><p>Start zero-shot with clear instructions; add examples when outputs are inconsistent in format or judgement. If you need a strict output <em>structure</em>, structured outputs (a JSON schema) are more reliable than examples alone. Examples teach judgement; schemas enforce shape.</p></aside><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>A zero-shot classifier labels most messages correctly but is inconsistent on messages that mix two topics. What is the best next step?</p><div class="opts"><button type="button" data-ok="0">A. Switch to a larger model</button><button type="button" data-ok="1">B. Add a few diverse examples, including mixed-topic messages labelled the way you want</button><button type="button" data-ok="0">C. Repeat the instruction in capital letters</button><button type="button" data-ok="0">D. Add ten examples of the easiest category</button></div><p class="why" hidden>Few-shot examples teach judgement on exactly the cases the instructions leave ambiguous. Examples of easy cases add skew rather than clarity.</p></div><div class="quiz" data-multi="1"><p class="q"><b>Practice question</b><span class="n">Select 2</span>All five examples in a prompt are short, formal, and from the same category. What risks does this create? (Select 2)</p><div class="opts"><button type="button" data-ok="1">A. Claude copies their length and tone even when the input needs something different</button><button type="button" data-ok="0">B. The API rejects prompts with more than three examples</button><button type="button" data-ok="1">C. Outputs are biased towards the over-represented category</button><button type="button" data-ok="0">D. Examples are ignored when a system prompt is present</button></div><button type=button class=check>Check answer</button><p class="why" hidden>Claude learns from everything in the examples, including incidental patterns like length, tone and label balance. Diverse, representative examples avoid teaching the wrong lesson.</p></div></section><section class="session" id="s5-4"><p class="snum">Session 5.4</p><h2>SDKs, REST and websockets</h2><p>The Claude API is a REST API over HTTPS. The official <strong>SDKs</strong> wrap it so you don't build HTTP requests by hand. They add typed request and response objects, authentication from the environment, automatic retries with backoff, timeouts, streaming helpers and helpers for pagination, batches and files.</p><div class="tbl"><table><thead><tr><th>Layer</th><th>You write</th><th>You get</th></tr></thead><tbody><tr><td>Raw HTTP</td><td>URL, headers (<code>x-api-key</code>, <code>anthropic-version</code>), JSON body, status handling, SSE parsing</td><td>Full control, any language</td></tr><tr><td>Official SDK</td><td><code>client.messages.create(...)</code></td><td>Types, retries, timeouts, streaming helpers, typed errors</td></tr><tr><td>Framework or agent SDK on top</td><td>A prompt and tools</td><td>A loop, memory and orchestration (Module 1)</td></tr></tbody></table></div><h3>How streaming travels: server-sent events</h3><p>Streaming responses use <strong>server-sent events (SSE)</strong>: an ordinary HTTP response that stays open while the server writes <code>event:</code> and <code>data:</code> lines. The SDK parses them for you; here's what that parsing does, run on a raw stream in the documented format.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">import json
+
+RAW = &quot;&quot;&quot;event: message_start
+data: {&quot;type&quot;: &quot;message_start&quot;, &quot;message&quot;: {&quot;id&quot;: &quot;msg_ex&quot;, &quot;usage&quot;: {&quot;input_tokens&quot;: 25}}}
+
+event: content_block_delta
+data: {&quot;type&quot;: &quot;content_block_delta&quot;, &quot;index&quot;: 0, &quot;delta&quot;: {&quot;type&quot;: &quot;text_delta&quot;, &quot;text&quot;: &quot;Hello&quot;}}
+
+event: ping
+data: {&quot;type&quot;: &quot;ping&quot;}
+
+event: content_block_delta
+data: {&quot;type&quot;: &quot;content_block_delta&quot;, &quot;index&quot;: 0, &quot;delta&quot;: {&quot;type&quot;: &quot;text_delta&quot;, &quot;text&quot;: &quot;, Mrs Iyer.&quot;}}
+
+event: message_delta
+data: {&quot;type&quot;: &quot;message_delta&quot;, &quot;delta&quot;: {&quot;stop_reason&quot;: &quot;end_turn&quot;}, &quot;usage&quot;: {&quot;output_tokens&quot;: 7}}
+
+event: message_stop
+data: {&quot;type&quot;: &quot;message_stop&quot;}
+&quot;&quot;&quot;
+
+def parse_sse(raw):
+    for block in raw.strip().split(&quot;\n\n&quot;):              # events are separated by a blank line
+        fields = dict(line.split(&quot;: &quot;, 1) for line in block.splitlines())
+        yield fields[&quot;event&quot;], json.loads(fields[&quot;data&quot;])
+
+text = &quot;&quot;
+for name, data in parse_sse(RAW):
+    if name == &quot;content_block_delta&quot;:
+        text += data[&quot;delta&quot;][&quot;text&quot;]
+    elif name == &quot;message_delta&quot;:
+        print(&quot;stop_reason:&quot;, data[&quot;delta&quot;][&quot;stop_reason&quot;], &quot;| output tokens:&quot;, data[&quot;usage&quot;][&quot;output_tokens&quot;])
+    elif name == &quot;ping&quot;:
+        print(&quot;(keep-alive ping ignored)&quot;)
+print(&quot;assembled text:&quot;, text)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>(keep-alive ping ignored)
+stop_reason: end_turn | output tokens: 7
+assembled text: Hello, Mrs Iyer.</pre></div></div><h3>Where websockets fit</h3><p>A <strong>WebSocket</strong> keeps one connection open in <strong>both directions</strong>, so either side can send messages at any time, without a new request for each. SSE, by contrast, streams one way: server to client, in answer to one request.</p><div class="tbl"><table><thead><tr><th>Direction</th><th>Client asks, server answers</th><th>Server → client, for one request</th><th>Both ways, any time</th></tr></thead><tbody><tr><td>Connection</td><td>One per request</td><td>Open while the reply streams</td><td>Long-lived</td></tr><tr><td>Claude use</td><td>Ordinary Messages API calls</td><td>Streaming Messages API replies</td><td>Between <em>your</em> browser app and <em>your</em> server (live chat, collaborative UIs); event feeds a tool watches</td></tr></tbody></table></div><figure class="seq anim" style="--c:3"><figcaption>Live streaming in a web app: two different connections</figcaption><div class="actors"><b>Browser</b><b>Your backend</b><b>Claude API</b></div><div class="lane"><div class="m r" style="grid-column:1/3;--s:2;--k:0"><span>WebSocket message: "Can I move Thursday's appointment?"</span><i></i></div><div class="m r" style="grid-column:2/4;--s:2;--k:1"><span>POST /v1/messages, stream: true (API key stays here)</span><i></i></div><div class="m l reply" style="grid-column:2/4;--s:2;--k:2"><span>SSE: content_block_delta "Yes, "</span><i></i></div><div class="m l reply" style="grid-column:1/3;--s:2;--k:3"><span>WebSocket: "Yes, "</span><i></i></div><div class="m l reply" style="grid-column:2/4;--s:2;--k:4"><span>SSE: content_block_delta "6 pm is free."</span><i></i></div><div class="m l reply" style="grid-column:1/3;--s:2;--k:5"><span>WebSocket: "6 pm is free."</span><i></i></div><div class="m l reply" style="grid-column:2/4;--s:2;--k:6"><span>SSE: message_stop</span><i></i></div></div></figure><aside class="call exam"><b>Exam lens</b><p>A common design for a live chat app: the browser talks to your backend over a <strong>WebSocket</strong>; your backend calls the Claude API with <code>stream: true</code> and relays the <strong>SSE</strong> deltas down the WebSocket. Your API key stays on the server, never in the browser. Claude Code can also <em>watch</em> an existing WebSocket feed (with its Monitor tool, after you approve the connection) to react to events instead of polling.</p></aside><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>A team wants to show Claude's replies word by word in their web app without exposing their API key. Which design fits?</p><div class="opts"><button type="button" data-ok="0">A. Call the Claude API directly from the browser with the key in the JavaScript bundle</button><button type="button" data-ok="1">B. The browser connects to their backend (for example over a WebSocket); the backend calls the API with streaming and relays the text as it arrives</button><button type="button" data-ok="0">C. Poll the Claude API every second from the browser</button><button type="button" data-ok="0">D. Use the Batches API and show results when ready</button></div><p class="why" hidden>Keys belong on the server. The backend streams from the API (SSE) and forwards deltas to the browser over its own connection. Polling and batches don't give live word-by-word output.</p></div><div class="quiz" data-multi="1"><p class="q"><b>Practice question</b><span class="n">Select 2</span>What do the official Claude SDKs add over raw HTTP calls? (Select 2)</p><div class="opts"><button type="button" data-ok="1">A. Automatic retries with backoff for retryable errors such as 429 and 5xx</button><button type="button" data-ok="0">B. A cheaper price per token</button><button type="button" data-ok="1">C. Typed errors and helpers that assemble streamed responses</button><button type="button" data-ok="0">D. Persistent conversation memory on Anthropic's servers</button></div><button type=button class=check>Check answer</button><p class="why" hidden>SDKs handle retries, timeouts, typing and streaming. Pricing is the same, and the API stays stateless whatever client you use.</p></div></section><section class="session" id="s5-5"><p class="snum">Session 5.5</p><h2>Opus, Sonnet or Haiku</h2><p>Claude comes in tiers that share core abilities but trade capability against speed and cost. Current models, with list prices per million tokens (input / output) on the Claude API:</p><div class="tbl"><table><thead><tr><th>Model</th><th>Model ID</th><th>Price in / out</th><th>Context</th><th>Best at</th></tr></thead><tbody><tr><td><strong>Claude Fable 5.1</strong></td><td><code>claude-fable-5-1</code></td><td>$10 / $50</td><td>1M</td><td>The most demanding reasoning and long-horizon agent work</td></tr><tr><td><strong>Claude Opus 5.5</strong></td><td><code>claude-opus-5-5</code></td><td>$4 / $20</td><td>1M</td><td>Complex reasoning, agentic coding, hard analysis; Anthropic's default recommendation</td></tr><tr><td><strong>Claude Sonnet 5.5</strong></td><td><code>claude-sonnet-5-5</code></td><td>$2 / $10</td><td>1M</td><td>Balance of capability and speed: everyday coding, agents, enterprise workloads at volume</td></tr><tr><td><strong>Claude Haiku 5.5</strong></td><td><code>claude-haiku-5-5</code></td><td>$0.10 / $0.50 (prompts up to 100K tokens)</td><td>1M</td><td>Fast, high-volume, simple tasks: classification, extraction, sub-agents</td></tr></tbody></table></div><p>All support up to 128K output tokens, vision and tools. Prices change: check Anthropic's pricing page before you plan a budget.</p><aside class="call concept"><b>The idea</b><p><strong>Two ways to start.</strong> <em>Capability-first</em>: begin with the most capable model, prove the task can be done well, then try cheaper models or lower effort against your eval and keep the cheapest that holds quality. <em>Efficiency-first</em>: begin small and move up only where evals show it falls short. Either way, the eval set decides, not a hunch.</p></aside><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">P = {&quot;Haiku 5.5&quot;: (0.10, 0.50), &quot;Sonnet 5.5&quot;: (2.00, 10.00), &quot;Opus 5.5&quot;: (4.00, 20.00)}
+
+def monthly(model, calls_per_day, tin, tout):
+    pin, pout = P[model]
+    return calls_per_day * 30 * (tin * pin + tout * pout) / 1e6
+
+workloads = [(&quot;classify 50k messages/day&quot;, 50_000, 600, 5),
+             (&quot;support replies 5k/day&quot;, 5_000, 4_000, 300),
+             (&quot;code review 200 PRs/day&quot;, 200, 30_000, 2_000)]
+print(f&quot;{&#x27;&#x27;:&lt;28}&quot; + &quot;&quot;.join(f&quot;{m:&gt;13}&quot; for m in P))
+for name, n, tin, tout in workloads:
+    print(f&quot;{name:&lt;28}&quot; + &quot;&quot;.join(f&quot;{&#x27;$&#x27; + format(monthly(m, n, tin, tout), &#x27;,.0f&#x27;):&gt;13}&quot; for m in P))</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>                                Haiku 5.5   Sonnet 5.5     Opus 5.5
+classify 50k messages/day             $94       $1,875       $3,750
+support replies 5k/day                $82       $1,650       $3,300
+code review 200 PRs/day               $24         $480         $960</pre></div></div><aside class="call read"><b>How to read it</b><p>For classification, Haiku is 20× cheaper than Sonnet ($94 against $1,875 a month here), so if it passes the eval, it's the obvious choice. For 200 code reviews a day, Opus costs $480 a month more than Sonnet: small next to the cost of one missed bug, so there it's quality, not price, that should decide.</p></aside><h3>Breaking changes between model releases</h3><p>A newer model is not a drop-in replacement. Model releases can <strong>remove parameters, change defaults, and change behaviour</strong> (how much it says, how it uses tools, what it declines). Some breaking changes fail loudly with a 400; others succeed with different output. Recent examples:</p><div class="tbl"><table><thead><tr><th>Change</th><th>Since</th><th>Effect on old code</th></tr></thead><tbody><tr><td>Assistant <strong>prefill</strong> (ending messages with a partial assistant turn) removed</td><td>Claude 4.6 generation</td><td>400 error; use structured outputs or instructions</td></tr><tr><td>Fixed thinking <code>budget_tokens</code> replaced by adaptive thinking + effort</td><td>Deprecated on 4.6, rejected on newer models</td><td>400 error on the newest models</td></tr><tr><td><code>temperature</code> / <code>top_p</code> / <code>top_k</code> only at defaults</td><td>Claude 4.7 and later</td><td>400 for non-default values</td></tr><tr><td>New tokenizer</td><td>Claude Opus 4.7</td><td>~1–1.35× more tokens for the same text: budgets and costs shift</td></tr><tr><td>Forced <code>tool_choice</code> (<code>any</code> / a named tool) rejected</td><td>Opus 5.5, Sonnet 5.5, Fable 5.1</td><td>400; use <code>auto</code> with <code>strict: true</code> or structured outputs</td></tr><tr><td>Thinking can't be disabled; effort defaults to <code>medium</code></td><td>Claude Opus 5.5</td><td>400 if code sends <code>thinking: {type: "disabled"}</code>; output depth shifts</td></tr></tbody></table></div><p>Here's a pre-migration check that scans request configurations for those changes before you switch the model ID.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">RULES = [  # (applies to target models, test on the request, message)
+    ({&quot;claude-opus-5-5&quot;, &quot;claude-sonnet-5-5&quot;, &quot;claude-fable-5-1&quot;},
+     lambda r: r.get(&quot;tool_choice&quot;, {}).get(&quot;type&quot;) in (&quot;any&quot;, &quot;tool&quot;), &quot;forced tool_choice → use auto + strict tools&quot;),
+    ({&quot;claude-opus-5-5&quot;}, lambda r: r.get(&quot;thinking&quot;, {}).get(&quot;type&quot;) == &quot;disabled&quot;, &quot;thinking can&#x27;t be disabled → lower effort instead&quot;),
+    ({&quot;*&quot;}, lambda r: &quot;budget_tokens&quot; in r.get(&quot;thinking&quot;, {}), &quot;budget_tokens → adaptive thinking + effort&quot;),
+    ({&quot;*&quot;}, lambda r: any(k in r for k in (&quot;temperature&quot;, &quot;top_p&quot;, &quot;top_k&quot;)), &quot;sampling parameters → remove them&quot;),
+    ({&quot;*&quot;}, lambda r: r[&quot;messages&quot;][-1][&quot;role&quot;] == &quot;assistant&quot;, &quot;assistant prefill → structured outputs or instructions&quot;),
+    ({&quot;claude-opus-5-5&quot;, &quot;claude-haiku-5-5&quot;}, lambda r: &quot;effort&quot; not in r.get(&quot;output_config&quot;, {}), &quot;effort defaults to medium here → set it explicitly&quot;),
+]
+
+def check_migration(request, target):
+    return [msg for models, test, msg in RULES if (&quot;*&quot; in models or target in models) and test(request)] or [&quot;no known breaking changes&quot;]
+
+legacy = {&quot;model&quot;: &quot;claude-sonnet-4-6&quot;, &quot;temperature&quot;: 0.2, &quot;tool_choice&quot;: {&quot;type&quot;: &quot;tool&quot;, &quot;name&quot;: &quot;extract&quot;},
+          &quot;thinking&quot;: {&quot;type&quot;: &quot;enabled&quot;, &quot;budget_tokens&quot;: 4000},
+          &quot;messages&quot;: [{&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;...&quot;}, {&quot;role&quot;: &quot;assistant&quot;, &quot;content&quot;: &quot;{&quot;}]}
+for target in (&quot;claude-sonnet-5-5&quot;, &quot;claude-opus-5-5&quot;):
+    print(f&quot;{legacy[&#x27;model&#x27;]} → {target}:&quot;)
+    for issue in check_migration(legacy, target): print(&quot;   -&quot;, issue)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>claude-sonnet-4-6 → claude-sonnet-5-5:
+   - forced tool_choice → use auto + strict tools
+   - budget_tokens → adaptive thinking + effort
+   - sampling parameters → remove them
+   - assistant prefill → structured outputs or instructions
+claude-sonnet-4-6 → claude-opus-5-5:
+   - forced tool_choice → use auto + strict tools
+   - budget_tokens → adaptive thinking + effort
+   - sampling parameters → remove them
+   - assistant prefill → structured outputs or instructions
+   - effort defaults to medium here → set it explicitly</pre></div></div><aside class="call tip"><b>Tip</b><p>Migrate like any risky release: read the migration guide, pin the new ID in config (never an alias), run the full eval set on both models, re-tune effort and prompts (prompts written for older models are often too prescriptive for newer ones), and roll out gradually with a way back.</p></aside><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>An app works on an older Sonnet. After only changing the model ID to <code>claude-opus-5-5</code>, every request fails with a 400 error. The requests set <code>tool_choice: {"type": "tool", "name": "extract"}</code>. Why?</p><div class="opts"><button type="button" data-ok="0">A. Opus models don't support tools</button><button type="button" data-ok="1">B. Claude Opus 5.5 rejects forced <code>tool_choice</code> (<code>any</code> or a named tool); use <code>auto</code> with a strict tool or structured outputs</button><button type="button" data-ok="0">C. The model ID needs a date suffix</button><button type="button" data-ok="0">D. The request needs the fast-mode beta flag</button></div><p class="why" hidden>Forcing a specific tool is a breaking change on Opus 5.5 (and Sonnet 5.5, Fable 5.1). If the forced call was just a way to get JSON, structured outputs are the replacement; otherwise use <code>auto</code> plus <code>strict: true</code> and an instruction.</p></div><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>Which approach to choosing a model is most defensible?</p><div class="opts"><button type="button" data-ok="0">A. Always use the most capable model to be safe</button><button type="button" data-ok="0">B. Always use the cheapest model to control cost</button><button type="button" data-ok="1">C. Measure candidate models (and effort levels) on your eval set, then pick the cheapest that meets the quality bar and latency requirement</button><button type="button" data-ok="0">D. Use whichever model the team used last time</button></div><p class="why" hidden>The right model is the cheapest one that meets your requirements, and only an eval on representative cases tells you which that is. Defaults in either direction waste money or quality.</p></div></section><section class="session" id="s5-6"><p class="snum">Session 5.6</p><h2>Token budgets and cost models</h2><p><strong>Token usage tracking</strong> records the tokens each request uses; <strong>cost modelling</strong> turns that into money, by route, model and day. Every response's <code>usage</code> tells you what you need:</p><div class="tbl"><table><thead><tr><th><code>usage</code> field</th><th>Billed at</th></tr></thead><tbody><tr><td><code>input_tokens</code></td><td>Base input price (uncached input)</td></tr><tr><td><code>cache_creation_input_tokens</code></td><td>About 1.25× input (5-minute cache) or 2× (1-hour)</td></tr><tr><td><code>cache_read_input_tokens</code></td><td>About 0.1× input (0.05× on Opus 5.5)</td></tr><tr><td><code>output_tokens</code></td><td>Output price, including thinking tokens</td></tr></tbody></table></div><p>Here's a cost model built from a day of logged <code>usage</code> records (the records are a sample we wrote; the aggregation is real). It answers the questions that matter: where does the money go, is caching working, and what does a <em>completed task</em> cost?</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">PRICES = {&quot;claude-haiku-5-5&quot;: (0.10, 0.50, 0.01), &quot;claude-sonnet-5-5&quot;: (2.00, 10.00, 0.20)}  # in, out, cache read
+
+LOG = [  # route, model, task_id, input, cache_write, cache_read, output
+    (&quot;faq&quot;,    &quot;claude-haiku-5-5&quot;,  &quot;t1&quot;, 900,  0,      14_000, 120),
+    (&quot;faq&quot;,    &quot;claude-haiku-5-5&quot;,  &quot;t2&quot;, 850,  0,      14_000, 140),
+    (&quot;faq&quot;,    &quot;claude-haiku-5-5&quot;,  &quot;t3&quot;, 950,  14_000, 0,      110),
+    (&quot;triage&quot;, &quot;claude-sonnet-5-5&quot;, &quot;t4&quot;, 2_100, 0,     22_000, 400),
+    (&quot;triage&quot;, &quot;claude-sonnet-5-5&quot;, &quot;t4&quot;, 2_600, 0,     22_000, 380),   # same task, 2nd turn
+    (&quot;triage&quot;, &quot;claude-sonnet-5-5&quot;, &quot;t5&quot;, 2_300, 22_000, 0,     420),
+    (&quot;report&quot;, &quot;claude-sonnet-5-5&quot;, &quot;t6&quot;, 48_000, 0,    0,      3_900),
+    (&quot;report&quot;, &quot;claude-sonnet-5-5&quot;, &quot;t6&quot;, 52_000, 0,    0,      3_600),   # retry after a bad draft
+]
+
+def cost(model, inp, cw, cr, out):
+    pin, pout, pread = PRICES[model]
+    return (inp * pin + cw * pin * 1.25 + cr * pread + out * pout) / 1e6
+
+by_route, tasks = {}, {}
+for route, model, task, inp, cw, cr, out in LOG:
+    c = cost(model, inp, cw, cr, out)
+    r = by_route.setdefault(route, {&quot;usd&quot;: 0, &quot;calls&quot;: 0, &quot;read&quot;: 0, &quot;uncached&quot;: 0})
+    r[&quot;usd&quot;] += c; r[&quot;calls&quot;] += 1; r[&quot;read&quot;] += cr; r[&quot;uncached&quot;] += inp + cw
+    tasks.setdefault((route, task), 0); tasks[(route, task)] += c
+
+for route, r in by_route.items():
+    n_tasks = len([t for t in tasks if t[0] == route])
+    hit = r[&quot;read&quot;] / (r[&quot;read&quot;] + r[&quot;uncached&quot;])
+    print(f&quot;{route:&lt;7} ${r[&#x27;usd&#x27;]:.4f}  {r[&#x27;calls&#x27;]} calls, {n_tasks} tasks  &quot;
+          f&quot;→ ${r[&#x27;usd&#x27;] / n_tasks:.4f} per task   cache-read share {hit:.0%}&quot;)
+total = sum(r[&quot;usd&quot;] for r in by_route.values())
+print(f&quot;\nreport route is {by_route[&#x27;report&#x27;][&#x27;usd&#x27;] / total:.0%} of today&#x27;s spend with no caching at all&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>faq     $0.0025  3 calls, 3 tasks  → $0.0008 per task   cache-read share 63%
+triage  $0.0898  3 calls, 2 tasks  → $0.0449 per task   cache-read share 60%
+report  $0.2750  2 calls, 1 tasks  → $0.2750 per task   cache-read share 0%
+
+report route is 75% of today&#x27;s spend with no caching at all</pre></div></div><aside class="call read"><b>How to read it</b><p>The report route is a single task but most of the day's spend: two large uncached calls, one of them a retry. That's where to look first: cache its stable prefix, or fix whatever made the first draft fail. The FAQ route's cache works (most input tokens are reads). Per-<em>task</em> cost exposes the triage conversation's two turns that per-call cost hides.</p></aside><aside class="call warn"><b>Watch out</b><p>Usage-based cost figures computed in your app (and the <code>total_cost_usd</code> estimates Claude Code and the Agent SDK report) are <strong>client-side estimates</strong> for monitoring and planning. The bill comes from Anthropic's usage and cost reporting.</p></aside><h3>Cost versus latency: not equal weights</h3><p>Latency is usually a <strong>constraint</strong> set by the people using the system: a live chat needs an answer in seconds; a nightly report needs to be there by morning. Cost is what you <strong>optimise within</strong> that constraint. So the question isn't "cost or latency?" but "given the latency we must meet, what's the cheapest way to meet it?"</p><figure class="flow anim" style="--n:5"><figcaption>Optimising cost inside a latency constraint</figcaption><ol><li style="--i:0"><b>Fix the latency need</b><span>Someone waiting? Seconds, minutes, or by tomorrow?</span></li><li style="--i:1"><b>Pick the API pattern</b><span>Real time (streamed) if waiting; batch at half price if not.</span></li><li style="--i:2"><b>Cache the stable prefix</b><span>Usually the biggest free saving.</span></li><li style="--i:3"><b>Trim the input</b><span>Shorter history, pruned tool output, smaller images.</span></li><li style="--i:4"><b>Lower effort, then smaller model</b><span>Each only as far as the eval still passes.</span></li></ol></figure><div class="quiz" data-multi="1"><p class="q"><b>Practice question</b><span class="n">Select 2</span>A report-generation route costs far more than expected. The usage logs show large <code>input_tokens</code>, zero <code>cache_read_input_tokens</code> and frequent second calls for the same task. What should you investigate first? (Select 2)</p><div class="opts"><button type="button" data-ok="1">A. Why the stable part of the prompt isn't being cached (a missing breakpoint or something changing the prefix)</button><button type="button" data-ok="1">B. Why tasks need retries, since per-task cost includes every failed attempt</button><button type="button" data-ok="0">C. Switching the route to fast mode</button><button type="button" data-ok="0">D. Raising <code>max_tokens</code></button></div><button type=button class=check>Check answer</button><p class="why" hidden>Zero cache reads on large repeated inputs is the classic free saving; retries multiply cost per completed task. Fast mode would raise prices, and <code>max_tokens</code> doesn't reduce input cost.</p></div><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>Which statement reflects the right way to balance cost and latency?</p><div class="opts"><button type="button" data-ok="0">A. Always minimise cost first, then see whether latency is acceptable</button><button type="button" data-ok="1">B. Treat the latency requirement as the constraint, then choose the cheapest design that meets it</button><button type="button" data-ok="0">C. Always minimise latency, whatever the cost</button><button type="button" data-ok="0">D. Cost and latency can't both be optimised, so pick one at random</button></div><p class="why" hidden>Latency needs come from users and workflows and usually aren't negotiable; cost has many levers (model, effort, caching, batching, input size) that you tune within that limit.</p></div></section>
+  <div class="pager"><a class="btn ghost" href="../module-4/">← Module 4</a><a class="btn" href="../module-6/">Module 6 →</a></div>
+  </div>
+</div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="fine" style="border:none;margin:0;padding:0">
+      <span>© 2026 XploreAI · <a href="/">xploreai.co.in</a></span>
+      <span><a href="mailto:hello@xploreai.co.in">hello@xploreai.co.in</a></span>
+    </div>
+  </div>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/json.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/bash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/markdown.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/typescript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/yaml.min.js"></script>
+<script src="/courses/claude-developer/course.js?v=1792997601"></script>
+</body>
+</html>

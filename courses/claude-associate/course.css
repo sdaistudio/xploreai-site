@@ -95,7 +95,7 @@ nav ul a[aria-current="page"]{color:var(--rust)}
 .cca .mod ol a{text-decoration:none;color:var(--espresso);font-size:15px;font-weight:600}
 .cca .mod ol a:hover{color:var(--rust)}
 .cca .mod ol span{color:var(--rust);margin-right:8px;font-variant-numeric:tabular-nums}
-.cca .hub-sec{padding:44px 0 10px}
+.cca .hub-sec{padding:44px 22px 10px}
 .cca .facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-top:22px}
 .cca .facts .card{padding:18px 20px}
 .cca .facts b{display:block;font-size:30px;color:var(--rust);line-height:1.1}

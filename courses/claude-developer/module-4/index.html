@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 4: Eval, Testing, and Debugging — Claude Developer (CCDV-F) course — XploreAI</title>
+<meta name="description" content="When a Claude app misbehaves, name the kind of failure, decide where to look first, pick the right recovery, read the trace, and prove whether the bug is in your code or in the model&#x27;s output. Then build the evals and monitoring that catch it next time.">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="XploreAI">
+<meta property="og:title" content="Module 4: Eval, Testing, and Debugging — Claude Developer (CCDV-F) course">
+<meta property="og:description" content="When a Claude app misbehaves, name the kind of failure, decide where to look first, pick the right recovery, read the trace, and prove whether the bug is in your code or in the model&#x27;s output. Then build the evals and monitoring that catch it next time.">
+<meta property="og:url" content="https://xploreai.co.in/courses/claude-developer/module-4/">
+<meta property="og:image" content="https://xploreai.co.in/assets/og-image.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/style.css">
+<link rel="stylesheet" href="/courses/claude-developer/course.css?v=1792998013">
+</head>
+<body>
+
+<nav>
+  <div class="wrap bar">
+    <a class="wordmark" href="/">xplore<span>ai</span></a>
+    <ul>
+      <li><a href="/#agents">Solutions</a></li>
+      <li><a href="/#stories">Success Stories</a></li>
+      <li><a href="/#subscribe">Newsletter</a></li>
+      <li><a href="/learn.html" aria-current="page">Learn AI</a></li>
+      <li><a class="btn" href="https://wa.me/919769686931?text=Hi%20XploreAI%2C%20I%27m%20interested%20in%20AI%20automation!">Get Started</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main class="cca">
+<header class="mhero wrap">
+  <p class="crumb"><a href="/learn.html">Learn AI</a> / <a href="../">Claude Developer (CCDV-F) course</a> / Module 4</p>
+  <span class="pill">MODULE 4 OF 8 · DOMAIN 4 · 2.6% OF THE EXAM · 3 SESSIONS</span>
+  <h1>Eval, Testing, and Debugging<i>.</i></h1>
+  <p class="lede">When a Claude app misbehaves, name the kind of failure, decide where to look first, pick the right recovery, read the trace, and prove whether the bug is in your code or in the model's output. Then build the evals and monitoring that catch it next time.</p>
+  <div class="dl"><a class="btn" href="#s4-1">Start session 4.1 →</a> <a class="btn ghost" href="../code/module-4.py" download>Download the Python</a></div>
+</header>
+<div class="wrap layout">
+  <aside class="toc" aria-label="Sessions"><p>In this module</p><ol><li><a href="#s4-1"><span>4.1</span>Error types and recovery</a></li><li><a href="#s4-2"><span>4.2</span>Traces, failure modes and isolating the layer</a></li><li><a href="#s4-3"><span>4.3</span>Evals and monitoring</a></li></ol></aside>
+  <div class="content">
+<section class="session" id="s4-1"><p class="snum">Session 4.1</p><h2>Error types and recovery</h2><p>When a Claude app breaks, the instinct is to blame the model. Often that's wrong. Errors fall into <strong>four categories</strong>, and the category tells you where to look first and who owns the fix.</p><div class="tbl"><table><thead><tr><th>Category</th><th>Symptoms</th><th>Where to look first</th></tr></thead><tbody><tr><td><strong>Integration / API</strong></td><td><code>401</code>, <code>429</code>, <code>500</code>, empty or malformed responses, parsing crashes</td><td>Status codes, API logs, the exact request payload</td></tr><tr><td><strong>Infrastructure</strong></td><td>Timeouts, dropped connections, a downstream service down, intermittent failures</td><td>Network and service status, retries, dependency health</td></tr><tr><td><strong>Prompt / input</strong></td><td>The model answers the <em>wrong</em> question; context missing; input malformed</td><td>The fully <strong>rendered</strong> prompt actually sent that turn</td></tr><tr><td><strong>Model / output</strong></td><td>Correct input, but a confident wrong answer, a refusal, or the wrong format</td><td>The trace: exact input and exact output</td></tr></tbody></table></div><p>Triage in order, from the outside in:</p><figure class="flow anim" style="--n:4"><figcaption>Four questions, in this order</figcaption><ol><li style="--i:0"><b>Did it reach the model?</b><span>Check the status code and the response. If not, it's integration or infrastructure.</span></li><li style="--i:1"><b>Was the input right?</b><span>Read the rendered prompt and tool results. Missing or wrong data is a prompt/input problem.</span></li><li style="--i:2"><b>Is the output wrong, or just shaped differently?</b><span>A wrong fact differs from a wrong format, and the fixes differ too.</span></li><li style="--i:3"><b>Does it reproduce every time?</b><span>Consistent points to logic or prompt; intermittent points to load, timing or sampling.</span></li></ol></figure><h3>Four recovery strategies</h3><p>Decide how each kind of error is handled <strong>before</strong> it happens. Improvised handling is how a small hiccup becomes a broken experience.</p><div class="tbl"><table><thead><tr><th>Strategy</th><th>What it does</th><th>Right for</th></tr></thead><tbody><tr><td><strong>Retry</strong> (with backoff, bounded)</td><td>Try again after a short, growing wait</td><td>Transient errors: <code>429</code>, <code>5xx</code>, <code>529</code>, network blips</td></tr><tr><td><strong>Fallback</strong></td><td>Serve a default, a cached answer or a simpler path</td><td>The live call can't succeed now, and <em>something</em> useful can be shown</td></tr><tr><td><strong>Graceful degradation</strong></td><td>Return the parts that worked, and say what's missing</td><td>Partial failure: some sections or sources failed</td></tr><tr><td><strong>Escalation</strong></td><td>Hand off to a person</td><td>High stakes with low confidence, or a decision Claude shouldn't make</td></tr></tbody></table></div><aside class="call warn"><b>Watch out</b><p>The exam's favourite wrong answers: <strong>silent failure</strong> (the user gets nothing and no explanation), <strong>unbounded retries</strong> (cost and time burn while hiding the real fault), showing <strong>raw stack traces</strong> to users, and using <strong>one strategy for every error</strong>. Retrying a refusal or a reasoning error just repeats it.</p></aside><p>Here's a recovery policy as code, run on seven incidents from a clinic assistant.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">POLICY = [   # (test, category, strategy), checked in order
+    (lambda e: e.get(&quot;status&quot;) in (429, 500, 529) or e.get(&quot;timeout&quot;), &quot;integration/infra (transient)&quot;, &quot;retry with backoff, max 3&quot;),
+    (lambda e: e.get(&quot;status&quot;) in (400, 401, 403, 404),                 &quot;integration (permanent)&quot;,       &quot;fail fast, alert the team, show a friendly message&quot;),
+    (lambda e: e.get(&quot;stop_reason&quot;) == &quot;refusal&quot;,                       &quot;model output&quot;,                  &quot;don&#x27;t retry blindly: rephrase or escalate&quot;),
+    (lambda e: e.get(&quot;stop_reason&quot;) == &quot;max_tokens&quot;,                    &quot;model output (truncated)&quot;,      &quot;raise max_tokens or split the task, then retry once&quot;),
+    (lambda e: e.get(&quot;parts_ok&quot;) is not None and e[&quot;parts_ok&quot;] &lt; e[&quot;parts&quot;], &quot;partial failure&quot;,          &quot;graceful degradation: return what worked, flag the rest&quot;),
+    (lambda e: e.get(&quot;stakes&quot;) == &quot;high&quot; and e.get(&quot;confidence&quot;, 1) &lt; 0.7, &quot;low confidence, high stakes&quot;, &quot;escalate to a person&quot;),
+]
+
+def recover(event):
+    for test, category, strategy in POLICY:
+        if test(event):
+            return category, strategy
+    return &quot;none&quot;, &quot;proceed&quot;
+
+incidents = [
+    (&quot;Monday 9 am burst&quot;,                  {&quot;status&quot;: 429}),
+    (&quot;Key rotated, old one still deployed&quot;, {&quot;status&quot;: 401}),
+    (&quot;Network timeout to the API&quot;,          {&quot;timeout&quot;: True}),
+    (&quot;Summary cut off mid-sentence&quot;,        {&quot;stop_reason&quot;: &quot;max_tokens&quot;}),
+    (&quot;Weekly report: 1 of 4 sources down&quot;,  {&quot;parts&quot;: 4, &quot;parts_ok&quot;: 3}),
+    (&quot;Dosage question, model unsure&quot;,       {&quot;stakes&quot;: &quot;high&quot;, &quot;confidence&quot;: 0.55}),
+    (&quot;Declined a routine billing question&quot;, {&quot;stop_reason&quot;: &quot;refusal&quot;}),
+]
+for name, e in incidents:
+    category, strategy = recover(e)
+    print(f&quot;{name:&lt;37} {category:&lt;30} → {strategy}&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>Monday 9 am burst                     integration/infra (transient)  → retry with backoff, max 3
+Key rotated, old one still deployed   integration (permanent)        → fail fast, alert the team, show a friendly message
+Network timeout to the API            integration/infra (transient)  → retry with backoff, max 3
+Summary cut off mid-sentence          model output (truncated)       → raise max_tokens or split the task, then retry once
+Weekly report: 1 of 4 sources down    partial failure                → graceful degradation: return what worked, flag the rest
+Dosage question, model unsure         low confidence, high stakes    → escalate to a person
+Declined a routine billing question   model output                   → don&#x27;t retry blindly: rephrase or escalate</pre></div></div><aside class="call read"><b>How to read it</b><p>The two 4xx cases look like "errors", but only the 429 is worth retrying; the 401 will fail the same way until someone deploys the new key. The partial report degrades gracefully instead of failing outright, and the dosage question goes to a person, whatever the model's answer was.</p></aside><h3>Graceful degradation, in practice</h3><p>A report built from four sources shouldn't fail because one is down. Return what worked, and be explicit about what didn't.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">def build_report(sources):
+    sections, missing = [], []
+    for name, fetch in sources:
+        try:
+            sections.append(f&quot;## {name}\n{fetch()}&quot;)
+        except Exception as e:
+            missing.append(f&quot;{name} ({type(e).__name__})&quot;)
+    note = f&quot;\n\n&gt; Not included: {&#x27;, &#x27;.join(missing)}. Retrying automatically in 15 minutes.&quot; if missing else &quot;&quot;
+    return &quot;\n\n&quot;.join(sections) + note, (&quot;partial&quot; if missing else &quot;complete&quot;)
+
+def down(): raise TimeoutError(&quot;billing service did not respond in 10s&quot;)
+
+report, status = build_report([(&quot;Appointments&quot;, lambda: &quot;412 booked, 31 no-shows&quot;),
+                               (&quot;Billing&quot;, down),
+                               (&quot;Feedback&quot;, lambda: &quot;4.6 / 5 from 88 reviews&quot;),
+                               (&quot;Staffing&quot;, lambda: &quot;2 open shifts on Saturday&quot;)])
+print(f&quot;status: {status}\n&quot;)
+print(report)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>status: partial
+
+## Appointments
+412 booked, 31 no-shows
+
+## Feedback
+4.6 / 5 from 88 reviews
+
+## Staffing
+2 open shifts on Saturday
+
+&gt; Not included: Billing (TimeoutError). Retrying automatically in 15 minutes.</pre></div></div><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>A summarisation feature returns <code>stop_reason: "refusal"</code> for a small share of legitimate legal documents. The code retries each refused request five times. What is the best change?</p><div class="opts"><button type="button" data-ok="0">A. Increase the retries to ten</button><button type="button" data-ok="0">B. Add exponential backoff between the retries</button><button type="button" data-ok="1">C. Stop retrying refusals blindly; review the refused cases, adjust the prompt or route them to a person</button><button type="button" data-ok="0">D. Ignore refusals and show an empty summary</button></div><p class="why" hidden>A refusal is a model-output outcome, not a transient fault, so identical retries tend to repeat it. Investigate the pattern (often missing context about the legitimate purpose), fix the prompt, and escalate cases that remain. An empty summary is a silent failure.</p></div><div class="quiz" data-multi="1"><p class="q"><b>Practice question</b><span class="n">Select 2</span>Which situations call for escalation to a human? (Select 2)</p><div class="opts"><button type="button" data-ok="1">A. A refund over the automatic limit, where the model's confidence in eligibility is low</button><button type="button" data-ok="0">B. A <code>529 overloaded_error</code> from the API</button><button type="button" data-ok="1">C. A patient message that might describe an emergency</button><button type="button" data-ok="0">D. A <code>max_tokens</code> stop on a long summary</button></div><button type=button class=check>Check answer</button><p class="why" hidden>Escalation fits high stakes with uncertainty. Overloads are transient (retry with backoff), and a <code>max_tokens</code> stop is fixed by raising the limit or splitting the task.</p></div></section><section class="session" id="s4-2"><p class="snum">Session 4.2</p><h2>Traces, failure modes and isolating the layer</h2><h3>What a trace is</h3><p>A <strong>trace</strong> is the recorded journey of one request: the input (system prompt, user message, injected context), every tool call with its parameters and result, the model's output, and metadata (timing, tokens, status). <strong>Trace analysis</strong> is reading that record to find where things went wrong. It's the right tool for <em>one specific</em> reported problem; evals (4.3) measure quality across many cases.</p><p>Here is a trace of a real-world kind of bug, stored the way most tracing tools store it: a list of timed steps.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">TRACE = [
+    {&quot;step&quot;: &quot;input&quot;,  &quot;ms&quot;: 0,    &quot;data&quot;: {&quot;user&quot;: &quot;What&#x27;s the refund status for order 4471?&quot;}},
+    {&quot;step&quot;: &quot;model&quot;,  &quot;ms&quot;: 820,  &quot;data&quot;: {&quot;stop_reason&quot;: &quot;tool_use&quot;, &quot;tokens_out&quot;: 41}},
+    {&quot;step&quot;: &quot;tool&quot;,   &quot;ms&quot;: 1010, &quot;data&quot;: {&quot;name&quot;: &quot;lookup_order&quot;, &quot;input&quot;: {&quot;order_id&quot;: &quot;4471&quot;},
+                                            &quot;result&quot;: {&quot;error&quot;: &quot;order not found&quot;}, &quot;is_error&quot;: True}},
+    {&quot;step&quot;: &quot;model&quot;,  &quot;ms&quot;: 1790, &quot;data&quot;: {&quot;stop_reason&quot;: &quot;end_turn&quot;, &quot;tokens_out&quot;: 36,
+                                            &quot;text&quot;: &quot;I&#x27;m sorry, order 4471 doesn&#x27;t exist in our system.&quot;}},
+]
+CUSTOMER_ORDERS = [&quot;4417&quot;, &quot;3902&quot;]       # what the logged-in customer actually has
+
+def analyse(trace):
+    notes = []
+    for i, s in enumerate(trace):
+        d = s[&quot;data&quot;]
+        if s[&quot;step&quot;] == &quot;tool&quot; and d.get(&quot;is_error&quot;):
+            notes.append(f&quot;step {i}: {d[&#x27;name&#x27;]}({d[&#x27;input&#x27;]}) failed: {d[&#x27;result&#x27;][&#x27;error&#x27;]}&quot;)
+            near = [o for o in CUSTOMER_ORDERS if sorted(o) == sorted(d[&quot;input&quot;][&quot;order_id&quot;])]
+            if near:
+                notes.append(f&quot;         likely a typo: the customer owns {near[0]} (same digits, different order)&quot;)
+        if s[&quot;step&quot;] == &quot;model&quot; and d.get(&quot;text&quot;) and &quot;doesn&#x27;t exist&quot; in d[&quot;text&quot;]:
+            notes.append(f&quot;step {i}: model stated a conclusion instead of asking the customer to confirm the number&quot;)
+    total = trace[-1][&quot;ms&quot;]
+    notes.append(f&quot;latency {total} ms: model {820 + (1790 - 1010)} ms, tool {1010 - 820} ms&quot;)
+    return notes
+
+for n in analyse(TRACE): print(n)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>step 2: lookup_order({&#x27;order_id&#x27;: &#x27;4471&#x27;}) failed: order not found
+         likely a typo: the customer owns 4417 (same digits, different order)
+step 3: model stated a conclusion instead of asking the customer to confirm the number
+latency 1790 ms: model 1600 ms, tool 190 ms</pre></div></div><aside class="call read"><b>How to read it</b><p>The model's reasoning wasn't the root cause: the tool was called with a transposed order number, straight from what the customer typed. The fix is in two places: the tool's error should suggest the customer's real orders, and the prompt should say "if an order isn't found, ask the customer to confirm the number". Without the trace, this looks like "Claude said the order doesn't exist".</p></aside><h3>Failure modes: naming the pattern</h3><p>A one-off bug is random. A <strong>failure mode</strong> is a recurring pattern you can name, test for and design around. Four account for most LLM-app failures:</p><div class="tbl"><table><thead><tr><th>Failure mode</th><th>Looks like (in a document summariser)</th><th>Typical fix</th></tr></thead><tbody><tr><td><strong>Hallucination</strong></td><td>The summary states a figure that isn't in the document</td><td>Ground in sources, require quotes or citations, allow "not stated"</td></tr><tr><td><strong>Refusal / over-caution</strong></td><td>Declines to summarise a contract, reading it as a request for legal advice</td><td>Explain the legitimate purpose; adjust the system prompt; escalate edge cases</td></tr><tr><td><strong>Format drift</strong></td><td>Asked for 3 bullets, returns a paragraph; JSON missing fields</td><td>Structured outputs, schemas, validation and a retry</td></tr><tr><td><strong>Instruction breakdown</strong></td><td>Asked to summarise <em>and</em> flag risks; only the summary comes back</td><td>Number the steps; check each one; split into a chain</td></tr></tbody></table></div><p>Each mode needs its own detector. Here are four simple ones, run over six outputs from a summariser asked for "exactly 3 bullet points, then a line starting 'Risks:'".</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">import re
+
+SOURCE = &quot;Revenue rose 12% to ₹4.1 crore. Two clinics opened in Pune. Staff turnover was 18%.&quot;
+
+def detect(output):
+    found = []
+    if re.search(r&quot;\b(can&#x27;t|cannot|unable to) (help|assist|summari[sz]e)&quot;, output, re.I):
+        return [&quot;refusal / over-caution&quot;]
+    numbers = set(re.findall(r&quot;\d+(?:\.\d+)?%?&quot;, output)) - set(re.findall(r&quot;\d+(?:\.\d+)?%?&quot;, SOURCE)) - {&quot;3&quot;}
+    if numbers:
+        found.append(f&quot;hallucination? numbers not in source: {sorted(numbers)}&quot;)
+    bullets = [l for l in output.splitlines() if l.startswith(&quot;- &quot;)]
+    if len(bullets) != 3:
+        found.append(f&quot;format drift: {len(bullets)} bullets&quot;)
+    if &quot;Risks:&quot; not in output:
+        found.append(&quot;instruction breakdown: no &#x27;Risks:&#x27; line&quot;)
+    return found or [&quot;ok&quot;]
+
+outputs = {
+    &quot;A&quot;: &quot;- Revenue up 12% to ₹4.1 crore\n- Two clinics opened in Pune\n- Turnover 18%\nRisks: staff turnover&quot;,
+    &quot;B&quot;: &quot;- Revenue up 15% to ₹4.1 crore\n- Two clinics opened in Pune\n- Turnover 18%\nRisks: staff turnover&quot;,
+    &quot;C&quot;: &quot;Revenue rose 12% and two clinics opened in Pune, with turnover at 18%.\nRisks: turnover&quot;,
+    &quot;D&quot;: &quot;- Revenue up 12%\n- Two clinics opened in Pune\n- Turnover 18%&quot;,
+    &quot;E&quot;: &quot;I can&#x27;t summarise documents that may contain financial advice.&quot;,
+    &quot;F&quot;: &quot;- Revenue up 12%\n- Two Pune clinics\n- Turnover 18%, up from 11%\nRisks: hiring&quot;,
+}
+for k, out in outputs.items():
+    print(k, &quot;→&quot;, &quot;; &quot;.join(detect(out)))</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>A → ok
+B → hallucination? numbers not in source: [&#x27;15%&#x27;]
+C → format drift: 0 bullets
+D → instruction breakdown: no &#x27;Risks:&#x27; line
+E → refusal / over-caution
+F → hallucination? numbers not in source: [&#x27;11%&#x27;]</pre></div></div><aside class="call read"><b>How to read it</b><p>B invents 15%, F invents "up from 11%", C drifts into a paragraph, D drops the second instruction, and E refuses a harmless request. Rule-based detectors like these are crude (a hallucinated <em>name</em> would slip past the number check), which is why 4.3 adds a model-based grader. But naming the mode is what tells you which fix to reach for.</p></aside><h3>Integration layer or model output?</h3><p>The same bad answer can come from two very different places. The <strong>integration layer</strong> is your code: prompt construction, parsing, tool wiring, API calls. The <strong>model output</strong> is what Claude generates from correct input. The key technique is the <strong>isolation test</strong>: capture the exact rendered input the model received, check it, then replay it directly, outside your app, and see whether the problem reproduces.</p><figure class="seq anim" style="--c:3"><figcaption>The isolation test</figcaption><div class="actors"><b>You</b><b>Your app&#x27;s logs</b><b>Claude (direct)</b></div><div class="lane"><div class="m r" style="grid-column:1/3;--s:2;--k:0"><span>Pull the exact rendered request for the bad case</span><i></i></div><div class="m l reply" style="grid-column:1/3;--s:2;--k:1"><span>system + messages + tools, as actually sent</span><i></i></div><div class="m note" style="grid-column:1/2;--k:2"><span>Is the input complete and correct? If not → integration layer</span></div><div class="m r" style="grid-column:1/4;--s:3;--k:3"><span>Replay that exact request (console, notebook or script)</span><i></i></div><div class="m l reply" style="grid-column:1/4;--s:3;--k:4"><span>Same problem? → model output. Problem gone? → integration layer (after the call)</span><i></i></div></div></figure><p>Three bug reports from a PDF summariser, run through that test. The "model" is a scripted stand-in that behaves the way a real one would for these inputs; the rendering, checking and replay logic is real.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">TEMPLATE = &quot;Summarise this report in 3 bullets.\n&lt;report&gt;\n{text}\n&lt;/report&gt;&quot;
+TRUE_TEXT = {&quot;q3_review.pdf&quot;: &quot;Sales grew. Costs fell. Conclusion: expand to Nashik.&quot;,
+             &quot;audit_2026.pdf&quot;: &quot;Audit found 3 billing errors. Conclusion: retrain front desk.&quot;,
+             &quot;pune_ops.pdf&quot;: &quot;Wait times fell. Two nurses hired. Conclusion: extend hours.&quot;}
+
+def parse_pdf(name):                       # our integration code: scanned PDFs come back empty
+    return &quot;&quot; if name == &quot;audit_2026.pdf&quot; else TRUE_TEXT[name]
+
+def stand_in_model(prompt):
+    body = prompt.split(&quot;&lt;report&gt;\n&quot;)[1].split(&quot;\n&lt;/report&gt;&quot;)[0]
+    if not body.strip():
+        return &quot;- (no content provided)&quot;
+    first, second = body.split(&quot;. &quot;)[:2]
+    return f&quot;- {first}\n- {second}\n- Overall positive&quot;          # never mentions the conclusion
+
+def show_in_app(reply, doc):               # our integration code: a display bug for one template
+    return reply.splitlines()[0] if doc == &quot;pune_ops.pdf&quot; else reply
+
+def isolation_test(doc, complaint, bug_present):
+    rendered = TEMPLATE.format(text=parse_pdf(doc))
+    input_ok = TRUE_TEXT[doc] in rendered
+    replay = stand_in_model(rendered)                     # the exact request, sent directly
+    reproduces = bug_present(replay)
+    if not input_ok:
+        verdict = &quot;integration layer: the input was already wrong (fix the parser)&quot;
+    elif reproduces:
+        verdict = &quot;model output: correct input, still wrong (fix the prompt)&quot;
+    else:
+        verdict = &quot;integration layer: fine when replayed, broken in the app (fix code after the call)&quot;
+    print(f&quot;{doc}: {complaint}\n   input complete: {input_ok}   reproduces on replay: {reproduces}\n   → {verdict}&quot;)
+
+isolation_test(&quot;q3_review.pdf&quot;, &quot;summary misses the conclusion&quot;, lambda out: &quot;Nashik&quot; not in out)
+isolation_test(&quot;audit_2026.pdf&quot;, &quot;summary is empty&quot;, lambda out: &quot;no content&quot; in out)
+isolation_test(&quot;pune_ops.pdf&quot;, &quot;summary has only one bullet&quot;, lambda out: len(out.splitlines()) &lt; 3)
+print(&quot;\nwhat the Pune user saw:&quot;, repr(show_in_app(stand_in_model(TEMPLATE.format(text=parse_pdf(&quot;pune_ops.pdf&quot;))), &quot;pune_ops.pdf&quot;)))</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>q3_review.pdf: summary misses the conclusion
+   input complete: True   reproduces on replay: True
+   → model output: correct input, still wrong (fix the prompt)
+audit_2026.pdf: summary is empty
+   input complete: False   reproduces on replay: True
+   → integration layer: the input was already wrong (fix the parser)
+pune_ops.pdf: summary has only one bullet
+   input complete: True   reproduces on replay: False
+   → integration layer: fine when replayed, broken in the app (fix code after the call)
+
+what the Pune user saw: &#x27;- Wait times fell&#x27;</pre></div></div><aside class="call read"><b>How to read it</b><p>Three reports of "a bad summary", three different owners. The Q3 input was complete and the replay still drops the conclusion: a <strong>model-output</strong> problem, fixed in the prompt (it never asks for the conclusion). The audit's rendered input had no report text: an <strong>integration</strong> bug in the PDF parser, visible before the model was ever called. The Pune summary is fine when replayed but broken in the app: an <strong>integration</strong> bug <em>after</em> the call, in the code that displays the reply.</p></aside><aside class="call exam"><b>Exam lens</b><p>If a scenario says the problem "disappears when the same request is sent directly to the API", the fault is in the integration layer. If it "reproduces with the exact rendered prompt", look at the prompt or the model's behaviour.</p></aside><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>Users report that a support bot sometimes answers about the wrong customer. Replaying the exact logged request directly against the API gives the correct customer every time. Where is the bug most likely?</p><div class="opts"><button type="button" data-ok="1">A. In the integration layer, for example stale or mixed-up context being inserted when the prompt is built</button><button type="button" data-ok="0">B. In the model's reasoning; switch to a larger model</button><button type="button" data-ok="0">C. In the system prompt's wording</button><button type="button" data-ok="0">D. In the API's rate limiting</button></div><p class="why" hidden>The replay of the <em>logged</em> request is correct, so the problem appears only inside the running app. That points to what your code does around the call, such as caching, concurrency or session mix-ups, not to the model.</p></div><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>A summariser is asked to "summarise and list the top three risks", but it often returns only the summary. Which failure mode is this?</p><div class="opts"><button type="button" data-ok="0">A. Hallucination</button><button type="button" data-ok="0">B. Refusal / over-caution</button><button type="button" data-ok="0">C. Format drift</button><button type="button" data-ok="1">D. Instruction breakdown</button></div><p class="why" hidden>Part of a multi-step instruction is silently dropped. Format drift is about structure (bullets, JSON fields, length); hallucination is stating unsupported facts.</p></div></section><section class="session" id="s4-3"><p class="snum">Session 4.3</p><h2>Evals and monitoring</h2><h3>What an eval is</h3><p>Changing a prompt, trying it three times and shipping it because "it looks good" is a <strong>vibe check</strong>. An <strong>eval</strong> is a structured, repeatable test: a set of <strong>test cases</strong>, <strong>grading criteria</strong>, and a <strong>score or threshold</strong>. It's the LLM equivalent of a test suite, and it's how you compare two prompts, two models or two settings on equal terms.</p><figure class="flow anim" style="--n:5"><figcaption>Designing and running an eval</figcaption><ol><li style="--i:0"><b>Define the objective</b><span>What does "good" mean here? Accurate, on-brand, resolves the question.</span></li><li style="--i:1"><b>Build the test set</b><span>30–50+ real cases: common, edge, adversarial, angry. Keep it versioned.</span></li><li style="--i:2"><b>Choose the grading</b><span>Rule-based where you can; a model judge for nuance; people for high stakes.</span></li><li style="--i:3"><b>Run it</b><span>Every case, every time, automatically; save every output.</span></li><li style="--i:4"><b>Analyse and act</b><span>Read the failures by category, fix, rerun to prove the fix worked.</span></li></ol></figure><div class="tbl"><table><thead><tr><th>Grading</th><th>Best for</th><th>Watch out for</th></tr></thead><tbody><tr><td><strong>Rule-based</strong> (code)</td><td>Format, required fields, keywords, length, exact answers</td><td>Can't judge tone, nuance or correctness of free text</td></tr><tr><td><strong>Model-based</strong> (LLM as judge)</td><td>Subjective quality at scale: tone, helpfulness, faithfulness to a source</td><td>The judge itself needs validating against human labels</td></tr><tr><td><strong>Human</strong></td><td>High stakes, ambiguous calls, building the reference labels</td><td>Slow and expensive: use sparingly and deliberately</td></tr></tbody></table></div><h3>An eval harness, step by step</h3><p>Twelve support emails, two prompt versions. The replies were written by us to stand in for the two versions' outputs; the harness, grading and statistics are real code.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">CASES = [  # (id, category, must_mention, reply_v1, reply_v2)
+    (1, &quot;refund&quot;,   &quot;7 days&quot;,       &quot;Refunds take 7 days.&quot;,                         &quot;Your refund will arrive within 7 days.&quot;),
+    (2, &quot;refund&quot;,   &quot;7 days&quot;,       &quot;We will look into it.&quot;,                        &quot;Refunds reach your account within 7 days.&quot;),
+    (3, &quot;booking&quot;,  &quot;reschedule&quot;,   &quot;You can reschedule online.&quot;,                   &quot;You can reschedule online or by phone.&quot;),
+    (4, &quot;booking&quot;,  &quot;reschedule&quot;,   &quot;Please call us.&quot;,                              &quot;To reschedule, use the link in your SMS.&quot;),
+    (5, &quot;angry&quot;,    &quot;sorry&quot;,        &quot;Calm down, it&#x27;s being handled.&quot;,               &quot;I&#x27;m sorry about the wait; it&#x27;s being handled today.&quot;),
+    (6, &quot;angry&quot;,    &quot;sorry&quot;,        &quot;Sorry for the trouble.&quot;,                       &quot;I&#x27;m sorry for the trouble.&quot;),
+    (7, &quot;clinical&quot;, &quot;nurse&quot;,        &quot;Take paracetamol and rest.&quot;,                   &quot;A nurse will call you within the hour.&quot;),
+    (8, &quot;clinical&quot;, &quot;nurse&quot;,        &quot;A nurse will call you.&quot;,                       &quot;A nurse will call you shortly.&quot;),
+    (9, &quot;billing&quot;,  &quot;invoice&quot;,      &quot;Your invoice is attached.&quot;,                    &quot;Your invoice is attached.&quot;),
+    (10, &quot;billing&quot;, &quot;invoice&quot;,      &quot;Check your email.&quot;,                            &quot;We&#x27;ve re-sent the invoice to your email.&quot;),
+    (11, &quot;refund&quot;,  &quot;7 days&quot;,       &quot;Refunds take 7 days.&quot;,                         &quot;Refunds take about a week.&quot;),
+    (12, &quot;booking&quot;, &quot;reschedule&quot;,   &quot;You can reschedule online.&quot;,                   &quot;You can reschedule online.&quot;),
+]
+BANNED = [&quot;calm down&quot;, &quot;paracetamol&quot;]          # tone and safety rules
+
+def grade(reply, must):
+    if any(b in reply.lower() for b in BANNED): return False, &quot;banned phrase&quot;
+    if must.lower() not in reply.lower():       return False, f&quot;missing &#x27;{must}&#x27;&quot;
+    return True, &quot;&quot;
+
+def run_eval(version):
+    col = 3 if version == &quot;v1&quot; else 4
+    results = [(c[0], c[1], *grade(c[col], c[2])) for c in CASES]
+    return results
+
+def wilson(passes, n, z=1.96):                 # 95% interval for a pass rate
+    p = passes / n; d = 1 + z * z / n
+    centre = (p + z * z / (2 * n)) / d; half = z * ((p * (1 - p) / n + z * z / (4 * n * n)) ** 0.5) / d
+    return centre - half, centre + half
+
+for v in (&quot;v1&quot;, &quot;v2&quot;):
+    res = run_eval(v)
+    passes = sum(ok for _, _, ok, _ in res)
+    lo, hi = wilson(passes, len(res))
+    fails = {}
+    for _, cat, ok, why in res:
+        if not ok: fails.setdefault(cat, []).append(why)
+    print(f&quot;{v}: {passes}/{len(res)} pass ({passes / len(res):.0%}, 95% CI {lo:.0%}–{hi:.0%})  failures: {fails}&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>v1: 7/12 pass (58%, 95% CI 32%–81%)  failures: {&#x27;refund&#x27;: [&quot;missing &#x27;7 days&#x27;&quot;], &#x27;booking&#x27;: [&quot;missing &#x27;reschedule&#x27;&quot;], &#x27;angry&#x27;: [&#x27;banned phrase&#x27;], &#x27;clinical&#x27;: [&#x27;banned phrase&#x27;], &#x27;billing&#x27;: [&quot;missing &#x27;invoice&#x27;&quot;]}
+v2: 11/12 pass (92%, 95% CI 65%–99%)  failures: {&#x27;refund&#x27;: [&quot;missing &#x27;7 days&#x27;&quot;]}</pre></div></div><aside class="call read"><b>How to read it</b><p>v2 fixes the unsafe paracetamol advice and the "calm down" tone, and v2's one failure (case 11, "about a week") is arguably a grading problem: the rule demands the literal words "7 days". That's the lesson in two parts. Rule-based grading is strict, so read your failures before trusting the score. And with only 12 cases, the intervals are wide: even 58% against 92% gives overlapping 95% intervals, so the result is a strong hint, not proof; two prompts scoring 85% and 90% on 12 cases would tell you nothing. More cases, not more runs of the same few, is what narrows the interval.</p></aside><h3>LLM as judge</h3><p>For qualities code can't check (is this reply empathetic? faithful to the policy?), a model can grade, quickly and at scale, if you give it a precise rubric and ask for a structured verdict.</p><div class="pcard"><div class="lab"><span>✎ A judge prompt</span><button class="copy" type="button">Copy</button></div><pre><code>You are grading a clinic&#x27;s reply to a patient email. Grade only against the rubric.
+
+&lt;policy&gt;{policy_text}&lt;/policy&gt;
+&lt;patient_email&gt;{email}&lt;/patient_email&gt;
+&lt;reply&gt;{reply}&lt;/reply&gt;
+
+Rubric (each pass/fail):
+1. accurate: every factual statement is supported by the policy
+2. resolves: it answers what the patient actually asked
+3. safe: no medical advice; clinical issues are routed to a nurse
+4. tone: polite and warm; no blame or dismissiveness
+
+Think through each criterion briefly, then output JSON only:
+{&quot;accurate&quot;: true|false, &quot;resolves&quot;: true|false, &quot;safe&quot;: true|false, &quot;tone&quot;: true|false,
+ &quot;evidence&quot;: &quot;the phrase that decided any failure&quot;}</code></pre></div><aside class="call warn"><b>Watch out</b><p>Don't let a model grade its own homework without checking it. Use a judge prompt (ideally a different model or at least a separate call), validate it against human labels on a sample, and recheck whenever you change the judge. Prefer pass/fail per criterion over a 1–10 score: it's more consistent and easier to act on.</p></aside><p>Validating a judge means measuring how often it agrees with people, beyond what chance would give. Cohen's kappa does that. Here are 20 replies labelled by a person and by two candidate judge prompts.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">human   = &quot;PPFPPFFPPPFPPFPPPFPP&quot;
+judge_a = &quot;PPFPPFFPPPFPPPPPPFPP&quot;
+judge_b = &quot;PPPPPPPPPPPPPPPPPPPP&quot;            # says &quot;pass&quot; to everything
+
+def kappa(a, b):
+    n = len(a)
+    observed = sum(x == y for x, y in zip(a, b)) / n
+    pa, pb = a.count(&quot;P&quot;) / n, b.count(&quot;P&quot;) / n
+    expected = pa * pb + (1 - pa) * (1 - pb)
+    return observed, (observed - expected) / (1 - expected) if expected &lt; 1 else 0.0
+
+for name, j in [(&quot;judge A&quot;, judge_a), (&quot;judge B&quot;, judge_b)]:
+    agree, k = kappa(human, j)
+    print(f&quot;{name}: agrees on {agree:.0%} of cases, Cohen&#x27;s kappa = {k:.2f}&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>judge A: agrees on 95% of cases, Cohen&#x27;s kappa = 0.87
+judge B: agrees on 70% of cases, Cohen&#x27;s kappa = 0.00</pre></div></div><aside class="call read"><b>How to read it</b><p>Judge B agrees with the person 70% of the time, which sounds fine, but it simply passes everything; kappa of 0 shows it adds nothing. Judge A agrees on 95% and has a kappa near 0.9: worth using. Raw agreement flatters lazy judges.</p></aside><h3>Monitoring production quality</h3><p>An eval is a pre-flight checklist on a fixed set; <strong>monitoring</strong> is the cockpit dashboard on live traffic. Track signals over time (error rates, thumbs up/down, escalations, refusals, cost, latency), <strong>read a sample of real traces</strong> regularly, and alert on thresholds. The loop closes when a production failure becomes a new eval case.</p><figure class="seq anim" style="--c:4"><figcaption>Closing the loop</figcaption><div class="actors"><b>Monitoring</b><b>Trace analysis</b><b>Eval set</b><b>Release</b></div><div class="lane"><div class="m r" style="grid-column:1/3;--s:2;--k:0"><span>Alert: thumbs-down rate doubled on Tuesday</span><i></i></div><div class="m l reply" style="grid-column:1/3;--s:2;--k:1"><span>Cause: new "teleconsult" questions the prompt doesn't cover</span><i></i></div><div class="m r" style="grid-column:2/4;--s:2;--k:2"><span>Add 15 teleconsult cases (they fail today)</span><i></i></div><div class="m r" style="grid-column:3/5;--s:2;--k:3"><span>Prompt v5 passes old and new cases</span><i></i></div><div class="m l reply" style="grid-column:1/5;--s:4;--k:4"><span>Ship; watch the same signal</span><i></i></div></div></figure><p>Even with a pinned model, quality can slip, because <strong>the inputs drift</strong>: new products, seasons, user groups and phrasing. Comparing this week's mix of request types with the mix your eval set was built on is a cheap early warning. The population stability index (PSI) is one common measure; above about 0.2 is usually treated as a significant shift.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">import math
+
+def psi(expected, actual):
+    total = 0
+    for k in expected:
+        e, a = max(expected[k], 1e-4), max(actual.get(k, 0), 1e-4)
+        total += (a - e) * math.log(a / e)
+    return total
+
+eval_mix   = {&quot;booking&quot;: 0.45, &quot;billing&quot;: 0.20, &quot;refund&quot;: 0.15, &quot;clinical&quot;: 0.15, &quot;teleconsult&quot;: 0.05}
+week_mix   = {&quot;booking&quot;: 0.42, &quot;billing&quot;: 0.21, &quot;refund&quot;: 0.16, &quot;clinical&quot;: 0.15, &quot;teleconsult&quot;: 0.06}
+launch_mix = {&quot;booking&quot;: 0.30, &quot;billing&quot;: 0.15, &quot;refund&quot;: 0.10, &quot;clinical&quot;: 0.15, &quot;teleconsult&quot;: 0.30}
+
+for label, mix in [(&quot;an ordinary week&quot;, week_mix), (&quot;week teleconsults launched&quot;, launch_mix)]:
+    v = psi(eval_mix, mix)
+    print(f&quot;{label:&lt;27} PSI = {v:.3f}  → {&#x27;DRIFT: refresh the eval set&#x27; if v &gt; 0.2 else &#x27;stable&#x27;}&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>an ordinary week            PSI = 0.005  → stable
+week teleconsults launched  PSI = 0.543  → DRIFT: refresh the eval set</pre></div></div><aside class="call tip"><b>Tip</b><p>Tools such as LangSmith (from LangChain, usable without LangChain itself) bundle this: traces of every step, online and offline evals, LLM-as-judge evaluators, human feedback, and dashboards with alerts. OpenTelemetry tracing of the Claude SDKs feeds the same kind of tooling. Whatever you use, the practice is the same: traces for single failures, evals for change, monitoring for drift.</p></aside><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>A team changes its system prompt, tries it on four emails, likes the replies, and ships. A week later, complaints rise. What should they have done?</p><div class="opts"><button type="button" data-ok="0">A. Tried it on eight emails instead of four</button><button type="button" data-ok="1">B. Run both prompt versions against a versioned eval set of representative cases with defined grading, and compared the scores before shipping</button><button type="button" data-ok="0">C. Asked the model whether the new prompt was better</button><button type="button" data-ok="0">D. Shipped to everyone and relied on user feedback</button></div><p class="why" hidden>Four hand-picked tries is a vibe check. An eval set with real, varied cases and clear grading shows regressions before users do, and makes the comparison objective.</p></div><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>An LLM judge agrees with human graders on 82% of replies. Before relying on it, what else should you check?</p><div class="opts"><button type="button" data-ok="0">A. Nothing: 82% is high</button><button type="button" data-ok="1">B. Agreement beyond chance (for example Cohen's kappa), especially whether it mostly says "pass" when most replies pass</button><button type="button" data-ok="0">C. Whether it uses a 1–10 scale</button><button type="button" data-ok="0">D. Whether it's the same model as the one being graded</button></div><p class="why" hidden>If 80% of replies pass, a judge that passes everything agrees 80% of the time while detecting nothing. Kappa corrects for chance agreement. (Using the same model as the system under test is a bias risk, not a validation.)</p></div><div class="quiz" data-multi="1"><p class="q"><b>Practice question</b><span class="n">Select 2</span>Which statements correctly distinguish evals, traces and monitoring? (Select 2)</p><div class="opts"><button type="button" data-ok="1">A. A trace explains one specific request; an eval measures quality across many cases</button><button type="button" data-ok="0">B. Monitoring replaces the need for evals once an app is live</button><button type="button" data-ok="1">C. Monitoring watches live traffic over time; production failures should be added to the eval set</button><button type="button" data-ok="0">D. An eval that passed once will keep passing, since the model is pinned</button></div><button type=button class=check>Check answer</button><p class="why" hidden>Traces diagnose single cases, evals compare versions on a fixed set, monitoring watches live behaviour. They complement each other. A pinned model doesn't stop inputs drifting, and outputs vary from run to run.</p></div></section>
+  <div class="pager"><a class="btn ghost" href="../module-3/">← Module 3</a><a class="btn" href="../module-5/">Module 5 →</a></div>
+  </div>
+</div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="fine" style="border:none;margin:0;padding:0">
+      <span>© 2026 XploreAI · <a href="/">xploreai.co.in</a></span>
+      <span><a href="mailto:hello@xploreai.co.in">hello@xploreai.co.in</a></span>
+    </div>
+  </div>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/json.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/bash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/markdown.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/typescript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/yaml.min.js"></script>
+<script src="/courses/claude-developer/course.js?v=1792997601"></script>
+</body>
+</html>

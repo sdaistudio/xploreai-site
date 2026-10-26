@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 8: Tools and MCPs — Claude Developer (CCDV-F) course — XploreAI</title>
+<meta name="description" content="Define tools Claude can use well, dispatch and execute them safely, write descriptions that route reliably, put gates and approvals where the stakes are, build an MCP server once and share it across apps, and choose between built-in tools, custom tools, Skills and MCP.">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="XploreAI">
+<meta property="og:title" content="Module 8: Tools and MCPs — Claude Developer (CCDV-F) course">
+<meta property="og:description" content="Define tools Claude can use well, dispatch and execute them safely, write descriptions that route reliably, put gates and approvals where the stakes are, build an MCP server once and share it across apps, and choose between built-in tools, custom tools, Skills and MCP.">
+<meta property="og:url" content="https://xploreai.co.in/courses/claude-developer/module-8/">
+<meta property="og:image" content="https://xploreai.co.in/assets/og-image.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/style.css">
+<link rel="stylesheet" href="/courses/claude-developer/course.css?v=1792998013">
+</head>
+<body>
+
+<nav>
+  <div class="wrap bar">
+    <a class="wordmark" href="/">xplore<span>ai</span></a>
+    <ul>
+      <li><a href="/#agents">Solutions</a></li>
+      <li><a href="/#stories">Success Stories</a></li>
+      <li><a href="/#subscribe">Newsletter</a></li>
+      <li><a href="/learn.html" aria-current="page">Learn AI</a></li>
+      <li><a class="btn" href="https://wa.me/919769686931?text=Hi%20XploreAI%2C%20I%27m%20interested%20in%20AI%20automation!">Get Started</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main class="cca">
+<header class="mhero wrap">
+  <p class="crumb"><a href="/learn.html">Learn AI</a> / <a href="../">Claude Developer (CCDV-F) course</a> / Module 8</p>
+  <span class="pill">MODULE 8 OF 8 · DOMAIN 8 · 10.6% OF THE EXAM · 5 SESSIONS</span>
+  <h1>Tools and MCPs<i>.</i></h1>
+  <p class="lede">Define tools Claude can use well, dispatch and execute them safely, write descriptions that route reliably, put gates and approvals where the stakes are, build an MCP server once and share it across apps, and choose between built-in tools, custom tools, Skills and MCP.</p>
+  <div class="dl"><a class="btn" href="#s8-1">Start session 8.1 →</a> <a class="btn ghost" href="../code/module-8.py" download>Download the Python</a></div>
+</header>
+<div class="wrap layout">
+  <aside class="toc" aria-label="Sessions"><p>In this module</p><ol><li><a href="#s8-1"><span>8.1</span>Tool use end to end</a></li><li><a href="#s8-2"><span>8.2</span>Tool descriptions and errors</a></li><li><a href="#s8-3"><span>8.3</span>Approval patterns and gates</a></li><li><a href="#s8-4"><span>8.4</span>Building an MCP server</a></li><li><a href="#s8-5"><span>8.5</span>Tools, Skills or MCP?</a></li></ol></aside>
+  <div class="content">
+<section class="session" id="s8-1"><p class="snum">Session 8.1</p><h2>Tool use end to end</h2><p>Claude never runs a tool itself. It reads the tool definitions you send, decides a tool is needed, and returns a <strong>structured request</strong> (a <code>tool_use</code> block). Your code, or Anthropic's servers for server tools, does the work and sends the result back. Tool use is a contract: Claude does the reasoning; the system does the execution.</p><div class="cell file"><div class="code"><div class="lab"><span>A tool definition (sent in the tools array)</span><button class="copy" type="button">Copy</button></div><pre><code class="language-json">{
+  &quot;name&quot;: &quot;check_slots&quot;,
+  &quot;description&quot;: &quot;List free appointment times for one doctor on one day at Sunrise Clinic. Use it before offering or booking any appointment. Returns times as HH:MM in IST; an empty list means fully booked.&quot;,
+  &quot;strict&quot;: true,
+  &quot;input_schema&quot;: {
+    &quot;type&quot;: &quot;object&quot;,
+    &quot;properties&quot;: {
+      &quot;doctor&quot;: { &quot;type&quot;: &quot;string&quot;, &quot;description&quot;: &quot;Doctor&#x27;s name as in the rota, e.g. \&quot;Dr Rao\&quot;&quot; },
+      &quot;date&quot;:   { &quot;type&quot;: &quot;string&quot;, &quot;format&quot;: &quot;date&quot;, &quot;description&quot;: &quot;ISO date, e.g. 2026-10-30&quot; }
+    },
+    &quot;required&quot;: [&quot;doctor&quot;, &quot;date&quot;],
+    &quot;additionalProperties&quot;: false
+  }
+}</code></pre></div></div><h3>Client tools and server tools</h3><div class="tbl"><table><thead><tr><th>Examples</th><th>Your database lookups, booking API, email sender</th><th>Web search, web fetch, code execution</th></tr></thead><tbody><tr><td>Who executes</td><td>Your code, after a <code>tool_use</code> block arrives</td><td>Anthropic's infrastructure, inside the same request</td></tr><tr><td>In the response</td><td>A <code>tool_use</code> block; <code>stop_reason: "tool_use"</code></td><td>A <code>server_tool_use</code> block followed by its result block (e.g. <code>web_search_tool_result</code>); you return nothing for it</td></tr><tr><td>Defined by</td><td>A name, description and JSON Schema you write</td><td>A typed entry such as <code>{"type": "web_search_20260209", "name": "web_search"}</code></td></tr><tr><td>Loop</td><td>You run it and return a <code>tool_result</code></td><td>Results come back as blocks in the response; a long turn may stop with <code>pause_turn</code>, and you send it back to continue</td></tr><tr><td>Errors</td><td>Return <code>is_error: true</code> with a useful message</td><td>Arrive as error objects inside result blocks, not exceptions</td></tr></tbody></table></div><figure class="seq anim" style="--c:3"><figcaption>A client tool and a server tool in one task</figcaption><div class="actors"><b>Your app</b><b>Claude API</b><b>Your booking system</b></div><div class="lane"><div class="m r" style="grid-column:1/3;--s:2;--k:0"><span>tools: [check_slots (client), web_search (server)]</span><i></i></div><div class="m note" style="grid-column:2/3;--k:1"><span>Claude searches the web for "Dr Rao Sunrise Clinic" itself (server tool)</span></div><div class="m l reply" style="grid-column:1/3;--s:2;--k:2"><span>tool_use: check_slots {doctor: "Dr Rao", date: "2026-10-30"}</span><i></i></div><div class="m r" style="grid-column:1/4;--s:3;--k:3"><span>free_slots("Dr Rao", "2026-10-30")</span><i></i></div><div class="m l reply" style="grid-column:1/4;--s:3;--k:4"><span>["10:30", "11:15"]</span><i></i></div><div class="m r" style="grid-column:1/3;--s:2;--k:5"><span>tool_result {tool_use_id, content: ["10:30", "11:15"]}</span><i></i></div><div class="m l reply" style="grid-column:1/3;--s:2;--k:6"><span>final answer</span><i></i></div></div></figure><h3>Dispatching tool calls safely</h3><p>A dispatcher maps tool names to functions, validates inputs before running anything, runs independent calls in parallel, and returns <strong>every</strong> result in <strong>one</strong> user message. Here's one, run on a response that asks for three tools at once, one of them malformed and one unknown.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">import json, re, time
+from concurrent.futures import ThreadPoolExecutor
+
+def check_slots(doctor, date):
+    time.sleep(0.2)                                   # pretend network call
+    return {&quot;Dr Rao&quot;: [&quot;10:30&quot;, &quot;11:15&quot;], &quot;Dr Iyer&quot;: []}.get(doctor, [])
+
+def get_invoice(invoice_no):
+    time.sleep(0.2)
+    return {&quot;INV-88213&quot;: {&quot;amount&quot;: 850, &quot;status&quot;: &quot;paid twice&quot;}}[invoice_no]
+
+REGISTRY = {
+    &quot;check_slots&quot;: (check_slots, {&quot;doctor&quot;: str, &quot;date&quot;: r&quot;^\d{4}-\d{2}-\d{2}$&quot;}),
+    &quot;get_invoice&quot;: (get_invoice, {&quot;invoice_no&quot;: r&quot;^INV-\d{5}$&quot;}),
+}
+
+def validate(args, spec):
+    for field, rule in spec.items():
+        if field not in args: return f&quot;missing required field &#x27;{field}&#x27;&quot;
+        v = args[field]
+        if rule is str and not isinstance(v, str): return f&quot;&#x27;{field}&#x27; must be a string&quot;
+        if isinstance(rule, str) and not re.fullmatch(rule, str(v)): return f&quot;&#x27;{field}&#x27;={v!r} doesn&#x27;t match {rule}&quot;
+    extra = set(args) - set(spec)
+    return f&quot;unexpected field(s) {sorted(extra)}&quot; if extra else None
+
+def run_one(block):
+    name, args = block[&quot;name&quot;], block[&quot;input&quot;]
+    if name not in REGISTRY:
+        return {&quot;type&quot;: &quot;tool_result&quot;, &quot;tool_use_id&quot;: block[&quot;id&quot;], &quot;is_error&quot;: True,
+                &quot;content&quot;: f&quot;Unknown tool &#x27;{name}&#x27;. Available: {sorted(REGISTRY)}&quot;}
+    fn, spec = REGISTRY[name]
+    problem = validate(args, spec)
+    if problem:
+        return {&quot;type&quot;: &quot;tool_result&quot;, &quot;tool_use_id&quot;: block[&quot;id&quot;], &quot;is_error&quot;: True, &quot;content&quot;: f&quot;Invalid input: {problem}&quot;}
+    try:
+        return {&quot;type&quot;: &quot;tool_result&quot;, &quot;tool_use_id&quot;: block[&quot;id&quot;], &quot;content&quot;: json.dumps(fn(**args))}
+    except Exception as e:
+        return {&quot;type&quot;: &quot;tool_result&quot;, &quot;tool_use_id&quot;: block[&quot;id&quot;], &quot;is_error&quot;: True, &quot;content&quot;: f&quot;{type(e).__name__}: {e}&quot;}
+
+response_content = [
+    {&quot;type&quot;: &quot;text&quot;, &quot;text&quot;: &quot;Let me check both doctors and your invoice.&quot;},
+    {&quot;type&quot;: &quot;tool_use&quot;, &quot;id&quot;: &quot;tu_1&quot;, &quot;name&quot;: &quot;check_slots&quot;, &quot;input&quot;: {&quot;doctor&quot;: &quot;Dr Rao&quot;, &quot;date&quot;: &quot;2026-10-30&quot;}},
+    {&quot;type&quot;: &quot;tool_use&quot;, &quot;id&quot;: &quot;tu_2&quot;, &quot;name&quot;: &quot;check_slots&quot;, &quot;input&quot;: {&quot;doctor&quot;: &quot;Dr Iyer&quot;, &quot;date&quot;: &quot;30/10/2026&quot;}},
+    {&quot;type&quot;: &quot;tool_use&quot;, &quot;id&quot;: &quot;tu_3&quot;, &quot;name&quot;: &quot;get_invoice&quot;, &quot;input&quot;: {&quot;invoice_no&quot;: &quot;INV-88213&quot;}},
+    {&quot;type&quot;: &quot;tool_use&quot;, &quot;id&quot;: &quot;tu_4&quot;, &quot;name&quot;: &quot;refund_all&quot;, &quot;input&quot;: {}},
+]
+calls = [b for b in response_content if b[&quot;type&quot;] == &quot;tool_use&quot;]
+t0 = time.time()
+with ThreadPoolExecutor() as pool:
+    results = list(pool.map(run_one, calls))          # order preserved, run concurrently
+print(f&quot;{len(calls)} calls in {time.time() - t0:.1f}s\n&quot;)
+for r in results:
+    print(f&quot;{r[&#x27;tool_use_id&#x27;]}  {&#x27;ERROR &#x27; if r.get(&#x27;is_error&#x27;) else &#x27;ok    &#x27;}{r[&#x27;content&#x27;]}&quot;)
+next_message = {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: results}
+print(&quot;\nall results in one user message:&quot;, len(next_message[&quot;content&quot;]), &quot;tool_result blocks&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>4 calls in 0.2s
+
+tu_1  ok    [&quot;10:30&quot;, &quot;11:15&quot;]
+tu_2  ERROR Invalid input: &#x27;date&#x27;=&#x27;30/10/2026&#x27; doesn&#x27;t match ^\d{4}-\d{2}-\d{2}$
+tu_3  ok    {&quot;amount&quot;: 850, &quot;status&quot;: &quot;paid twice&quot;}
+tu_4  ERROR Unknown tool &#x27;refund_all&#x27;. Available: [&#x27;check_slots&#x27;, &#x27;get_invoice&#x27;]
+
+all results in one user message: 4 tool_result blocks</pre></div></div><aside class="call read"><b>How to read it</b><p>The two valid lookups ran side by side (about 0.2 s in total, not 0.4). The badly formatted date was rejected before anything ran, with a message that says exactly what's wrong so Claude can fix it, and the unknown tool lists what <em>is</em> available. Nothing crashed, and every <code>tool_use_id</code> got its answer.</p></aside><aside class="call tip"><b>Tip</b><p>On current models, use <code>strict: true</code> on tool definitions to guarantee schema-valid inputs. Your own validation still matters for business rules a schema can't express. Forcing a specific tool with <code>tool_choice</code> is rejected by Claude Opus 5.5, Sonnet 5.5 and Fable 5.1; use <code>auto</code> and say in the prompt which tool to use, and check that it was called.</p></aside><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>Which statement about tool use in the Claude API is correct?</p><div class="opts"><button type="button" data-ok="0">A. Claude executes client tools inside Anthropic's infrastructure</button><button type="button" data-ok="1">B. For client tools, Claude returns a <code>tool_use</code> request; your code executes it and returns a <code>tool_result</code></button><button type="button" data-ok="0">C. Server tools must be executed by your code</button><button type="button" data-ok="0">D. Tool results should be sent back as separate messages, one per tool</button></div><p class="why" hidden>Client tools run in your code; Claude only asks. Server tools such as web search run on Anthropic's side. All of a turn's results go back together in one user message.</p></div><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>Claude calls a tool with an input that fails your validation. What should your dispatcher do?</p><div class="opts"><button type="button" data-ok="0">A. Run the tool anyway and hope it copes</button><button type="button" data-ok="0">B. Crash the loop so a developer notices</button><button type="button" data-ok="1">C. Return a <code>tool_result</code> with <code>is_error: true</code> and a specific message about what's wrong, so Claude can correct the call</button><button type="button" data-ok="0">D. Silently drop the call</button></div><p class="why" hidden>A precise error lets the model fix its own input on the next turn. Running bad input is unsafe, crashing breaks the user's task, and dropping the call leaves an unanswered <code>tool_use</code>, which the API rejects.</p></div></section><section class="session" id="s8-2"><p class="snum">Session 8.2</p><h2>Tool descriptions and errors</h2><p>Claude chooses tools by reading their <strong>names and descriptions</strong>. A vague description is the most common reason an agent calls the wrong tool, calls none, or passes the wrong input. A production-grade description has five parts:</p><div class="tbl"><table><thead><tr><th>Element</th><th>Example for <code>lookup_order</code></th></tr></thead><tbody><tr><td><strong>1. What it does</strong>, in one precise sentence</td><td>"Looks up one order by its order number or tracking ID."</td></tr><tr><td><strong>2. Inputs</strong> and their formats</td><td>"<code>order_ref</code>: an order number like ORD-104233, or a tracking ID like BD123456789IN."</td></tr><tr><td><strong>3. Example queries</strong> it handles</td><td>"'Where's my order ORD-104233?', 'Has BD123456789IN shipped?'"</td></tr><tr><td><strong>4. Edge cases and limits</strong></td><td>"Orders older than 2 years aren't available. Returns <code>not_found</code> for unknown references; ask the user to check the number."</td></tr><tr><td><strong>5. Boundaries</strong>: when to use it vs similar tools</td><td>"For customer details use <code>get_customer</code>; for refunds use <code>refund_status</code>."</td></tr></tbody></table></div><div class="compare anim"><div class="side weak"><div class="lab"><span>✗ Before</span><button class="copy" type="button">Copy</button></div><pre><code>name: get_data
+description: Gets data about orders and customers.</code></pre></div><div class="side strong"><div class="lab"><span>✓ After</span><button class="copy" type="button">Copy</button></div><pre><code>name: lookup_order
+description: Looks up one order by its order number
+(e.g. ORD-104233) or tracking ID (e.g. BD123456789IN) and
+returns status, items, delivery date and refund state.
+Use for questions about where an order is or what was in it,
+e.g. &quot;Where&#x27;s ORD-104233?&quot;. Orders older than 2 years are not
+available. If it returns not_found, ask the user to confirm
+the number rather than guessing. For customer profile details
+use get_customer; for refund timelines use refund_status.</code></pre></div></div><h3>Spotting tools Claude will confuse</h3><p>When two tools' descriptions say similar things, routing becomes a coin toss. A quick check: measure how much each pair of descriptions overlaps in meaningful words.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">STOP = set(&quot;a an the of for to and or by use it is are with on in this that as e g&quot;.split())
+
+TOOLS = {
+    &quot;get_customer&quot;:  &quot;Gets customer information and account data.&quot;,
+    &quot;lookup_order&quot;:  &quot;Gets order information and account data for customers.&quot;,
+    &quot;refund_status&quot;: &quot;Returns the refund state and expected date for one order number, e.g. ORD-104233. Not for order contents.&quot;,
+    &quot;find_slots&quot;:    &quot;Lists free appointment times for one doctor on one date.&quot;,
+}
+
+def words(text):
+    return {w for w in re.findall(r&quot;[a-z]+&quot;, text.lower()) if w not in STOP}
+
+pairs = []
+names = list(TOOLS)
+for i in range(len(names)):
+    for j in range(i + 1, len(names)):
+        a, b = words(TOOLS[names[i]]), words(TOOLS[names[j]])
+        pairs.append((len(a &amp; b) / len(a | b), names[i], names[j], sorted(a &amp; b)))
+for score, a, b, shared in sorted(pairs, reverse=True)[:3]:
+    flag = &quot;  ← likely to be confused&quot; if score &gt; 0.4 else &quot;&quot;
+    print(f&quot;{score:.2f}  {a} / {b}  shared: {shared}{flag}&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>0.57  get_customer / lookup_order  shared: [&#x27;account&#x27;, &#x27;data&#x27;, &#x27;gets&#x27;, &#x27;information&#x27;]  ← likely to be confused
+0.12  refund_status / find_slots  shared: [&#x27;date&#x27;, &#x27;one&#x27;]
+0.06  lookup_order / refund_status  shared: [&#x27;order&#x27;]</pre></div></div><aside class="call read"><b>How to read it</b><p><code>get_customer</code> and <code>lookup_order</code> share most of their words ("gets ... information and account data"), so Claude has little to go on. Rewriting them with the five elements, especially <em>inputs</em> (an email versus an order number) and <em>boundaries</em>, is the fix. Word overlap is a crude proxy, but it's a fast way to find the pairs to rewrite.</p></aside><h3>Errors that help the model recover</h3><p>A tool error is a message to Claude. "Error 500" teaches it nothing. Say what went wrong, whether retrying could help, and what to do instead.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">class NotFound(Exception): pass
+class RateLimited(Exception): pass
+
+def describe_error(tool, args, exc):
+    if isinstance(exc, NotFound):
+        return (f&quot;No order matches {args.get(&#x27;order_ref&#x27;)!r}. Order numbers look like ORD-123456. &quot;
+                &quot;Ask the user to check the number; don&#x27;t guess another one.&quot;)
+    if isinstance(exc, RateLimited):
+        return &quot;The order service is busy. Wait a few seconds and retry once; if it fails again, tell the user it&#x27;s temporarily unavailable.&quot;
+    if isinstance(exc, PermissionError):
+        return &quot;This order belongs to a different account. Don&#x27;t reveal anything about it; ask the user to sign in to the right account.&quot;
+    return f&quot;{tool} failed unexpectedly ({type(exc).__name__}). Don&#x27;t retry; apologise and offer the support line.&quot;
+
+for exc in [NotFound(), RateLimited(), PermissionError(), ValueError(&quot;bad state&quot;)]:
+    print(f&quot;{type(exc).__name__:&lt;16} → {describe_error(&#x27;lookup_order&#x27;, {&#x27;order_ref&#x27;: &#x27;ORD-14233&#x27;}, exc)}&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>NotFound         → No order matches &#x27;ORD-14233&#x27;. Order numbers look like ORD-123456. Ask the user to check the number; don&#x27;t guess another one.
+RateLimited      → The order service is busy. Wait a few seconds and retry once; if it fails again, tell the user it&#x27;s temporarily unavailable.
+PermissionError  → This order belongs to a different account. Don&#x27;t reveal anything about it; ask the user to sign in to the right account.
+ValueError       → lookup_order failed unexpectedly (ValueError). Don&#x27;t retry; apologise and offer the support line.</pre></div></div><h3>Building a good tool set</h3><ul><li><strong>Fewer, sharper tools.</strong> Every extra tool is another choice to get wrong. Consolidate near-duplicates (one <code>lookup_order</code> with an <code>order_ref</code> field, not three variants).</li><li><strong>Clear, namespaced names.</strong> <code>billing_get_invoice</code> and <code>booking_check_slots</code> route better than <code>get</code> and <code>check</code>.</li><li><strong>Return what's useful, not everything.</strong> Trim large payloads; return IDs and the fields the task needs (context is expensive, Module 6).</li><li><strong>Describe the output</strong> as well as the input, so Claude knows what it will get back.</li><li><strong>Test routing</strong> with an eval: a list of requests and the tool each should trigger.</li></ul><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>An agent keeps calling <code>get_customer</code> when users ask about orders. Both tools' descriptions say "Gets customer and order information." What's the best fix?</p><div class="opts"><button type="button" data-ok="0">A. Switch to a larger model</button><button type="button" data-ok="0">B. Remove <code>get_customer</code></button><button type="button" data-ok="1">C. Rewrite both descriptions with what each does, the inputs each expects, examples, and explicit boundaries ("for order questions use lookup_order")</button><button type="button" data-ok="0">D. Force <code>tool_choice</code> to <code>lookup_order</code> on every request</button></div><p class="why" hidden>Routing depends on the descriptions, and these two are nearly identical. Distinct purposes, input formats and boundaries make the choice clear. Forcing one tool breaks the other use case (and is rejected on the newest models).</p></div><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>Which tool error message gives Claude the best chance to recover?</p><div class="opts"><button type="button" data-ok="0">A. "Error"</button><button type="button" data-ok="0">B. "HTTP 404"</button><button type="button" data-ok="1">C. "No order matches ORD-14233. Order numbers look like ORD-123456. Ask the user to check the number."</button><button type="button" data-ok="0">D. An empty string, with <code>is_error</code> false</button></div><p class="why" hidden>A useful error explains the problem, the expected format and the next step. Bare codes give the model nothing to act on, and an empty non-error result invites it to assume success.</p></div></section><section class="session" id="s8-3"><p class="snum">Session 8.3</p><h2>Approval patterns and gates</h2><p>When an agent can act in real systems, the critical moment is the instant between Claude deciding to act and the action happening. Three mechanisms sit there:</p><div class="tbl"><table><thead><tr><th>Mechanism</th><th>Decides</th><th>Example</th></tr></thead><tbody><tr><td><strong>Programmatic gate</strong></td><td>Code allows or blocks, automatically, every time</td><td>Block <code>DELETE</code> and <code>DROP</code> on production databases</td></tr><tr><td><strong>Interception</strong></td><td>Code rewrites the call and lets it proceed</td><td>Redirect a write outside the sandbox into it</td></tr><tr><td><strong>Approval pattern</strong></td><td>A person decides, after seeing the proposed action</td><td>"Send this email to 3,200 patients?" Approve / Deny</td></tr></tbody></table></div><p>An approval pattern has four steps: <strong>propose</strong> (the agent states exactly what it wants to do), <strong>pause</strong> (execution stops completely), <strong>review</strong> (a person sees the action, its target and its consequences), <strong>proceed</strong> (approve: execute; deny: stop or choose another route).</p><figure class="seq anim" style="--c:4"><figcaption>An approval pattern</figcaption><div class="actors"><b>Agent</b><b>Approval gate</b><b>Person</b><b>Email service</b></div><div class="lane"><div class="m r" style="grid-column:1/3;--s:2;--k:0"><span>send_email(to: 3,200 patients, subject: "Clinic closed Friday")</span><i></i></div><div class="m note" style="grid-column:2/3;--k:1"><span>High risk: external, bulk, irreversible</span></div><div class="m r" style="grid-column:2/4;--s:2;--k:2"><span>Review: recipients, preview, why</span><i></i></div><div class="m l reply" style="grid-column:2/4;--s:2;--k:3"><span>Approve</span><i></i></div><div class="m r" style="grid-column:2/5;--s:3;--k:4"><span>send</span><i></i></div><div class="m l reply" style="grid-column:1/5;--s:4;--k:5"><span>sent: 3,200 queued</span><i></i></div></div></figure><aside class="call warn"><b>Watch out</b><p><strong>More prompts isn't more safety.</strong> Asking for approval on everything causes <strong>approval fatigue</strong>: people click "approve" without reading, and oversight disappears. Reserve approvals for actions that are high-stakes, external or hard to reverse; allow routine, low-risk actions; block what should never happen.</p></aside><p>Here's a policy that sorts each proposed action into allow, ask or deny, with the reason, and counts how many prompts a typical day would produce.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">def risk_policy(action):
+    t, a = action[&quot;tool&quot;], action[&quot;args&quot;]
+    if t == &quot;run_sql&quot; and re.search(r&quot;\b(drop|truncate|delete)\b&quot;, a[&quot;query&quot;], re.I):
+        return &quot;deny&quot;, &quot;destructive SQL is never run by the agent&quot;
+    if t in (&quot;read_file&quot;, &quot;search_docs&quot;, &quot;check_slots&quot;, &quot;run_sql&quot;):
+        return &quot;allow&quot;, &quot;read-only&quot;
+    if t == &quot;send_email&quot;:
+        external = not a[&quot;to&quot;].endswith(&quot;@sunriseclinic.in&quot;)
+        bulk = a.get(&quot;recipients&quot;, 1) &gt; 20
+        if external or bulk:
+            return &quot;ask&quot;, (&quot;external &quot; if external else &quot;&quot;) + (&quot;bulk &quot; if bulk else &quot;&quot;) + &quot;email&quot;
+        return &quot;allow&quot;, &quot;internal, small&quot;
+    if t == &quot;issue_refund&quot;:
+        return (&quot;ask&quot;, &quot;refund over ₹2,000&quot;) if a[&quot;amount&quot;] &gt; 2_000 else (&quot;allow&quot;, &quot;small refund within policy&quot;)
+    return &quot;ask&quot;, &quot;unknown action: default to a person&quot;
+
+day = ([{&quot;tool&quot;: &quot;check_slots&quot;, &quot;args&quot;: {}}] * 140 + [{&quot;tool&quot;: &quot;search_docs&quot;, &quot;args&quot;: {}}] * 60 +
+       [{&quot;tool&quot;: &quot;send_email&quot;, &quot;args&quot;: {&quot;to&quot;: &quot;front@sunriseclinic.in&quot;}}] * 25 +
+       [{&quot;tool&quot;: &quot;issue_refund&quot;, &quot;args&quot;: {&quot;amount&quot;: 850}}] * 12 + [{&quot;tool&quot;: &quot;issue_refund&quot;, &quot;args&quot;: {&quot;amount&quot;: 4_200}}] * 2 +
+       [{&quot;tool&quot;: &quot;send_email&quot;, &quot;args&quot;: {&quot;to&quot;: &quot;patients@list&quot;, &quot;recipients&quot;: 3_200}}] +
+       [{&quot;tool&quot;: &quot;run_sql&quot;, &quot;args&quot;: {&quot;query&quot;: &quot;DELETE FROM bookings WHERE date &lt; &#x27;2025-01-01&#x27;&quot;}}])
+
+tally = {}
+for act in day:
+    verdict, why = risk_policy(act)
+    tally.setdefault(verdict, {}).setdefault(why, 0)
+    tally[verdict][why] += 1
+for verdict in (&quot;allow&quot;, &quot;ask&quot;, &quot;deny&quot;):
+    total = sum(tally.get(verdict, {}).values())
+    print(f&quot;{verdict.upper():&lt;6} {total:&gt;4}  {tally.get(verdict, {})}&quot;)
+print(f&quot;\nprompts a person sees today: {sum(tally[&#x27;ask&#x27;].values())} out of {len(day)} actions&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>ALLOW   237  {&#x27;read-only&#x27;: 200, &#x27;internal, small&#x27;: 25, &#x27;small refund within policy&#x27;: 12}
+ASK       3  {&#x27;refund over ₹2,000&#x27;: 2, &#x27;external bulk email&#x27;: 1}
+DENY      1  {&#x27;destructive SQL is never run by the agent&#x27;: 1}
+
+prompts a person sees today: 3 out of 241 actions</pre></div></div><aside class="call read"><b>How to read it</b><p>Of 241 actions, a person is asked about 3: two large refunds and the bulk email. Everything routine flows; the destructive SQL is refused without asking anyone. Three meaningful prompts get read; three hundred trivial ones get rubber-stamped.</p></aside><aside class="call tip"><b>Tip</b><p>You don't need a hand-written loop to add approvals. With the SDK's Tool Runner, gate inside the tool function (return "the user declined" as the result) or inspect pending <code>tool_use</code> blocks between turns. In Claude Code, <code>ask</code> permission rules and PreToolUse hooks do the same job, and Managed Agents has per-tool permission policies (<code>always_allow</code>, <code>always_ask</code>).</p></aside><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>An agent asks for approval before every action, including reading files. After a week, reviewers approve everything within a second. What's the best change?</p><div class="opts"><button type="button" data-ok="0">A. Keep it: more approvals are always safer</button><button type="button" data-ok="0">B. Remove approvals entirely</button><button type="button" data-ok="1">C. Allow routine low-risk actions automatically, block never-allowed actions in code, and reserve approvals for high-stakes or irreversible ones</button><button type="button" data-ok="0">D. Ask the model to explain each action in more detail</button></div><p class="why" hidden>Approval fatigue has removed real oversight. Tiering actions (allow / ask / deny) keeps the prompts few and meaningful, so people actually review the ones that matter.</p></div><div class="quiz" data-multi="1"><p class="q"><b>Practice question</b><span class="n">Select 2</span>Which actions usually warrant an approval step even though they could be undone? (Select 2)</p><div class="opts"><button type="button" data-ok="1">A. Sending an email to an external customer</button><button type="button" data-ok="0">B. Reading a project file</button><button type="button" data-ok="1">C. Publishing a post on the clinic's public social media account</button><button type="button" data-ok="0">D. Listing free appointment slots</button></div><button type=button class=check>Check answer</button><p class="why" hidden>External messages and public posts are seen by others the moment they happen, so "reversible" in the system doesn't undo their effect. Reads and lookups are routine and low-risk.</p></div></section><section class="session" id="s8-4"><p class="snum">Session 8.4</p><h2>Building an MCP server</h2><p>Before MCP, connecting M AI applications to N systems meant M × N one-off integrations. The <strong>Model Context Protocol</strong> is an open standard that turns that into M + N: build one <strong>MCP server</strong> for your ticketing system, and every MCP-compatible application can use it.</p><div class="tbl"><table><thead><tr><th>Role</th><th>What it is</th><th>Example</th></tr></thead><tbody><tr><td><strong>Host</strong></td><td>The AI application the user works in</td><td>Claude Code, Claude Desktop, your own agent</td></tr><tr><td><strong>Client</strong></td><td>A connector inside the host, one per server</td><td>Claude Code's connection to your inventory server</td></tr><tr><td><strong>Server</strong></td><td>A program that exposes capabilities over MCP</td><td><code>inventory-mcp</code>, wrapping your inventory REST API</td></tr></tbody></table></div><p>A server offers three kinds of capability. The most testable fact about them is <strong>who decides when each is used</strong>:</p><div class="tbl"><table><thead><tr><th>Primitive</th><th>Controlled by</th><th>What it is</th><th>Example (inventory server)</th></tr></thead><tbody><tr><td><strong>Tools</strong></td><td>The <strong>model</strong></td><td>Actions Claude chooses to call</td><td><code>check_stock(sku)</code>, <code>reserve_items(sku, qty)</code></td></tr><tr><td><strong>Resources</strong></td><td>The <strong>application</strong></td><td>Read-only context the host decides to attach</td><td><code>inventory://warehouses</code> (list of sites)</td></tr><tr><td><strong>Prompts</strong></td><td>The <strong>user</strong></td><td>Reusable templates a person picks explicitly</td><td>"Weekly stock-out report"</td></tr></tbody></table></div><p>Messages are <strong>JSON-RPC 2.0</strong>, with methods such as <code>tools/list</code>, <code>tools/call</code>, <code>resources/list</code>, <code>resources/read</code>, <code>prompts/list</code> and <code>prompts/get</code>. Two transports are current:</p><div class="tbl"><table><thead><tr><th>Transport</th><th>How</th><th>Use for</th></tr></thead><tbody><tr><td><strong>stdio</strong></td><td>The host starts the server as a local process and talks over its standard input and output</td><td>Local tools: file systems, local databases, developer tooling</td></tr><tr><td><strong>Streamable HTTP</strong></td><td>The server runs remotely; clients send HTTP requests (optionally receiving a stream back)</td><td>Shared, remote services used by many hosts and users</td></tr></tbody></table></div><p>The older HTTP + SSE transport is deprecated.</p><figure class="seq anim" style="--c:3"><figcaption>An MCP session over stdio</figcaption><div class="actors"><b>Host (Claude Code)</b><b>MCP client</b><b>MCP server process</b></div><div class="lane"><div class="m r" style="grid-column:1/4;--s:3;--k:0"><span>start: python inventory_server.py</span><i></i></div><div class="m r" style="grid-column:2/4;--s:2;--k:1"><span>tools/list</span><i></i></div><div class="m l reply" style="grid-column:2/4;--s:2;--k:2"><span>[check_stock, reserve_items] with schemas</span><i></i></div><div class="m note" style="grid-column:1/2;--k:3"><span>Claude sees them as tools; decides to call one</span></div><div class="m r" style="grid-column:2/4;--s:2;--k:4"><span>tools/call check_stock {sku: "GLV-M-100"}</span><i></i></div><div class="m l reply" style="grid-column:2/4;--s:2;--k:5"><span>{"content": [{"type": "text", "text": "412 in stock"}]}</span><i></i></div></div></figure><h3>The wire format, for real</h3><p>To show exactly what travels over stdio, here's a tiny hand-written server that speaks MCP-style JSON-RPC, one message per line. The cell writes it to a file, <strong>starts it as a real subprocess</strong>, and talks to it through its stdin and stdout, as a host would. It's deliberately minimal (no initialisation handshake or capability negotiation); real servers should use the official SDK, shown after.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">import json, os, subprocess, sys, tempfile
+
+SERVER = r&#x27;&#x27;&#x27;
+import json, sys
+STOCK = {&quot;GLV-M-100&quot;: 412, &quot;MSK-N95-20&quot;: 0}
+TOOLS = [{&quot;name&quot;: &quot;check_stock&quot;, &quot;description&quot;: &quot;Units in stock for one SKU, e.g. GLV-M-100.&quot;,
+          &quot;inputSchema&quot;: {&quot;type&quot;: &quot;object&quot;, &quot;properties&quot;: {&quot;sku&quot;: {&quot;type&quot;: &quot;string&quot;}}, &quot;required&quot;: [&quot;sku&quot;]}}]
+RESOURCES = [{&quot;uri&quot;: &quot;inventory://warehouses&quot;, &quot;name&quot;: &quot;Warehouses&quot;, &quot;mimeType&quot;: &quot;text/plain&quot;}]
+PROMPTS = [{&quot;name&quot;: &quot;stockout_report&quot;, &quot;description&quot;: &quot;Weekly report of SKUs at zero stock&quot;}]
+
+def handle(req):
+    m, p = req[&quot;method&quot;], req.get(&quot;params&quot;, {})
+    if m == &quot;tools/list&quot;:     return {&quot;tools&quot;: TOOLS}
+    if m == &quot;resources/list&quot;: return {&quot;resources&quot;: RESOURCES}
+    if m == &quot;prompts/list&quot;:   return {&quot;prompts&quot;: PROMPTS}
+    if m == &quot;resources/read&quot;: return {&quot;contents&quot;: [{&quot;uri&quot;: p[&quot;uri&quot;], &quot;text&quot;: &quot;Andheri, Thane, Pune&quot;}]}
+    if m == &quot;tools/call&quot;:
+        sku = p[&quot;arguments&quot;][&quot;sku&quot;]
+        if sku not in STOCK:
+            return {&quot;content&quot;: [{&quot;type&quot;: &quot;text&quot;, &quot;text&quot;: f&quot;Unknown SKU {sku}&quot;}], &quot;isError&quot;: True}
+        return {&quot;content&quot;: [{&quot;type&quot;: &quot;text&quot;, &quot;text&quot;: f&quot;{STOCK[sku]} in stock&quot;}]}
+    raise KeyError(m)
+
+for line in sys.stdin:
+    req = json.loads(line)
+    try:
+        out = {&quot;jsonrpc&quot;: &quot;2.0&quot;, &quot;id&quot;: req[&quot;id&quot;], &quot;result&quot;: handle(req)}
+    except KeyError as e:
+        out = {&quot;jsonrpc&quot;: &quot;2.0&quot;, &quot;id&quot;: req[&quot;id&quot;], &quot;error&quot;: {&quot;code&quot;: -32601, &quot;message&quot;: f&quot;Method not found: {e}&quot;}}
+    print(json.dumps(out), flush=True)
+&#x27;&#x27;&#x27;
+
+path = os.path.join(tempfile.mkdtemp(), &quot;inventory_server.py&quot;)
+open(path, &quot;w&quot;).write(SERVER)
+proc = subprocess.Popen([sys.executable, &quot;-I&quot;, path], stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=True)
+
+def rpc(i, method, params=None):
+    msg = {&quot;jsonrpc&quot;: &quot;2.0&quot;, &quot;id&quot;: i, &quot;method&quot;: method, **({&quot;params&quot;: params} if params else {})}
+    proc.stdin.write(json.dumps(msg) + &quot;\n&quot;); proc.stdin.flush()
+    reply = json.loads(proc.stdout.readline())
+    print(f&quot;→ {json.dumps(msg)}\n← {json.dumps(reply)}\n&quot;)
+    return reply
+
+rpc(1, &quot;tools/list&quot;)
+rpc(2, &quot;tools/call&quot;, {&quot;name&quot;: &quot;check_stock&quot;, &quot;arguments&quot;: {&quot;sku&quot;: &quot;GLV-M-100&quot;}})
+rpc(3, &quot;tools/call&quot;, {&quot;name&quot;: &quot;check_stock&quot;, &quot;arguments&quot;: {&quot;sku&quot;: &quot;XYZ&quot;}})
+rpc(4, &quot;resources/read&quot;, {&quot;uri&quot;: &quot;inventory://warehouses&quot;})
+rpc(5, &quot;tools/delete&quot;)
+proc.stdin.close(); proc.wait()
+print(&quot;server process exited with code&quot;, proc.returncode)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>→ {&quot;jsonrpc&quot;: &quot;2.0&quot;, &quot;id&quot;: 1, &quot;method&quot;: &quot;tools/list&quot;}
+← {&quot;jsonrpc&quot;: &quot;2.0&quot;, &quot;id&quot;: 1, &quot;result&quot;: {&quot;tools&quot;: [{&quot;name&quot;: &quot;check_stock&quot;, &quot;description&quot;: &quot;Units in stock for one SKU, e.g. GLV-M-100.&quot;, &quot;inputSchema&quot;: {&quot;type&quot;: &quot;object&quot;, &quot;properties&quot;: {&quot;sku&quot;: {&quot;type&quot;: &quot;string&quot;}}, &quot;required&quot;: [&quot;sku&quot;]}}]}}
+
+→ {&quot;jsonrpc&quot;: &quot;2.0&quot;, &quot;id&quot;: 2, &quot;method&quot;: &quot;tools/call&quot;, &quot;params&quot;: {&quot;name&quot;: &quot;check_stock&quot;, &quot;arguments&quot;: {&quot;sku&quot;: &quot;GLV-M-100&quot;}}}
+← {&quot;jsonrpc&quot;: &quot;2.0&quot;, &quot;id&quot;: 2, &quot;result&quot;: {&quot;content&quot;: [{&quot;type&quot;: &quot;text&quot;, &quot;text&quot;: &quot;412 in stock&quot;}]}}
+
+→ {&quot;jsonrpc&quot;: &quot;2.0&quot;, &quot;id&quot;: 3, &quot;method&quot;: &quot;tools/call&quot;, &quot;params&quot;: {&quot;name&quot;: &quot;check_stock&quot;, &quot;arguments&quot;: {&quot;sku&quot;: &quot;XYZ&quot;}}}
+← {&quot;jsonrpc&quot;: &quot;2.0&quot;, &quot;id&quot;: 3, &quot;result&quot;: {&quot;content&quot;: [{&quot;type&quot;: &quot;text&quot;, &quot;text&quot;: &quot;Unknown SKU XYZ&quot;}], &quot;isError&quot;: true}}
+
+→ {&quot;jsonrpc&quot;: &quot;2.0&quot;, &quot;id&quot;: 4, &quot;method&quot;: &quot;resources/read&quot;, &quot;params&quot;: {&quot;uri&quot;: &quot;inventory://warehouses&quot;}}
+← {&quot;jsonrpc&quot;: &quot;2.0&quot;, &quot;id&quot;: 4, &quot;result&quot;: {&quot;contents&quot;: [{&quot;uri&quot;: &quot;inventory://warehouses&quot;, &quot;text&quot;: &quot;Andheri, Thane, Pune&quot;}]}}
+
+→ {&quot;jsonrpc&quot;: &quot;2.0&quot;, &quot;id&quot;: 5, &quot;method&quot;: &quot;tools/delete&quot;}
+← {&quot;jsonrpc&quot;: &quot;2.0&quot;, &quot;id&quot;: 5, &quot;error&quot;: {&quot;code&quot;: -32601, &quot;message&quot;: &quot;Method not found: &#x27;tools/delete&#x27;&quot;}}
+
+server process exited with code 0</pre></div></div><aside class="call read"><b>How to read it</b><p>Every exchange is one JSON object per line: requests carry an <code>id</code> and a <code>method</code>; responses echo the <code>id</code> with either a <code>result</code> or an <code>error</code>. A failed <em>tool</em> (unknown SKU) is a normal result with <code>isError: true</code>, which Claude reads and can act on; an unsupported <em>method</em> is a JSON-RPC error. When the host closes stdin, the server exits.</p></aside><h3>With the official Python SDK</h3><p>The SDK handles the protocol details: initialisation, schemas generated from type hints, both transports. Current documentation uses <code>MCPServer</code> (install with <code>pip install "mcp[cli]"</code>); shown, not run.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><span class="noeval">shown, not run here</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">from mcp.server import MCPServer
+
+mcp = MCPServer(&quot;inventory&quot;)
+
+@mcp.tool()
+async def check_stock(sku: str) -&gt; str:
+    &quot;&quot;&quot;Units in stock for one SKU, e.g. GLV-M-100. Returns &#x27;unknown SKU&#x27; if it doesn&#x27;t exist.&quot;&quot;&quot;
+    units = await inventory_api.get_units(sku)          # your existing REST API
+    return f&quot;{units} in stock&quot;
+
+@mcp.resource(&quot;inventory://warehouses&quot;)
+def warehouses() -&gt; str:
+    return &quot;Andheri, Thane, Pune&quot;
+
+if __name__ == &quot;__main__&quot;:
+    mcp.run(transport=&quot;stdio&quot;)</code></pre></div></div><h3>Connecting servers to Claude</h3><div class="cell file"><div class="code"><div class="lab"><span>Claude Code: adding MCP servers</span><button class="copy" type="button">Copy</button></div><pre><code class="language-bash"># Local server over stdio (everything after -- is the command to run)
+claude mcp add --transport stdio inventory -- python inventory_server.py
+
+# Remote server over HTTP, shared with the team via .mcp.json
+claude mcp add --transport http --scope project tickets https://mcp.example.com/mcp \
+  --header &quot;Authorization: Bearer $TICKETS_TOKEN&quot;</code></pre></div></div><div class="cell file"><div class="code"><div class="lab"><span>.mcp.json (project scope, committed)</span><button class="copy" type="button">Copy</button></div><pre><code class="language-json">{
+  &quot;mcpServers&quot;: {
+    &quot;tickets&quot;:   { &quot;type&quot;: &quot;http&quot;, &quot;url&quot;: &quot;https://mcp.example.com/mcp&quot; },
+    &quot;inventory&quot;: { &quot;command&quot;: &quot;python&quot;, &quot;args&quot;: [&quot;inventory_server.py&quot;], &quot;env&quot;: { &quot;INVENTORY_URL&quot;: &quot;https://inv.internal&quot; } }
+  }
+}</code></pre></div></div><p>Scopes: <code>local</code> (default: you, this project), <code>project</code> (written to <code>.mcp.json</code> for the team) and <code>user</code> (you, every project). In Claude Code, MCP tools appear with names like <code>mcp__inventory__check_stock</code>, which is what you match in permission rules and hooks.</p><p>From the <strong>Claude API</strong>, the MCP connector lets the Messages API call a remote server directly. It's in beta, supports <strong>tools only</strong> (not resources or prompts), and only <strong>remote HTTP</strong> servers (not local stdio ones).</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><span class="noeval">shown, not run here</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">response = client.beta.messages.create(
+    model=&quot;claude-sonnet-5-5&quot;, max_tokens=4096,
+    betas=[&quot;mcp-client-2026-09-15&quot;],
+    mcp_servers=[{&quot;type&quot;: &quot;url&quot;, &quot;url&quot;: &quot;https://mcp.example.com/mcp&quot;, &quot;name&quot;: &quot;tickets&quot;,
+                  &quot;authorization_token&quot;: os.environ[&quot;TICKETS_TOKEN&quot;]}],
+    tools=[{&quot;type&quot;: &quot;mcp_toolset&quot;, &quot;mcp_server_name&quot;: &quot;tickets&quot;}],
+    messages=[{&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;Open a ticket for the broken X-ray printer at Andheri.&quot;}],
+)</code></pre></div></div><aside class="call warn"><b>Watch out</b><p>An MCP server is code that runs with your credentials (stdio) or a service you hand data to (HTTP). Install only servers you trust, scope their tokens narrowly, and remember that everything a server returns is <strong>untrusted input</strong> to Claude (Module 7): a compromised server can inject instructions through its tool results.</p></aside><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>In MCP, which primitive is controlled by the user, rather than the model or the application?</p><div class="opts"><button type="button" data-ok="0">A. Tools</button><button type="button" data-ok="0">B. Resources</button><button type="button" data-ok="1">C. Prompts</button><button type="button" data-ok="0">D. Transports</button></div><p class="why" hidden>Prompts are templates a person selects explicitly. Tools are model-controlled (Claude decides to call them); resources are application-controlled context the host chooses to attach.</p></div><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>A team wants Claude to use a database tool that runs on each developer's laptop. Which transport fits, and what can't they use?</p><div class="opts"><button type="button" data-ok="1">A. stdio for Claude Code; the Claude API's MCP connector can't reach it, because the connector only supports remote HTTP servers</button><button type="button" data-ok="0">B. Streamable HTTP only; stdio is deprecated</button><button type="button" data-ok="0">C. The MCP connector over stdio</button><button type="button" data-ok="0">D. Any transport; MCP has only one</button></div><p class="why" hidden>stdio is the transport for local servers launched by the host. The API's MCP connector connects to publicly reachable HTTP servers only, so a laptop-local server needs Claude Code (or another local host).</p></div></section><section class="session" id="s8-5"><p class="snum">Session 8.5</p><h2>Tools, Skills or MCP?</h2><p>Several mechanisms extend what Claude can do. They are complementary, not competing, and choosing the lightest one that fits avoids over-engineering.</p><div class="tbl"><table><thead><tr><th>Mechanism</th><th>Gives Claude</th><th>Best when</th><th>Example</th></tr></thead><tbody><tr><td><strong>Built-in / server tools</strong></td><td>Ready-made abilities: web search and fetch, code execution, file editing, bash</td><td>The ability is generic and Anthropic already provides it</td><td>Research with current web sources</td></tr><tr><td><strong>Custom tools</strong> (in your app)</td><td>A specific action or data source, defined in one application</td><td>One app needs a capability tied to its own code</td><td><code>issue_refund</code> inside your billing app</td></tr><tr><td><strong>MCP server</strong></td><td>Tools (plus resources and prompts) behind a standard interface</td><td>The capability should be <strong>reused across several applications</strong> and maintained independently</td><td>One inventory server used by Claude Code, Desktop and two agents</td></tr><tr><td><strong>Skill</strong></td><td><strong>Know-how</strong>: instructions, scripts and references for a kind of task, loaded when relevant</td><td>Claude has the access but needs a repeatable <strong>procedure</strong> or house style</td><td>"How we write release notes", "our month-end reconciliation checklist"</td></tr><tr><td><strong>CLAUDE.md</strong></td><td>Standing project context, always loaded</td><td>Rules that always apply in that project</td><td>Test commands, conventions</td></tr><tr><td><strong>Subagent</strong></td><td>A separate worker with its own context</td><td>Large or independent subtasks</td><td>A migration reviewer</td></tr><tr><td><strong>Hook</strong></td><td>Deterministic actions at fixed points</td><td>Something must always or never happen</td><td>Block force pushes; format after edits</td></tr></tbody></table></div><aside class="call concept"><b>The idea</b><p><strong>Access versus know-how.</strong> MCP servers and tools give Claude <em>access</em>: to systems, data and actions. Skills give Claude <em>know-how</em>: how to carry out a kind of task well. They combine naturally: an MCP server lets Claude read the ledger; a skill teaches it your reconciliation procedure.</p></aside><h3>Skills, briefly</h3><p>A skill is a folder with a <code>SKILL.md</code> file (front matter, then instructions) and optional scripts and reference files. Skills load in stages: the <strong>name and description</strong> (about 100 tokens) are always visible; the <strong>body</strong> loads when a task matches; <strong>extra files</strong> are read only when needed. In the Claude API, <code>name</code> and <code>description</code> are required (the name is lowercase letters, numbers and hyphens, up to 64 characters); skills there run in the code execution container. In Claude Code they live in <code>.claude/skills/</code> or <code>~/.claude/skills/</code>, and in claude.ai you upload them under Settings.</p><div class="cell file"><div class="code"><div class="lab"><span>skills/monthly-reconciliation/SKILL.md</span><button class="copy" type="button">Copy</button></div><pre><code class="language-markdown">---
+name: monthly-reconciliation
+description: Reconcile the clinic&#x27;s monthly UPI and card settlements against invoices. Use when asked to reconcile payments, find unmatched transactions or close the month.
+---
+# Monthly reconciliation
+
+1. Export settlements with `scripts/fetch_settlements.py --month YYYY-MM`.
+2. Match on invoice number first, then on amount and date within ±1 day.
+3. List unmatched items in a table: date, amount, channel, probable cause.
+4. Duplicate payments (same invoice, two channels) go to the refunds queue, never auto-refunded.
+
+See `reference/edge-cases.md` for split payments and partial refunds.</code></pre></div></div><h3>Choosing, as code</h3><p>The official sample question for this domain asks exactly this kind of thing: an internal inventory REST API that several Claude applications must use, maintained independently of any one of them. Here's a decision function run on it and five other needs.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">def choose(need):
+    if need.get(&quot;generic_capability&quot;):                       return &quot;built-in / server tool&quot;
+    if need.get(&quot;procedure_or_style&quot;) and not need.get(&quot;new_access&quot;):
+                                                             return &quot;Skill&quot;
+    if need.get(&quot;new_access&quot;) and need.get(&quot;apps&quot;, 1) &gt; 1:   return &quot;MCP server&quot;
+    if need.get(&quot;new_access&quot;):                               return &quot;custom tool in that app&quot;
+    if need.get(&quot;must_always_happen&quot;):                       return &quot;hook&quot;
+    return &quot;CLAUDE.md / prompt&quot;
+
+needs = [
+    (&quot;Inventory REST API, used by several Claude apps, owned by the ops team&quot;, dict(new_access=True, apps=3)),
+    (&quot;Look up current news for a research brief&quot;,                             dict(generic_capability=True)),
+    (&quot;Our 9-step month-end reconciliation procedure&quot;,                         dict(procedure_or_style=True)),
+    (&quot;Issue refunds from inside the billing app only&quot;,                        dict(new_access=True, apps=1)),
+    (&quot;Run the formatter after every edit&quot;,                                    dict(must_always_happen=True)),
+    (&quot;Always use British spelling in this repo&quot;,                              dict()),
+]
+for name, n in needs:
+    print(f&quot;{choose(n):&lt;26} ← {name}&quot;)
+
+M, N = 4, 6
+print(f&quot;\n{M} apps × {N} systems: {M * N} custom integrations, or {M + N} MCP pieces ({M} clients + {N} servers)&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>MCP server                 ← Inventory REST API, used by several Claude apps, owned by the ops team
+built-in / server tool     ← Look up current news for a research brief
+Skill                      ← Our 9-step month-end reconciliation procedure
+custom tool in that app    ← Issue refunds from inside the billing app only
+hook                       ← Run the formatter after every edit
+CLAUDE.md / prompt         ← Always use British spelling in this repo
+
+4 apps × 6 systems: 24 custom integrations, or 10 MCP pieces (4 clients + 6 servers)</pre></div></div><aside class="call exam"><b>Exam lens</b><p>For the inventory scenario, the answer is an MCP server exposing the operations as tools. Hard-coding logic into prompts isn't reusable or maintainable, pasting data into the context gives no live access and wastes tokens, and built-in tools can't reach arbitrary internal APIs.</p></aside><h3>Beyond MCP: agents talking to agents</h3><p>MCP connects an agent to <strong>tools and data</strong>. A different family of protocols connects <strong>agents to other agents</strong>, each with its own model, tools and permissions.</p><div class="tbl"><table><thead><tr><th>Protocol</th><th>Origin and status</th><th>Idea</th></tr></thead><tbody><tr><td><strong>A2A</strong> (Agent2Agent)</td><td>Created by Google (April 2025); now an open project under the Linux Foundation</td><td>Agents discover each other through an <strong>Agent Card</strong> and exchange tasks and messages over JSON-RPC 2.0</td></tr><tr><td><strong>ACP</strong> (Agent Communication Protocol)</td><td>Created by IBM Research; merged into A2A under the Linux Foundation in 2025</td><td>Structured, REST-based agent messaging; its ideas now continue in A2A</td></tr></tbody></table></div><aside class="call warn"><b>Watch out</b><p>"ACP" is ambiguous: today it often means Zed's unrelated <em>Agent Client Protocol</em> (editors talking to coding agents). Read the context of a question before answering.</p></aside><p>An Agent Card is a JSON document an agent publishes (at <code>/.well-known/agent-card.json</code>) describing who it is, where to reach it and what it can do:</p><div class="cell file"><div class="code"><div class="lab"><span>/.well-known/agent-card.json</span><button class="copy" type="button">Copy</button></div><pre><code class="language-json">{
+  &quot;name&quot;: &quot;Sunrise Clinic Scheduling Agent&quot;,
+  &quot;description&quot;: &quot;Finds and holds appointment slots across Sunrise Clinic&#x27;s four Mumbai clinics.&quot;,
+  &quot;provider&quot;: { &quot;organization&quot;: &quot;Sunrise Clinic&quot; },
+  &quot;url&quot;: &quot;https://agents.sunriseclinic.in/a2a/scheduling&quot;,
+  &quot;capabilities&quot;: { &quot;streaming&quot;: true, &quot;pushNotifications&quot;: false },
+  &quot;skills&quot;: [
+    { &quot;id&quot;: &quot;find-slot&quot;, &quot;name&quot;: &quot;Find a slot&quot;,
+      &quot;description&quot;: &quot;Free slots for a doctor or speciality within a date range&quot;,
+      &quot;inputModes&quot;: [&quot;text&quot;], &quot;outputModes&quot;: [&quot;text&quot;, &quot;application/json&quot;],
+      &quot;examples&quot;: [&quot;Next free dermatology slot in Thane after 6 pm&quot;] }
+  ]
+}</code></pre></div></div><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>A team needs Claude to call an internal inventory service exposed as a REST API. The capability must be reusable across several Claude applications and maintained independently of any one app. What fits best?</p><div class="opts"><button type="button" data-ok="0">A. Hard-code the inventory logic into each application's system prompt</button><button type="button" data-ok="1">B. Build an MCP server that exposes the inventory operations as tools</button><button type="button" data-ok="0">C. Paste current inventory data into the context on every request</button><button type="button" data-ok="0">D. Rely on a built-in tool, since built-in tools can reach any internal REST API</button></div><p class="why" hidden>An MCP server is a reusable, independently maintained interface that any MCP-capable application can connect to. Prompts aren't integrations, pasted data is stale and costly, and built-in tools don't reach arbitrary internal APIs.</p></div><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>Claude already has read access to the accounting system through an MCP server, but its month-end reconciliations are inconsistent from run to run. What should you add?</p><div class="opts"><button type="button" data-ok="0">A. A second MCP server for the same system</button><button type="button" data-ok="1">B. A Skill that captures the reconciliation procedure, with any helper scripts</button><button type="button" data-ok="0">C. A larger context window</button><button type="button" data-ok="0">D. A hook that runs after every tool call</button></div><p class="why" hidden>The problem is know-how, not access. A Skill packages the procedure so Claude follows it the same way every time, loading it only when reconciliation is requested.</p></div><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>How does A2A differ from MCP?</p><div class="opts"><button type="button" data-ok="0">A. They are the same protocol under different names</button><button type="button" data-ok="1">B. MCP connects an agent to tools and data; A2A lets independent agents discover each other (via Agent Cards) and exchange tasks</button><button type="button" data-ok="0">C. A2A only works with Google models</button><button type="button" data-ok="0">D. MCP is for agent-to-agent messaging and A2A for databases</button></div><p class="why" hidden>MCP is agent-to-tools; A2A is agent-to-agent. They complement each other: an agent might use MCP servers for its own tools and A2A to delegate to another organisation's agent.</p></div></section>
+  <div class="pager"><a class="btn ghost" href="../module-7/">← Module 7</a><a class="btn" href="../">Course home →</a></div>
+  </div>
+</div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="fine" style="border:none;margin:0;padding:0">
+      <span>© 2026 XploreAI · <a href="/">xploreai.co.in</a></span>
+      <span><a href="mailto:hello@xploreai.co.in">hello@xploreai.co.in</a></span>
+    </div>
+  </div>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/json.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/bash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/markdown.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/typescript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/yaml.min.js"></script>
+<script src="/courses/claude-developer/course.js?v=1792997601"></script>
+</body>
+</html>

@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 1: Agents and Workflows — Claude Developer (CCDV-F) course — XploreAI</title>
+<meta name="description" content="Know when a fixed workflow beats an agent, build the agentic loop by hand so nothing about it is magic, split big jobs across a coordinator and subagents, pick a way to build and host agents, add hooks for the things that must always happen, and choose a framework only when it earns its place.">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="XploreAI">
+<meta property="og:title" content="Module 1: Agents and Workflows — Claude Developer (CCDV-F) course">
+<meta property="og:description" content="Know when a fixed workflow beats an agent, build the agentic loop by hand so nothing about it is magic, split big jobs across a coordinator and subagents, pick a way to build and host agents, add hooks for the things that must always happen, and choose a framework only when it earns its place.">
+<meta property="og:url" content="https://xploreai.co.in/courses/claude-developer/module-1/">
+<meta property="og:image" content="https://xploreai.co.in/assets/og-image.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/style.css">
+<link rel="stylesheet" href="/courses/claude-developer/course.css?v=1792998013">
+</head>
+<body>
+
+<nav>
+  <div class="wrap bar">
+    <a class="wordmark" href="/">xplore<span>ai</span></a>
+    <ul>
+      <li><a href="/#agents">Solutions</a></li>
+      <li><a href="/#stories">Success Stories</a></li>
+      <li><a href="/#subscribe">Newsletter</a></li>
+      <li><a href="/learn.html" aria-current="page">Learn AI</a></li>
+      <li><a class="btn" href="https://wa.me/919769686931?text=Hi%20XploreAI%2C%20I%27m%20interested%20in%20AI%20automation!">Get Started</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main class="cca">
+<header class="mhero wrap">
+  <p class="crumb"><a href="/learn.html">Learn AI</a> / <a href="../">Claude Developer (CCDV-F) course</a> / Module 1</p>
+  <span class="pill">MODULE 1 OF 8 · DOMAIN 1 · 14.7% OF THE EXAM · 7 SESSIONS</span>
+  <h1>Agents and Workflows<i>.</i></h1>
+  <p class="lede">Know when a fixed workflow beats an agent, build the agentic loop by hand so nothing about it is magic, split big jobs across a coordinator and subagents, pick a way to build and host agents, add hooks for the things that must always happen, and choose a framework only when it earns its place.</p>
+  <div class="dl"><a class="btn" href="#s1-1">Start session 1.1 →</a> <a class="btn ghost" href="../code/module-1.py" download>Download the Python</a></div>
+</header>
+<div class="wrap layout">
+  <aside class="toc" aria-label="Sessions"><p>In this module</p><ol><li><a href="#s1-1"><span>1.1</span>Workflow or agent?</a></li><li><a href="#s1-2"><span>1.2</span>The agentic loop</a></li><li><a href="#s1-3"><span>1.3</span>Coordinators and subagents</a></li><li><a href="#s1-4"><span>1.4</span>Building agents with Claude</a></li><li><a href="#s1-5"><span>1.5</span>Hooks for deterministic actions</a></li><li><a href="#s1-6"><span>1.6</span>Memory and context in agents</a></li><li><a href="#s1-7"><span>1.7</span>Agent frameworks</a></li></ol></aside>
+  <div class="content">
+<section class="session" id="s1-1"><p class="snum">Session 1.1</p><h2>Workflow or agent?</h2><p>Every Claude feature you build sits on one of three tiers. Pick the <strong>lowest tier that does the job</strong>: each step up costs more, takes longer and is harder to test.</p><div class="tbl"><table><thead><tr><th>Tier</th><th>Who decides the next step?</th><th>Good for</th><th>Example</th></tr></thead><tbody><tr><td><strong>Single call</strong></td><td>Nobody: one request, one response</td><td>Classify, extract, summarise, rewrite</td><td>Tag a patient message as booking, billing or clinical</td></tr><tr><td><strong>Workflow</strong></td><td><strong>Your code</strong>, along a path you wrote</td><td>Multi-step jobs whose steps you can list in advance</td><td>Extract invoice fields, validate them, then draft an email</td></tr><tr><td><strong>Agent</strong></td><td><strong>Claude</strong>, one tool call at a time</td><td>Open-ended jobs you can't fully specify up front</td><td>"Find why last night's build failed and fix it"</td></tr></tbody></table></div><aside class="call concept"><b>The idea</b><p><strong>The difference is who holds the steering wheel.</strong> In a workflow, Claude is a component inside a path your code controls. In an agent, Claude chooses which tool to call next, reads the result, and decides again, until it judges the goal met. That freedom is what makes agents powerful, and what makes them slower, costlier and less predictable.</p></aside><h3>Generative and agentic, side by side</h3><p>You'll hear "generative AI" and "agentic AI" contrasted. Generative AI answers a prompt: one input, one output, no actions. Agentic AI is given a <em>goal</em>, plans, uses tools, checks results and keeps going. The same model can be both. What changes is the code around it.</p><figure class="flow anim" style="--n:3"><figcaption>The same request, two shapes</figcaption><ol><li style="--i:0"><b>Generative</b><span>"Draft a reply to this patient." One call, one draft, done.</span></li><li style="--i:1"><b>Workflow</b><span>Classify the message → look up the slot in code → draft the reply → a person approves.</span></li><li style="--i:2"><b>Agent</b><span>"Handle today's inbox." Claude reads, looks up, drafts, asks for approval, and decides when it has finished.</span></li></ol></figure><h3>Workflow patterns worth knowing by name</h3><p>Most production "AI features" are workflows, not agents. Five patterns cover most of them:</p><div class="tbl"><table><thead><tr><th>Pattern</th><th>What your code does</th><th>Use when</th></tr></thead><tbody><tr><td><strong>Prompt chaining</strong></td><td>Output of step 1 becomes the input of step 2, with a check in between</td><td>The task splits cleanly into fixed stages</td></tr><tr><td><strong>Routing</strong></td><td>Classify first, then send to a specialised prompt or model</td><td>Inputs fall into distinct types needing different handling</td></tr><tr><td><strong>Parallelisation</strong></td><td>Run independent calls at once, then merge (or vote)</td><td>Sub-tasks don't depend on each other</td></tr><tr><td><strong>Orchestrator–workers</strong></td><td>One call plans sub-tasks, workers do them, results are merged</td><td>You can't know the sub-tasks until you see the input</td></tr><tr><td><strong>Evaluator–optimiser</strong></td><td>One call drafts, another grades against criteria, loop until it passes</td><td>There are clear quality criteria and iteration helps</td></tr></tbody></table></div><h3>Four questions before you build an agent</h3><p>An agent is justified only when the answer to all four is yes. If any answer is no, drop to a workflow or a single call.</p><ul><li><strong>Complexity</strong>: is the task multi-step and hard to specify in advance?</li><li><strong>Value</strong>: is the outcome worth the extra cost and latency?</li><li><strong>Viability</strong>: is Claude actually good at this kind of task?</li><li><strong>Cost of error</strong>: can mistakes be caught and undone (tests, review, rollback)?</li></ul><p>Here are those four questions as code, run against five tasks. The scoring is ours, a way to make the reasoning explicit, not an official formula.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">def choose_tier(task):
+    &quot;&quot;&quot;Return the lowest tier that fits, with the reason.&quot;&quot;&quot;
+    if task[&quot;steps_known_in_advance&quot;] and task[&quot;steps&quot;] == 1:
+        return &quot;single call&quot;, &quot;one step, nothing to orchestrate&quot;
+    if task[&quot;steps_known_in_advance&quot;]:
+        return &quot;workflow&quot;, &quot;the path can be written down, so code should own it&quot;
+    # Open-ended: an agent is a candidate, but only if all four checks pass
+    checks = {
+        &quot;complexity&quot;: not task[&quot;steps_known_in_advance&quot;],
+        &quot;value&quot;: task[&quot;value_per_run_usd&quot;] &gt;= 5 * task[&quot;est_cost_usd&quot;],
+        &quot;viability&quot;: task[&quot;claude_good_at_it&quot;],
+        &quot;cost of error&quot;: task[&quot;errors_reversible&quot;],
+    }
+    failed = [k for k, ok in checks.items() if not ok]
+    if failed:
+        return &quot;workflow (+ human)&quot;, &quot;agent ruled out by: &quot; + &quot;, &quot;.join(failed)
+    return &quot;agent&quot;, &quot;open-ended, worth it, feasible, and errors can be undone&quot;
+
+tasks = [
+    (&quot;Tag a message as booking/billing/clinical&quot;, dict(steps_known_in_advance=True,  steps=1, value_per_run_usd=0.02, est_cost_usd=0.001, claude_good_at_it=True,  errors_reversible=True)),
+    (&quot;Invoice: extract, validate, draft email&quot;,   dict(steps_known_in_advance=True,  steps=3, value_per_run_usd=1.5,  est_cost_usd=0.01,  claude_good_at_it=True,  errors_reversible=True)),
+    (&quot;Fix last night&#x27;s failing build&quot;,            dict(steps_known_in_advance=False, steps=0, value_per_run_usd=60,   est_cost_usd=1.2,   claude_good_at_it=True,  errors_reversible=True)),
+    (&quot;Research a competitor, write a brief&quot;,      dict(steps_known_in_advance=False, steps=0, value_per_run_usd=40,   est_cost_usd=0.8,   claude_good_at_it=True,  errors_reversible=True)),
+    (&quot;Move money between client accounts&quot;,        dict(steps_known_in_advance=False, steps=0, value_per_run_usd=25,   est_cost_usd=0.5,   claude_good_at_it=True,  errors_reversible=False)),
+]
+
+for name, t in tasks:
+    tier, why = choose_tier(t)
+    print(f&quot;{name:&lt;44} → {tier:&lt;18} {why}&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>Tag a message as booking/billing/clinical    → single call        one step, nothing to orchestrate
+Invoice: extract, validate, draft email      → workflow           the path can be written down, so code should own it
+Fix last night&#x27;s failing build               → agent              open-ended, worth it, feasible, and errors can be undone
+Research a competitor, write a brief         → agent              open-ended, worth it, feasible, and errors can be undone
+Move money between client accounts           → workflow (+ human) agent ruled out by: cost of error</pre></div></div><aside class="call read"><b>How to read it</b><p>The first two tasks never reach the agent checks: their steps are known, so code should own the path. The money transfer is open-ended, but a wrong transfer can't be undone, so it stays a workflow with a human approving each step.</p></aside><aside class="call exam"><b>Exam lens</b><p>Expect scenario questions that describe a task and ask for the <em>most appropriate</em> architecture. Watch for the words that settle it: "the steps are always the same" points to a workflow; "unpredictable", "open-ended" or "explore" points to an agent; "irreversible", "regulated" or "must be auditable" pulls you back towards fixed steps and a human.</p></aside><h3>Types of agent, from simplest up</h3><p>Textbooks sort agents into five types. You won't build a "simple reflex agent" with Claude, but the ladder is a useful vocabulary.</p><div class="tbl"><table><thead><tr><th>Type</th><th>Decides by</th><th>Everyday example</th></tr></thead><tbody><tr><td>Simple reflex</td><td>If-then rules on the current input</td><td>A thermostat; lock an account after five bad passwords</td></tr><tr><td>Model-based</td><td>Rules plus an internal picture of the world over time</td><td>A spam filter that learns each sender's pattern</td></tr><tr><td>Goal-based</td><td>Planning steps towards a stated goal</td><td>A Claude agent asked to "get the tests passing"</td></tr><tr><td>Utility-based</td><td>Choosing the option that scores best on a trade-off</td><td>Route planning that weighs time against cost</td></tr><tr><td>Learning</td><td>Improving its own behaviour from feedback</td><td>A recommender that adapts to what you click</td></tr></tbody></table></div><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>A clinic wants every new lab report PDF to be read, the key values extracted into their system, and a summary sent to the doctor. The steps never change. What's the most appropriate design?</p><div class="opts"><button type="button" data-ok="0">A. An autonomous agent with tools for reading PDFs, writing to the system and sending messages</button><button type="button" data-ok="1">B. A workflow: code calls Claude to extract and summarise, validates the fields, then writes and sends</button><button type="button" data-ok="0">C. A single call that returns the summary, with a person typing the values in by hand</button><button type="button" data-ok="0">D. A multi-agent system with one subagent per step</button></div><p class="why" hidden>The steps are fixed and known in advance, so code should own the path and Claude should do the parts that need language understanding. An agent adds cost and unpredictability for no benefit; a single call leaves the integration undone; multiple agents add coordination overhead to a linear job.</p></div><div class="quiz" data-multi="1"><p class="q"><b>Practice question</b><span class="n">Select 2</span>Which two facts most strongly argue <em>against</em> using an agent for a task? (Select 2)</p><div class="opts"><button type="button" data-ok="1">A. Its mistakes are expensive and can't be undone</button><button type="button" data-ok="0">B. It needs more than one tool</button><button type="button" data-ok="1">C. Its steps are the same every time</button><button type="button" data-ok="0">D. It takes a person about an hour to do</button></div><button type=button class=check>Check answer</button><p class="why" hidden>Irreversible errors fail the "cost of error" check, and a fixed sequence of steps means a workflow can do the job more cheaply and predictably. Needing several tools or taking an hour by hand doesn't, by itself, call for model-driven control.</p></div></section><section class="session" id="s1-2"><p class="snum">Session 1.2</p><h2>The agentic loop</h2><p>An agent isn't a special model or a special endpoint. It's <strong>a loop in your code</strong> around the Messages API. The model can't run anything: it can only <em>ask</em> for a tool call. Your code runs the tool, sends the result back, and asks again, until the model says it's done.</p><figure class="seq anim" style="--c:3"><figcaption>One turn of the loop, with one tool call</figcaption><div class="actors"><b>Your app</b><b>Claude (API)</b><b>Tool</b></div><div class="lane"><div class="m r" style="grid-column:1/3;--s:2;--k:0"><span>messages.create(system, tools, messages)</span><i></i></div><div class="m l reply" style="grid-column:1/3;--s:2;--k:1"><span>stop_reason="tool_use", tool_use block {id, name, input}</span><i></i></div><div class="m r" style="grid-column:1/4;--s:3;--k:2"><span>run name(input)</span><i></i></div><div class="m l reply" style="grid-column:1/4;--s:3;--k:3"><span>result (or an error)</span><i></i></div><div class="m r" style="grid-column:1/3;--s:2;--k:4"><span>the whole history + tool_result {tool_use_id, content}</span><i></i></div><div class="m l reply" style="grid-column:1/3;--s:2;--k:5"><span>stop_reason="end_turn", final text</span><i></i></div></div></figure><p>The loop has four stages, and it repeats them until the model stops asking for tools:</p><figure class="flow anim" style="--n:4"><figcaption>The four stages, every iteration</figcaption><ol><li style="--i:0"><b>Send</b><span>The system prompt, the tool definitions and the full message history, every time.</span></li><li style="--i:1"><b>Model responds</b><span>Text, one or more tool_use blocks, or both. stop_reason says which.</span></li><li style="--i:2"><b>Execute</b><span>Your code runs every requested tool and captures each result or error.</span></li><li style="--i:3"><b>Feed back</b><span>Append the assistant turn, then one user turn holding every tool_result. Go again.</span></li></ol></figure><aside class="call warn"><b>Watch out</b><p><strong>The API is stateless.</strong> The model remembers nothing between requests. Whatever isn't in <code>messages</code> doesn't exist for it. Send a partial history and you get answers based on a partial picture.</p></aside><h3>What stop_reason tells your code</h3><div class="tbl"><table><thead><tr><th><code>stop_reason</code></th><th>Meaning</th><th>What your loop does</th></tr></thead><tbody><tr><td><code>end_turn</code></td><td>The model has finished</td><td>Read the final text and stop</td></tr><tr><td><code>tool_use</code></td><td>It wants one or more tools run</td><td>Run them all, send back all results, loop</td></tr><tr><td><code>max_tokens</code></td><td>It was cut off by your <code>max_tokens</code> limit</td><td>Don't run a half-written tool call; raise the limit or continue</td></tr><tr><td><code>pause_turn</code></td><td>A server-side tool paused a long turn</td><td>Send the conversation back as is so it can continue</td></tr><tr><td><code>refusal</code></td><td>The model declined for safety reasons</td><td>Don't read <code>content</code> as an answer; handle it (and check <code>stop_details</code>)</td></tr><tr><td><code>stop_sequence</code></td><td>It hit one of your stop sequences</td><td>Treat as finished, or handle as your design intends</td></tr></tbody></table></div><h3>The loop with the real SDK</h3><p>This is the shape you'd write against the API. It needs an API key, so it's shown here, not run.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><span class="noeval">shown, not run here</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">import anthropic
+
+client = anthropic.Anthropic()          # reads ANTHROPIC_API_KEY from the environment
+messages = [{&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;Is Dr Rao free on Friday morning? If so, hold 10:30 for Mrs Iyer.&quot;}]
+
+while True:
+    response = client.messages.create(
+        model=&quot;claude-opus-5-5&quot;, max_tokens=16000,
+        system=SYSTEM, tools=TOOLS, messages=messages,
+    )
+    messages.append({&quot;role&quot;: &quot;assistant&quot;, &quot;content&quot;: response.content})   # keep the whole turn
+
+    if response.stop_reason != &quot;tool_use&quot;:
+        break
+
+    results = []
+    for block in response.content:                     # there may be several tool_use blocks
+        if block.type == &quot;tool_use&quot;:
+            output, failed = run_tool(block.name, block.input)
+            results.append({&quot;type&quot;: &quot;tool_result&quot;, &quot;tool_use_id&quot;: block.id,
+                            &quot;content&quot;: output, &quot;is_error&quot;: failed})
+    messages.append({&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: results})   # all results, one user turn
+
+print(next(b.text for b in response.content if b.type == &quot;text&quot;))</code></pre></div></div><h3>The same loop, run here</h3><p>To show the loop running without an API key, we replace Claude with a <strong>scripted stand-in</strong>: a function that returns the replies we wrote for it, in the same shape the API uses (a list of content blocks plus a <code>stop_reason</code>). Everything else, the tools, the dispatch and the history, is real code doing real work.</p><p>First, two tools and a dispatcher. The calendar is a plain dictionary.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">import json
+
+CALENDAR = {(&quot;Dr Rao&quot;, &quot;Fri&quot;): {&quot;09:00&quot;: &quot;Mr Shah&quot;, &quot;10:30&quot;: None, &quot;11:15&quot;: None}}
+HOLDS = []
+
+def check_slots(doctor, day):
+    slots = CALENDAR.get((doctor, day))
+    if slots is None:
+        raise KeyError(f&quot;no calendar for {doctor} on {day}&quot;)
+    return [t for t, who in slots.items() if who is None]
+
+def hold_slot(doctor, day, time, patient):
+    if CALENDAR[(doctor, day)].get(time, &quot;taken&quot;) is not None:
+        raise ValueError(f&quot;{time} is not free&quot;)
+    CALENDAR[(doctor, day)][time] = patient + &quot; (held)&quot;
+    HOLDS.append((doctor, day, time, patient))
+    return f&quot;held {time} on {day} with {doctor} for {patient}&quot;
+
+TOOLS = {&quot;check_slots&quot;: check_slots, &quot;hold_slot&quot;: hold_slot}
+
+def run_tool(name, args):
+    &quot;&quot;&quot;Route a tool call to its function. Return (content, is_error).&quot;&quot;&quot;
+    if name not in TOOLS:
+        return f&quot;unknown tool: {name}&quot;, True
+    try:
+        return json.dumps(TOOLS[name](**args)), False
+    except Exception as e:                       # report the failure to the model, don&#x27;t crash the loop
+        return f&quot;{type(e).__name__}: {e}&quot;, True
+
+print(run_tool(&quot;check_slots&quot;, {&quot;doctor&quot;: &quot;Dr Rao&quot;, &quot;day&quot;: &quot;Fri&quot;}))
+print(run_tool(&quot;check_slots&quot;, {&quot;doctor&quot;: &quot;Dr Rao&quot;, &quot;day&quot;: &quot;Sun&quot;}))</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>(&#x27;[&quot;10:30&quot;, &quot;11:15&quot;]&#x27;, False)
+(&quot;KeyError: &#x27;no calendar for Dr Rao on Sun&#x27;&quot;, True)</pre></div></div><p>Now the stand-in for Claude. On its first turn it asks for <strong>two</strong> tool calls at once (models often do), then a hold, then gives its answer.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">SCRIPT = [
+    {&quot;stop_reason&quot;: &quot;tool_use&quot;, &quot;content&quot;: [
+        {&quot;type&quot;: &quot;text&quot;, &quot;text&quot;: &quot;I&#x27;ll check Friday, and Saturday as a fallback.&quot;},
+        {&quot;type&quot;: &quot;tool_use&quot;, &quot;id&quot;: &quot;tu_1&quot;, &quot;name&quot;: &quot;check_slots&quot;, &quot;input&quot;: {&quot;doctor&quot;: &quot;Dr Rao&quot;, &quot;day&quot;: &quot;Fri&quot;}},
+        {&quot;type&quot;: &quot;tool_use&quot;, &quot;id&quot;: &quot;tu_2&quot;, &quot;name&quot;: &quot;check_slots&quot;, &quot;input&quot;: {&quot;doctor&quot;: &quot;Dr Rao&quot;, &quot;day&quot;: &quot;Sat&quot;}}]},
+    {&quot;stop_reason&quot;: &quot;tool_use&quot;, &quot;content&quot;: [
+        {&quot;type&quot;: &quot;tool_use&quot;, &quot;id&quot;: &quot;tu_3&quot;, &quot;name&quot;: &quot;hold_slot&quot;,
+         &quot;input&quot;: {&quot;doctor&quot;: &quot;Dr Rao&quot;, &quot;day&quot;: &quot;Fri&quot;, &quot;time&quot;: &quot;10:30&quot;, &quot;patient&quot;: &quot;Mrs Iyer&quot;}}]},
+    {&quot;stop_reason&quot;: &quot;end_turn&quot;, &quot;content&quot;: [
+        {&quot;type&quot;: &quot;text&quot;, &quot;text&quot;: &quot;Done: 10:30 on Friday with Dr Rao is held for Mrs Iyer.&quot;}]},
+]
+
+def scripted_claude(messages, turn):
+    &quot;&quot;&quot;A stand-in for client.messages.create: returns the next scripted reply.&quot;&quot;&quot;
+    return SCRIPT[turn]</code></pre></div></div><p>And the loop itself, the same logic as the SDK version, printing what crosses the wire.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">def run_agent(user_text, model=scripted_claude, max_turns=10):
+    messages = [{&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: user_text}]
+    for turn in range(max_turns):
+        reply = model(messages, turn)
+        messages.append({&quot;role&quot;: &quot;assistant&quot;, &quot;content&quot;: reply[&quot;content&quot;]})
+        calls = [b for b in reply[&quot;content&quot;] if b[&quot;type&quot;] == &quot;tool_use&quot;]
+        print(f&quot;turn {turn + 1}: stop_reason={reply[&#x27;stop_reason&#x27;]}, tool calls={len(calls)}&quot;)
+        if reply[&quot;stop_reason&quot;] != &quot;tool_use&quot;:
+            return reply[&quot;content&quot;][-1][&quot;text&quot;], messages
+        results = []
+        for c in calls:
+            content, failed = run_tool(c[&quot;name&quot;], c[&quot;input&quot;])
+            print(f&quot;   {c[&#x27;name&#x27;]}({c[&#x27;input&#x27;][&#x27;day&#x27;]}) → {&#x27;ERROR &#x27; if failed else &#x27;&#x27;}{content}&quot;)
+            results.append({&quot;type&quot;: &quot;tool_result&quot;, &quot;tool_use_id&quot;: c[&quot;id&quot;], &quot;content&quot;: content, &quot;is_error&quot;: failed})
+        messages.append({&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: results})
+    raise RuntimeError(f&quot;no answer after {max_turns} turns&quot;)
+
+answer, history = run_agent(&quot;Is Dr Rao free on Friday morning? If so, hold 10:30 for Mrs Iyer.&quot;)
+print(&quot;\nfinal answer:&quot;, answer)
+print(&quot;messages in history:&quot;, len(history), &quot;→&quot;, [m[&quot;role&quot;] for m in history])</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>turn 1: stop_reason=tool_use, tool calls=2
+   check_slots(Fri) → [&quot;10:30&quot;, &quot;11:15&quot;]
+   check_slots(Sat) → ERROR KeyError: &#x27;no calendar for Dr Rao on Sat&#x27;
+turn 2: stop_reason=tool_use, tool calls=1
+   hold_slot(Fri) → &quot;held 10:30 on Fri with Dr Rao for Mrs Iyer&quot;
+turn 3: stop_reason=end_turn, tool calls=0
+
+final answer: Done: 10:30 on Friday with Dr Rao is held for Mrs Iyer.
+messages in history: 6 → [&#x27;user&#x27;, &#x27;assistant&#x27;, &#x27;user&#x27;, &#x27;assistant&#x27;, &#x27;user&#x27;, &#x27;assistant&#x27;]</pre></div></div><aside class="call read"><b>How to read it</b><p>Saturday failed (there's no calendar for it), and the loop didn't crash: the error went back to the model as a <code>tool_result</code> with <code>is_error: true</code>, so it can adapt. The history alternates user, assistant, user... and the tool results travel in <strong>user</strong> turns. Six messages for three model calls: each call saw everything before it.</p></aside><h3>The mistakes that break agents</h3><p>Three bugs account for most broken loops. The API rejects the first one outright; the other two fail quietly.</p><ul><li><strong>Dropping a tool call.</strong> If you only handle the first <code>tool_use</code> block, the second has no matching <code>tool_result</code>, and the next request is rejected.</li><li><strong>Splitting the results.</strong> Return every <code>tool_result</code> from a turn in <strong>one</strong> user message. Spreading them over several messages teaches the model to stop making parallel calls.</li><li><strong>Hiding failures.</strong> If a tool fails and you return an empty string, the model may carry on as if it worked, and give a confident wrong answer. Return the error with <code>is_error: true</code>.</li></ul><p>Here's a checker for the first two, run on our good history and on a broken one.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">def check_history(messages):
+    problems = []
+    for i, m in enumerate(messages):
+        if m[&quot;role&quot;] != &quot;assistant&quot; or isinstance(m[&quot;content&quot;], str):
+            continue
+        asked = {b[&quot;id&quot;] for b in m[&quot;content&quot;] if b[&quot;type&quot;] == &quot;tool_use&quot;}
+        if not asked:
+            continue
+        nxt = messages[i + 1] if i + 1 &lt; len(messages) else {&quot;content&quot;: []}
+        answered = {b.get(&quot;tool_use_id&quot;) for b in nxt[&quot;content&quot;] if isinstance(b, dict)}
+        for missing in sorted(asked - answered):
+            problems.append(f&quot;message {i}: tool_use {missing} has no tool_result in the next user turn&quot;)
+    return problems or [&quot;ok&quot;]
+
+print(&quot;good history:  &quot;, check_history(history))
+
+broken = [dict(m) for m in history]
+broken[2] = {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: broken[2][&quot;content&quot;][:1]}     # handled only the first call
+print(&quot;broken history:&quot;, check_history(broken))</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>good history:   [&#x27;ok&#x27;]
+broken history: [&#x27;message 1: tool_use tu_2 has no tool_result in the next user turn&#x27;]</pre></div></div><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>Claude's response contains a text block and three <code>tool_use</code> blocks. What should your code send next?</p><div class="opts"><button type="button" data-ok="0">A. One request per tool result, in the order the tools finish</button><button type="button" data-ok="0">B. Only the result of the first tool; Claude will ask for the others again</button><button type="button" data-ok="1">C. The assistant turn as returned, then a single user turn with three <code>tool_result</code> blocks, each carrying the matching <code>tool_use_id</code></button><button type="button" data-ok="0">D. A user turn summarising the three results in plain text</button></div><p class="why" hidden>Every <code>tool_use</code> needs a <code>tool_result</code> with the same id, in the user turn that immediately follows, and all of a turn's results belong in one message. Dropping some is rejected by the API; splitting them discourages parallel calls; plain text loses the id link.</p></div><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>A tool times out during an agent run. Which response gives the model the best chance of recovering?</p><div class="opts"><button type="button" data-ok="0">A. Return an empty <code>tool_result</code> so the loop can continue</button><button type="button" data-ok="0">B. Stop the loop and show the user a stack trace</button><button type="button" data-ok="1">C. Return a <code>tool_result</code> with <code>is_error: true</code> and a short, specific message such as "timed out after 10s; try a narrower date range"</button><button type="button" data-ok="0">D. Retry the tool forever until it succeeds</button></div><p class="why" hidden>An error result keeps the loop alive and tells the model what went wrong, so it can retry with different input, try another tool, or explain the problem. An empty result invites a confident wrong answer; endless retries can hang the agent.</p></div></section><section class="session" id="s1-3"><p class="snum">Session 1.3</p><h2>Coordinators and subagents</h2><p>When one agent tries to research, analyse, decide and write all at once, its context fills with everything it read and its attention spreads thin. The <strong>hub-and-spoke</strong> (or orchestrator–worker) pattern splits the job: a <strong>coordinator</strong> plans and assigns, <strong>subagents</strong> each do one focused piece and report back, and the coordinator combines the results.</p><figure class="seq anim" style="--c:4"><figcaption>Hub and spoke: the coordinator never does the reading itself</figcaption><div class="actors"><b>Coordinator</b><b>Finance agent</b><b>Market agent</b><b>Risk agent</b></div><div class="lane"><div class="m note" style="grid-column:1/2;--k:0"><span>Splits "review Q3 for our 4 clinics" into 3 scoped tasks</span></div><div class="m r" style="grid-column:1/3;--s:2;--k:1"><span>task spec: revenue, margins per clinic</span><i></i></div><div class="m r" style="grid-column:1/4;--s:3;--k:2"><span>task spec: competitor openings within 3 km</span><i></i></div><div class="m r" style="grid-column:1/5;--s:4;--k:3"><span>task spec: staffing and compliance risks</span><i></i></div><div class="m l reply" style="grid-column:1/3;--s:2;--k:4"><span>150-word summary + table</span><i></i></div><div class="m l reply" style="grid-column:1/4;--s:3;--k:5"><span>150-word summary + list</span><i></i></div><div class="m l reply" style="grid-column:1/5;--s:4;--k:6"><span>150-word summary + top 3 risks</span><i></i></div><div class="m note" style="grid-column:1/2;--k:7"><span>Merges, resolves conflicts, writes the brief</span></div></div></figure><p>Multi-agent systems usually have four roles, though one agent may play more than one:</p><div class="tbl"><table><thead><tr><th>Role</th><th>Job</th></tr></thead><tbody><tr><td><strong>Orchestrator</strong> (coordinator)</td><td>Understands the goal, breaks it down, assigns, merges</td></tr><tr><td><strong>Workers</strong> (subagents)</td><td>Each does one specialised task: research, code, write</td></tr><tr><td><strong>Critic</strong> (reviewer)</td><td>Checks the workers' output against criteria</td></tr><tr><td><strong>State manager</strong></td><td>Tracks what's done and what's pending; holds shared context</td></tr></tbody></table></div><p>Work moves between them in two ways. <strong>Sequential handoff</strong> is a relay: research, then write, then review. <strong>Parallel collaboration</strong> runs independent pieces at once and merges them: faster, but the coordinator must reconcile overlaps and contradictions.</p><h3>Why subagents help: context isolation</h3><p>Each subagent runs in <strong>its own context window</strong>. It can read fifty pages and return a one-paragraph summary; only the summary lands in the coordinator's context. That keeps the coordinator's context small and focused, and stops one task's detail from distracting another.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python"># Rough token accounting: what each design puts in the deciding model&#x27;s context
+reading = {&quot;finance&quot;: 38_000, &quot;market&quot;: 52_000, &quot;risk&quot;: 27_000}   # tokens each piece of research reads
+summary = 400                                                       # tokens each subagent sends back
+brief_instructions = 1_500
+
+single = brief_instructions + sum(reading.values())
+coordinator = brief_instructions + summary * len(reading)
+
+print(f&quot;one agent does everything : {single:&gt;7,} tokens in context when it writes the brief&quot;)
+print(f&quot;coordinator + 3 subagents : {coordinator:&gt;7,} tokens in the coordinator&#x27;s context&quot;)
+print(f&quot;largest subagent context  : {max(reading.values()) + 600:&gt;7,} tokens (its own window)&quot;)
+print(f&quot;total tokens processed    : {sum(reading.values()) + 600 * 3 + coordinator:&gt;7,} (more in total, but no window is overloaded)&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>one agent does everything : 118,500 tokens in context when it writes the brief
+coordinator + 3 subagents :   2,700 tokens in the coordinator&#x27;s context
+largest subagent context  :  52,600 tokens (its own window)
+total tokens processed    : 121,500 (more in total, but no window is overloaded)</pre></div></div><aside class="call read"><b>How to read it</b><p>Subagents don't make the whole job cheaper. Here they process slightly <em>more</em> tokens in total. What they buy is a coordinator that decides with 2,700 tokens of distilled findings instead of 118,500 tokens of raw reading, and workers that can run in parallel.</p></aside><h3>Decomposition decides quality</h3><p>When a multi-agent system gives a poor answer, the cause is usually the <strong>coordinator's breakdown</strong>, not the subagents. A subagent can only do the task it's given; it won't notice that a responsibility was never assigned, and it can't see the context the coordinator forgot to pass.</p><div class="compare anim"><div class="side weak"><div class="lab"><span>✗ Weak decomposition</span><button class="copy" type="button">Copy</button></div><pre><code>To subagent: &quot;Analyse the company&#x27;s performance.&quot;
+
+(No scope, no time period, no data sources,
+no output format, no length. The subagent has
+to guess what matters, and the coordinator
+gets back something it can&#x27;t merge.)</code></pre></div><div class="side strong"><div class="lab"><span>✓ Strong decomposition</span><button class="copy" type="button">Copy</button></div><pre><code>To finance subagent:
+Objective: compare Q3 revenue and gross margin for our 4 clinics against Q2.
+Inputs: the attached Q2 and Q3 P&amp;L exports only.
+Out of scope: forecasts, marketing spend.
+Output: a table (clinic, revenue Q2, Q3, % change, margin Q2, Q3)
+then at most 150 words on the two biggest changes and their likely causes.
+If a figure is missing, write &quot;missing&quot;, don&#x27;t estimate.</code></pre></div></div><p>A coordinator can check its own task specs before it dispatches anything. Here the check is code, and the subagents are plain functions standing in for real ones, run in parallel with a thread pool.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">from concurrent.futures import ThreadPoolExecutor
+import time
+
+REQUIRED = (&quot;objective&quot;, &quot;inputs&quot;, &quot;output&quot;, &quot;out_of_scope&quot;)
+
+plan = [
+    {&quot;agent&quot;: &quot;finance&quot;, &quot;objective&quot;: &quot;Q3 vs Q2 revenue and margin per clinic&quot;, &quot;inputs&quot;: &quot;P&amp;L exports&quot;,
+     &quot;output&quot;: &quot;table + 150 words&quot;, &quot;out_of_scope&quot;: &quot;forecasts&quot;},
+    {&quot;agent&quot;: &quot;market&quot;, &quot;objective&quot;: &quot;competitor openings within 3 km since July&quot;, &quot;inputs&quot;: &quot;maps search&quot;,
+     &quot;output&quot;: &quot;list of name, date, distance&quot;, &quot;out_of_scope&quot;: &quot;pricing&quot;},
+    {&quot;agent&quot;: &quot;risk&quot;, &quot;objective&quot;: &quot;analyse risks&quot;},                       # under-specified on purpose
+]
+
+def missing_fields(spec):
+    return [f for f in REQUIRED if not spec.get(f)]
+
+for spec in plan:
+    gaps = missing_fields(spec)
+    print(f&quot;{spec[&#x27;agent&#x27;]:&lt;8} {&#x27;ready&#x27; if not gaps else &#x27;REJECTED, missing: &#x27; + &#x27;, &#x27;.join(gaps)}&quot;)
+
+def subagent(spec):                      # stand-in: a real one would be its own Claude loop
+    time.sleep(0.2)                      # pretend to work
+    return {&quot;agent&quot;: spec[&quot;agent&quot;], &quot;summary&quot;: f&quot;[{spec[&#x27;agent&#x27;]}] findings on: {spec[&#x27;objective&#x27;]}&quot;}
+
+ready = [s for s in plan if not missing_fields(s)]
+t0 = time.time()
+with ThreadPoolExecutor() as pool:
+    reports = list(pool.map(subagent, ready))
+print(f&quot;\n{len(reports)} subagents ran in parallel in {time.time() - t0:.1f}s (each takes 0.2s)&quot;)
+for r in reports:
+    print(&quot; &quot;, r[&quot;summary&quot;])</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>finance  ready
+market   ready
+risk     REJECTED, missing: inputs, output, out_of_scope
+
+2 subagents ran in parallel in 0.2s (each takes 0.2s)
+  [finance] findings on: Q3 vs Q2 revenue and margin per clinic
+  [market] findings on: competitor openings within 3 km since July</pre></div></div><aside class="call tip"><b>Tip</b><p>Give every subagent task the same five things: <strong>objective, inputs, scope (and what's out of it), output format, and what to do when stuck</strong>. Ask for a fixed output shape so the coordinator can merge reports without guessing. Start with copies of one agent, and move reading-heavy work to a cheaper model only once the design works.</p></aside><aside class="call exam"><b>Exam lens</b><p>If a scenario says the final report "misses" something or subagents "overlap", look for an answer that fixes the coordinator's decomposition (clearer scope, explicit ownership, a required output format), not one that swaps in a bigger model for the subagents.</p></aside><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>A coordinator sends three subagents the instruction "research the market" and gets back three overlapping reports, none covering pricing. What's the best fix?</p><div class="opts"><button type="button" data-ok="0">A. Use a more capable model for each subagent</button><button type="button" data-ok="0">B. Add a fourth subagent to research the market again</button><button type="button" data-ok="1">C. Have the coordinator assign distinct, scoped tasks (one owns pricing) with a required output format</button><button type="button" data-ok="0">D. Let the subagents read each other's reports as they work</button></div><p class="why" hidden>Overlap and gaps both come from poor decomposition. Explicit, non-overlapping scopes with clear ownership fix both; a bigger model still gets a vague task, and sharing reports mid-run undoes context isolation.</p></div><div class="quiz" data-multi="1"><p class="q"><b>Practice question</b><span class="n">Select 2</span>What is the main benefit of running research in subagents rather than in the coordinator's own loop? (Select 2)</p><div class="opts"><button type="button" data-ok="1">A. Each subagent's reading stays in its own context window, so the coordinator's context stays small</button><button type="button" data-ok="0">B. The total number of tokens processed always goes down</button><button type="button" data-ok="1">C. Independent pieces of research can run in parallel</button><button type="button" data-ok="0">D. Subagents remember earlier runs automatically</button></div><button type=button class=check>Check answer</button><p class="why" hidden>Context isolation and parallelism are the two wins. Total tokens often go up slightly, because each subagent needs its own instructions, and subagents are no more stateful than any other model call.</p></div></section><section class="session" id="s1-4"><p class="snum">Session 1.4</p><h2>Building agents with Claude</h2><p>You've seen that an agent is a loop plus tools. In practice you rarely write that loop from scratch. There are four ways to build a Claude agent, and two questions separate them: <strong>who supplies the harness</strong> (the loop, tool execution, context management) and <strong>who runs the infrastructure</strong> it lives on.</p><div class="tbl"><table><thead><tr><th>Approach</th><th>You write</th><th>Harness</th><th>Hosting</th><th>Tools</th></tr></thead><tbody><tr><td><strong>Manual loop</strong> on the Messages API</td><td>The <code>while stop_reason == "tool_use"</code> loop</td><td>You</td><td>You</td><td>Only the ones you define</td></tr><tr><td><strong>Tool Runner</strong> (in the <code>anthropic</code> SDK, beta)</td><td>Just the tool functions</td><td>The SDK</td><td>You</td><td>Only the ones you define</td></tr><tr><td><strong>Claude Agent SDK</strong> (<code>claude-agent-sdk</code>)</td><td>A prompt and options</td><td>The SDK: Claude Code's harness as a library</td><td>You</td><td>Built-in Read, Write, Edit, Bash, Grep, web search..., plus MCP and subagents</td></tr><tr><td><strong>Claude Managed Agents</strong> (beta)</td><td>An agent config, plus results for any tools you host</td><td>Anthropic</td><td>Anthropic, in a managed sandbox</td><td>Hosted bash, files and code, plus Skills, MCP and your tools</td></tr></tbody></table></div><aside class="call concept"><b>The idea</b><p><strong>Harness and hosting are separate choices.</strong> The Tool Runner and the Agent SDK both give you a harness, but <em>you</em> still deploy and run them, on your servers, under your security controls. Managed Agents is the only option where Anthropic runs the loop <em>and</em> the environment the tools execute in. That's the self-hosted versus Anthropic-hosted choice the exam expects you to weigh.</p></aside><figure class="flow anim" style="--n:4"><figcaption>Choosing a build approach</figcaption><ol><li style="--i:0"><b>Need full control of every request?</b><span>Manual loop. No beta dependency, nothing hidden, most code to own.</span></li><li style="--i:1"><b>Your own tools, standard loop?</b><span>Tool Runner. Decorate functions; the SDK loops, with hooks for approvals and errors.</span></li><li style="--i:2"><b>A coding or file-system agent?</b><span>Agent SDK. The Claude Code harness with its built-in tools, on your infrastructure.</span></li><li style="--i:3"><b>Long-running, scheduled, or no servers?</b><span>Managed Agents. Anthropic hosts the loop, the sandbox and the session state.</span></li></ol></figure><h3>The Tool Runner: tools as decorated functions</h3><p>The SDK reads each function's signature and docstring to build the tool definition, then runs the loop for you. Shown, not run (it needs an API key).</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><span class="noeval">shown, not run here</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">import anthropic
+from anthropic import beta_tool
+
+client = anthropic.Anthropic()
+
+@beta_tool
+def check_slots(doctor: str, day: str) -&gt; str:
+    &quot;&quot;&quot;List the free appointment times for a doctor on a given day.
+
+    Args:
+        doctor: The doctor&#x27;s name exactly as it appears in the rota, e.g. &quot;Dr Rao&quot;.
+        day: Three-letter day name, e.g. &quot;Fri&quot;.
+    &quot;&quot;&quot;
+    return json.dumps(free_slots(doctor, day))
+
+runner = client.beta.messages.tool_runner(
+    model=&quot;claude-opus-5-5&quot;, max_tokens=16000,
+    tools=[check_slots],
+    messages=[{&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;When is Dr Rao free on Friday?&quot;}],
+)
+for message in runner:          # one BetaMessage per model turn; stops when Claude is done
+    print(message.content)</code></pre></div></div><h3>The Agent SDK: Claude Code as a library</h3><p>The Agent SDK gives you the same harness that powers Claude Code: built-in tools, permissions, context management, subagents and hooks. You pass a prompt and options and iterate over the messages it streams back.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><span class="noeval">shown, not run here</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">import asyncio
+from claude_agent_sdk import query, ClaudeAgentOptions, AgentDefinition
+
+options = ClaudeAgentOptions(
+    system_prompt=&quot;You maintain the clinic booking service. Never touch production config.&quot;,
+    allowed_tools=[&quot;Read&quot;, &quot;Grep&quot;, &quot;Glob&quot;, &quot;Bash&quot;],   # pre-approved; not a whitelist on its own
+    permission_mode=&quot;default&quot;,
+    max_turns=30,
+    model=&quot;claude-opus-5-5&quot;,
+    agents={                                           # subagents Claude can delegate to
+        &quot;test-runner&quot;: AgentDefinition(
+            description=&quot;Runs the test suite and reports failures concisely.&quot;,
+            prompt=&quot;Run the tests. Report only failing tests with file, line and error.&quot;,
+            model=&quot;claude-haiku-5-5&quot;,
+        ),
+    },
+)
+
+async def main():
+    async for message in query(prompt=&quot;Find why test_booking fails and fix it.&quot;, options=options):
+        print(message)
+
+asyncio.run(main())</code></pre></div></div><aside class="call warn"><b>Watch out</b><p>In the Agent SDK, <code>allowed_tools</code> <strong>pre-approves</strong> tools; it doesn't by itself stop Claude using others. To keep a tool away from the agent, use <code>disallowed_tools</code>, a permission mode, or a hook that denies it. A question that treats <code>allowed_tools</code> as a hard sandbox is testing exactly this.</p></aside><aside class="call tip"><b>Tip</b><p><code>query()</code> starts a fresh session on every call. When you need several exchanges in one session, or the ability to interrupt, use <code>ClaudeSDKClient</code> instead.</p></aside><h3>What a harness adds on top of the loop</h3><p>The bare loop from 1.2 works, but production needs guard rails around it. Here are two, a turn limit and a token budget, added to the loop. The stand-in model this time never finishes: it keeps asking to search, as a confused agent might.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">def stuck_model(messages, turn):
+    &quot;&quot;&quot;A scripted stand-in that never stops calling tools.&quot;&quot;&quot;
+    return {&quot;stop_reason&quot;: &quot;tool_use&quot;, &quot;usage&quot;: {&quot;input_tokens&quot;: 1_800 + 900 * turn, &quot;output_tokens&quot;: 120},
+            &quot;content&quot;: [{&quot;type&quot;: &quot;tool_use&quot;, &quot;id&quot;: f&quot;tu_{turn}&quot;, &quot;name&quot;: &quot;check_slots&quot;,
+                         &quot;input&quot;: {&quot;doctor&quot;: &quot;Dr Rao&quot;, &quot;day&quot;: &quot;Fri&quot;}}]}
+
+def guarded_agent(user_text, model, max_turns=8, token_budget=12_000):
+    messages, spent, trace = [{&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: user_text}], 0, []
+    for turn in range(max_turns):
+        reply = model(messages, turn)
+        spent += reply[&quot;usage&quot;][&quot;input_tokens&quot;] + reply[&quot;usage&quot;][&quot;output_tokens&quot;]
+        trace.append((turn + 1, reply[&quot;stop_reason&quot;], spent))
+        if spent &gt; token_budget:
+            return &quot;stopped: token budget exceeded&quot;, trace
+        messages.append({&quot;role&quot;: &quot;assistant&quot;, &quot;content&quot;: reply[&quot;content&quot;]})
+        if reply[&quot;stop_reason&quot;] != &quot;tool_use&quot;:
+            return &quot;finished&quot;, trace
+        results = [{&quot;type&quot;: &quot;tool_result&quot;, &quot;tool_use_id&quot;: b[&quot;id&quot;], &quot;content&quot;: run_tool(b[&quot;name&quot;], b[&quot;input&quot;])[0]}
+                   for b in reply[&quot;content&quot;] if b[&quot;type&quot;] == &quot;tool_use&quot;]
+        messages.append({&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: results})
+    return &quot;stopped: turn limit reached&quot;, trace
+
+for limit, budget in [(8, 12_000), (3, 50_000)]:
+    status, trace = guarded_agent(&quot;Find me a slot.&quot;, stuck_model, limit, budget)
+    print(f&quot;max_turns={limit}, budget={budget:,}: {status}&quot;)
+    for t, why, spent in trace:
+        print(f&quot;   turn {t}: {why:&lt;8} tokens so far {spent:&gt;6,}&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>max_turns=8, budget=12,000: stopped: token budget exceeded
+   turn 1: tool_use tokens so far  1,920
+   turn 2: tool_use tokens so far  4,740
+   turn 3: tool_use tokens so far  8,460
+   turn 4: tool_use tokens so far 13,080
+max_turns=3, budget=50,000: stopped: turn limit reached
+   turn 1: tool_use tokens so far  1,920
+   turn 2: tool_use tokens so far  4,740
+   turn 3: tool_use tokens so far  8,460</pre></div></div><aside class="call read"><b>How to read it</b><p>Without either guard this agent would loop forever and bill you for every turn. Notice how the token count climbs faster each turn: every request resends the growing history (1.6 comes back to this). Real harnesses add more: retries with backoff, logging every call for traces, permission checks, and context management.</p></aside><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>A team wants an agent that runs every night, works for up to an hour on a repository, and needs no servers of their own. Which approach fits best?</p><div class="opts"><button type="button" data-ok="0">A. A manual loop on the Messages API, run from a developer's laptop</button><button type="button" data-ok="0">B. The Tool Runner inside their web app</button><button type="button" data-ok="1">C. Claude Managed Agents, which runs the harness and the sandbox on Anthropic's infrastructure</button><button type="button" data-ok="0">D. The Agent SDK, because it includes built-in file tools</button></div><p class="why" hidden>Only Managed Agents supplies both the harness and the hosting. The Agent SDK has the right tools but must still run on infrastructure the team operates; the manual loop and Tool Runner leave both the loop's hosting and any sandbox to them.</p></div><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>What is the key difference between the Tool Runner and the Claude Agent SDK?</p><div class="opts"><button type="button" data-ok="0">A. The Tool Runner is hosted by Anthropic; the Agent SDK is self-hosted</button><button type="button" data-ok="1">B. The Tool Runner loops over tools you define; the Agent SDK is the full Claude Code harness with built-in tools, subagents and permissions</button><button type="button" data-ok="0">C. Only the Agent SDK can call custom Python functions</button><button type="button" data-ok="0">D. They are two names for the same package</button></div><p class="why" hidden>Both are harness-only libraries you host yourself. The Tool Runner (part of the <code>anthropic</code> SDK) automates the request–execute–loop cycle for your tools; the Agent SDK (<code>claude-agent-sdk</code>) packages Claude Code's whole harness.</p></div></section><section class="session" id="s1-5"><p class="snum">Session 1.5</p><h2>Hooks for deterministic actions</h2><p>A system prompt that says "never delete files outside the project" is a request. The model will <em>usually</em> follow it. A <strong>hook</strong> is code that runs at a fixed point in the agent's life cycle, every time, whatever the model decides. Use hooks for anything that must <em>always</em> or <em>never</em> happen.</p><figure class="seq anim" style="--c:4"><figcaption>A PreToolUse hook sits between the decision and the execution</figcaption><div class="actors"><b>Claude</b><b>Harness</b><b>Your hook</b><b>Tool</b></div><div class="lane"><div class="m r" style="grid-column:1/3;--s:2;--k:0"><span>tool_use: Bash "rm -rf build/ ../shared"</span><i></i></div><div class="m r" style="grid-column:2/4;--s:2;--k:1"><span>event JSON on stdin (tool_name, tool_input, session_id...)</span><i></i></div><div class="m note" style="grid-column:3/4;--k:2"><span>Checks the command against your rules</span></div><div class="m l reply" style="grid-column:2/4;--s:2;--k:3"><span>deny + reason (or allow, or a modified input)</span><i></i></div><div class="m l reply" style="grid-column:1/3;--s:2;--k:4"><span>tool_result: blocked, with your reason</span><i></i></div><div class="m note" style="grid-column:4/5;--k:5"><span>Never runs</span></div></div></figure><p>The hook events you'll meet most:</p><div class="tbl"><table><thead><tr><th>Event</th><th>Fires</th><th>Typical use</th></tr></thead><tbody><tr><td><code>PreToolUse</code></td><td>After Claude chooses a tool call, before it runs</td><td>Block dangerous calls, require approval, rewrite inputs</td></tr><tr><td><code>PostToolUse</code></td><td>After the tool has run</td><td>Format or lint edited files, log, check output, give Claude feedback</td></tr><tr><td><code>UserPromptSubmit</code></td><td>When a prompt is submitted</td><td>Add context, reject prompts that break policy</td></tr><tr><td><code>Stop</code> / <code>SubagentStop</code></td><td>When the agent or a subagent finishes</td><td>Check the work is complete; run tests before stopping</td></tr><tr><td><code>SessionStart</code></td><td>When a session begins</td><td>Load context such as recent tickets or the branch name</td></tr><tr><td><code>PreCompact</code></td><td>Before the context is compacted</td><td>Save state you don't want summarised away</td></tr></tbody></table></div><aside class="call warn"><b>Watch out</b><p><code>PostToolUse</code> runs <strong>after</strong> the tool. It can't un-run a command or un-write a file; it can only react: log, fix up, or tell Claude what went wrong. Anything that must be <em>prevented</em> belongs in <code>PreToolUse</code>.</p></aside><h3>Registering a hook in Claude Code</h3><p>Hooks live in <code>settings.json</code>: an event, then matcher groups (which tools), then the handlers to run.</p><div class="cell file"><div class="code"><div class="lab"><span>.claude/settings.json</span><button class="copy" type="button">Copy</button></div><pre><code class="language-json">{
+  &quot;hooks&quot;: {
+    &quot;PreToolUse&quot;: [
+      {
+        &quot;matcher&quot;: &quot;Bash&quot;,
+        &quot;hooks&quot;: [{ &quot;type&quot;: &quot;command&quot;, &quot;command&quot;: &quot;python3 .claude/hooks/guard_bash.py&quot; }]
+      },
+      {
+        &quot;matcher&quot;: &quot;Write|Edit&quot;,
+        &quot;hooks&quot;: [{ &quot;type&quot;: &quot;command&quot;, &quot;command&quot;: &quot;python3 .claude/hooks/sandbox_paths.py&quot; }]
+      }
+    ],
+    &quot;PostToolUse&quot;: [
+      {
+        &quot;matcher&quot;: &quot;Write|Edit&quot;,
+        &quot;hooks&quot;: [{ &quot;type&quot;: &quot;command&quot;, &quot;command&quot;: &quot;npx prettier --write \&quot;$CLAUDE_PROJECT_DIR\&quot;&quot; }]
+      }
+    ]
+  }
+}</code></pre></div></div><h3>Three things a PreToolUse hook can do</h3><p>The hook receives the event as JSON on stdin and answers in one of three ways:</p><div class="tbl"><table><thead><tr><th>Answer</th><th>How</th><th>Effect</th></tr></thead><tbody><tr><td><strong>Step aside</strong></td><td>Exit 0 and print nothing</td><td>The normal permission flow carries on</td></tr><tr><td><strong>Block</strong> (a gate)</td><td>Exit code <strong>2</strong> with the reason on stderr, or JSON with <code>permissionDecision: "deny"</code></td><td>The tool doesn't run; Claude gets your reason and can adjust</td></tr><tr><td><strong>Fix silently</strong> (interception)</td><td>JSON with <code>updatedInput</code> inside <code>hookSpecificOutput</code></td><td>The tool runs with your corrected arguments</td></tr></tbody></table></div><p>Here's one hook script doing all three. A real script would read <code>sys.stdin</code>; to run it on this page we pass it four sample events, shaped like the JSON Claude Code sends.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">import json, os, re
+
+SANDBOX = &quot;/tmp/agent-sandbox&quot;
+DANGEROUS = {                                   # what the rule stops: the pattern that spots it
+    &quot;rm -rf reaching outside the project&quot;: r&quot;\brm\s+-rf?\b.*(\s/|\s\.\.|~)&quot;,
+    &quot;force-pushing&quot;: r&quot;\bgit\s+push\b.*--force&quot;,
+    &quot;dropping a table&quot;: r&quot;\bDROP\s+TABLE\b&quot;,
+    &quot;piping a download into a shell&quot;: r&quot;curl[^|]*\|\s*(ba)?sh&quot;,
+}
+
+def pre_tool_use(event):
+    &quot;&quot;&quot;Return (exit_code, stdout, stderr), as a hook script would.&quot;&quot;&quot;
+    tool, args = event[&quot;tool_name&quot;], event[&quot;tool_input&quot;]
+    if tool == &quot;Bash&quot;:
+        for rule, pattern in DANGEROUS.items():
+            if re.search(pattern, args[&quot;command&quot;], re.I):
+                return 2, &quot;&quot;, f&quot;Blocked by policy: {rule} is not allowed. Work inside the project only.&quot;
+    if tool in (&quot;Write&quot;, &quot;Edit&quot;):
+        path = args[&quot;file_path&quot;]
+        if not os.path.abspath(path).startswith(SANDBOX + &quot;/&quot;):
+            fixed = dict(args, file_path=os.path.join(SANDBOX, os.path.basename(path)))
+            out = {&quot;hookSpecificOutput&quot;: {&quot;hookEventName&quot;: &quot;PreToolUse&quot;,
+                                          &quot;permissionDecision&quot;: &quot;allow&quot;, &quot;updatedInput&quot;: fixed}}
+            return 0, json.dumps(out), &quot;&quot;
+    return 0, &quot;&quot;, &quot;&quot;                                    # silence = no opinion
+
+events = [
+    {&quot;hook_event_name&quot;: &quot;PreToolUse&quot;, &quot;tool_name&quot;: &quot;Bash&quot;, &quot;tool_input&quot;: {&quot;command&quot;: &quot;pytest -q tests/&quot;}},
+    {&quot;hook_event_name&quot;: &quot;PreToolUse&quot;, &quot;tool_name&quot;: &quot;Bash&quot;, &quot;tool_input&quot;: {&quot;command&quot;: &quot;rm -rf build/ ../shared&quot;}},
+    {&quot;hook_event_name&quot;: &quot;PreToolUse&quot;, &quot;tool_name&quot;: &quot;Write&quot;, &quot;tool_input&quot;: {&quot;file_path&quot;: &quot;/etc/report.txt&quot;, &quot;content&quot;: &quot;...&quot;}},
+    {&quot;hook_event_name&quot;: &quot;PreToolUse&quot;, &quot;tool_name&quot;: &quot;Write&quot;, &quot;tool_input&quot;: {&quot;file_path&quot;: SANDBOX + &quot;/notes.md&quot;, &quot;content&quot;: &quot;...&quot;}},
+]
+for e in events:
+    code, out, err = pre_tool_use(e)
+    shown = e[&quot;tool_input&quot;].get(&quot;command&quot;) or e[&quot;tool_input&quot;][&quot;file_path&quot;]
+    verdict = &quot;BLOCK&quot; if code == 2 else (&quot;REWRITE&quot; if out else &quot;pass&quot;)
+    print(f&quot;{e[&#x27;tool_name&#x27;]:&lt;6} {shown:&lt;28} exit={code}  {verdict}&quot;)
+    if err: print(&quot;       stderr →&quot;, err)
+    if out: print(&quot;       stdout →&quot;, json.loads(out)[&quot;hookSpecificOutput&quot;][&quot;updatedInput&quot;][&quot;file_path&quot;])</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>Bash   pytest -q tests/             exit=0  pass
+Bash   rm -rf build/ ../shared      exit=2  BLOCK
+       stderr → Blocked by policy: rm -rf reaching outside the project is not allowed. Work inside the project only.
+Write  /etc/report.txt              exit=0  REWRITE
+       stdout → /tmp/agent-sandbox/report.txt
+Write  /tmp/agent-sandbox/notes.md  exit=0  pass</pre></div></div><aside class="call read"><b>How to read it</b><p>The test run passes untouched. The <code>rm</code> reaching outside the project is blocked, and Claude receives the stderr text as the reason. The write to <code>/etc</code> isn't blocked but <strong>redirected</strong> into the sandbox: no error, no retry, and Claude doesn't see the change. The write already inside the sandbox passes.</p></aside><aside class="call concept"><b>The idea</b><p><strong>Gate or intercept?</strong> Block when the action itself is wrong (deleting outside the project). Intercept when the action is right but a detail is off (a path one level too high), because blocking would only make Claude retry and possibly repeat the mistake.</p></aside><h3>The same gate in the Agent SDK</h3><p>In the Agent SDK, hooks are Python functions registered against a matcher. Returning an empty dict means "allow".</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><span class="noeval">shown, not run here</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">from claude_agent_sdk import ClaudeAgentOptions, HookMatcher
+
+async def protect_env_files(input_data, tool_use_id, context):
+    path = input_data[&quot;tool_input&quot;].get(&quot;file_path&quot;, &quot;&quot;)
+    if path.split(&quot;/&quot;)[-1].lower() == &quot;.env&quot;:
+        return {&quot;hookSpecificOutput&quot;: {
+            &quot;hookEventName&quot;: input_data[&quot;hook_event_name&quot;],
+            &quot;permissionDecision&quot;: &quot;deny&quot;,
+            &quot;permissionDecisionReason&quot;: &quot;Agents may not modify .env files&quot;,
+        }}
+    return {}
+
+options = ClaudeAgentOptions(
+    hooks={&quot;PreToolUse&quot;: [HookMatcher(matcher=&quot;Write|Edit&quot;, hooks=[protect_env_files])]},
+)</code></pre></div></div><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>Your agent must never run <code>git push --force</code>. Where should that rule live to be guaranteed?</p><div class="opts"><button type="button" data-ok="0">A. In the system prompt, in capital letters</button><button type="button" data-ok="0">B. In CLAUDE.md, so every session sees it</button><button type="button" data-ok="1">C. In a PreToolUse hook on the Bash tool that blocks the command</button><button type="button" data-ok="0">D. In a PostToolUse hook that detects the push afterwards</button></div><p class="why" hidden>Prompts and CLAUDE.md are instructions the model usually follows; a PreToolUse hook is code that runs before every matching call, so it enforces the rule deterministically. A PostToolUse hook runs after the push has already happened.</p></div><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>A PreToolUse hook script exits with code 2 and writes "Use the staging database" to stderr. What happens?</p><div class="opts"><button type="button" data-ok="0">A. The tool runs, and the message is logged</button><button type="button" data-ok="1">B. The tool call is blocked, and Claude receives the stderr text as the reason</button><button type="button" data-ok="0">C. The whole session ends with an error</button><button type="button" data-ok="0">D. The message replaces the tool's input</button></div><p class="why" hidden>Exit code 2 is the blocking signal: the call doesn't run, and the stderr text is fed back so Claude can adjust. Modifying the input needs <code>updatedInput</code> in JSON on stdout with exit 0.</p></div></section><section class="session" id="s1-6"><p class="snum">Session 1.6</p><h2>Memory and context in agents</h2><p>The model has no memory of its own between requests. Everything an agent "remembers" is something your harness put back into the context, or stored outside it and fetched again. Agent designs use four kinds of memory:</p><div class="tbl"><table><thead><tr><th>Memory</th><th>Where it lives</th><th>Lasts</th><th>Claude example</th></tr></thead><tbody><tr><td><strong>In-context</strong> (working)</td><td>The <code>messages</code> sent with each request</td><td>This run only</td><td>The conversation and tool results so far</td></tr><tr><td><strong>External</strong></td><td>A database, files, a vector store</td><td>As long as you keep it</td><td>A memory tool or a retrieval step fetching notes</td></tr><tr><td><strong>Episodic</strong></td><td>A log of past runs and their outcomes</td><td>Across runs</td><td>"Last time, the migration failed on the index step"</td></tr><tr><td><strong>Procedural</strong></td><td>Instructions on how to do things</td><td>Until edited</td><td>CLAUDE.md files, Skills, system prompts</td></tr></tbody></table></div><aside class="call concept"><b>The idea</b><p><strong>The context window is a whiteboard.</strong> Everything on it is available to the model at once, but it has a fixed size (1M tokens on current Claude models), and every token on it is paid for on every request. Long-running agents fail when the whiteboard fills with stale tool output, not because the model "forgets".</p></aside><h3>Why long agent runs get expensive</h3><p>Because the API is stateless, turn 20 resends turns 1 to 19. If every tool result is large, input tokens grow with every turn, and the total grows roughly with the <em>square</em> of the number of turns. Here's a 20-turn run where each tool returns about 3,000 tokens, with and without pruning old tool results down to a one-line stub.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">def run_cost(turns, tool_tokens, keep_last=None, base=2_500, per_turn_text=150, price_in=2.00):
+    &quot;&quot;&quot;Total input tokens (and $ at price_in per million) for an agent run.&quot;&quot;&quot;
+    history, total = [], 0
+    for t in range(turns):
+        context = base + sum(history)
+        total += context
+        history.append(per_turn_text + tool_tokens)        # this turn&#x27;s reply + tool result join the history
+        if keep_last is not None and len(history) &gt; keep_last:
+            i = len(history) - keep_last - 1
+            history[i] = per_turn_text + 40                 # old result replaced by a short stub
+    return total, total * price_in / 1e6, base + sum(history)
+
+for label, keep in [(&quot;keep every tool result&quot;, None), (&quot;keep only the last 3&quot;, 3)]:
+    total, usd, final = run_cost(20, 3_000, keep)
+    print(f&quot;{label:&lt;24} total input {total:&gt;9,} tokens  ≈ ${usd:.2f} at $2/MTok   context at the end {final:&gt;6,}&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>keep every tool result   total input   648,500 tokens  ≈ $1.30 at $2/MTok   context at the end 65,500
+keep only the last 3     total input   245,940 tokens  ≈ $0.49 at $2/MTok   context at the end 15,180</pre></div></div><aside class="call read"><b>How to read it</b><p>Pruning cuts total input tokens by more than half here (about 2.6 times fewer), and the final context is under a quarter of the size. The prices use Claude Sonnet 5.5's input rate. Prompt caching (Module 5) makes the repeated prefix much cheaper again, but it doesn't make an overloaded context any easier for the model to use.</p></aside><h3>Giving an agent memory that outlasts the run</h3><p>External and episodic memory are just storage your harness, or a tool, reads and writes. The simplest useful version is a notes file the agent can append to and search. Claude's API also has a ready-made <strong>memory tool</strong> (<code>memory_20250818</code>) that lets the model create, read and edit files in a memory directory you control.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">NOTES = []        # in production: a file, a database table, or the memory tool&#x27;s directory
+
+def remember(topic, note):
+    NOTES.append({&quot;topic&quot;: topic, &quot;note&quot;: note})
+    return &quot;saved&quot;
+
+STOP = {&quot;the&quot;, &quot;a&quot;, &quot;an&quot;, &quot;and&quot;, &quot;of&quot;, &quot;to&quot;, &quot;for&quot;, &quot;in&quot;, &quot;on&quot;, &quot;my&quot;, &quot;our&quot;}
+
+def recall(query):
+    words = set(query.lower().split()) - STOP
+    hits = [n for n in NOTES if words &amp; set((n[&quot;topic&quot;] + &quot; &quot; + n[&quot;note&quot;]).lower().split())]
+    return hits[-3:] or &quot;nothing relevant&quot;
+
+# Run 1 (episodic): the agent records what happened
+remember(&quot;migration&quot;, &quot;Step 3 failed: the index on bookings.created_at took 40 min. Build it concurrently.&quot;)
+remember(&quot;style&quot;, &quot;Clinic prefers dates as 12 Oct 2026, never 10/12/26.&quot;)
+
+# Run 2, days later: a fresh context. The harness recalls before the agent starts work.
+print(recall(&quot;plan the bookings migration&quot;))
+print(recall(&quot;format the appointment dates&quot;))</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>[{&#x27;topic&#x27;: &#x27;migration&#x27;, &#x27;note&#x27;: &#x27;Step 3 failed: the index on bookings.created_at took 40 min. Build it concurrently.&#x27;}]
+[{&#x27;topic&#x27;: &#x27;style&#x27;, &#x27;note&#x27;: &#x27;Clinic prefers dates as 12 Oct 2026, never 10/12/26.&#x27;}]</pre></div></div><aside class="call tip"><b>Tip</b><p>Keep memory small and deliberate. Store decisions, outcomes and preferences, not raw transcripts. Save state before a context is compacted (the <code>PreCompact</code> hook exists for this), and treat what you read back as data to check, not as instructions.</p></aside><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>An agent works well for the first 15 turns of a long task, then starts ignoring earlier instructions and repeating searches. Each tool returns around 20,000 tokens of logs. What is the most likely cause and fix?</p><div class="opts"><button type="button" data-ok="0">A. The model has run out of memory; switch to a model with a larger context window</button><button type="button" data-ok="1">B. The context is bloated with stale tool output; prune or summarise old tool results and keep only what's needed</button><button type="button" data-ok="0">C. The system prompt is too short; repeat the instructions in every user turn</button><button type="button" data-ok="0">D. Temperature is too high; lower it</button></div><p class="why" hidden>Large, stale tool results crowd the context, dilute attention on the instructions and raise cost on every turn. Pruning old results (or isolating the reading in subagents) addresses the cause; a bigger window just postpones it.</p></div><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>Which kind of memory is a project's CLAUDE.md file?</p><div class="opts"><button type="button" data-ok="0">A. In-context memory</button><button type="button" data-ok="0">B. Episodic memory</button><button type="button" data-ok="1">C. Procedural memory</button><button type="button" data-ok="0">D. External vector memory</button></div><p class="why" hidden>CLAUDE.md holds standing instructions on how to work in the project (conventions, commands, rules), which is procedural memory. It's loaded into the context at the start of a session, but its role is "how we do things here", not a record of past events.</p></div></section><section class="session" id="s1-7"><p class="snum">Session 1.7</p><h2>Agent frameworks</h2><p>You can build any agent on the Messages API alone. Frameworks earn their place when they remove scaffolding you would otherwise write and maintain. The blueprint names three, and each makes a different bet:</p><div class="tbl"><table><thead><tr><th>Core idea</th><th>Model-driven: give it a model, tools and a prompt; the model plans the loop</th><th>Your workflow as an explicit <strong>graph</strong> of state, nodes and edges</th><th>A strictly <strong>typed</strong> agent definition; the model is a swappable back end</th></tr></thead><tbody><tr><td>Control</td><td>Light: the model manages more of its own flow</td><td>High: you define every step and transition</td><td>Medium: typed tools and validated outputs, no graph orchestration</td></tr><tr><td>Strengths</td><td>Little code; MCP tools; pairs with Amazon Bedrock AgentCore</td><td>Branching, retries, checkpoints, pause-and-resume, human-in-the-loop; LangSmith tracing</td><td>Type safety, validated results, dependency injection, model portability</td></tr><tr><td>Trade-off</td><td>Less built-in state management; you wire in persistence</td><td>More abstraction to learn</td><td>Doesn't orchestrate complex multi-agent flows</td></tr><tr><td>Reach for it when</td><td>You want an agent running fast and trust the model to plan</td><td>You need to see, control and resume every step</td><td>A Python team wants typed correctness without an orchestration layer</td></tr></tbody></table></div><aside class="call exam"><b>Exam lens</b><p>There's no "most advanced" framework; the question is the shape of the system. "Explicit control of multi-step flows, checkpointing, human approval mid-flow" points to LangGraph. "Minimal code, let the model drive, AWS" points to Strands. "Typed, validated outputs and swapping model providers" points to PydanticAI. "One straightforward tool loop" may need no framework at all.</p></aside><h3>The graph idea in 30 lines</h3><p>LangGraph's core concepts are <strong>state</strong> (a shared snapshot of the data), <strong>nodes</strong> (functions that read and update state) and <strong>edges</strong> (rules that pick the next node). Here is that idea in plain Python, not LangGraph itself: a triage flow with a conditional edge, a retry loop and a checkpoint after every node, so a run could be paused for human review and resumed.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">def classify(state):
+    msg = state[&quot;message&quot;].lower()
+    state[&quot;category&quot;] = &quot;clinical&quot; if any(w in msg for w in (&quot;pain&quot;, &quot;bleeding&quot;, &quot;fever&quot;)) else &quot;admin&quot;
+    return state
+
+def draft_reply(state):
+    state[&quot;attempts&quot;] = state.get(&quot;attempts&quot;, 0) + 1
+    state[&quot;draft&quot;] = &quot;Thanks, we&#x27;ve received your message.&quot; if state[&quot;attempts&quot;] == 1 else \
+                     &quot;Thanks, Mrs Iyer. Your 10:30 Friday booking is confirmed.&quot;
+    return state
+
+def check_reply(state):
+    state[&quot;ok&quot;] = &quot;booking&quot; in state[&quot;draft&quot;]           # stand-in for a real quality check
+    return state
+
+def escalate(state):
+    state[&quot;routed_to&quot;] = &quot;duty nurse&quot;
+    return state
+
+NODES = {&quot;classify&quot;: classify, &quot;draft&quot;: draft_reply, &quot;check&quot;: check_reply, &quot;escalate&quot;: escalate}
+EDGES = {
+    &quot;classify&quot;: lambda s: &quot;escalate&quot; if s[&quot;category&quot;] == &quot;clinical&quot; else &quot;draft&quot;,
+    &quot;draft&quot;:    lambda s: &quot;check&quot;,
+    &quot;check&quot;:    lambda s: &quot;END&quot; if s[&quot;ok&quot;] or s[&quot;attempts&quot;] &gt;= 3 else &quot;draft&quot;,   # retry loop
+    &quot;escalate&quot;: lambda s: &quot;END&quot;,
+}
+
+def run_graph(state, start=&quot;classify&quot;):
+    node, checkpoints = start, []
+    while node != &quot;END&quot;:
+        state = NODES[node](dict(state))
+        checkpoints.append((node, dict(state)))           # a resumable snapshot after every node
+        node = EDGES[node](state)
+    return state, checkpoints
+
+for text in [&quot;Can you confirm my Friday booking?&quot;, &quot;Sharp pain since this morning&quot;]:
+    final, cps = run_graph({&quot;message&quot;: text})
+    print(f&quot;{text!r}\n   path: {&#x27; → &#x27;.join(n for n, _ in cps)}&quot;)
+    print(f&quot;   result: {final.get(&#x27;draft&#x27;) or &#x27;routed to &#x27; + final[&#x27;routed_to&#x27;]}&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>&#x27;Can you confirm my Friday booking?&#x27;
+   path: classify → draft → check → draft → check
+   result: Thanks, Mrs Iyer. Your 10:30 Friday booking is confirmed.
+&#x27;Sharp pain since this morning&#x27;
+   path: classify → escalate
+   result: routed to duty nurse</pre></div></div><aside class="call read"><b>How to read it</b><p>The booking message loops through <em>draft → check</em> twice before the check passes; the clinical one is routed to a nurse without drafting anything. Every transition is explicit and every step leaves a checkpoint. That visibility is LangGraph's selling point, and also why it carries more machinery than a model-driven framework.</p></aside><h3>Typed outputs, the PydanticAI idea</h3><p>PydanticAI's bet is that the model's output should be validated into a typed object before your code touches it. The same idea works with plain dataclasses, shown here on two candidate outputs.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">from dataclasses import dataclass
+
+@dataclass
+class Triage:
+    category: str
+    urgency: int
+    reply: str
+
+    def __post_init__(self):
+        if self.category not in {&quot;admin&quot;, &quot;clinical&quot;, &quot;billing&quot;}:
+            raise ValueError(f&quot;category {self.category!r} not allowed&quot;)
+        if not 1 &lt;= self.urgency &lt;= 5:
+            raise ValueError(f&quot;urgency {self.urgency} outside 1–5&quot;)
+
+for raw in [&#x27;{&quot;category&quot;: &quot;clinical&quot;, &quot;urgency&quot;: 4, &quot;reply&quot;: &quot;A nurse will call you.&quot;}&#x27;,
+            &#x27;{&quot;category&quot;: &quot;urgent!!&quot;, &quot;urgency&quot;: 9, &quot;reply&quot;: &quot;Go to A&amp;E&quot;}&#x27;]:
+    try:
+        print(&quot;valid  →&quot;, Triage(**json.loads(raw)))
+    except ValueError as e:
+        print(&quot;invalid →&quot;, e, &quot;(send the error back to the model and ask again)&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>valid  → Triage(category=&#x27;clinical&#x27;, urgency=4, reply=&#x27;A nurse will call you.&#x27;)
+invalid → category &#x27;urgent!!&#x27; not allowed (send the error back to the model and ask again)</pre></div></div><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>A team needs a multi-step approval flow where a refund agent pauses for a manager's sign-off, can resume the next day from where it stopped, and every step must be traceable. Which framework fits best?</p><div class="opts"><button type="button" data-ok="0">A. Strands Agents, because it lets the model decide the flow</button><button type="button" data-ok="1">B. LangGraph, because it models the flow as an explicit graph with checkpointing and human-in-the-loop interrupts</button><button type="button" data-ok="0">C. PydanticAI, because it validates outputs</button><button type="button" data-ok="0">D. No framework: one Messages API call</button></div><p class="why" hidden>Pausing, resuming from a checkpoint and tracing each step are exactly what an explicit, persisted graph provides. Strands deliberately leaves state management light, and PydanticAI focuses on typed correctness rather than flow control.</p></div><div class="quiz" data-multi="1"><p class="q"><b>Practice question</b><span class="n">Select 2</span>Which statements about agent frameworks are accurate? (Select 2)</p><div class="opts"><button type="button" data-ok="1">A. Strands takes a model-driven approach, leaving the planning of the loop to the model</button><button type="button" data-ok="0">B. LangGraph only works with Amazon Bedrock</button><button type="button" data-ok="1">C. PydanticAI treats the model as a swappable back end behind typed tools and validated outputs</button><button type="button" data-ok="0">D. Any Claude agent needs one of these frameworks to call tools</button></div><button type=button class=check>Check answer</button><p class="why" hidden>Strands is model-driven and PydanticAI is built around type safety and model portability. LangGraph is platform-agnostic, and tool use is a Messages API feature: a hand-written loop works without any framework.</p></div></section>
+  <div class="pager"><a class="btn ghost" href="../">← Course home</a><a class="btn" href="../module-2/">Module 2 →</a></div>
+  </div>
+</div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="fine" style="border:none;margin:0;padding:0">
+      <span>© 2026 XploreAI · <a href="/">xploreai.co.in</a></span>
+      <span><a href="mailto:hello@xploreai.co.in">hello@xploreai.co.in</a></span>
+    </div>
+  </div>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/json.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/bash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/markdown.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/typescript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/yaml.min.js"></script>
+<script src="/courses/claude-developer/course.js?v=1792997601"></script>
+</body>
+</html>
