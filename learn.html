@@ -22,7 +22,9 @@
   .head-block h1{font-size:clamp(32px,5vw,48px);font-weight:700;line-height:1.2;margin:10px 0 12px}
   .head-block h1 i{font-style:normal;color:var(--rust)}
   #certifications{padding:40px 0 10px}
-  .certs{grid-template-columns:repeat(auto-fill,minmax(230px,1fr))}
+  .tools.certs{grid-template-columns:repeat(4,minmax(0,1fr))}
+  @media(max-width:1000px){.tools.certs{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  @media(max-width:560px){.tools.certs{grid-template-columns:1fr}}
   .tool.cert .badge{width:96px;height:96px;object-fit:contain;margin:0 0 14px}
   .tool.cert h3{font-size:19px}
   .tool.cert.soon{justify-content:flex-start;text-align:left}
