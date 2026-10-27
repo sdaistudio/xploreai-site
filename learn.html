@@ -21,6 +21,14 @@
   .head-block{padding-top:70px;padding-bottom:20px;text-align:center}
   .head-block h1{font-size:clamp(32px,5vw,48px);font-weight:700;line-height:1.2;margin:10px 0 12px}
   .head-block h1 i{font-style:normal;color:var(--rust)}
+  #certifications{padding:40px 0 10px}
+  .certs{grid-template-columns:repeat(auto-fill,minmax(230px,1fr))}
+  .tool.cert .badge{width:96px;height:96px;object-fit:contain;margin:0 0 14px}
+  .tool.cert h3{font-size:19px}
+  .tool.cert.soon{justify-content:flex-start;text-align:left}
+  .tool.cert.soon .badge{opacity:.55;filter:grayscale(.35)}
+  .tool.cert.soon h3{margin:12px 0 8px}
+  .fine-note{font-size:13px;color:var(--soft);margin-top:14px}
   #courses{padding:40px 0 10px}
   #concepts{padding:40px 0 10px}
   #tools{padding:40px 0 10px}
@@ -58,6 +66,46 @@
   <p class="lede" style="margin:0 auto">Hands-on ways to understand what AI can do for your business — and what it really costs.</p>
 </header>
 
+<section id="certifications">
+  <div class="wrap">
+    <span class="eyebrow">🏅 Claude Certification Series</span>
+    <h2 class="big">Prepare for Claude certification<i>.</i></h2>
+    <p class="lede">Free study courses for Anthropic's Claude certification exams, one module per exam domain, with practice questions throughout.</p>
+
+    <div class="tools certs">
+      <!-- To add a certification course: copy an <article>, add its badge to /assets/badges/ -->
+      <article class="card tool cert">
+        <img class="badge" src="/assets/badges/claude-associate-foundations.png" alt="Claude Certified Associate – Foundations badge" width="96" height="96">
+        <span class="pill">CCAO-F · 7 MODULES · 48 QUESTIONS</span>
+        <h3>Associate – Foundations</h3>
+        <p>Prompting, checking outputs, choosing products and models, workflows, Projects, governance and troubleshooting.</p>
+        <a class="btn" href="/courses/claude-associate/">Start the course →</a>
+      </article>
+      <article class="card tool cert">
+        <img class="badge" src="/assets/badges/claude-developer-foundations.png" alt="Claude Certified Developer – Foundations badge" width="96" height="96">
+        <span class="pill">CCDV-F · 8 MODULES · 92 QUESTIONS</span>
+        <h3>Developer – Foundations</h3>
+        <p>Agents, the Messages API, Claude Code, evals, model choice, context engineering, security, tools and MCP.</p>
+        <a class="btn" href="/courses/claude-developer/">Start the course →</a>
+      </article>
+      <article class="card tool cert soon">
+        <img class="badge" src="/assets/badges/claude-architect-foundations.png" alt="Claude Certified Architect – Foundations badge" width="96" height="96">
+        <span class="pill">CCA-F</span>
+        <h3>Architect – Foundations</h3>
+        <p>Coming soon.</p>
+      </article>
+      <article class="card tool cert">
+        <img class="badge" src="/assets/badges/claude-architect-professional.png" alt="Claude Certified Architect – Professional badge" width="96" height="96">
+        <span class="pill">CCAR-P · 7 MODULES · 76 QUESTIONS</span>
+        <h3>Architect – Professional</h3>
+        <p>Solution design, integration and RAG, evaluation, governance, stakeholders and team enablement.</p>
+        <a class="btn" href="/courses/claude-architect/">Start the course →</a>
+      </article>
+    </div>
+    <p class="fine-note">Unofficial study material. Not affiliated with or endorsed by Anthropic; badges identify the exam each course prepares for.</p>
+  </div>
+</section>
+
 <section id="courses">
   <div class="wrap">
     <span class="eyebrow">🎓 Courses</span>
@@ -83,24 +131,6 @@
         <h3>Designing ML Systems, in motion and in code</h3>
         <p>Chapter-by-chapter notes on Chip Huyen's <i>Designing Machine Learning Systems</i>: data engineering, training data, features, model development, deployment, monitoring, continual learning, MLOps infrastructure and responsible AI. Every idea gets an animation or demo, plus a Python code lab with its real output.</p>
         <a class="btn" href="/courses/ml-systems/">Open the notes →</a>
-      </article>
-      <article class="card tool">
-        <span class="pill">EXAM PREP · 7 MODULES · 31 SESSIONS</span>
-        <h3>Claude Certified Associate – Foundations</h3>
-        <p>A study course for Anthropic's CCAO-F exam, one module per exam domain: prompting, output validation, product and model choice, workflow design, Projects and connectors, responsible use, and troubleshooting. Animated workflows, example screens, prompts to copy, light Python with real output, and 48 practice questions.</p>
-        <a class="btn" href="/courses/claude-associate/">Start the course →</a>
-      </article>
-      <article class="card tool">
-        <span class="pill">EXAM PREP · 8 MODULES · 44 SESSIONS</span>
-        <h3>Claude Certified Developer – Foundations</h3>
-        <p>A study course for Anthropic's CCDV-F exam, one module per exam domain: agents and workflows, the Messages API and app design, Claude Code, evals and debugging, model choice and cost, prompt and context engineering, security, and tools and MCP. Animated diagrams, 77 Python cells with real output, config files, and 92 practice questions.</p>
-        <a class="btn" href="/courses/claude-developer/">Start the course →</a>
-      </article>
-      <article class="card tool">
-        <span class="pill">EXAM PREP · 7 MODULES · 38 SESSIONS</span>
-        <h3>Claude Certified Architect – Professional</h3>
-        <p>A study course for Anthropic's senior CCAR-P exam, one module per exam domain: solution design, models and context engineering, integration and RAG, evaluation, governance and compliance, stakeholders and the solution life cycle, and team enablement. Animated architectures, decision records, 48 Python cells with real output, and 76 practice questions.</p>
-        <a class="btn" href="/courses/claude-architect/">Start the course →</a>
       </article>
     </div>
   </div>
