@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 5: Context Management &amp; Reliability — Claude Architect (CCAR-F) course — XploreAI</title>
+<meta name="description" content="Keep exact facts alive through long conversations, escalate for the right reasons and ask when matches are ambiguous, propagate errors so coordinators can recover, stay coherent while exploring big codebases, route human review with calibrated confidence, and preserve sources and conflicts through multi-source synthesis.">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="XploreAI">
+<meta property="og:title" content="Module 5: Context Management &amp; Reliability — Claude Architect (CCAR-F) course">
+<meta property="og:description" content="Keep exact facts alive through long conversations, escalate for the right reasons and ask when matches are ambiguous, propagate errors so coordinators can recover, stay coherent while exploring big codebases, route human review with calibrated confidence, and preserve sources and conflicts through multi-source synthesis.">
+<meta property="og:url" content="https://xploreai.co.in/courses/claude-architect-foundations/module-5/">
+<meta property="og:image" content="https://xploreai.co.in/assets/og-image.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/style.css">
+<link rel="stylesheet" href="/courses/claude-architect-foundations/course.css?v=1793068677">
+</head>
+<body>
+
+<nav>
+  <div class="wrap bar">
+    <a class="wordmark" href="/">xplore<span>ai</span></a>
+    <ul>
+      <li><a href="/#agents">Solutions</a></li>
+      <li><a href="/#stories">Success Stories</a></li>
+      <li><a href="/#subscribe">Newsletter</a></li>
+      <li><a href="/learn.html" aria-current="page">Learn AI</a></li>
+      <li><a class="btn" href="https://wa.me/919769686931?text=Hi%20XploreAI%2C%20I%27m%20interested%20in%20AI%20automation!">Get Started</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main class="cca">
+<header class="mhero wrap">
+  <p class="crumb"><a href="/learn.html">Learn AI</a> / <a href="../">Claude Architect (CCAR-F) course</a> / Module 5</p>
+  <span class="pill">MODULE 5 OF 5 · DOMAIN 5 · 15% OF THE EXAM · 6 TASK STATEMENTS</span>
+  <h1>Context Management &amp; Reliability<i>.</i></h1>
+  <p class="lede">Keep exact facts alive through long conversations, escalate for the right reasons and ask when matches are ambiguous, propagate errors so coordinators can recover, stay coherent while exploring big codebases, route human review with calibrated confidence, and preserve sources and conflicts through multi-source synthesis.</p>
+  <div class="dl"><a class="btn" href="#s5-1">Start session 5.1 →</a> <a class="btn ghost" href="../code/module-5.py" download>Download the Python</a></div>
+</header>
+<div class="wrap layout">
+  <aside class="toc" aria-label="Sessions"><p>In this module</p><ol><li><a href="#s5-1"><span>5.1</span>Preserving critical information</a></li><li><a href="#s5-2"><span>5.2</span>Escalation and ambiguity</a></li><li><a href="#s5-3"><span>5.3</span>Error propagation across agents</a></li><li><a href="#s5-4"><span>5.4</span>Exploring large codebases</a></li><li><a href="#s5-5"><span>5.5</span>Human review and confidence</a></li><li><a href="#s5-6"><span>5.6</span>Provenance and uncertainty</a></li></ol></aside>
+  <div class="content">
+<section class="session" id="s5-1"><p class="snum">Task statement 5.1</p><h2>Preserving critical information</h2><p>Four things erode context in long interactions:</p><div class="tbl"><table><thead><tr><th>Problem</th><th>What happens</th><th>Fix</th></tr></thead><tbody><tr><td><strong>Progressive summarisation</strong></td><td>Amounts, percentages, dates and what the customer was promised become vague ("about $90", "early next week")</td><td>Keep transactional facts in a persistent <strong>case facts</strong> block outside the summarised history</td></tr><tr><td><strong>Lost in the middle</strong></td><td>Findings in the middle of long inputs get less attention than the start and end</td><td>Put a <strong>key findings summary first</strong>; organise details under explicit section headers</td></tr><tr><td><strong>Tool-result bloat</strong></td><td>A 40-field order lookup when 5 fields matter, repeated every turn</td><td><strong>Trim</strong> tool outputs to the relevant fields before they accumulate</td></tr><tr><td><strong>Missing history</strong></td><td>Requests sent without the full conversation lose coherence</td><td>Always pass the <strong>complete</strong> history (minus what you've deliberately trimmed)</td></tr></tbody></table></div><p>For <strong>multi-issue sessions</strong>, keep a structured layer per issue (order ID, amount, status) so three problems in one conversation don't blur together. In multi-agent systems, have upstream agents return <strong>structured facts with metadata</strong> (dates, sources, relevance) rather than long prose and reasoning, especially when downstream agents have small context budgets.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">import json
+
+order_lookup = {   # what the orders API returns (abridged here: imagine 40+ fields)
+    &quot;order_id&quot;: &quot;ORD-1182&quot;, &quot;status&quot;: &quot;delivered&quot;, &quot;delivered_at&quot;: &quot;2026-10-09&quot;, &quot;total&quot;: 42.00, &quot;currency&quot;: &quot;USD&quot;,
+    &quot;items&quot;: [{&quot;sku&quot;: &quot;BLD-200&quot;, &quot;name&quot;: &quot;Blender&quot;, &quot;qty&quot;: 1, &quot;price&quot;: 42.00, &quot;returnable&quot;: True}],
+    &quot;warehouse&quot;: &quot;PNQ-3&quot;, &quot;carrier&quot;: &quot;BlueDart&quot;, &quot;carrier_events&quot;: [{&quot;t&quot;: i, &quot;e&quot;: &quot;scan&quot;} for i in range(14)],
+    &quot;billing_address&quot;: &quot;...&quot;, &quot;shipping_address&quot;: &quot;...&quot;, &quot;gift_wrap&quot;: False, &quot;loyalty_points&quot;: 84,
+    &quot;fraud_score&quot;: 0.02, &quot;marketing_opt_in&quot;: True, &quot;audit&quot;: {&quot;created_by&quot;: &quot;web&quot;, &quot;version&quot;: 7},
+}
+RETURN_FIELDS = [&quot;order_id&quot;, &quot;status&quot;, &quot;delivered_at&quot;, &quot;total&quot;, &quot;items&quot;]
+trimmed = {k: order_lookup[k] for k in RETURN_FIELDS}
+trimmed[&quot;items&quot;] = [{k: i[k] for k in (&quot;name&quot;, &quot;price&quot;, &quot;returnable&quot;)} for i in trimmed[&quot;items&quot;]]
+
+case_facts = {&quot;issues&quot;: [
+    {&quot;id&quot;: 1, &quot;order&quot;: &quot;ORD-1182&quot;, &quot;problem&quot;: &quot;blender arrived broken&quot;, &quot;amount&quot;: 42.00, &quot;status&quot;: &quot;refund issued&quot;},
+    {&quot;id&quot;: 2, &quot;order&quot;: &quot;ORD-1190&quot;, &quot;problem&quot;: &quot;charged twice&quot;, &quot;amount&quot;: 129.00, &quot;status&quot;: &quot;awaiting billing review&quot;},
+], &quot;promised&quot;: &quot;update on issue 2 by email before 17:00 IST, 28 Oct&quot;}
+
+print(f&quot;raw lookup ≈ {len(json.dumps(order_lookup)) // 4} tokens; trimmed ≈ {len(json.dumps(trimmed)) // 4} tokens&quot;)
+print(&quot;trimmed:&quot;, trimmed)
+print(&quot;\n&lt;case_facts&gt;&quot; + json.dumps(case_facts) + &quot;&lt;/case_facts&gt;   ← carried verbatim every turn&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>raw lookup ≈ 196 tokens; trimmed ≈ 39 tokens
+trimmed: {&#x27;order_id&#x27;: &#x27;ORD-1182&#x27;, &#x27;status&#x27;: &#x27;delivered&#x27;, &#x27;delivered_at&#x27;: &#x27;2026-10-09&#x27;, &#x27;total&#x27;: 42.0, &#x27;items&#x27;: [{&#x27;name&#x27;: &#x27;Blender&#x27;, &#x27;price&#x27;: 42.0, &#x27;returnable&#x27;: True}]}
+
+&lt;case_facts&gt;{&quot;issues&quot;: [{&quot;id&quot;: 1, &quot;order&quot;: &quot;ORD-1182&quot;, &quot;problem&quot;: &quot;blender arrived broken&quot;, &quot;amount&quot;: 42.0, &quot;status&quot;: &quot;refund issued&quot;}, {&quot;id&quot;: 2, &quot;order&quot;: &quot;ORD-1190&quot;, &quot;problem&quot;: &quot;charged twice&quot;, &quot;amount&quot;: 129.0, &quot;status&quot;: &quot;awaiting billing review&quot;}], &quot;promised&quot;: &quot;update on issue 2 by email before 17:00 IST, 28 Oct&quot;}&lt;/case_facts&gt;   ← carried verbatim every turn</pre></div></div><aside class="call read"><b>How to read it</b><p>The trimmed lookup keeps exactly what a return decision needs at about a fifth of the size, and that saving repeats on every later turn. The case-facts block holds both issues' exact amounts and the specific promise made to the customer, so a summary that drifts to "some refund, will update soon" can't erase them.</p></aside><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>In long support conversations, the agent later quotes refund amounts and promised dates vaguely or wrongly. History is being summarised to stay within limits. What's the fix?</p><div class="opts"><button type="button" data-ok="0">A. Stop summarising and let the context grow without limit</button><button type="button" data-ok="1">B. Extract transactional facts (amounts, dates, order numbers, statuses, promises) into a persistent case-facts block included in every prompt, outside the summarised history</button><button type="button" data-ok="0">C. Tell the model to "remember precisely"</button><button type="button" data-ok="0">D. Shorten the system prompt</button></div><p class="why" hidden>Summaries are lossy by design. A small structured block of exact facts survives any amount of summarisation.</p></div><div class="quiz" data-multi="1"><p class="q"><b>Practice question</b><span class="n">Select 2</span>A synthesis agent receives 30 pages of aggregated subagent output and keeps missing findings from the middle sections. Which changes help? (Select 2)</p><div class="opts"><button type="button" data-ok="1">A. Put a key-findings summary at the beginning of the aggregated input</button><button type="button" data-ok="0">B. Repeat the full output twice</button><button type="button" data-ok="1">C. Organise the detailed results under explicit section headers</button><button type="button" data-ok="0">D. Move the most important findings to the middle</button></div><button type=button class=check>Check answer</button><p class="why" hidden>Models attend most reliably to the start and end of long inputs. A leading summary and clear sections counter the position effect.</p></div></section><section class="session" id="s5-2"><p class="snum">Task statement 5.2</p><h2>Escalation and ambiguity</h2><div class="tbl"><table><thead><tr><th>Trigger</th><th>Escalate?</th><th>How</th></tr></thead><tbody><tr><td>Customer <strong>explicitly asks</strong> for a human</td><td>✓ Immediately</td><td>Don't investigate first; hand over with a structured summary</td></tr><tr><td><strong>Policy is ambiguous or silent</strong> on the request (a policy gap)</td><td>✓</td><td>E.g. competitor price matching when policy only covers own-site adjustments</td></tr><tr><td><strong>Can't make meaningful progress</strong></td><td>✓</td><td>After real attempts; with what was tried</td></tr><tr><td>Customer is <strong>frustrated</strong>, issue is straightforward</td><td>✗ Not on its own</td><td>Acknowledge the frustration, offer the resolution; escalate if they <strong>reiterate</strong> they want a person</td></tr><tr><td><strong>Complex</strong> but within policy and capability</td><td>✗ Not on its own</td><td>Keep working</td></tr></tbody></table></div><aside class="call warn"><b>Watch out</b><p><strong>Two unreliable proxies.</strong> Sentiment-based escalation and the model's <strong>self-reported confidence</strong> don't track case complexity. An agent that's wrongly confident on hard policy-exception cases will rate itself highly on exactly those. Calibrate escalation with <strong>explicit criteria plus few-shot examples</strong> in the system prompt, the official sample answer for an agent stuck at 55% first-contact resolution.</p></aside><figure class="seq anim" style="--c:4"><figcaption>Frustrated, straightforward: resolve first; a repeated request: hand over</figcaption><div class="actors"><b>Customer</b><b>Agent</b><b>Orders tool</b><b>Human queue</b></div><div class="lane"><div class="m r" style="grid-column:1/3;--s:2;--k:0"><span>"THIRD TIME asking! My kettle arrived broken." (photo)</span><i></i></div><div class="m note" style="grid-column:2/3;--k:1"><span>Frustrated, but within policy and capability: no trigger yet</span></div><div class="m r" style="grid-column:2/4;--s:2;--k:2"><span>lookup_order + check_damage_policy</span><i></i></div><div class="m l reply" style="grid-column:2/4;--s:2;--k:3"><span>eligible for replacement</span><i></i></div><div class="m l reply" style="grid-column:1/3;--s:2;--k:4"><span>apologises, arranges the replacement, offers a person</span><i></i></div><div class="m r" style="grid-column:1/3;--s:2;--k:5"><span>"No, I want a person."</span><i></i></div><div class="m r" style="grid-column:2/5;--s:3;--k:6"><span>escalate now, with a structured summary</span><i></i></div></div></figure><p><strong>Ambiguous matches need clarification, not guesswork.</strong> When a lookup returns several customers, ask for another identifier; never pick one by heuristic ("the most recent", "the first").</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">def handle(turn):
+    if turn.get(&quot;asks_for_human&quot;):
+        return &quot;ESCALATE now with a structured summary (don&#x27;t investigate first)&quot;
+    if turn.get(&quot;policy&quot;) == &quot;silent&quot;:
+        return &quot;ESCALATE: policy gap — a person must decide&quot;
+    matches = turn.get(&quot;customer_matches&quot;, 1)
+    if matches &gt; 1:
+        return f&quot;ASK for another identifier ({matches} customers match); never guess&quot;
+    if turn.get(&quot;frustrated&quot;) and turn.get(&quot;straightforward&quot;):
+        if turn.get(&quot;reiterated_human&quot;):
+            return &quot;ESCALATE: they asked again for a person&quot;
+        return &quot;acknowledge frustration, offer the fix, mention a person is available&quot;
+    return &quot;resolve&quot;
+
+turns = [
+    (&quot;&#x27;Just get me a human.&#x27;&quot;,                                        dict(asks_for_human=True)),
+    (&quot;&#x27;Match AnyMart&#x27;s price, it&#x27;s ₹400 cheaper.&#x27;&quot;,                   dict(policy=&quot;silent&quot;)),
+    (&quot;&#x27;I&#x27;m Rahul Shah, refund my order.&#x27; (3 Rahul Shahs found)&quot;,      dict(customer_matches=3)),
+    (&quot;&#x27;THIRD TIME asking! Replace my damaged kettle!&#x27; (photo attached)&quot;, dict(frustrated=True, straightforward=True)),
+    (&quot;Same customer: &#x27;No, I want a person.&#x27;&quot;,                         dict(frustrated=True, straightforward=True, reiterated_human=True)),
+    (&quot;Standard damage replacement with photo evidence&quot;,               dict(straightforward=True)),
+]
+for text, t in turns:
+    print(f&quot;{handle(t):&lt;74} ← {text}&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>ESCALATE now with a structured summary (don&#x27;t investigate first)           ← &#x27;Just get me a human.&#x27;
+ESCALATE: policy gap — a person must decide                                ← &#x27;Match AnyMart&#x27;s price, it&#x27;s ₹400 cheaper.&#x27;
+ASK for another identifier (3 customers match); never guess                ← &#x27;I&#x27;m Rahul Shah, refund my order.&#x27; (3 Rahul Shahs found)
+acknowledge frustration, offer the fix, mention a person is available      ← &#x27;THIRD TIME asking! Replace my damaged kettle!&#x27; (photo attached)
+ESCALATE: they asked again for a person                                    ← Same customer: &#x27;No, I want a person.&#x27;
+resolve                                                                    ← Standard damage replacement with photo evidence</pre></div></div><aside class="call read"><b>How to read it</b><p>Frustration alone gets resolution, not escalation, until the customer reiterates that they want a person; then it's immediate. The standard damage replacement with a photo is resolved autonomously, which is exactly what the 55%-resolution agent was escalating wrongly. Three customers called Rahul Shah means asking for an email or order number, not picking one.</p></aside><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>An agent resolves 55% of contacts against an 80% target. It escalates routine damage replacements that have photo evidence, but tries to handle policy exceptions on its own. What's the most effective first improvement?</p><div class="opts"><button type="button" data-ok="1">A. Add explicit escalation criteria with few-shot examples of when to escalate versus resolve</button><button type="button" data-ok="0">B. Have the agent self-rate its confidence 1–10 and escalate below a threshold</button><button type="button" data-ok="0">C. Train a separate classifier on historical tickets</button><button type="button" data-ok="0">D. Escalate when sentiment analysis detects frustration</button></div><p class="why" hidden>The decision boundary is unclear, so state it with examples. Self-reported confidence is poorly calibrated (it's already confident on the hard cases), a classifier is over-engineered as a first step, and sentiment doesn't measure complexity.</p></div><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>get_customer returns two accounts named "Priya Nair". What should the agent do?</p><div class="opts"><button type="button" data-ok="0">A. Choose the account with the most recent order</button><button type="button" data-ok="0">B. Choose the first result</button><button type="button" data-ok="1">C. Ask the customer for an additional identifier, such as email or order number</button><button type="button" data-ok="0">D. Escalate immediately</button></div><p class="why" hidden>Picking by heuristic risks acting on the wrong account. Asking for one more identifier resolves the ambiguity safely and quickly.</p></div></section><section class="session" id="s5-3"><p class="snum">Task statement 5.3</p><h2>Error propagation across agents</h2><p>When a subagent fails, what the coordinator receives decides what it can do. A <strong>structured error context</strong> carries: the <strong>failure type</strong>, <strong>what was attempted</strong>, any <strong>partial results</strong>, and possible <strong>alternatives</strong>. Two anti-patterns the guide names:</p><ul><li><strong>Suppressing</strong> errors: returning an empty result marked "success". The coordinator thinks the search worked and found nothing.</li><li><strong>Terminating</strong> the whole workflow on one subagent failure, when partial results and alternatives could still produce a useful report.</li></ul><p>Subagents should <strong>recover locally</strong> from transient failures (a bounded retry) and propagate only what they can't resolve. The final synthesis should carry <strong>coverage annotations</strong>: which findings are well supported, which areas have gaps because a source was unavailable.</p><figure class="seq anim" style="--c:3"><figcaption>A timeout, propagated usefully</figcaption><div class="actors"><b>Coordinator</b><b>Web search subagent</b><b>Search API</b></div><div class="lane"><div class="m r" style="grid-column:1/3;--s:2;--k:0"><span>research "EU rules on AI in hiring"</span><i></i></div><div class="m r" style="grid-column:2/4;--s:2;--k:1"><span>query (retry once on timeout)</span><i></i></div><div class="m l reply" style="grid-column:2/4;--s:2;--k:2"><span>timeout again</span><i></i></div><div class="m l reply" style="grid-column:1/3;--s:2;--k:3"><span>{failure: timeout, attempted: 2 queries, partial: 4 sources, alternatives: [use the document-analysis agent's EU corpus]}</span><i></i></div><div class="m r" style="grid-column:1/3;--s:2;--k:4"><span>narrower query for the missing subtopic</span><i></i></div><div class="m note" style="grid-column:1/2;--k:5"><span>Report ships with a coverage note on what's thin</span></div></div></figure><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">OUTCOMES = {
+    &quot;regulation&quot;:  {&quot;ok&quot;: True,  &quot;findings&quot;: 6},
+    &quot;case law&quot;:    {&quot;ok&quot;: False, &quot;failure&quot;: &quot;timeout&quot;, &quot;attempted&quot;: &quot;2 queries&quot;, &quot;partial&quot;: 2, &quot;alternatives&quot;: [&quot;legal DB via analysis agent&quot;]},
+    &quot;vendor tools&quot;: {&quot;ok&quot;: True,  &quot;findings&quot;: 0},                               # searched; genuinely nothing
+    &quot;worker views&quot;: {&quot;ok&quot;: False, &quot;failure&quot;: &quot;permission&quot;, &quot;attempted&quot;: &quot;survey archive&quot;, &quot;partial&quot;: 0, &quot;alternatives&quot;: []},
+}
+def coordinate(outcomes):
+    report = []
+    for topic, o in outcomes.items():
+        if o[&quot;ok&quot;] and o[&quot;findings&quot;]:   report.append((topic, f&quot;well supported ({o[&#x27;findings&#x27;]} sources)&quot;))
+        elif o[&quot;ok&quot;]:                   report.append((topic, &quot;searched: no relevant sources exist&quot;))
+        elif o[&quot;alternatives&quot;]:         report.append((topic, f&quot;PARTIAL: {o[&#x27;partial&#x27;]} sources; retrying via {o[&#x27;alternatives&#x27;][0]}&quot;))
+        else:                           report.append((topic, f&quot;GAP: {o[&#x27;failure&#x27;]} on {o[&#x27;attempted&#x27;]}; not covered&quot;))
+    return report
+
+for topic, note in coordinate(OUTCOMES):
+    print(f&quot;{topic:&lt;13} {note}&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>regulation    well supported (6 sources)
+case law      PARTIAL: 2 sources; retrying via legal DB via analysis agent
+vendor tools  searched: no relevant sources exist
+worker views  GAP: permission on survey archive; not covered</pre></div></div><aside class="call read"><b>How to read it</b><p>The report still ships, and it's honest about coverage: one area is solid, one has partial results with an alternative route under way, one was searched and genuinely has nothing, and one is a gap because of a permission failure. Had the failures been suppressed as empty successes, the last two lines would have read the same as "vendor tools": a false claim that nothing exists.</p></aside><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>A web search subagent times out. Which way of reporting it back best enables recovery?</p><div class="opts"><button type="button" data-ok="1">A. Structured context: failure type, the attempted query, partial results and possible alternatives</button><button type="button" data-ok="0">B. Retry with backoff inside the subagent, then return a generic "search unavailable"</button><button type="button" data-ok="0">C. Return an empty result marked as success</button><button type="button" data-ok="0">D. Raise the exception to a top-level handler that ends the workflow</button></div><p class="why" hidden>Structured context lets the coordinator retry differently, try an alternative or proceed with partial results. Generic statuses hide information, suppression fakes success, and termination throws away recoverable work.</p></div></section><section class="session" id="s5-4"><p class="snum">Task statement 5.4</p><h2>Exploring large codebases</h2><p>In long exploration sessions, context degrades: answers become inconsistent, and the model starts citing "typical patterns" instead of the specific classes it found an hour ago. The guide's countermeasures:</p><div class="tbl"><table><thead><tr><th>Technique</th><th>Does</th></tr></thead><tbody><tr><td><strong>Scratchpad files</strong></td><td>The agent writes key findings to a file and re-reads it for later questions</td></tr><tr><td><strong>Subagent delegation</strong></td><td>"Find all test files", "trace the refund flow's dependencies" run in subagents; the main agent keeps the high-level picture</td></tr><tr><td><strong>Summaries between phases</strong></td><td>Summarise one phase's findings and inject that summary into the next phase's subagents</td></tr><tr><td><strong>State manifests for crash recovery</strong></td><td>Each agent exports state to a known location; on resume, the coordinator loads the manifest and injects it into prompts</td></tr><tr><td><strong><code>/compact</code></strong></td><td>Reduces context usage when it fills with verbose discovery output</td></tr></tbody></table></div><p>Here's a scratchpad and a manifest surviving a crash, using real files in a temporary folder.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">import json, os, tempfile
+
+work = tempfile.mkdtemp()
+scratch, manifest = os.path.join(work, &quot;scratchpad.md&quot;), os.path.join(work, &quot;manifest.json&quot;)
+
+def note(line):
+    with open(scratch, &quot;a&quot;) as f: f.write(f&quot;- {line}\n&quot;)
+
+def save_state(agent, state):
+    m = json.load(open(manifest)) if os.path.exists(manifest) else {}
+    m[agent] = state
+    json.dump(m, open(manifest, &quot;w&quot;), indent=1)
+
+# Phase 1: exploration (findings persisted as we go)
+note(&quot;Refund entry point: api/refunds.py:post_refund → services/refunds.py:issue_refund&quot;)
+note(&quot;Money stored as integer paise in models/payment.py (Payment.amount_paise)&quot;)
+save_state(&quot;explorer&quot;, {&quot;phase&quot;: &quot;trace-refund-flow&quot;, &quot;done&quot;: [&quot;api&quot;, &quot;services&quot;], &quot;next&quot;: [&quot;gateway client&quot;, &quot;webhooks&quot;]})
+save_state(&quot;test-mapper&quot;, {&quot;phase&quot;: &quot;find-tests&quot;, &quot;done&quot;: [&quot;tests/api&quot;], &quot;next&quot;: [&quot;tests/services&quot;]})
+# ... process crashes here ...
+
+# Resume: coordinator loads the manifest and scratchpad and injects them
+state = json.load(open(manifest))
+resume_prompt = &quot;Resuming. Key findings so far:\n&quot; + open(scratch).read() + &quot;\nAgent state:\n&quot; + &quot;\n&quot;.join(f&quot;  {a}: {json.dumps(s)}&quot; for a, s in state.items())
+print(resume_prompt)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>Resuming. Key findings so far:
+- Refund entry point: api/refunds.py:post_refund → services/refunds.py:issue_refund
+- Money stored as integer paise in models/payment.py (Payment.amount_paise)
+
+Agent state:
+  explorer: {&quot;phase&quot;: &quot;trace-refund-flow&quot;, &quot;done&quot;: [&quot;api&quot;, &quot;services&quot;], &quot;next&quot;: [&quot;gateway client&quot;, &quot;webhooks&quot;]}
+  test-mapper: {&quot;phase&quot;: &quot;find-tests&quot;, &quot;done&quot;: [&quot;tests/api&quot;], &quot;next&quot;: [&quot;tests/services&quot;]}</pre></div></div><aside class="call read"><b>How to read it</b><p>After the crash nothing has to be rediscovered: the coordinator rebuilds each agent's prompt from the manifest (what's done, what's next) and the scratchpad's specific findings, such as the exact entry point and the integer-paise rule. Those are precisely the details that degrade into "typical patterns" in a long, overflowing session.</p></aside><div class="quiz" data-multi="1"><p class="q"><b>Practice question</b><span class="n">Select 2</span>Two hours into exploring a legacy codebase, the agent starts answering with generic descriptions ("typically, services call repositories") instead of the specific classes it found earlier. What helps? (Select 2)</p><div class="opts"><button type="button" data-ok="1">A. Have the agent maintain a scratchpad file of key findings and consult it for later questions</button><button type="button" data-ok="0">B. Ask the same question again</button><button type="button" data-ok="1">C. Delegate focused investigations to subagents and keep only summaries in the main context</button><button type="button" data-ok="0">D. Switch off CLAUDE.md</button></div><button type=button class=check>Check answer</button><p class="why" hidden>Context degradation in long sessions is countered by persisting specific findings outside the context and isolating verbose exploration in subagents.</p></div></section><section class="session" id="s5-5"><p class="snum">Task statement 5.5</p><h2>Human review and confidence</h2><p>Before reducing human review, verify accuracy <strong>by segment</strong>. An aggregate like "97% accurate" can hide a document type or field that's far worse. Then:</p><ul><li>Have the model output <strong>field-level confidence</strong>, and <strong>calibrate</strong> thresholds on a labelled validation set.</li><li>Route <strong>low-confidence</strong> extractions, and those from <strong>ambiguous or contradictory</strong> sources, to people first; reviewer capacity is limited.</li><li>Keep measuring the "trusted" path with <strong>stratified random sampling</strong> of high-confidence extractions, so you catch new error patterns.</li></ul><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">import random
+random.seed(9)
+
+RESULTS = {  # (document type, field): (checked, correct)
+    (&quot;typed invoice&quot;, &quot;total&quot;):    (4_000, 3_964), (&quot;typed invoice&quot;, &quot;date&quot;): (4_000, 3_952),
+    (&quot;scanned receipt&quot;, &quot;total&quot;):  (1_500, 1_455), (&quot;scanned receipt&quot;, &quot;date&quot;): (1_500, 1_440),
+    (&quot;handwritten note&quot;, &quot;total&quot;): (300, 231),     (&quot;handwritten note&quot;, &quot;date&quot;): (300, 249),
+}
+checked = sum(c for c, _ in RESULTS.values()); correct = sum(k for _, k in RESULTS.values())
+print(f&quot;overall accuracy: {correct / checked:.1%}\n&quot;)
+for (doc, field), (c, k) in RESULTS.items():
+    acc = k / c
+    print(f&quot;{doc:&lt;17}{field:&lt;6} {acc:6.1%}{&#x27;  ← below 95%: keep full human review&#x27; if acc &lt; 0.95 else &#x27;&#x27;}&quot;)
+
+high_conf = [(&quot;typed invoice&quot;, i) for i in range(3_000)] + [(&quot;scanned receipt&quot;, i) for i in range(900)] + [(&quot;handwritten note&quot;, i) for i in range(40)]
+per_stratum = 25
+sample = {d: random.sample([x for x in high_conf if x[0] == d], per_stratum) for d in (&quot;typed invoice&quot;, &quot;scanned receipt&quot;, &quot;handwritten note&quot;)}
+print(&quot;\nweekly audit of high-confidence extractions:&quot;, {d: len(s) for d, s in sample.items()}, &quot;(equal per type, not proportional)&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>overall accuracy: 97.3%
+
+typed invoice    total   99.1%
+typed invoice    date    98.8%
+scanned receipt  total   97.0%
+scanned receipt  date    96.0%
+handwritten note total   77.0%  ← below 95%: keep full human review
+handwritten note date    83.0%  ← below 95%: keep full human review
+
+weekly audit of high-confidence extractions: {&#x27;typed invoice&#x27;: 25, &#x27;scanned receipt&#x27;: 25, &#x27;handwritten note&#x27;: 25} (equal per type, not proportional)</pre></div></div><aside class="call read"><b>How to read it</b><p>The headline 97.3% hides handwritten notes at 77% (totals) and 83% (dates): automating those on the strength of the overall number would let roughly one in five through wrong. The audit samples the same number from each document type, so the rare handwritten notes get checked as often as the abundant typed invoices; a simple random sample would almost never pick them.</p></aside><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>An extraction pipeline is 97% accurate overall, and the team wants to stop human review of high-confidence extractions. What should happen first?</p><div class="opts"><button type="button" data-ok="0">A. Stop reviewing immediately: 97% is high</button><button type="button" data-ok="1">B. Analyse accuracy by document type and field, confirm every segment performs consistently, and keep stratified sampling of high-confidence extractions</button><button type="button" data-ok="0">C. Lower the confidence threshold</button><button type="button" data-ok="0">D. Review only the lowest-confidence 1%</button></div><p class="why" hidden>Aggregates can mask weak segments. Segment-level validation before automating, plus ongoing stratified sampling, protects against hidden error pockets and new patterns.</p></div></section><section class="session" id="s5-6"><p class="snum">Task statement 5.6</p><h2>Provenance and uncertainty</h2><p>When findings are summarised and merged, <strong>source attribution is easily lost</strong>: a claim survives, but nobody can say where it came from. In multi-source synthesis:</p><ul><li>Require subagents to output <strong>claim–source mappings</strong> (source URL or document, excerpt, <strong>publication or collection date</strong>), and require the synthesis agent to <strong>preserve and merge</strong> them.</li><li>When credible sources <strong>conflict</strong>, include both values with attribution and annotate the conflict; don't silently pick one. Let the coordinator decide how to reconcile.</li><li>Check <strong>dates</strong> first: two figures from different years may be a trend, not a contradiction.</li><li>Structure the report into <strong>well-established</strong> and <strong>contested</strong> findings, keep each source's own characterisation, and render each content type appropriately: financial data as tables, news as prose, technical findings as lists.</li></ul><figure class="seq anim" style="--c:4"><figcaption>Keeping sources attached through synthesis</figcaption><div class="actors"><b>Search subagent</b><b>Analysis subagent</b><b>Coordinator</b><b>Synthesis subagent</b></div><div class="lane"><div class="m r reply" style="grid-column:1/4;--s:3;--k:0"><span>claims + source URL + excerpt + date</span><i></i></div><div class="m r reply" style="grid-column:2/4;--s:2;--k:1"><span>claims + document + page + date</span><i></i></div><div class="m note" style="grid-column:3/4;--k:2"><span>Conflicting values kept side by side, annotated; dates checked</span></div><div class="m r" style="grid-column:3/5;--s:2;--k:3"><span>merged claim–source map (nothing paraphrased away)</span><i></i></div><div class="m l reply" style="grid-column:3/5;--s:2;--k:4"><span>report: well-established vs contested, every claim cited</span><i></i></div></div></figure><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">CLAIMS = [
+    {&quot;metric&quot;: &quot;AI use in hiring (share of firms)&quot;, &quot;value&quot;: &quot;38%&quot;, &quot;source&quot;: &quot;EU Labour Survey&quot;, &quot;date&quot;: &quot;2025-11&quot;},
+    {&quot;metric&quot;: &quot;AI use in hiring (share of firms)&quot;, &quot;value&quot;: &quot;41%&quot;, &quot;source&quot;: &quot;Recruiters Assoc. report&quot;, &quot;date&quot;: &quot;2025-12&quot;},
+    {&quot;metric&quot;: &quot;AI use in hiring (share of firms)&quot;, &quot;value&quot;: &quot;23%&quot;, &quot;source&quot;: &quot;EU Labour Survey&quot;, &quot;date&quot;: &quot;2023-06&quot;},
+    {&quot;metric&quot;: &quot;Candidates told about AI screening&quot;, &quot;value&quot;: &quot;12%&quot;, &quot;source&quot;: &quot;Consumer Watch&quot;, &quot;date&quot;: &quot;2026-02&quot;},
+    {&quot;metric&quot;: &quot;Candidates told about AI screening&quot;, &quot;value&quot;: &quot;31%&quot;, &quot;source&quot;: &quot;HR Tech Index&quot;, &quot;date&quot;: &quot;2026-03&quot;},
+]
+from collections import defaultdict
+by_metric = defaultdict(list)
+for c in CLAIMS: by_metric[c[&quot;metric&quot;]].append(c)
+
+for metric, cs in by_metric.items():
+    print(f&quot;\n{metric}&quot;)
+    years = {c[&quot;date&quot;][:4] for c in cs}
+    recent = [c for c in cs if c[&quot;date&quot;][:4] == max(years)] if len(years) &gt; 1 else cs
+    older = [c for c in cs if c not in recent]
+    for c in older:
+        print(f&quot;   trend context: {c[&#x27;value&#x27;]} ({c[&#x27;source&#x27;]}, {c[&#x27;date&#x27;]}) — earlier year, not a contradiction&quot;)
+    vals = {c[&quot;value&quot;] for c in recent}
+    spread = max(float(v[:-1]) for v in vals) - min(float(v[:-1]) for v in vals)
+    label = &quot;WELL-ESTABLISHED (sources agree within 5 points)&quot; if spread &lt;= 5 else &quot;CONTESTED: show both, with sources&quot;
+    print(f&quot;   {label}&quot;)
+    for c in recent:
+        print(f&quot;     {c[&#x27;value&#x27;]:&lt;5} {c[&#x27;source&#x27;]} ({c[&#x27;date&#x27;]})&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>
+AI use in hiring (share of firms)
+   trend context: 23% (EU Labour Survey, 2023-06) — earlier year, not a contradiction
+   WELL-ESTABLISHED (sources agree within 5 points)
+     38%   EU Labour Survey (2025-11)
+     41%   Recruiters Assoc. report (2025-12)
+
+Candidates told about AI screening
+   CONTESTED: show both, with sources
+     12%   Consumer Watch (2026-02)
+     31%   HR Tech Index (2026-03)</pre></div></div><aside class="call read"><b>How to read it</b><p>For AI use in hiring, the 2023 figure is placed as earlier context rather than flagged as conflicting, and the two recent figures agree within a few points: well established. For disclosure to candidates, 12% and 31% from similar dates genuinely conflict, so both go into the report with their sources under "contested", instead of the synthesis quietly picking one.</p></aside><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>Two credible sources report 12% and 31% for the same statistic, published a month apart. How should the synthesis handle it?</p><div class="opts"><button type="button" data-ok="0">A. Use the higher figure</button><button type="button" data-ok="0">B. Average them to about 21%</button><button type="button" data-ok="1">C. Report both values with their sources, annotate the conflict, and place the finding under contested findings</button><button type="button" data-ok="0">D. Drop the statistic</button></div><p class="why" hidden>Arbitrarily choosing or averaging hides a real disagreement. Preserving both with attribution lets readers, or the coordinator, weigh the sources.</p></div><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>A report says sources "contradict each other" on adoption: 23% versus 40%. The first is from 2023, the second from 2025. What went wrong upstream?</p><div class="opts"><button type="button" data-ok="0">A. Nothing: they do contradict</button><button type="button" data-ok="1">B. Subagents didn't carry publication dates, so a trend over time was misread as a contradiction</button><button type="button" data-ok="0">C. The synthesis model is too small</button><button type="button" data-ok="0">D. The figures should have been averaged</button></div><p class="why" hidden>Requiring dates in structured outputs lets synthesis tell temporal change from genuine conflict.</p></div></section>
+  <div class="pager"><a class="btn ghost" href="../module-4/">← Module 4</a><a class="btn" href="../">Course home →</a></div>
+  </div>
+</div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="fine" style="border:none;margin:0;padding:0">
+      <span>© 2026 XploreAI · <a href="/">xploreai.co.in</a></span>
+      <span><a href="mailto:hello@xploreai.co.in">hello@xploreai.co.in</a></span>
+    </div>
+  </div>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/json.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/bash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/markdown.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/typescript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/yaml.min.js"></script>
+<script src="/courses/claude-architect-foundations/course.js?v=1793068677"></script>
+</body>
+</html>

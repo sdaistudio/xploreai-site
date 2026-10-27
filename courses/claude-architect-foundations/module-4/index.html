@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 4: Prompt Engineering &amp; Structured Output — Claude Architect (CCAR-F) course — XploreAI</title>
+<meta name="description" content="Replace vague instructions with explicit criteria, use few-shot examples that show reasoning, get schema-compliant output through tool use and design schemas that don&#x27;t invite fabrication, validate and retry intelligently, match batch processing to latency needs, and review with independent instances and multiple passes.">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="XploreAI">
+<meta property="og:title" content="Module 4: Prompt Engineering &amp; Structured Output — Claude Architect (CCAR-F) course">
+<meta property="og:description" content="Replace vague instructions with explicit criteria, use few-shot examples that show reasoning, get schema-compliant output through tool use and design schemas that don&#x27;t invite fabrication, validate and retry intelligently, match batch processing to latency needs, and review with independent instances and multiple passes.">
+<meta property="og:url" content="https://xploreai.co.in/courses/claude-architect-foundations/module-4/">
+<meta property="og:image" content="https://xploreai.co.in/assets/og-image.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/style.css">
+<link rel="stylesheet" href="/courses/claude-architect-foundations/course.css?v=1793068677">
+</head>
+<body>
+
+<nav>
+  <div class="wrap bar">
+    <a class="wordmark" href="/">xplore<span>ai</span></a>
+    <ul>
+      <li><a href="/#agents">Solutions</a></li>
+      <li><a href="/#stories">Success Stories</a></li>
+      <li><a href="/#subscribe">Newsletter</a></li>
+      <li><a href="/learn.html" aria-current="page">Learn AI</a></li>
+      <li><a class="btn" href="https://wa.me/919769686931?text=Hi%20XploreAI%2C%20I%27m%20interested%20in%20AI%20automation!">Get Started</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main class="cca">
+<header class="mhero wrap">
+  <p class="crumb"><a href="/learn.html">Learn AI</a> / <a href="../">Claude Architect (CCAR-F) course</a> / Module 4</p>
+  <span class="pill">MODULE 4 OF 5 · DOMAIN 4 · 20% OF THE EXAM · 6 TASK STATEMENTS</span>
+  <h1>Prompt Engineering &amp; Structured Output<i>.</i></h1>
+  <p class="lede">Replace vague instructions with explicit criteria, use few-shot examples that show reasoning, get schema-compliant output through tool use and design schemas that don't invite fabrication, validate and retry intelligently, match batch processing to latency needs, and review with independent instances and multiple passes.</p>
+  <div class="dl"><a class="btn" href="#s4-1">Start session 4.1 →</a> <a class="btn ghost" href="../code/module-4.py" download>Download the Python</a></div>
+</header>
+<div class="wrap layout">
+  <aside class="toc" aria-label="Sessions"><p>In this module</p><ol><li><a href="#s4-1"><span>4.1</span>Explicit criteria</a></li><li><a href="#s4-2"><span>4.2</span>Few-shot examples</a></li><li><a href="#s4-3"><span>4.3</span>Structured output with tool use</a></li><li><a href="#s4-4"><span>4.4</span>Validation, retry and feedback</a></li><li><a href="#s4-5"><span>4.5</span>Batch processing</a></li><li><a href="#s4-6"><span>4.6</span>Multi-instance and multi-pass review</a></li></ol></aside>
+  <div class="content">
+<section class="session" id="s4-1"><p class="snum">Task statement 4.1</p><h2>Explicit criteria</h2><p>Instructions like "be conservative" or "only report high-confidence findings" <strong>don't improve precision</strong>: the model has no shared definition of conservative, and its confidence isn't calibrated. What works is <strong>specific, categorical criteria</strong>: which issues to report and which to skip.</p><div class="compare anim"><div class="side weak"><div class="lab"><span>✗ Vague</span><button class="copy" type="button">Copy</button></div><pre><code>Review this PR. Be conservative and only report
+issues you&#x27;re confident about. Check that the
+comments are accurate.</code></pre></div><div class="side strong"><div class="lab"><span>✓ Explicit criteria</span><button class="copy" type="button">Copy</button></div><pre><code>Report only:
+- Bugs: wrong logic, unhandled None, off-by-one, race conditions
+- Security: injection, missing authorisation, secrets in code or logs
+- Comments whose claimed behaviour contradicts what the code actually does
+Do not report: formatting, naming preferences, patterns used consistently elsewhere in this repo.
+Severity: HIGH = exploitable or data-corrupting (e.g. SQL built with f-strings);
+MEDIUM = wrong result in an edge case (e.g. empty list crashes);
+LOW = misleading comment with no behavioural effect.</code></pre></div></div><aside class="call concept"><b>The idea</b><p><strong>False positives cost trust across the board.</strong> If one category (say, "performance") is wrong half the time, developers start ignoring <em>all</em> findings, including the accurate security ones. A pragmatic fix is to <strong>temporarily disable</strong> the high-false-positive categories while you improve their criteria, restoring trust in the rest.</p></aside><p>Here's that decision made from a month of review data, using how often developers dismissed each category's findings.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">FINDINGS = {  # category: (posted, dismissed by developers as wrong)
+    &quot;security&quot;:        (48, 3),
+    &quot;bug&quot;:             (160, 22),
+    &quot;comment-accuracy&quot;: (35, 6),
+    &quot;performance&quot;:     (120, 71),
+    &quot;style&quot;:           (310, 236),
+}
+total_posted = sum(p for p, _ in FINDINGS.values())
+total_wrong = sum(d for _, d in FINDINGS.values())
+print(f&quot;overall: {total_wrong / total_posted:.0%} of all findings dismissed\n&quot;)
+keep = {}
+for cat, (posted, wrong) in sorted(FINDINGS.items(), key=lambda kv: kv[1][1] / kv[1][0]):
+    fp_rate = wrong / posted
+    action = &quot;keep&quot; if fp_rate &lt;= 0.25 else &quot;DISABLE while criteria are rewritten&quot;
+    if action == &quot;keep&quot;: keep[cat] = (posted, wrong)
+    print(f&quot;{cat:&lt;17} false-positive rate {fp_rate:&gt;4.0%}  → {action}&quot;)
+kp = sum(p for p, _ in keep.values()); kw = sum(w for _, w in keep.values())
+print(f&quot;\nafter disabling: {kw / kp:.0%} of findings dismissed ({kp} posted instead of {total_posted})&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>overall: 50% of all findings dismissed
+
+security          false-positive rate   6%  → keep
+bug               false-positive rate  14%  → keep
+comment-accuracy  false-positive rate  17%  → keep
+performance       false-positive rate  59%  → DISABLE while criteria are rewritten
+style             false-positive rate  76%  → DISABLE while criteria are rewritten
+
+after disabling: 13% of findings dismissed (243 posted instead of 673)</pre></div></div><aside class="call read"><b>How to read it</b><p>Half of all findings were being dismissed, almost entirely because of the style and performance categories. Disabling those two while their criteria are rewritten drops the dismissal rate to about 13% and keeps every security finding flowing. That's how you rebuild developer trust without losing the valuable categories.</p></aside><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>An automated reviewer's false-positive rate is high. A teammate proposes adding "Only report findings you are highly confident about." What does the exam guide say?</p><div class="opts"><button type="button" data-ok="0">A. That will fix it; confidence filtering is the recommended approach</button><button type="button" data-ok="1">B. General instructions like this don't reliably improve precision; define specific criteria for what to report and what to skip</button><button type="button" data-ok="0">C. Raise the temperature instead</button><button type="button" data-ok="0">D. Ask for more findings so the true ones stand out</button></div><p class="why" hidden>The model's self-assessed confidence isn't calibrated, and "confident" means nothing specific. Categorical criteria (report X, skip Y) with severity examples do improve precision.</p></div><div class="quiz" data-multi="1"><p class="q"><b>Practice question</b><span class="n">Select 2</span>Developers have started ignoring all automated review comments because one category is wrong most of the time. What's a sound short-term step? (Select 2)</p><div class="opts"><button type="button" data-ok="1">A. Temporarily disable the high-false-positive category while improving its criteria</button><button type="button" data-ok="0">B. Disable all categories</button><button type="button" data-ok="1">C. Add explicit severity definitions with a concrete code example per level</button><button type="button" data-ok="0">D. Post findings without severity</button></div><button type=button class=check>Check answer</button><p class="why" hidden>Turning off the noisy category restores trust in the accurate ones, and concrete severity criteria make classification consistent.</p></div></section><section class="session" id="s4-2"><p class="snum">Task statement 4.2</p><h2>Few-shot examples</h2><p>When detailed instructions still produce inconsistent output, <strong>few-shot examples</strong> are the most effective fix. The guide's recipe: <strong>2–4 targeted examples</strong> for the ambiguous cases, each showing <strong>why</strong> one action was chosen over plausible alternatives, not just the answer. Examples also:</p><ul><li>Show the <strong>output format</strong> you need (location, issue, severity, suggested fix).</li><li>Distinguish <strong>acceptable patterns</strong> from genuine issues, which cuts false positives while still letting the model generalise.</li><li>Demonstrate extraction from <strong>varied document structures</strong> (inline citations vs bibliographies; narrative vs tables), which reduces empty or invented values.</li></ul><div class="cell file"><div class="code"><div class="lab"><span>A targeted example that shows reasoning (review prompt excerpt)</span><button class="copy" type="button">Copy</button></div><pre><code class="language-markdown">&lt;example&gt;
+&lt;code&gt;
+items = fetch_items(order_id)
+total = sum(i.price for i in items)
+&lt;/code&gt;
+&lt;finding&gt;none&lt;/finding&gt;
+&lt;reasoning&gt;Looks like it might crash on an empty order, but sum() of an empty
+sequence is 0, which is the correct total. Not a bug, so no finding. (Contrast:
+`items[0].price` on an empty list WOULD be a HIGH finding.)&lt;/reasoning&gt;
+&lt;/example&gt;</code></pre></div></div><p>Examples are easy to get subtly wrong. Here's a check over a candidate example set: does each example carry reasoning, follow the required output format, and cover a distinct ambiguity?</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">REQUIRED_FORMAT = {&quot;location&quot;, &quot;issue&quot;, &quot;severity&quot;, &quot;fix&quot;}
+EXAMPLES = [
+    {&quot;ambiguity&quot;: &quot;empty-sequence sum&quot;, &quot;finding&quot;: None, &quot;reasoning&quot;: &quot;sum([]) is 0, the correct total; not a bug&quot;},
+    {&quot;ambiguity&quot;: &quot;SQL via f-string&quot;, &quot;finding&quot;: {&quot;location&quot;: &quot;db.py:12&quot;, &quot;issue&quot;: &quot;SQL injection&quot;, &quot;severity&quot;: &quot;HIGH&quot;, &quot;fix&quot;: &quot;parameterise&quot;},
+     &quot;reasoning&quot;: &quot;user input reaches the query string; parameters exist in this codebase&quot;},
+    {&quot;ambiguity&quot;: &quot;SQL via f-string&quot;, &quot;finding&quot;: {&quot;location&quot;: &quot;db.py:40&quot;, &quot;issue&quot;: &quot;SQL injection&quot;, &quot;severity&quot;: &quot;HIGH&quot;, &quot;fix&quot;: &quot;parameterise&quot;},
+     &quot;reasoning&quot;: None},
+    {&quot;ambiguity&quot;: &quot;TODO comment&quot;, &quot;finding&quot;: {&quot;location&quot;: &quot;api.py:7&quot;, &quot;issue&quot;: &quot;TODO left&quot;}, &quot;reasoning&quot;: &quot;style only&quot;},
+]
+seen = set()
+for i, ex in enumerate(EXAMPLES, 1):
+    problems = []
+    if not ex[&quot;reasoning&quot;]: problems.append(&quot;no reasoning: teaches the answer, not the judgement&quot;)
+    if ex[&quot;finding&quot;] and not REQUIRED_FORMAT &lt;= set(ex[&quot;finding&quot;]): problems.append(f&quot;missing format fields {sorted(REQUIRED_FORMAT - set(ex[&#x27;finding&#x27;]))}&quot;)
+    if ex[&quot;ambiguity&quot;] in seen: problems.append(&quot;duplicates an ambiguity already covered&quot;)
+    seen.add(ex[&quot;ambiguity&quot;])
+    print(f&quot;example {i} ({ex[&#x27;ambiguity&#x27;]}): {&#x27;; &#x27;.join(problems) or &#x27;ok&#x27;}&quot;)
+print(f&quot;\n{len(seen)} distinct ambiguities in {len(EXAMPLES)} examples (target: 2–4 targeted, each different)&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>example 1 (empty-sequence sum): ok
+example 2 (SQL via f-string): ok
+example 3 (SQL via f-string): no reasoning: teaches the answer, not the judgement; duplicates an ambiguity already covered
+example 4 (TODO comment): missing format fields [&#x27;fix&#x27;, &#x27;severity&#x27;]
+
+3 distinct ambiguities in 4 examples (target: 2–4 targeted, each different)</pre></div></div><aside class="call read"><b>How to read it</b><p>Examples 1 and 2 are good: each demonstrates a different judgement and explains it. Example 3 repeats example 2 with no reasoning, so it adds tokens and nothing new. Example 4 breaks the output format (no severity or fix), so it would teach the model to omit them, and its "finding" is a style issue the criteria say to skip.</p></aside><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>A team adds ten examples that show only the final classification for clear-cut cases. Inconsistency on borderline cases persists. What should change?</p><div class="opts"><button type="button" data-ok="0">A. Add twenty more clear-cut examples</button><button type="button" data-ok="1">B. Use 2–4 targeted examples of the borderline cases, each explaining why one action was chosen over plausible alternatives</button><button type="button" data-ok="0">C. Remove all examples</button><button type="button" data-ok="0">D. Put the examples after the input</button></div><p class="why" hidden>Examples teach judgement when they target the ambiguous cases and show the reasoning; answer-only examples of easy cases add tokens without resolving the ambiguity.</p></div><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>An extraction prompt returns null for "methodology" when papers describe it inside the introduction rather than in a section titled "Methods". What helps most?</p><div class="opts"><button type="button" data-ok="0">A. Make the field required</button><button type="button" data-ok="1">B. Add few-shot examples showing correct extraction from documents with varied structures</button><button type="button" data-ok="0">C. Shorten the documents</button><button type="button" data-ok="0">D. Ask the model to "look harder"</button></div><p class="why" hidden>Examples that demonstrate varied structures (embedded details vs dedicated sections) teach the model where to look, reducing empty extractions.</p></div></section><section class="session" id="s4-3"><p class="snum">Task statement 4.3</p><h2>Structured output with tool use</h2><p>Defining an extraction "tool" whose <strong>input schema is the structure you want</strong> and reading the model's <code>tool_use</code> input is, in the guide's words, the most reliable way to get <strong>schema-compliant</strong> output: no more JSON syntax errors.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><span class="noeval">shown, not run here</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">extract_invoice = {
+    &quot;name&quot;: &quot;extract_invoice&quot;,
+    &quot;description&quot;: &quot;Record the fields of one supplier invoice.&quot;,
+    &quot;input_schema&quot;: {
+        &quot;type&quot;: &quot;object&quot;,
+        &quot;properties&quot;: {
+            &quot;invoice_number&quot;: {&quot;type&quot;: &quot;string&quot;},
+            &quot;invoice_date&quot;:   {&quot;type&quot;: [&quot;string&quot;, &quot;null&quot;], &quot;description&quot;: &quot;ISO date; null if not stated&quot;},
+            &quot;po_number&quot;:      {&quot;type&quot;: [&quot;string&quot;, &quot;null&quot;], &quot;description&quot;: &quot;Purchase order; null if absent&quot;},
+            &quot;category&quot;:       {&quot;type&quot;: &quot;string&quot;, &quot;enum&quot;: [&quot;goods&quot;, &quot;services&quot;, &quot;freight&quot;, &quot;other&quot;, &quot;unclear&quot;]},
+            &quot;category_detail&quot;: {&quot;type&quot;: [&quot;string&quot;, &quot;null&quot;], &quot;description&quot;: &quot;Required when category is &#x27;other&#x27;&quot;},
+            &quot;line_items&quot;:     {&quot;type&quot;: &quot;array&quot;, &quot;items&quot;: {&quot;type&quot;: &quot;object&quot;, &quot;properties&quot;: {&quot;amount&quot;: {&quot;type&quot;: &quot;number&quot;}}}},
+            &quot;stated_total&quot;:   {&quot;type&quot;: &quot;number&quot;},
+        },
+        &quot;required&quot;: [&quot;invoice_number&quot;, &quot;category&quot;, &quot;line_items&quot;, &quot;stated_total&quot;],
+    },
+}
+response = client.messages.create(model=&quot;claude-sonnet-5-5&quot;, max_tokens=2048, tools=[extract_invoice],
+                                  messages=[{&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: [pdf_block, {&quot;type&quot;: &quot;text&quot;, &quot;text&quot;: &quot;Record this invoice with extract_invoice.&quot;}]}])
+data = next(b.input for b in response.content if b.type == &quot;tool_use&quot;)</code></pre></div></div><aside class="call warn"><b>Watch out</b><p><strong>Schemas stop syntax errors, not semantic ones.</strong> A perfectly valid object can still have line items that don't sum to the total, or a value in the wrong field. And a <strong>required</strong> field the document doesn't contain invites the model to <strong>fabricate</strong> a value to satisfy the schema. Make such fields <strong>optional and nullable</strong>, add <strong>"unclear"</strong> to enums for ambiguous cases, and use <strong>"other" plus a detail field</strong> for extensible categories.</p></aside><p>Here's the fabrication risk made concrete: the same document under two schemas. The "model" fills fields the way an over-eager extractor would (a stand-in, labelled as such); the schema validation is real.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">DOC = &quot;Invoice INV-5521 from Kaveri Freight. Items: haulage ₹18,000; loading ₹2,500. Total ₹20,500.&quot;
+
+def stand_in_extract(schema_required):
+    out = {&quot;invoice_number&quot;: &quot;INV-5521&quot;, &quot;category&quot;: &quot;freight&quot;, &quot;line_items&quot;: [18000, 2500], &quot;stated_total&quot;: 20500}
+    for f in (&quot;invoice_date&quot;, &quot;po_number&quot;):
+        out[f] = (&quot;2026-10-01&quot; if f == &quot;invoice_date&quot; else &quot;PO-0001&quot;) if f in schema_required else None
+    return out
+
+def validate(record, required, enums=(&quot;goods&quot;, &quot;services&quot;, &quot;freight&quot;, &quot;other&quot;, &quot;unclear&quot;)):
+    errs = [f&quot;missing {f}&quot; for f in required if record.get(f) is None]
+    if record[&quot;category&quot;] not in enums: errs.append(&quot;category not in enum&quot;)
+    if record[&quot;category&quot;] == &quot;other&quot; and not record.get(&quot;category_detail&quot;): errs.append(&quot;&#x27;other&#x27; needs category_detail&quot;)
+    return errs or [&quot;schema-valid&quot;]
+
+for label, required in [(&quot;date and PO required&quot;, [&quot;invoice_number&quot;, &quot;invoice_date&quot;, &quot;po_number&quot;]),
+                        (&quot;date and PO nullable&quot;, [&quot;invoice_number&quot;])]:
+    rec = stand_in_extract(required)
+    invented = [f for f in (&quot;invoice_date&quot;, &quot;po_number&quot;) if rec[f] is not None and rec[f] not in DOC]
+    print(f&quot;{label:&lt;22} {validate(rec, required)}  invented values: {invented or &#x27;none&#x27;}&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>date and PO required   [&#x27;schema-valid&#x27;]  invented values: [&#x27;invoice_date&#x27;, &#x27;po_number&#x27;]
+date and PO nullable   [&#x27;schema-valid&#x27;]  invented values: none</pre></div></div><aside class="call read"><b>How to read it</b><p>Both records pass their schemas, which is the point: validation can't tell that "2026-10-01" and "PO-0001" appear nowhere in the document. With the fields required, the extractor had to put <em>something</em> there; with them nullable, it could honestly return null.</p></aside><h3>tool_choice for structured output</h3><p>The guide's patterns: <code>"any"</code> guarantees a tool call when several extraction schemas exist and the document type is unknown; <code>{"type": "tool", "name": "extract_metadata"}</code> forces a particular extraction to run before enrichment. <strong>Then vs now:</strong> Opus 5.5, Sonnet 5.5 and Fable 5.1 reject both with a 400; on those models use <code>auto</code> with an instruction and check that the call happened, add <code>strict: true</code> for schema-valid input, or use structured outputs (<code>output_config.format</code>).</p><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>An extraction schema makes "po_number" required. Many invoices have no PO, and audits find invented PO numbers. What's the fix?</p><div class="opts"><button type="button" data-ok="0">A. Add "do not invent values" to the prompt and keep the field required</button><button type="button" data-ok="1">B. Make po_number optional and nullable so the model can return null when the document doesn't contain it</button><button type="button" data-ok="0">C. Remove the field from the schema entirely</button><button type="button" data-ok="0">D. Retry until a PO appears</button></div><p class="why" hidden>A required field the source lacks pressures the model to fabricate. Nullable fields let it represent absence honestly.</p></div><div class="quiz" data-multi="1"><p class="q"><b>Practice question</b><span class="n">Select 2</span>Which statements about tool-use structured output are true? (Select 2)</p><div class="opts"><button type="button" data-ok="1">A. It eliminates JSON syntax errors</button><button type="button" data-ok="0">B. It guarantees line items add up to the stated total</button><button type="button" data-ok="1">C. An enum with "unclear" and an "other" + detail field handles ambiguous and extensible categories</button><button type="button" data-ok="0">D. Required fields prevent fabrication</button></div><button type=button class=check>Check answer</button><p class="why" hidden>Schemas guarantee shape, not meaning: semantic checks such as totals still need validation. "unclear" and "other"+detail give the model honest options; required fields can cause fabrication.</p></div></section><section class="session" id="s4-4"><p class="snum">Task statement 4.4</p><h2>Validation, retry and feedback</h2><p><strong>Retry with error feedback</strong>: when validation fails, send a follow-up containing the <strong>original document</strong>, the <strong>failed extraction</strong> and the <strong>specific validation errors</strong>, and ask for a corrected extraction. It works for <strong>format and structural</strong> errors. It <strong>doesn't</strong> work when the information simply <strong>isn't in the document</strong> (it's in an attachment you didn't send, say); retrying then just invites invention.</p><p>Build <strong>semantic</strong> checks into the extraction itself: extract a <code>calculated_total</code> alongside the <code>stated_total</code>, and a <code>conflict_detected</code> flag when the source contradicts itself.</p><figure class="seq anim" style="--c:3"><figcaption>Retry with error feedback</figcaption><div class="actors"><b>Pipeline</b><b>Claude</b><b>Validator</b></div><div class="lane"><div class="m r" style="grid-column:1/3;--s:2;--k:0"><span>document + extract_invoice tool</span><i></i></div><div class="m l reply" style="grid-column:1/3;--s:2;--k:1"><span>extraction (date "14/10/26", total mismatch)</span><i></i></div><div class="m r" style="grid-column:1/4;--s:3;--k:2"><span>check format and semantics</span><i></i></div><div class="m l reply" style="grid-column:1/4;--s:3;--k:3"><span>errors: date not ISO; line items sum 20,500 vs stated 21,500</span><i></i></div><div class="m r" style="grid-column:1/3;--s:2;--k:4"><span>original document + failed extraction + these exact errors</span><i></i></div><div class="m l reply" style="grid-column:1/3;--s:2;--k:5"><span>corrected: date 2026-10-14; conflict_detected true (document's own total is wrong)</span><i></i></div></div></figure><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">import re
+
+def check(rec):
+    errs = []
+    if rec.get(&quot;invoice_date&quot;) and not re.fullmatch(r&quot;\d{4}-\d{2}-\d{2}&quot;, rec[&quot;invoice_date&quot;]):
+        errs.append(f&quot;invoice_date {rec[&#x27;invoice_date&#x27;]!r} is not ISO YYYY-MM-DD&quot;)
+    calc = sum(rec[&quot;line_items&quot;])
+    if calc != rec[&quot;stated_total&quot;] and not rec.get(&quot;conflict_detected&quot;):
+        errs.append(f&quot;line items sum to {calc} but stated_total is {rec[&#x27;stated_total&#x27;]}; set conflict_detected if the document itself disagrees&quot;)
+    if rec.get(&quot;gst_number&quot;) is None and rec.get(&quot;_gst_only_in_attachment&quot;):
+        errs.append(&quot;gst_number missing&quot;)
+    return errs
+
+ATTEMPTS = [  # what a stand-in model returns on each try
+    {&quot;invoice_date&quot;: &quot;14/10/26&quot;, &quot;line_items&quot;: [18000, 2500], &quot;stated_total&quot;: 21500, &quot;gst_number&quot;: None, &quot;_gst_only_in_attachment&quot;: True},
+    {&quot;invoice_date&quot;: &quot;2026-10-14&quot;, &quot;line_items&quot;: [18000, 2500], &quot;stated_total&quot;: 21500, &quot;conflict_detected&quot;: True, &quot;gst_number&quot;: None, &quot;_gst_only_in_attachment&quot;: True},
+]
+for i, rec in enumerate(ATTEMPTS, 1):
+    errs = check(rec)
+    print(f&quot;attempt {i}: {errs or &#x27;valid&#x27;}&quot;)
+    fixable = [e for e in errs if &quot;gst_number&quot; not in e]
+    if errs and not fixable:
+        print(&quot;   remaining error is about information that isn&#x27;t in this document → stop retrying; leave gst_number null and flag for review&quot;)
+        break</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>attempt 1: [&quot;invoice_date &#x27;14/10/26&#x27; is not ISO YYYY-MM-DD&quot;, &#x27;line items sum to 20500 but stated_total is 21500; set conflict_detected if the document itself disagrees&#x27;, &#x27;gst_number missing&#x27;]
+attempt 2: [&#x27;gst_number missing&#x27;]
+   remaining error is about information that isn&#x27;t in this document → stop retrying; leave gst_number null and flag for review</pre></div></div><aside class="call read"><b>How to read it</b><p>The first retry fixes everything that <em>can</em> be fixed from the document: the date format, and an honest <code>conflict_detected</code> because the invoice's own total is wrong (20,500 vs 21,500). The GST number only exists in an attachment that wasn't sent, so a further retry can't help; the pipeline stops, keeps the field null and routes it to review.</p></aside><aside class="call tip"><b>Tip</b><p><strong>Close the loop on review findings too.</strong> Add a <code>detected_pattern</code> field to each finding (e.g. "f-string SQL", "bare except") so that when developers dismiss findings you can see which <em>patterns</em> produce false positives and fix the criteria for those.</p></aside><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>Validation reports that an extracted "contract_end_date" is missing. The contract says the end date is "as set out in Schedule B", which wasn't provided. Will retry-with-error-feedback help?</p><div class="opts"><button type="button" data-ok="0">A. Yes, retries always improve extractions</button><button type="button" data-ok="1">B. No: the information isn't in the provided document, so retrying risks invention; leave it null and flag it, or supply Schedule B</button><button type="button" data-ok="0">C. Yes, if the temperature is raised</button><button type="button" data-ok="0">D. Only with a larger model</button></div><p class="why" hidden>Retries fix format and structural errors. When the source doesn't contain the value, the right action is to record its absence or fetch the missing document.</p></div><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>Which design helps catch extractions whose numbers don't add up?</p><div class="opts"><button type="button" data-ok="1">A. Extract a calculated_total alongside the stated_total and a conflict_detected flag, then validate the difference</button><button type="button" data-ok="0">B. Make every number field required</button><button type="button" data-ok="0">C. Ask the model to double-check silently</button><button type="button" data-ok="0">D. Only extract the stated total</button></div><p class="why" hidden>Having both values makes discrepancies checkable in code, and the flag lets the model report a genuinely inconsistent source rather than "fixing" it.</p></div></section><section class="session" id="s4-5"><p class="snum">Task statement 4.5</p><h2>Batch processing</h2><p>The <strong>Message Batches API</strong>: 50% cost saving, processing within a <strong>24-hour window</strong>, <strong>no guaranteed latency</strong>. Each request is matched to its result by <strong><code>custom_id</code></strong>. It suits non-blocking work (overnight reports, weekly audits, nightly test generation) and not blocking work (pre-merge checks developers wait on). One more constraint: a batch request <strong>can't do multi-turn tool calling</strong> (it can't pause mid-request for your code to run a tool and return the result).</p><figure class="seq anim" style="--c:2"><figcaption>Batch life cycle, keyed by custom_id</figcaption><div class="actors"><b>Pipeline</b><b>Message Batches API</b></div><div class="lane"><div class="m r" style="grid-column:1/3;--s:2;--k:0"><span>create batch: 400 requests, each with a custom_id</span><i></i></div><div class="m l reply" style="grid-column:1/3;--s:2;--k:1"><span>batch id (processing: up to 24 h, no latency guarantee)</span><i></i></div><div class="m r" style="grid-column:1/3;--s:2;--k:2"><span>poll status … ended</span><i></i></div><div class="m l reply" style="grid-column:1/3;--s:2;--k:3"><span>results in any order: succeeded / errored / expired per custom_id</span><i></i></div><div class="m note" style="grid-column:1/2;--k:4"><span>Join on custom_id; resubmit only failures, adapted (e.g. chunk oversized docs)</span></div></div></figure><h3>Meeting an SLA with batches</h3><p>If results are promised within 30 hours and a batch can take up to 24, documents must be <strong>submitted within 6 hours of arriving</strong>. Submitting every 4 hours leaves margin for retries.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">def worst_case_hours(submit_every, batch_max=24):
+    return submit_every + batch_max            # a document arriving just after a submission waits a full interval
+
+SLA = 30
+for every in (2, 4, 6, 8, 12):
+    w = worst_case_hours(every)
+    print(f&quot;submit every {every:&gt;2} h → worst case {w} h  {&#x27;meets&#x27; if w &lt;= SLA else &#x27;BREAKS&#x27;} the {SLA} h SLA&quot; + (&quot;  (margin for one resubmission cycle)&quot; if SLA - w &gt;= 2 else &quot;&quot;))
+
+results = {&quot;doc-001&quot;: &quot;succeeded&quot;, &quot;doc-002&quot;: &quot;errored: prompt too long&quot;, &quot;doc-003&quot;: &quot;succeeded&quot;, &quot;doc-004&quot;: &quot;expired&quot;}
+resubmit = {cid: (&quot;split into chunks&quot; if &quot;too long&quot; in r else &quot;resubmit unchanged&quot;) for cid, r in results.items() if r != &quot;succeeded&quot;}
+print(&quot;\nresubmit only failures, by custom_id:&quot;, resubmit)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>submit every  2 h → worst case 26 h  meets the 30 h SLA  (margin for one resubmission cycle)
+submit every  4 h → worst case 28 h  meets the 30 h SLA  (margin for one resubmission cycle)
+submit every  6 h → worst case 30 h  meets the 30 h SLA
+submit every  8 h → worst case 32 h  BREAKS the 30 h SLA
+submit every 12 h → worst case 36 h  BREAKS the 30 h SLA
+
+resubmit only failures, by custom_id: {&#x27;doc-002&#x27;: &#x27;split into chunks&#x27;, &#x27;doc-004&#x27;: &#x27;resubmit unchanged&#x27;}</pre></div></div><aside class="call read"><b>How to read it</b><p>Every 4 hours gives a 28-hour worst case, inside 30 with a little margin; every 8 or 12 hours breaks the SLA even though most batches finish far sooner, because the API gives no latency guarantee. When a batch returns, resubmit only the failed <code>custom_id</code>s, adapted to the failure (chunk the oversized document), and refine the prompt on a sample <em>before</em> the big run so fewer documents fail at all.</p></aside><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>A manager proposes moving both the blocking pre-merge check and the overnight technical-debt report to the Batches API for the 50% saving. What's the right call?</p><div class="opts"><button type="button" data-ok="1">A. Batch the overnight report only; keep the pre-merge check on the synchronous API</button><button type="button" data-ok="0">B. Batch both, and poll for completion</button><button type="button" data-ok="0">C. Keep both synchronous to avoid result-ordering problems</button><button type="button" data-ok="0">D. Batch both with a real-time fallback on timeout</button></div><p class="why" hidden>Batches can take up to 24 hours with no latency guarantee, which is unacceptable for a blocking check but ideal overnight. Ordering isn't a problem: custom_id correlates results.</p></div><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>Why can't an agent workflow that calls tools mid-conversation simply be moved to the Batches API?</p><div class="opts"><button type="button" data-ok="0">A. Batches don't support tools at all</button><button type="button" data-ok="1">B. A batch request can't pause for your code to execute a tool and return the result within the same request, so multi-turn tool calling doesn't fit</button><button type="button" data-ok="0">C. Batches only support Haiku</button><button type="button" data-ok="0">D. custom_id can't be used with tools</button></div><p class="why" hidden>Each batch request runs to completion on its own; the interactive request–execute–return loop needs synchronous calls.</p></div></section><section class="session" id="s4-6"><p class="snum">Task statement 4.6</p><h2>Multi-instance and multi-pass review</h2><p>A model reviewing its own work <strong>in the same session</strong> keeps the reasoning that produced it, and is less likely to question its own decisions. The guide is specific: an <strong>independent instance</strong> without that context catches subtle issues better than self-review instructions or extended thinking.</p><div class="tbl"><table><thead><tr><th>Pattern</th><th>Use</th></tr></thead><tbody><tr><td><strong>Independent review instance</strong></td><td>A second Claude instance reviews generated code with only the diff and the criteria</td></tr><tr><td><strong>Multi-pass review</strong></td><td>Per-file passes for local issues, plus a separate integration pass for cross-file data flow; avoids attention dilution and contradictory findings</td></tr><tr><td><strong>Verification pass with confidence</strong></td><td>The reviewer reports a confidence with each finding, so findings can be routed: high-confidence to the PR, low-confidence to a human or dropped</td></tr></tbody></table></div><figure class="seq anim" style="--c:4"><figcaption>Multi-pass review of a 14-file PR</figcaption><div class="actors"><b>Orchestrator</b><b>Per-file reviewer</b><b>Integration reviewer</b><b>Verifier</b></div><div class="lane"><div class="m r" style="grid-column:1/3;--s:2;--k:0"><span>file 1 … file 14, one at a time (local issues only)</span><i></i></div><div class="m l reply" style="grid-column:1/3;--s:2;--k:1"><span>findings per file, consistent depth</span><i></i></div><div class="m r" style="grid-column:1/4;--s:3;--k:2"><span>interfaces + data flow across the changed files</span><i></i></div><div class="m l reply" style="grid-column:1/4;--s:3;--k:3"><span>cross-file findings</span><i></i></div><div class="m r" style="grid-column:1/5;--s:4;--k:4"><span>all findings (independent instance, no generation context)</span><i></i></div><div class="m l reply" style="grid-column:1/5;--s:4;--k:5"><span>confirmed findings + confidence per finding → route</span><i></i></div></div></figure><p>Self-reported confidence is only useful once <strong>calibrated</strong> against labelled data. Here's that calibration on a set of past findings that developers labelled as real or not.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">LABELLED = [  # (reviewer&#x27;s self-reported confidence, was it a real issue?)
+    *[(0.9, True)] * 46, *[(0.9, False)] * 4,
+    *[(0.7, True)] * 30, *[(0.7, False)] * 20,
+    *[(0.5, True)] * 12, *[(0.5, False)] * 38,
+]
+for c in (0.9, 0.7, 0.5):
+    bucket = [real for conf, real in LABELLED if conf == c]
+    precision = sum(bucket) / len(bucket)
+    route = &quot;post to PR&quot; if precision &gt;= 0.85 else (&quot;human triage&quot; if precision &gt;= 0.5 else &quot;drop (log for pattern analysis)&quot;)
+    print(f&quot;confidence {c}: {len(bucket)} findings, {precision:.0%} real → {route}&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>confidence 0.9: 50 findings, 92% real → post to PR
+confidence 0.7: 50 findings, 60% real → human triage
+confidence 0.5: 50 findings, 24% real → drop (log for pattern analysis)</pre></div></div><aside class="call read"><b>How to read it</b><p>Findings the reviewer marks 0.9 are real 92% of the time, so they can go straight to the PR. At 0.7 it's 60%, worth a quick human look. At 0.5 only about a quarter are real, so posting them would erode trust. The thresholds come from labelled data, not from the model's raw numbers.</p></aside><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>Claude generated a module and was then asked, in the same session, to review it carefully. It approved everything; a colleague later found two subtle bugs. What's the better design?</p><div class="opts"><button type="button" data-ok="0">A. Ask the same session to "review more critically"</button><button type="button" data-ok="1">B. Run the review in an independent instance without the generator's reasoning context</button><button type="button" data-ok="0">C. Turn on extended thinking in the same session</button><button type="button" data-ok="0">D. Skip review for generated code</button></div><p class="why" hidden>The generating session retains its reasoning and tends to confirm it. An independent instance reviews the code on its own merits.</p></div><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>A reviewer outputs a confidence score with each finding. How should those scores be used for routing?</p><div class="opts"><button type="button" data-ok="0">A. Trust them directly: anything above 0.5 gets posted</button><button type="button" data-ok="1">B. Calibrate thresholds against labelled findings, then route by measured precision per confidence level</button><button type="button" data-ok="0">C. Ignore them</button><button type="button" data-ok="0">D. Post only findings with confidence exactly 1.0</button></div><p class="why" hidden>Self-reported confidence isn't calibrated by default. Measuring precision per confidence level on labelled data turns it into a usable routing signal.</p></div></section>
+  <div class="pager"><a class="btn ghost" href="../module-3/">← Module 3</a><a class="btn" href="../module-5/">Module 5 →</a></div>
+  </div>
+</div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="fine" style="border:none;margin:0;padding:0">
+      <span>© 2026 XploreAI · <a href="/">xploreai.co.in</a></span>
+      <span><a href="mailto:hello@xploreai.co.in">hello@xploreai.co.in</a></span>
+    </div>
+  </div>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/json.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/bash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/markdown.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/typescript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/yaml.min.js"></script>
+<script src="/courses/claude-architect-foundations/course.js?v=1793068677"></script>
+</body>
+</html>

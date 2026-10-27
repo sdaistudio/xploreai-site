@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 2: Tool Design &amp; MCP Integration — Claude Architect (CCAR-F) course — XploreAI</title>
+<meta name="description" content="Write tool descriptions that make selection reliable, return errors an agent can act on, give each agent only the tools its role needs and control tool_choice, wire MCP servers into Claude Code at the right scope, and pick the right built-in tool for each job.">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="XploreAI">
+<meta property="og:title" content="Module 2: Tool Design &amp; MCP Integration — Claude Architect (CCAR-F) course">
+<meta property="og:description" content="Write tool descriptions that make selection reliable, return errors an agent can act on, give each agent only the tools its role needs and control tool_choice, wire MCP servers into Claude Code at the right scope, and pick the right built-in tool for each job.">
+<meta property="og:url" content="https://xploreai.co.in/courses/claude-architect-foundations/module-2/">
+<meta property="og:image" content="https://xploreai.co.in/assets/og-image.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/style.css">
+<link rel="stylesheet" href="/courses/claude-architect-foundations/course.css?v=1793068677">
+</head>
+<body>
+
+<nav>
+  <div class="wrap bar">
+    <a class="wordmark" href="/">xplore<span>ai</span></a>
+    <ul>
+      <li><a href="/#agents">Solutions</a></li>
+      <li><a href="/#stories">Success Stories</a></li>
+      <li><a href="/#subscribe">Newsletter</a></li>
+      <li><a href="/learn.html" aria-current="page">Learn AI</a></li>
+      <li><a class="btn" href="https://wa.me/919769686931?text=Hi%20XploreAI%2C%20I%27m%20interested%20in%20AI%20automation!">Get Started</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main class="cca">
+<header class="mhero wrap">
+  <p class="crumb"><a href="/learn.html">Learn AI</a> / <a href="../">Claude Architect (CCAR-F) course</a> / Module 2</p>
+  <span class="pill">MODULE 2 OF 5 · DOMAIN 2 · 18% OF THE EXAM · 5 TASK STATEMENTS</span>
+  <h1>Tool Design &amp; MCP Integration<i>.</i></h1>
+  <p class="lede">Write tool descriptions that make selection reliable, return errors an agent can act on, give each agent only the tools its role needs and control tool_choice, wire MCP servers into Claude Code at the right scope, and pick the right built-in tool for each job.</p>
+  <div class="dl"><a class="btn" href="#s2-1">Start session 2.1 →</a> <a class="btn ghost" href="../code/module-2.py" download>Download the Python</a></div>
+</header>
+<div class="wrap layout">
+  <aside class="toc" aria-label="Sessions"><p>In this module</p><ol><li><a href="#s2-1"><span>2.1</span>Tool interfaces and descriptions</a></li><li><a href="#s2-2"><span>2.2</span>Structured error responses</a></li><li><a href="#s2-3"><span>2.3</span>Distributing tools and tool_choice</a></li><li><a href="#s2-4"><span>2.4</span>Integrating MCP servers</a></li><li><a href="#s2-5"><span>2.5</span>The built-in tools</a></li></ol></aside>
+  <div class="content">
+<section class="session" id="s2-1"><p class="snum">Task statement 2.1</p><h2>Tool interfaces and descriptions</h2><p><strong>Tool descriptions are the primary mechanism Claude uses to choose a tool.</strong> With minimal descriptions ("Retrieves customer information" / "Retrieves order details") and similar input formats, the model has little to tell the tools apart, and it misroutes. A complete description states:</p><div class="tbl"><table><thead><tr><th>Element</th><th>Example for <code>lookup_order</code></th></tr></thead><tbody><tr><td>What it does</td><td>"Returns one order's status, items, delivery date and refund state."</td></tr><tr><td>Input formats</td><td>"<code>order_id</code> like ORD-12345 or #12345; or a tracking number like 1Z…"</td></tr><tr><td>Example queries</td><td>"'check my order #12345', 'where is my parcel 1Z999…'"</td></tr><tr><td>Edge cases</td><td>"Orders older than 2 years return not_found; ask the customer to confirm the number."</td></tr><tr><td><strong>Boundaries vs similar tools</strong></td><td>"For account details (address, email, loyalty tier) use <code>get_customer</code>, not this tool."</td></tr></tbody></table></div><aside class="call concept"><b>The idea</b><p><strong>The "versus similar tools" clause matters most.</strong> Each tool's description is read on its own merits, so overlapping tools look equally plausible unless each one says <em>when not to use it</em> and <em>what to use instead</em>.</p></aside><p>Here's selection on four realistic queries, simulated by matching query words against each tool's description (a crude stand-in for how a model weighs descriptions, but it shows the effect of vocabulary and boundaries).</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">import re
+
+MINIMAL = {&quot;get_customer&quot;: &quot;Retrieves customer information.&quot;,
+           &quot;lookup_order&quot;: &quot;Retrieves order details.&quot;}
+COMPLETE = {
+    &quot;get_customer&quot;: &quot;Returns a customer&#x27;s account: name, email, address, phone, loyalty tier. Input: email or customer ID like C-7731. &quot;
+                    &quot;Use for account, address or profile questions. Not for orders, parcels or deliveries: use lookup_order.&quot;,
+    &quot;lookup_order&quot;: &quot;Returns one order: status, items, delivery date, refund state. Input: order number like ORD-12345 or #12345, &quot;
+                    &quot;or a parcel tracking number. Use for &#x27;where is my order&#x27;, delivery, return and refund questions about an order.&quot;,
+}
+STOP = set(&quot;a an the my is of for to and or i me it this like use not on&quot;.split())
+def stem(w): return w[:-3] + &quot;y&quot; if w.endswith(&quot;ies&quot;) else (w[:-1] if w.endswith(&quot;s&quot;) and len(w) &gt; 3 else w)
+def words(s): return {stem(w) for w in re.findall(r&quot;[a-z]+&quot;, s.lower()) if w not in STOP}
+
+def score(query, desc):
+    pos, _, neg = desc.partition(&quot;Not for&quot;)                  # the boundary clause counts against the tool
+    return len(words(query) &amp; words(pos)) - 2 * len(words(query) &amp; words(neg))
+
+def choose(query, tools):
+    scores = {t: score(query, d) for t, d in tools.items()}
+    best = max(scores.values())
+    return [t for t, v in scores.items() if v == best][0] if best &gt; 0 else &quot;get_customer (default: first tool)&quot;
+
+QUERIES = [(&quot;check my order #12345&quot;, &quot;lookup_order&quot;), (&quot;where is my parcel, it was due Tuesday&quot;, &quot;lookup_order&quot;),
+           (&quot;change the email on my account&quot;, &quot;get_customer&quot;), (&quot;has my refund for the blender gone through&quot;, &quot;lookup_order&quot;)]
+for label, tools in [(&quot;minimal&quot;, MINIMAL), (&quot;complete&quot;, COMPLETE)]:
+    right = 0
+    for q, want in QUERIES:
+        got = choose(q, tools); right += got.startswith(want)
+    print(f&quot;{label:&lt;9} descriptions: {right}/{len(QUERIES)} routed correctly&quot;)
+    for q, want in QUERIES:
+        print(f&quot;    {q!r:&lt;44} → {choose(q, tools)}&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>minimal   descriptions: 2/4 routed correctly
+    &#x27;check my order #12345&#x27;                      → lookup_order
+    &#x27;where is my parcel, it was due Tuesday&#x27;     → get_customer (default: first tool)
+    &#x27;change the email on my account&#x27;             → get_customer (default: first tool)
+    &#x27;has my refund for the blender gone through&#x27; → get_customer (default: first tool)
+complete  descriptions: 4/4 routed correctly
+    &#x27;check my order #12345&#x27;                      → lookup_order
+    &#x27;where is my parcel, it was due Tuesday&#x27;     → lookup_order
+    &#x27;change the email on my account&#x27;             → get_customer
+    &#x27;has my refund for the blender gone through&#x27; → lookup_order</pre></div></div><aside class="call read"><b>How to read it</b><p>With one-line descriptions, only two of four route correctly, and one of those only by accident: nothing matched, so it fell through to the first tool, which happened to be right. With complete descriptions, all four route correctly, helped by the boundary clause ("Not for orders… use lookup_order") counting against the wrong tool. That's the official sample answer for this scenario: expand the descriptions first. Few-shot routing examples add token overhead without fixing the cause, a keyword router bypasses the model's understanding, and merging the tools is a bigger change than a first step warrants.</p></aside><h3>Split generic tools; check the system prompt</h3><ul><li><strong>Split</strong> a vague, generic tool into purpose-specific ones with clear input/output contracts: <code>analyze_document</code> becomes <code>extract_data_points</code>, <code>summarize_content</code> and <code>verify_claim_against_source</code>.</li><li><strong>Rename</strong> tools whose functions overlap (<code>analyze_content</code> vs <code>analyze_document</code>) so names and descriptions no longer compete.</li><li><strong>Review the system prompt</strong> for keyword-sensitive instructions. A line like "always check the customer's account first" can pull requests toward <code>get_customer</code> and override well-written descriptions.</li></ul><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>The agent often calls get_customer for "check my order #12345". Both tools have one-line descriptions and accept similar identifiers. What's the most effective first step?</p><div class="opts"><button type="button" data-ok="0">A. Add 5–8 few-shot examples routing order queries to lookup_order</button><button type="button" data-ok="1">B. Expand each description with input formats, example queries, edge cases and when to use it versus the other tool</button><button type="button" data-ok="0">C. Build a keyword router that pre-selects the tool</button><button type="button" data-ok="0">D. Merge both into a single lookup_entity tool</button></div><p class="why" hidden>Descriptions are the primary selection mechanism, and these are too thin to differentiate. Fixing them addresses the root cause at low cost; the other options add overhead, bypass the model or over-engineer a first step.</p></div><div class="quiz" data-multi="1"><p class="q"><b>Practice question</b><span class="n">Select 2</span>Two tools, analyze_content and analyze_document, have near-identical descriptions, and the agent picks between them inconsistently. What should you do? (Select 2)</p><div class="opts"><button type="button" data-ok="1">A. Rename and re-describe them so each has a distinct purpose and boundary</button><button type="button" data-ok="0">B. Add a third similar tool as a tie-breaker</button><button type="button" data-ok="1">C. Split generic analysis into purpose-specific tools such as extract_data_points and summarize_content</button><button type="button" data-ok="0">D. Remove all tool descriptions</button></div><button type=button class=check>Check answer</button><p class="why" hidden>Overlap causes misrouting. Distinct names, purposes and boundaries, or purpose-specific tools with clear contracts, remove the ambiguity.</p></div></section><section class="session" id="s2-2"><p class="snum">Task statement 2.2</p><h2>Structured error responses</h2><p>When an MCP tool fails, return the failure with the <strong><code>isError</code></strong> flag and enough structure for the agent to decide what to do. A generic "Operation failed" leaves it guessing: it may retry something that can never succeed, or give up on something a retry would fix.</p><div class="tbl"><table><thead><tr><th>Category</th><th>Example</th><th>Retryable?</th><th>Agent should</th></tr></thead><tbody><tr><td><strong>Transient</strong></td><td>Timeout, service unavailable</td><td>Yes</td><td>Retry (bounded), maybe later</td></tr><tr><td><strong>Validation</strong></td><td>Malformed order ID</td><td>No, until the input changes</td><td>Fix the input or ask the user</td></tr><tr><td><strong>Business</strong></td><td>Return window expired; refund over policy</td><td>No</td><td>Explain to the customer in plain words; offer alternatives</td></tr><tr><td><strong>Permission</strong></td><td>Not authorised for this account</td><td>No</td><td>Don't retry; escalate or request access</td></tr></tbody></table></div><figure class="seq anim" style="--c:2"><figcaption>Same failure, two responses</figcaption><div class="actors"><b>Agent</b><b>Refund tool (MCP)</b></div><div class="lane"><div class="m r" style="grid-column:1/3;--s:2;--k:0"><span>process_refund(ORD-0931, $60)</span><i></i></div><div class="m l reply" style="grid-column:1/3;--s:2;--k:1"><span>✗ "Operation failed" → agent retries 3 times, then apologises vaguely</span><i></i></div><div class="m r" style="grid-column:1/3;--s:2;--k:2"><span>process_refund(ORD-0931, $60)</span><i></i></div><div class="m l reply" style="grid-column:1/3;--s:2;--k:3"><span>✓ isError, errorCategory: business, isRetryable: false, customerMessage: "outside the 30-day window"</span><i></i></div><div class="m note" style="grid-column:1/2;--k:4"><span>No retry; explains the policy and offers the warranty route</span></div></div></figure><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">import json
+
+def tool_error(category, message, retryable, customer_message=None, **extra):
+    return {&quot;isError&quot;: True, &quot;content&quot;: [{&quot;type&quot;: &quot;text&quot;, &quot;text&quot;: json.dumps(
+        {&quot;errorCategory&quot;: category, &quot;isRetryable&quot;: retryable, &quot;message&quot;: message,
+         **({&quot;customerMessage&quot;: customer_message} if customer_message else {}), **extra})}]}
+
+def agent_decision(result):
+    if not result.get(&quot;isError&quot;):
+        data = json.loads(result[&quot;content&quot;][0][&quot;text&quot;])
+        return &quot;valid empty result: tell the customer there are no matches&quot; if data.get(&quot;matches&quot;) == [] else &quot;use the data&quot;
+    e = json.loads(result[&quot;content&quot;][0][&quot;text&quot;])
+    if e[&quot;isRetryable&quot;]:                   return f&quot;retry ({e[&#x27;errorCategory&#x27;]}), bounded&quot;
+    if e[&quot;errorCategory&quot;] == &quot;business&quot;:   return f&quot;don&#x27;t retry; tell the customer: {e[&#x27;customerMessage&#x27;]}&quot;
+    if e[&quot;errorCategory&quot;] == &quot;validation&quot;: return &quot;don&#x27;t retry as is; fix the input or ask the user&quot;
+    return &quot;don&#x27;t retry; escalate or request access&quot;
+
+results = {
+    &quot;timeout&quot;:        tool_error(&quot;transient&quot;, &quot;orders service timed out after 10s&quot;, True),
+    &quot;bad id&quot;:         tool_error(&quot;validation&quot;, &quot;order_id &#x27;ORD12&#x27; doesn&#x27;t match ORD-NNNNN&quot;, False),
+    &quot;window closed&quot;:  tool_error(&quot;business&quot;, &quot;return window closed 2026-09-30&quot;, False,
+                                 customer_message=&quot;This order is outside the 30-day return window, but it may still be under warranty.&quot;),
+    &quot;no access&quot;:      tool_error(&quot;permission&quot;, &quot;agent role can&#x27;t read corporate accounts&quot;, False),
+    &quot;no matches&quot;:     {&quot;isError&quot;: False, &quot;content&quot;: [{&quot;type&quot;: &quot;text&quot;, &quot;text&quot;: json.dumps({&quot;matches&quot;: []})}]},
+}
+for name, r in results.items():
+    print(f&quot;{name:&lt;14} → {agent_decision(r)}&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>timeout        → retry (transient), bounded
+bad id         → don&#x27;t retry as is; fix the input or ask the user
+window closed  → don&#x27;t retry; tell the customer: This order is outside the 30-day return window, but it may still be under warranty.
+no access      → don&#x27;t retry; escalate or request access
+no matches     → valid empty result: tell the customer there are no matches</pre></div></div><aside class="call read"><b>How to read it</b><p>Five outcomes, five different correct responses, and only one of them is a retry. Note the last line: an empty result is <strong>not</strong> an error. "I searched and found nothing" and "I couldn't search" look identical if both come back empty, but they need opposite handling (Module 5 returns to this).</p></aside><aside class="call tip"><b>Tip</b><p>Inside a multi-agent system, let subagents <strong>recover locally</strong> from transient failures (a bounded retry) and propagate to the coordinator only what they can't resolve, together with what they attempted and any partial results.</p></aside><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>An MCP refund tool returns "Operation failed" for every problem. The agent retries refunds that were rejected for being outside policy. What change helps most?</p><div class="opts"><button type="button" data-ok="0">A. Increase the retry limit</button><button type="button" data-ok="1">B. Return structured errors with errorCategory, isRetryable and a customer-friendly message, so business-rule rejections are marked non-retryable and explained</button><button type="button" data-ok="0">C. Remove error messages entirely</button><button type="button" data-ok="0">D. Ask the model to guess the error type</button></div><p class="why" hidden>Generic errors hide whether a retry can work. Structured metadata lets the agent skip pointless retries and explain policy outcomes to the customer.</p></div><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>A search tool finds no orders for a customer's email. How should it respond?</p><div class="opts"><button type="button" data-ok="1">A. A successful result with an empty match list, not an error</button><button type="button" data-ok="0">B. isError true with category "transient"</button><button type="button" data-ok="0">C. isError true with category "permission"</button><button type="button" data-ok="0">D. Throw an exception</button></div><p class="why" hidden>The query succeeded; there were simply no matches. Reporting it as an error would make the agent retry or escalate a correct answer.</p></div></section><section class="session" id="s2-3"><p class="snum">Task statement 2.3</p><h2>Distributing tools and tool_choice</h2><p>Give an agent too many tools (the guide's example is 18 instead of 4–5) and selection reliability drops: more options, more overlap, more decisions. Agents with tools outside their specialisation also tend to <strong>misuse</strong> them, for example a synthesis agent starting its own web searches. Scope each agent's tools to its role.</p><div class="tbl"><table><thead><tr><th>Technique</th><th>Example</th></tr></thead><tbody><tr><td><strong>Role-scoped tools</strong></td><td>Search agent: web search and fetch. Synthesis agent: read and write the report.</td></tr><tr><td><strong>Constrained alternatives</strong></td><td>Replace a generic <code>fetch_url</code> with <code>load_document</code>, which only accepts URLs from approved document stores</td></tr><tr><td><strong>Scoped cross-role tools for frequent needs</strong></td><td>Give synthesis a narrow <code>verify_fact</code> for simple checks; complex verification still goes through the coordinator to the search agent</td></tr></tbody></table></div><p>That last row is the official sample answer for a synthesis agent bouncing every fact-check through the coordinator. Here's why it works, with the guide's split of 85% simple checks and 15% deep ones (round-trip counts are illustrative).</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">checks = 100
+simple, deep = 85, 15
+via_coordinator_trips = 3          # synthesis → coordinator → search → synthesis
+verify_fact_trips = 1              # one scoped tool call
+
+before = checks * via_coordinator_trips
+after = simple * verify_fact_trips + deep * via_coordinator_trips
+print(f&quot;round trips per 100 checks: {before} before, {after} with a scoped verify_fact tool ({1 - after / before:.0%} fewer)&quot;)
+
+ALLOWED_STORES = (&quot;https://docs.internal.example/&quot;, &quot;https://policies.internal.example/&quot;)
+def load_document(url):
+    if not url.startswith(ALLOWED_STORES):
+        return {&quot;isError&quot;: True, &quot;errorCategory&quot;: &quot;validation&quot;, &quot;isRetryable&quot;: False,
+                &quot;message&quot;: &quot;load_document only accepts approved document stores&quot;}
+    return {&quot;isError&quot;: False, &quot;content&quot;: f&quot;(document text from {url})&quot;}
+for u in [&quot;https://docs.internal.example/refund-policy&quot;, &quot;https://evil.example/payload.html&quot;]:
+    print(f&quot;{u:&lt;48} → {&#x27;loaded&#x27; if not load_document(u)[&#x27;isError&#x27;] else &#x27;rejected: not an approved store&#x27;}&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>round trips per 100 checks: 300 before, 130 with a scoped verify_fact tool (57% fewer)
+https://docs.internal.example/refund-policy      → loaded
+https://evil.example/payload.html                → rejected: not an approved store</pre></div></div><aside class="call read"><b>How to read it</b><p>The scoped tool removes about 57% of round trips while keeping complex verification on the existing, observable path. Giving synthesis <em>all</em> the search tools would over-provision it; batching checks to the end would block synthesis steps that depend on verified facts. The constrained <code>load_document</code> shows the same least-privilege idea at the tool level: it can't be pointed at arbitrary URLs.</p></aside><h3>tool_choice</h3><div class="tbl"><table><thead><tr><th>Setting</th><th>Behaviour</th><th>Use for</th></tr></thead><tbody><tr><td><code>{"type": "auto"}</code></td><td>Claude may call a tool <strong>or</strong> reply with text</td><td>Normal agent turns</td></tr><tr><td><code>{"type": "any"}</code></td><td>Claude <strong>must</strong> call a tool, but chooses which</td><td>Guaranteeing structured output when several extraction schemas exist and the document type is unknown</td></tr><tr><td><code>{"type": "tool", "name": "extract_metadata"}</code></td><td>Claude <strong>must</strong> call that tool</td><td>Forcing a step to run first (metadata before enrichment), then continuing in follow-up turns</td></tr></tbody></table></div><aside class="call warn"><b>Watch out</b><p><strong>Then vs now.</strong> The exam guide teaches <code>any</code> and forced tool selection, and you should know them for the exam. On current models, <strong>Claude Opus 5.5, Sonnet 5.5 and Fable 5.1 reject forced <code>tool_choice</code> (<code>any</code> or a named tool) with a 400 error.</strong> There, use <code>auto</code> with an instruction to call the tool, <code>strict: true</code> on the tool for schema-valid input, check that the call was made, or use structured outputs (<code>output_config.format</code>) when the forced call only existed to get JSON.</p></aside><div class="cell"><div class="code"><div class="lab"><span>Python</span><span class="noeval">shown, not run here</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">response = client.messages.create(
+    model=&quot;claude-haiku-5-5&quot;,                    # a model that still accepts forced tool_choice
+    max_tokens=2048,
+    tools=[extract_invoice, extract_receipt, extract_contract],
+    tool_choice={&quot;type&quot;: &quot;any&quot;},                 # must call one of the extraction tools
+    messages=[{&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: [doc_block, {&quot;type&quot;: &quot;text&quot;, &quot;text&quot;: &quot;Extract this document.&quot;}]}],
+)</code></pre></div></div><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>A synthesis agent sends every fact-check back through the coordinator to the search agent, adding 2–3 round trips and 40% latency. 85% of checks are simple (dates, names, figures). What's the best change?</p><div class="opts"><button type="button" data-ok="1">A. Give the synthesis agent a scoped verify_fact tool for simple checks; keep complex verification flowing through the coordinator</button><button type="button" data-ok="0">B. Have synthesis batch all checks and send them at the end</button><button type="button" data-ok="0">C. Give the synthesis agent all of the search agent's tools</button><button type="button" data-ok="0">D. Have the search agent pre-cache extra context speculatively</button></div><p class="why" hidden>A narrow cross-role tool handles the frequent case with least privilege while keeping the observable path for complex cases. Batching blocks dependent steps, full access over-provisions, and speculative caching can't predict needs.</p></div><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>Several extraction tools exist (invoice, receipt, contract), the document type is unknown, and you need a tool call rather than chat. Per the exam guide, which tool_choice setting fits?</p><div class="opts"><button type="button" data-ok="0">A. "auto"</button><button type="button" data-ok="1">B. "any"</button><button type="button" data-ok="0">C. {"type": "tool", "name": "extract_invoice"}</button><button type="button" data-ok="0">D. "none"</button></div><p class="why" hidden>"any" forces a tool call while letting the model pick the right schema. (On Opus 5.5, Sonnet 5.5 and Fable 5.1 forced options are rejected; use auto plus an instruction and verify the call, or structured outputs.)</p></div></section><section class="session" id="s2-4"><p class="snum">Task statement 2.4</p><h2>Integrating MCP servers</h2><p>In Claude Code, MCP servers are configured at two main scopes:</p><div class="tbl"><table><thead><tr><th>Scope</th><th>File</th><th>For</th></tr></thead><tbody><tr><td><strong>Project</strong></td><td><code>.mcp.json</code> in the repository, <strong>committed</strong></td><td>Shared team tooling (Jira, GitHub, internal APIs)</td></tr><tr><td><strong>User</strong></td><td><code>~/.claude.json</code></td><td>Personal or experimental servers</td></tr></tbody></table></div><p>Use <strong>environment variable expansion</strong> in <code>.mcp.json</code> so credentials never enter version control. Tools from <strong>all</strong> configured servers are discovered at connection time and are available to the agent <strong>simultaneously</strong>.</p><div class="cell file"><div class="code"><div class="lab"><span>.mcp.json (committed)</span><button class="copy" type="button">Copy</button></div><pre><code class="language-json">{
+  &quot;mcpServers&quot;: {
+    &quot;github&quot;: {
+      &quot;type&quot;: &quot;http&quot;,
+      &quot;url&quot;: &quot;https://api.githubcopilot.com/mcp/&quot;,
+      &quot;headers&quot;: { &quot;Authorization&quot;: &quot;Bearer ${GITHUB_TOKEN}&quot; }
+    },
+    &quot;orders&quot;: {
+      &quot;command&quot;: &quot;python&quot;,
+      &quot;args&quot;: [&quot;tools/orders_mcp.py&quot;],
+      &quot;env&quot;: { &quot;ORDERS_API_KEY&quot;: &quot;${ORDERS_API_KEY}&quot; }
+    }
+  }
+}</code></pre></div></div><figure class="seq anim" style="--c:4"><figcaption>Session start: every configured server&#x27;s tools at once</figcaption><div class="actors"><b>Claude Code</b><b>.mcp.json (project)</b><b>~/.claude.json (user)</b><b>Servers</b></div><div class="lane"><div class="m r" style="grid-column:1/3;--s:2;--k:0"><span>read github, orders (expand ${GITHUB_TOKEN}, ${ORDERS_API_KEY})</span><i></i></div><div class="m r" style="grid-column:1/4;--s:3;--k:1"><span>read scratch-notes</span><i></i></div><div class="m r" style="grid-column:1/5;--s:4;--k:2"><span>connect to each and list its tools</span><i></i></div><div class="m l reply" style="grid-column:1/5;--s:4;--k:3"><span>github: 2 tools · scratch-notes: 2 tools · orders: auth failed</span><i></i></div><div class="m note" style="grid-column:1/2;--k:4"><span>The agent sees all connected servers' tools together</span></div></div></figure><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">import os, re
+
+PROJECT = {&quot;github&quot;: {&quot;headers&quot;: {&quot;Authorization&quot;: &quot;Bearer ${GITHUB_TOKEN}&quot;}, &quot;tools&quot;: [&quot;create_issue&quot;, &quot;search_code&quot;]},
+           &quot;orders&quot;: {&quot;env&quot;: {&quot;ORDERS_API_KEY&quot;: &quot;${ORDERS_API_KEY}&quot;}, &quot;tools&quot;: [&quot;lookup_order&quot;, &quot;process_refund&quot;]}}
+USER = {&quot;scratch-notes&quot;: {&quot;env&quot;: {}, &quot;tools&quot;: [&quot;save_note&quot;, &quot;find_note&quot;]}}
+ENV = {&quot;GITHUB_TOKEN&quot;: &quot;ghp_(set in the shell)&quot;}                        # ORDERS_API_KEY missing on this machine
+
+def expand(obj, env, missing):
+    if isinstance(obj, dict): return {k: expand(v, env, missing) for k, v in obj.items()}
+    if isinstance(obj, list): return [expand(v, env, missing) for v in obj]
+    if isinstance(obj, str):
+        for var in re.findall(r&quot;\$\{(\w+)\}&quot;, obj):
+            if var not in env: missing.append(var)
+        return re.sub(r&quot;\$\{(\w+)\}&quot;, lambda m: env.get(m.group(1), &quot;&lt;MISSING&gt;&quot;), obj)
+    return obj
+
+available = []
+for scope, servers in ((&quot;project&quot;, PROJECT), (&quot;user&quot;, USER)):
+    for name, cfg in servers.items():
+        missing = []
+        expand(cfg, ENV, missing)
+        status = f&quot;credential missing: {missing}&quot; if missing else &quot;connected&quot;
+        if not missing: available += [f&quot;mcp__{name}__{t}&quot; for t in cfg[&quot;tools&quot;]]
+        print(f&quot;{scope:&lt;8}{name:&lt;14}{status}&quot;)
+print(&quot;\ntools available together:&quot;, available)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>project github        connected
+project orders        credential missing: [&#x27;ORDERS_API_KEY&#x27;]
+user    scratch-notes connected
+
+tools available together: [&#x27;mcp__github__create_issue&#x27;, &#x27;mcp__github__search_code&#x27;, &#x27;mcp__scratch-notes__save_note&#x27;, &#x27;mcp__scratch-notes__find_note&#x27;]</pre></div></div><aside class="call read"><b>How to read it</b><p>The GitHub and personal notes servers connect, and their tools appear side by side in one tool list. The orders server fails because <code>ORDERS_API_KEY</code> isn't set in this shell, which is the most common "the MCP tool isn't there" cause after typos and unapproved servers. The committed file never contained the key itself.</p></aside><h3>Make MCP tools win over built-ins, and expose catalogs as resources</h3><ul><li>If an agent keeps using <strong>Grep</strong> where a richer MCP search tool exists, the MCP tool's description is usually too thin. Explain its capabilities and outputs in detail.</li><li>Prefer <strong>existing community MCP servers</strong> for standard integrations (Jira, GitHub); build custom servers for team-specific workflows.</li><li>Expose <strong>content catalogs as MCP resources</strong> (issue summaries, documentation trees, database schemas) so the agent can see what exists without exploratory tool calls.</li></ul><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>A team wants its shared Jira MCP server available to everyone who clones the repo, and one developer wants to try an experimental personal server. Where should each be configured?</p><div class="opts"><button type="button" data-ok="1">A. Jira in the project's .mcp.json with ${JIRA_TOKEN} expansion; the experimental server in the developer's ~/.claude.json</button><button type="button" data-ok="0">B. Both in ~/.claude.json</button><button type="button" data-ok="0">C. Both in .mcp.json with tokens inline</button><button type="button" data-ok="0">D. Jira in CLAUDE.md</button></div><p class="why" hidden>Project scope shares team tooling through version control; environment variable expansion keeps secrets out of it. Personal servers belong in user scope.</p></div><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>An agent explores a docs site by repeatedly calling list_pages and search_docs before finding anything. What MCP feature reduces those exploratory calls?</p><div class="opts"><button type="button" data-ok="0">A. More tools</button><button type="button" data-ok="1">B. Exposing the documentation hierarchy as an MCP resource so the agent can see what's available up front</button><button type="button" data-ok="0">C. A larger context window</button><button type="button" data-ok="0">D. Disabling the search tool</button></div><p class="why" hidden>Resources expose catalogs (doc trees, issue summaries, schemas) as readable context, giving visibility without discovery calls.</p></div></section><section class="session" id="s2-5"><p class="snum">Task statement 2.5</p><h2>The built-in tools</h2><p>Agents built on Claude Code and the Agent SDK come with built-in tools. Choosing the right one is a tested skill:</p><div class="tbl"><table><thead><tr><th>Tool</th><th>Does</th><th>Use for</th></tr></thead><tbody><tr><td><strong>Grep</strong></td><td>Searches file <strong>contents</strong> for a pattern</td><td>Callers of a function, an error message, an import</td></tr><tr><td><strong>Glob</strong></td><td>Matches file <strong>paths</strong> by pattern</td><td>All test files: <code><em>*/</em>.test.tsx</code>; all migrations</td></tr><tr><td><strong>Read</strong> / <strong>Write</strong></td><td>Load or replace a whole file</td><td>Understanding a file; rewriting it completely</td></tr><tr><td><strong>Edit</strong></td><td>Targeted change by matching <strong>unique</strong> text</td><td>Small, precise edits</td></tr><tr><td><strong>Bash</strong></td><td>Runs commands</td><td>Tests, builds, git</td></tr></tbody></table></div><aside class="call tip"><b>Tip</b><p>Build understanding <strong>incrementally</strong>: Grep to find entry points, Read to follow imports and trace the flow. Don't read every file up front. If Edit fails because its anchor text isn't unique, fall back to Read + Write. To trace usage through wrapper modules, first find every name the wrapper exports, then search for each.</p></aside><p>Here are those moves on a small in-memory repository.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">import fnmatch
+
+REPO = {
+    &quot;src/payments/refund.py&quot;: &quot;from .client import charge\n\ndef issue_refund(order, amount):\n    log(&#x27;refund start&#x27;)\n    result = charge(order, -amount)\n    log(&#x27;refund done&#x27;)\n    return result\n&quot;,
+    &quot;src/payments/client.py&quot;: &quot;def charge(order, amount):\n    log(&#x27;charge&#x27;)\n    return gateway.post(order, amount)\n&quot;,
+    &quot;src/payments/__init__.py&quot;: &quot;from .refund import issue_refund as refund\nfrom .client import charge as raw_charge\n&quot;,
+    &quot;src/api/routes.py&quot;: &quot;from payments import refund\n\ndef post_refund(req):\n    return refund(req.order, req.amount)\n&quot;,
+    &quot;src/ui/Button.test.tsx&quot;: &quot;test(&#x27;renders&#x27;)\n&quot;, &quot;src/ui/Modal.test.tsx&quot;: &quot;test(&#x27;opens&#x27;)\n&quot;,
+}
+grep = lambda pat: [(p, i + 1) for p, src in REPO.items() for i, line in enumerate(src.splitlines()) if re.search(pat, line)]
+glob = lambda pat: sorted(p for p in REPO if fnmatch.fnmatch(p, pat))
+
+print(&quot;Glob **/*.test.tsx:&quot;, glob(&quot;*.test.tsx&quot;))           # fnmatch&#x27;s * also crosses folders, like **
+print(&quot;Grep &#x27;log\\(&#x27; (content):&quot;, grep(r&quot;log\(&quot;))
+
+def edit(path, old, new):
+    count = REPO[path].count(old)
+    if count != 1:
+        return f&quot;Edit failed: {count} matches for {old!r}; fall back to Read + Write&quot;
+    REPO[path] = REPO[path].replace(old, new); return &quot;edited&quot;
+print(&quot;Edit &#x27;log(&#x27; → &#x27;audit(&#x27; in refund.py:&quot;, edit(&quot;src/payments/refund.py&quot;, &quot;log(&quot;, &quot;audit(&quot;))
+src = REPO[&quot;src/payments/refund.py&quot;]                                    # fallback: Read the whole file...
+REPO[&quot;src/payments/refund.py&quot;] = src.replace(&quot;log(&quot;, &quot;audit(&quot;)         # ...and Write the corrected version
+print(&quot;after Read + Write:&quot;, re.findall(r&quot;\w+\(&#x27;refund \w+&#x27;\)&quot;, REPO[&quot;src/payments/refund.py&quot;]))
+
+exports = re.findall(r&quot;import (\w+) as (\w+)&quot;, REPO[&quot;src/payments/__init__.py&quot;])
+print(&quot;\nwrapper exports:&quot;, exports)
+for original, alias in exports:
+    print(f&quot;  callers of {alias} (wraps {original}):&quot;, [p for p, _ in grep(rf&quot;\b{alias}\(&quot;)])</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>Glob **/*.test.tsx: [&#x27;src/ui/Button.test.tsx&#x27;, &#x27;src/ui/Modal.test.tsx&#x27;]
+Grep &#x27;log\(&#x27; (content): [(&#x27;src/payments/refund.py&#x27;, 4), (&#x27;src/payments/refund.py&#x27;, 6), (&#x27;src/payments/client.py&#x27;, 2)]
+Edit &#x27;log(&#x27; → &#x27;audit(&#x27; in refund.py: Edit failed: 2 matches for &#x27;log(&#x27;; fall back to Read + Write
+after Read + Write: [&quot;audit(&#x27;refund start&#x27;)&quot;, &quot;audit(&#x27;refund done&#x27;)&quot;]
+
+wrapper exports: [(&#x27;issue_refund&#x27;, &#x27;refund&#x27;), (&#x27;charge&#x27;, &#x27;raw_charge&#x27;)]
+  callers of refund (wraps issue_refund): [&#x27;src/api/routes.py&#x27;]
+  callers of raw_charge (wraps charge): []</pre></div></div><aside class="call read"><b>How to read it</b><p>Glob finds files by name wherever they live; Grep finds <code>log(</code> calls by content. The Edit fails because <code>log(</code> appears twice in the file, so there's no unique anchor; Read + Write then updates both calls reliably. Tracing through the <code>payments</code> wrapper only works after listing its exports: callers use the alias <code>refund</code>, not <code>issue_refund</code>, so a search for the original name alone would find nothing in the API layer.</p></aside><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>You need every test file in a codebase where tests sit next to their source files, e.g. src/ui/Button.test.tsx. Which built-in tool fits best?</p><div class="opts"><button type="button" data-ok="0">A. Grep for "test"</button><button type="button" data-ok="1">B. Glob with a pattern like <em>*/</em>.test.tsx</button><button type="button" data-ok="0">C. Read every file</button><button type="button" data-ok="0">D. Bash with a custom script</button></div><p class="why" hidden>Finding files by name or extension is a path-matching job, which is what Glob does. Grep searches contents and would match many non-test files.</p></div><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>An Edit call fails because its anchor text appears several times in the file. What's the reliable fallback?</p><div class="opts"><button type="button" data-ok="0">A. Retry the same Edit</button><button type="button" data-ok="1">B. Read the whole file and Write the corrected version</button><button type="button" data-ok="0">C. Use Glob</button><button type="button" data-ok="0">D. Delete the file</button></div><p class="why" hidden>Edit needs unique text to anchor on. Reading the full file and writing the updated content avoids the ambiguity.</p></div></section>
+  <div class="pager"><a class="btn ghost" href="../module-1/">← Module 1</a><a class="btn" href="../module-3/">Module 3 →</a></div>
+  </div>
+</div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="fine" style="border:none;margin:0;padding:0">
+      <span>© 2026 XploreAI · <a href="/">xploreai.co.in</a></span>
+      <span><a href="mailto:hello@xploreai.co.in">hello@xploreai.co.in</a></span>
+    </div>
+  </div>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/json.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/bash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/markdown.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/typescript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/yaml.min.js"></script>
+<script src="/courses/claude-architect-foundations/course.js?v=1793068677"></script>
+</body>
+</html>

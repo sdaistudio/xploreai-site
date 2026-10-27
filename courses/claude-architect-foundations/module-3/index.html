@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 3: Claude Code Configuration &amp; Workflows — Claude Architect (CCAR-F) course — XploreAI</title>
+<meta name="description" content="Put instructions at the right level of the CLAUDE.md hierarchy and keep them modular, share commands and skills through the repository, scope conventions with path-specific rules, choose between plan mode and direct execution, iterate with examples and tests, and run Claude Code reliably in CI/CD.">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="XploreAI">
+<meta property="og:title" content="Module 3: Claude Code Configuration &amp; Workflows — Claude Architect (CCAR-F) course">
+<meta property="og:description" content="Put instructions at the right level of the CLAUDE.md hierarchy and keep them modular, share commands and skills through the repository, scope conventions with path-specific rules, choose between plan mode and direct execution, iterate with examples and tests, and run Claude Code reliably in CI/CD.">
+<meta property="og:url" content="https://xploreai.co.in/courses/claude-architect-foundations/module-3/">
+<meta property="og:image" content="https://xploreai.co.in/assets/og-image.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/style.css">
+<link rel="stylesheet" href="/courses/claude-architect-foundations/course.css?v=1793068677">
+</head>
+<body>
+
+<nav>
+  <div class="wrap bar">
+    <a class="wordmark" href="/">xplore<span>ai</span></a>
+    <ul>
+      <li><a href="/#agents">Solutions</a></li>
+      <li><a href="/#stories">Success Stories</a></li>
+      <li><a href="/#subscribe">Newsletter</a></li>
+      <li><a href="/learn.html" aria-current="page">Learn AI</a></li>
+      <li><a class="btn" href="https://wa.me/919769686931?text=Hi%20XploreAI%2C%20I%27m%20interested%20in%20AI%20automation!">Get Started</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main class="cca">
+<header class="mhero wrap">
+  <p class="crumb"><a href="/learn.html">Learn AI</a> / <a href="../">Claude Architect (CCAR-F) course</a> / Module 3</p>
+  <span class="pill">MODULE 3 OF 5 · DOMAIN 3 · 20% OF THE EXAM · 6 TASK STATEMENTS</span>
+  <h1>Claude Code Configuration &amp; Workflows<i>.</i></h1>
+  <p class="lede">Put instructions at the right level of the CLAUDE.md hierarchy and keep them modular, share commands and skills through the repository, scope conventions with path-specific rules, choose between plan mode and direct execution, iterate with examples and tests, and run Claude Code reliably in CI/CD.</p>
+  <div class="dl"><a class="btn" href="#s3-1">Start session 3.1 →</a> <a class="btn ghost" href="../code/module-3.py" download>Download the Python</a></div>
+</header>
+<div class="wrap layout">
+  <aside class="toc" aria-label="Sessions"><p>In this module</p><ol><li><a href="#s3-1"><span>3.1</span>The CLAUDE.md hierarchy</a></li><li><a href="#s3-2"><span>3.2</span>Slash commands and skills</a></li><li><a href="#s3-3"><span>3.3</span>Path-specific rules</a></li><li><a href="#s3-4"><span>3.4</span>Plan mode or direct execution</a></li><li><a href="#s3-5"><span>3.5</span>Iterative refinement</a></li><li><a href="#s3-6"><span>3.6</span>Claude Code in CI/CD</a></li></ol></aside>
+  <div class="content">
+<section class="session" id="s3-1"><p class="snum">Task statement 3.1</p><h2>The CLAUDE.md hierarchy</h2><div class="tbl"><table><thead><tr><th>Level</th><th>Location</th><th>Shared with the team?</th></tr></thead><tbody><tr><td><strong>User</strong></td><td><code>~/.claude/CLAUDE.md</code></td><td><strong>No</strong>: it applies only to you and isn't in version control</td></tr><tr><td><strong>Project</strong></td><td><code>CLAUDE.md</code> at the repo root, or <code>.claude/CLAUDE.md</code></td><td>Yes, via the repository</td></tr><tr><td><strong>Directory</strong></td><td><code>CLAUDE.md</code> in a subdirectory</td><td>Yes; applies when working in that part of the tree</td></tr></tbody></table></div><p>Keep the hierarchy <strong>modular</strong> rather than one giant file:</p><ul><li><code>@import</code> pulls in other files, e.g. a package's CLAUDE.md importing only the standards relevant to it (<code>@docs/standards/api.md</code>).</li><li><code>.claude/rules/</code> holds topic-specific rule files (<code>testing.md</code>, <code>api-conventions.md</code>, <code>deployment.md</code>) as an alternative to a monolithic CLAUDE.md.</li><li><code>/memory</code> shows which memory files are loaded: the first thing to check when behaviour differs between people or sessions.</li></ul><div class="cell file"><div class="code"><div class="lab"><span>packages/billing/CLAUDE.md</span><button class="copy" type="button">Copy</button></div><pre><code class="language-markdown"># Billing package
+@../../docs/standards/api-conventions.md
+@../../docs/standards/money-handling.md
+
+- Amounts are integers in paise; never floats.
+- Every public function in this package has a test in tests/billing/.</code></pre></div></div><figure class="seq anim" style="--c:5"><figcaption>What one session loads</figcaption><div class="actors"><b>Claude Code</b><b>User file</b><b>Project CLAUDE.md</b><b>Imports</b><b>Directory CLAUDE.md</b></div><div class="lane"><div class="m r" style="grid-column:1/3;--s:2;--k:0"><span>~/.claude/CLAUDE.md (this developer only)</span><i></i></div><div class="m r" style="grid-column:1/4;--s:3;--k:1"><span>CLAUDE.md at the repo root (whole team)</span><i></i></div><div class="m r" style="grid-column:3/5;--s:2;--k:2"><span>@docs/standards/testing.md → @fixtures.md</span><i></i></div><div class="m r" style="grid-column:1/6;--s:5;--k:3"><span>packages/billing/CLAUDE.md when working there</span><i></i></div><div class="m note" style="grid-column:1/2;--k:4"><span>/memory lists exactly which of these are loaded</span></div></div></figure><p>Here's how those files resolve for two developers on the same repository. Imports are expanded recursively (with a guard against cycles).</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">import re
+
+FILES = {
+    &quot;~/.claude/CLAUDE.md&quot;: &quot;- Prefer early returns.\n- Team rule: run `make lint` before committing.&quot;,
+    &quot;CLAUDE.md&quot;: &quot;# Monorepo\n- Python 3.12, pytest.\n@docs/standards/testing.md&quot;,
+    &quot;docs/standards/testing.md&quot;: &quot;- Tests use factories in tests/factories.\n@docs/standards/fixtures.md&quot;,
+    &quot;docs/standards/fixtures.md&quot;: &quot;- Fixtures live in conftest.py at package level.&quot;,
+    &quot;packages/billing/CLAUDE.md&quot;: &quot;@docs/standards/money-handling.md\n- Amounts in paise.&quot;,
+    &quot;docs/standards/money-handling.md&quot;: &quot;- Use Decimal for display only; integers internally.\n@docs/standards/testing.md&quot;,
+}
+
+def expand(path, seen=None):
+    seen = seen or set()
+    if path in seen: return [f&quot;(skipped repeat import of {path})&quot;]
+    seen.add(path)
+    out = []
+    for line in FILES[path].splitlines():
+        m = re.match(r&quot;@(\S+)&quot;, line)
+        out += expand(m.group(1), seen) if m else [line]
+    return out
+
+for dev, has_user_file in [(&quot;Asha (wrote the team rule in her user file)&quot;, True), (&quot;Ravi (new teammate)&quot;, False)]:
+    sources = ([&quot;~/.claude/CLAUDE.md&quot;] if has_user_file else []) + [&quot;CLAUDE.md&quot;, &quot;packages/billing/CLAUDE.md&quot;]
+    lines = [l for s in sources for l in expand(s) if l.startswith(&quot;-&quot;)]
+    print(f&quot;{dev}: {len(lines)} instructions; has &#x27;make lint&#x27; rule: {any(&#x27;make lint&#x27; in l for l in lines)}&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>Asha (wrote the team rule in her user file): 9 instructions; has &#x27;make lint&#x27; rule: True
+Ravi (new teammate): 7 instructions; has &#x27;make lint&#x27; rule: False</pre></div></div><aside class="call read"><b>How to read it</b><p>Imports nest (testing pulls in fixtures; money-handling pulls testing again, and the repeat is skipped). The diagnosis the exam loves: the "run <code>make lint</code>" <strong>team</strong> rule lives in Asha's <strong>user</strong> file, so Ravi never gets it. Moving it to the project CLAUDE.md (or a <code>.claude/rules/</code> file) fixes it for everyone; <code>/memory</code> on Ravi's machine would show it isn't loaded.</p></aside><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>A new team member's Claude Code ignores the team's commit conventions, while everyone else's follows them. The conventions turn out to be in a senior engineer's ~/.claude/CLAUDE.md. What's the fix?</p><div class="opts"><button type="button" data-ok="0">A. Ask the new member to copy the senior engineer's file</button><button type="button" data-ok="1">B. Move the conventions into the project-level CLAUDE.md (or a .claude/rules/ file) committed to the repository</button><button type="button" data-ok="0">C. Put them in each developer's settings.json</button><button type="button" data-ok="0">D. Restart Claude Code</button></div><p class="why" hidden>User-level files apply only to their owner and aren't shared via version control. Team conventions belong at project level.</p></div><div class="quiz" data-multi="1"><p class="q"><b>Practice question</b><span class="n">Select 2</span>A monorepo's root CLAUDE.md has grown to 900 lines covering every package. What does the guide recommend? (Select 2)</p><div class="opts"><button type="button" data-ok="1">A. Split topics into focused files in .claude/rules/ (testing.md, api-conventions.md, …)</button><button type="button" data-ok="0">B. Move it all to ~/.claude/CLAUDE.md</button><button type="button" data-ok="1">C. Use @import in each package's CLAUDE.md to include only the standards relevant to that package</button><button type="button" data-ok="0">D. Delete the CLAUDE.md and rely on prompts</button></div><button type=button class=check>Check answer</button><p class="why" hidden>Modular organisation keeps each context relevant: topic files in .claude/rules/ and selective @imports per package.</p></div></section><section class="session" id="s3-2"><p class="snum">Task statement 3.2</p><h2>Slash commands and skills</h2><div class="tbl"><table><thead><tr><th>Item</th><th>Team-wide (version-controlled)</th><th>Personal</th></tr></thead><tbody><tr><td>Custom slash commands</td><td><code>.claude/commands/</code> in the repository</td><td><code>~/.claude/commands/</code></td></tr><tr><td>Skills</td><td><code>.claude/skills/&lt;name&gt;/SKILL.md</code></td><td><code>~/.claude/skills/&lt;name&gt;/SKILL.md</code></td></tr></tbody></table></div><p>Skill front matter supports options the exam names:</p><div class="tbl"><table><thead><tr><th>Option</th><th>Does</th></tr></thead><tbody><tr><td><code>context: fork</code></td><td>Runs the skill in an <strong>isolated subagent</strong>, so its verbose or exploratory output doesn't pollute the main conversation</td></tr><tr><td><code>allowed-tools</code></td><td>Restricts the tools available while the skill runs (e.g. only file writes, nothing destructive)</td></tr><tr><td><code>argument-hint</code></td><td>Prompts the developer for required parameters when they invoke the skill without arguments</td></tr></tbody></table></div><div class="cell file"><div class="code"><div class="lab"><span>.claude/skills/codebase-map/SKILL.md</span><button class="copy" type="button">Copy</button></div><pre><code class="language-markdown">---
+name: codebase-map
+description: Map an unfamiliar area of the codebase: entry points, main flows, dependencies. Use when asked to explain or explore a module.
+context: fork
+allowed-tools: Read, Grep, Glob
+argument-hint: &lt;directory or module to map&gt;
+---
+Map $ARGUMENTS. Return: entry points, the 3–5 main flows with file:line references,
+external dependencies, and anything surprising. At most 40 lines. Do not edit files.</code></pre></div></div><aside class="call tip"><b>Tip</b><p><strong>Skills or CLAUDE.md?</strong> CLAUDE.md is for <strong>always-loaded universal standards</strong>. Skills are for <strong>on-demand, task-specific workflows</strong>. To customise a team skill for yourself, create a <strong>personal variant with a different name</strong> in <code>~/.claude/skills/</code> so you don't change behaviour for teammates.</p></aside><p>Here's why <code>context: fork</code> matters for the main conversation, plus <code>argument-hint</code> and <code>allowed-tools</code> doing their jobs.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">def invoke(skill, args, main_context_tokens):
+    if skill[&quot;argument_hint&quot;] and not args:
+        return main_context_tokens, f&quot;prompt user: {skill[&#x27;argument_hint&#x27;]}&quot;
+    exploration = 46_000                         # files read, searches run while mapping
+    summary = 900                                # what the skill returns
+    if skill[&quot;context&quot;] == &quot;fork&quot;:
+        return main_context_tokens + summary, &quot;ran in an isolated subagent&quot;
+    return main_context_tokens + exploration + summary, &quot;ran inline&quot;
+
+def tool_allowed(skill, tool):
+    return tool in skill[&quot;allowed_tools&quot;]
+
+forked = {&quot;argument_hint&quot;: &quot;&lt;directory or module to map&gt;&quot;, &quot;context&quot;: &quot;fork&quot;, &quot;allowed_tools&quot;: {&quot;Read&quot;, &quot;Grep&quot;, &quot;Glob&quot;}}
+inline = dict(forked, context=None)
+
+for label, sk in [(&quot;context: fork&quot;, forked), (&quot;inline&quot;, inline)]:
+    tokens, how = invoke(sk, &quot;src/payments&quot;, 12_000)
+    print(f&quot;{label:&lt;14} main conversation after skill: {tokens:&gt;6,} tokens ({how})&quot;)
+print(&quot;no arguments:&quot;, invoke(forked, &quot;&quot;, 12_000)[1])
+print(&quot;skill tries Bash(rm -rf build):&quot;, &quot;allowed&quot; if tool_allowed(forked, &quot;Bash&quot;) else &quot;blocked by allowed-tools&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>context: fork  main conversation after skill: 12,900 tokens (ran in an isolated subagent)
+inline         main conversation after skill: 58,900 tokens (ran inline)
+no arguments: prompt user: &lt;directory or module to map&gt;
+skill tries Bash(rm -rf build): blocked by allowed-tools</pre></div></div><aside class="call read"><b>How to read it</b><p>Run inline, the mapping work leaves about 46,000 tokens of file reads and searches in the main conversation; forked, only the 900-token summary comes back. Invoked without a target, the skill asks for one instead of guessing, and its <code>allowed-tools</code> list stops it running Bash at all.</p></aside><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>You want a /review command running the team's checklist to be available to every developer who clones the repository. Where does it go?</p><div class="opts"><button type="button" data-ok="1">A. .claude/commands/ in the project repository</button><button type="button" data-ok="0">B. ~/.claude/commands/ on each developer's machine</button><button type="button" data-ok="0">C. The project CLAUDE.md</button><button type="button" data-ok="0">D. A .claude/config.json "commands" array</button></div><p class="why" hidden>Project-scoped commands in .claude/commands/ are version-controlled and available to everyone. ~/.claude/commands/ is personal, CLAUDE.md is for instructions, and the config.json option doesn't exist.</p></div><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>A codebase-analysis skill floods the main conversation with file contents, and later answers degrade. Which front-matter option addresses this?</p><div class="opts"><button type="button" data-ok="0">A. argument-hint</button><button type="button" data-ok="1">B. context: fork</button><button type="button" data-ok="0">C. allowed-tools</button><button type="button" data-ok="0">D. description</button></div><p class="why" hidden>context: fork runs the skill in an isolated subagent; only its result returns to the main conversation.</p></div></section><section class="session" id="s3-3"><p class="snum">Task statement 3.3</p><h2>Path-specific rules</h2><p>Files in <code>.claude/rules/</code> can carry YAML front matter with a <strong><code>paths</code></strong> field of glob patterns. A path-scoped rule loads <strong>only when Claude edits a matching file</strong>, cutting irrelevant context and tokens. Globs reach files <strong>wherever they live</strong>, which is the advantage over directory-level CLAUDE.md files for conventions that span the codebase (test files next to their source, Terraform under several folders).</p><div class="cell file"><div class="code"><div class="lab"><span>.claude/rules/testing.md</span><button class="copy" type="button">Copy</button></div><pre><code class="language-markdown">---
+paths: [&quot;**/*.test.tsx&quot;, &quot;**/*.test.ts&quot;]
+---
+# Test conventions
+- Arrange / act / assert, one behaviour per test.
+- Use renderWithProviders from test/utils, never raw render.</code></pre></div></div><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">import fnmatch
+
+RULES = {
+    &quot;react.md&quot;:     ([&quot;src/components/**/*.tsx&quot;], 900),
+    &quot;api.md&quot;:       ([&quot;src/api/**/*&quot;], 1_200),
+    &quot;testing.md&quot;:   ([&quot;**/*.test.tsx&quot;, &quot;**/*.test.ts&quot;], 700),
+    &quot;terraform.md&quot;: ([&quot;terraform/**/*&quot;], 1_600),
+    &quot;db.md&quot;:        ([&quot;src/db/**/*&quot;], 800),
+}
+def matches(path, pattern):                       # fnmatch&#x27;s * crosses &#x27;/&#x27;, so &#x27;**/&#x27; just needs an optional prefix
+    return fnmatch.fnmatch(path, pattern) or fnmatch.fnmatch(path, pattern.replace(&quot;**/&quot;, &quot;&quot;))
+
+for edited in [[&quot;src/components/Button.tsx&quot;, &quot;src/components/Button.test.tsx&quot;], [&quot;src/api/refunds.ts&quot;, &quot;src/api/refunds.test.ts&quot;], [&quot;terraform/prod/main.tf&quot;]]:
+    loaded = [r for r, (pats, _) in RULES.items() if any(matches(f, p) for f in edited for p in pats)]
+    tokens = sum(RULES[r][1] for r in loaded)
+    print(f&quot;editing {edited}\n   loads {loaded} ({tokens:,} tokens of {sum(t for _, t in RULES.values()):,})&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>editing [&#x27;src/components/Button.tsx&#x27;, &#x27;src/components/Button.test.tsx&#x27;]
+   loads [&#x27;react.md&#x27;, &#x27;testing.md&#x27;] (1,600 tokens of 5,200)
+editing [&#x27;src/api/refunds.ts&#x27;, &#x27;src/api/refunds.test.ts&#x27;]
+   loads [&#x27;api.md&#x27;, &#x27;testing.md&#x27;] (1,900 tokens of 5,200)
+editing [&#x27;terraform/prod/main.tf&#x27;]
+   loads [&#x27;terraform.md&#x27;] (1,600 tokens of 5,200)</pre></div></div><aside class="call read"><b>How to read it</b><p>The test conventions load alongside React rules in one session and alongside API rules in another, because the glob follows test files across folders. Terraform work loads only the Terraform rule. A directory CLAUDE.md couldn't do the test-file case without copying the same text into every folder.</p></aside><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>React components, API handlers and database models each follow different conventions. Test files sit next to their source files throughout the codebase, and all tests should follow one set of conventions. What's the most maintainable way to apply the right conventions automatically?</p><div class="opts"><button type="button" data-ok="1">A. Rule files in .claude/rules/ with glob patterns in their paths front matter</button><button type="button" data-ok="0">B. One root CLAUDE.md with a section per area</button><button type="button" data-ok="0">C. A skill per code type</button><button type="button" data-ok="0">D. A CLAUDE.md in each subdirectory</button></div><p class="why" hidden>Globs apply conventions by file path regardless of directory, which handles tests spread across the tree. A single file relies on inference, skills need invocation, and directory files can't follow scattered files.</p></div></section><section class="session" id="s3-4"><p class="snum">Task statement 3.4</p><h2>Plan mode or direct execution</h2><div class="tbl"><table><thead><tr><th>Choose</th><th>When</th><th>Examples</th></tr></thead><tbody><tr><td><strong>Plan mode</strong></td><td>Large-scale changes, several valid approaches, architectural decisions, many files</td><td>Monolith to microservices; a library migration touching 45+ files; choosing between integration approaches with different infrastructure needs</td></tr><tr><td><strong>Direct execution</strong></td><td>Simple, well-scoped, well-understood changes</td><td>A single-file bug fix with a clear stack trace; adding a date-validation check</td></tr><tr><td><strong>Both</strong></td><td>Plan the investigation and design, then execute the agreed plan directly</td><td>Plan a library migration; then implement it step by step</td></tr></tbody></table></div><p>Plan mode explores and designs <strong>before</strong> changing anything, preventing costly rework. For verbose discovery phases, the <strong>Explore subagent</strong> reads widely and returns a summary, keeping the main conversation's context free for decisions.</p><figure class="flow anim" style="--n:5"><figcaption>Plan, then execute</figcaption><ol><li style="--i:0"><b>Plan mode</b><span>Explore the code read-only; the Explore subagent summarises verbose discovery.</span></li><li style="--i:1"><b>Design</b><span>Compare the valid approaches; agree boundaries and order of work.</span></li><li style="--i:2"><b>Approve</b><span>You review the plan before any file changes.</span></li><li style="--i:3"><b>Execute</b><span>Switch to direct execution and implement the agreed steps.</span></li><li style="--i:4"><b>Verify</b><span>Run tests; iterate on failures.</span></li></ol></figure><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">def mode_for(task):
+    signals = []
+    if task[&quot;files&quot;] &gt; 10:            signals.append(f&quot;{task[&#x27;files&#x27;]} files&quot;)
+    if task[&quot;approaches&quot;] &gt; 1:        signals.append(f&quot;{task[&#x27;approaches&#x27;]} valid approaches&quot;)
+    if task[&quot;architectural&quot;]:         signals.append(&quot;architectural decision&quot;)
+    if signals:
+        return &quot;plan mode&quot;, signals
+    return &quot;direct execution&quot;, [&quot;small, clear scope&quot;]
+
+tasks = [
+    (&quot;Split the monolith into services&quot;,                 dict(files=60, approaches=3, architectural=True)),
+    (&quot;Fix the KeyError in invoice.py (stack trace given)&quot;, dict(files=1, approaches=1, architectural=False)),
+    (&quot;Migrate from requests to httpx (45 files)&quot;,          dict(files=45, approaches=1, architectural=False)),
+    (&quot;Add a date-range check to create_booking()&quot;,         dict(files=1, approaches=1, architectural=False)),
+    (&quot;Webhooks or a queue for partner notifications?&quot;,     dict(files=6, approaches=2, architectural=True)),
+]
+for name, t in tasks:
+    mode, why = mode_for(t)
+    print(f&quot;{mode:&lt;17} {name:&lt;50} ({&#x27;, &#x27;.join(why)})&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>plan mode         Split the monolith into services                   (60 files, 3 valid approaches, architectural decision)
+direct execution  Fix the KeyError in invoice.py (stack trace given) (small, clear scope)
+plan mode         Migrate from requests to httpx (45 files)          (45 files)
+direct execution  Add a date-range check to create_booking()         (small, clear scope)
+plan mode         Webhooks or a queue for partner notifications?     (2 valid approaches, architectural decision)</pre></div></div><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>You're asked to restructure a monolith into microservices, with decisions about service boundaries across dozens of files. Which approach fits?</p><div class="opts"><button type="button" data-ok="1">A. Enter plan mode to explore dependencies and design the approach before changing anything</button><button type="button" data-ok="0">B. Start with direct execution and let boundaries emerge</button><button type="button" data-ok="0">C. Direct execution with detailed upfront instructions</button><button type="button" data-ok="0">D. Direct execution, switching to plan mode only if it gets complicated</button></div><p class="why" hidden>The complexity is stated up front: many files, architectural choices, several valid approaches. Plan mode is designed for exactly that and prevents rework.</p></div><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>During a multi-phase migration, discovery output (hundreds of file reads) is exhausting the main context. What helps?</p><div class="opts"><button type="button" data-ok="0">A. Turning off plan mode</button><button type="button" data-ok="1">B. Delegating discovery to the Explore subagent, which returns a summary</button><button type="button" data-ok="0">C. Reading files twice</button><button type="button" data-ok="0">D. Removing CLAUDE.md</button></div><p class="why" hidden>The Explore subagent isolates verbose discovery and returns only what matters, preserving the main conversation's context.</p></div></section><section class="session" id="s3-5"><p class="snum">Task statement 3.5</p><h2>Iterative refinement</h2><p>When Claude's output isn't right, how you iterate matters:</p><div class="tbl"><table><thead><tr><th>Technique</th><th>Use it when</th></tr></thead><tbody><tr><td><strong>2–3 concrete input/output examples</strong></td><td>Prose descriptions of a transformation are interpreted inconsistently</td></tr><tr><td><strong>Test-driven iteration</strong></td><td>Write tests (behaviour, edge cases, performance) first; then share the failures to guide each round</td></tr><tr><td><strong>The interview pattern</strong></td><td>In an unfamiliar domain, ask Claude to question you first to surface considerations (cache invalidation, failure modes)</td></tr><tr><td><strong>One message for interacting issues</strong></td><td>Fixes affect each other: describe them together</td></tr><tr><td><strong>Sequential fixes for independent issues</strong></td><td>Each can be fixed and verified alone</td></tr></tbody></table></div><p>Here's test-driven iteration on a migration helper: tests first, a first version, the failures shared back, and a second version.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">TESTS = [  # (input row, expected output) for normalising legacy phone numbers
+    ({&quot;phone&quot;: &quot;98200 12345&quot;},  &quot;+919820012345&quot;),
+    ({&quot;phone&quot;: &quot;+91-98200-12345&quot;}, &quot;+919820012345&quot;),
+    ({&quot;phone&quot;: None},           None),                 # edge case: missing value
+    ({&quot;phone&quot;: &quot;022 2345 6789&quot;}, &quot;+912223456789&quot;),     # landline with STD code
+]
+
+def v1(row):
+    digits = &quot;&quot;.join(c for c in row[&quot;phone&quot;] if c.isdigit())
+    return &quot;+91&quot; + digits[-10:]
+
+def v2(row):
+    if row[&quot;phone&quot;] is None:
+        return None
+    digits = &quot;&quot;.join(c for c in row[&quot;phone&quot;] if c.isdigit())
+    if digits.startswith(&quot;91&quot;) and len(digits) == 12:
+        digits = digits[2:]
+    if digits.startswith(&quot;0&quot;):
+        digits = digits[1:]
+    return &quot;+91&quot; + digits
+
+def run_tests(fn):
+    failures = []
+    for row, want in TESTS:
+        try:
+            got = fn(row)
+        except Exception as e:
+            got = f&quot;{type(e).__name__}&quot;
+        if got != want: failures.append(f&quot;input {row} → got {got!r}, expected {want!r}&quot;)
+    return failures
+
+for name, fn in [(&quot;v1&quot;, v1), (&quot;v2&quot;, v2)]:
+    f = run_tests(fn)
+    print(f&quot;{name}: {len(TESTS) - len(f)}/{len(TESTS)} pass&quot;)
+    for line in f: print(&quot;   &quot;, line)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>v1: 3/4 pass
+    input {&#x27;phone&#x27;: None} → got &#x27;TypeError&#x27;, expected None
+v2: 4/4 pass</pre></div></div><aside class="call read"><b>How to read it</b><p>The first version gets the formats right but crashes on the missing phone value, an edge case the prose request never mentioned. That exact failure message, with its input and expected output, is what you send back. The second version passes all four. Concrete failing cases beat "handle edge cases better", which gives the model nothing specific to fix.</p></aside><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>You've described a data transformation in prose three times, and Claude interprets it differently each time. What's the most effective next step?</p><div class="opts"><button type="button" data-ok="0">A. Describe it a fourth time in more detail</button><button type="button" data-ok="1">B. Give 2–3 concrete input/output examples of the transformation</button><button type="button" data-ok="0">C. Switch to plan mode</button><button type="button" data-ok="0">D. Ask for a longer answer</button></div><p class="why" hidden>Concrete examples communicate expected transformations more precisely than prose that keeps being read inconsistently.</p></div><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>Two bugs in a function interact: fixing the rounding changes which branch handles negative totals. How should you give the fixes to Claude?</p><div class="opts"><button type="button" data-ok="1">A. In a single detailed message describing both issues and how they interact</button><button type="button" data-ok="0">B. One at a time, verifying each before the next</button><button type="button" data-ok="0">C. Only the first; the second will fix itself</button><button type="button" data-ok="0">D. As two separate sessions</button></div><p class="why" hidden>Interacting issues need to be solved together; sequential fixes suit independent issues.</p></div></section><section class="session" id="s3-6"><p class="snum">Task statement 3.6</p><h2>Claude Code in CI/CD</h2><div class="cell file"><div class="code"><div class="lab"><span>CI review step</span><button class="copy" type="button">Copy</button></div><pre><code class="language-bash">claude -p &quot;Review the diff in pr.diff against CLAUDE.md review criteria. \
+Report only issues that are new or still unaddressed compared with prior_findings.json.&quot; \
+  --output-format json \
+  --json-schema &quot;$(cat schemas/findings.json)&quot; &gt; review.json</code></pre></div></div><div class="tbl"><table><thead><tr><th>Practice</th><th>Why</th></tr></thead><tbody><tr><td><strong><code>-p</code> (<code>--print</code>)</strong></td><td>Non-interactive mode: processes the prompt, prints, exits. Without it the job hangs waiting for input</td></tr><tr><td><strong><code>--output-format json</code> + <code>--json-schema</code></strong></td><td>Machine-parseable findings to post as inline PR comments</td></tr><tr><td><strong>CLAUDE.md as CI context</strong></td><td>Testing standards, fixture conventions and review criteria reach the CI-invoked instance too</td></tr><tr><td><strong>An independent review instance</strong></td><td>The session that generated code is less likely to question its own reasoning</td></tr><tr><td><strong>Prior findings in context on re-runs</strong></td><td>Report only new or still-unaddressed issues, avoiding duplicate comments after each commit</td></tr><tr><td><strong>Existing tests in context for test generation</strong></td><td>Avoids suggesting scenarios the suite already covers</td></tr></tbody></table></div><figure class="seq anim" style="--c:4"><figcaption>Generation and review as independent instances</figcaption><div class="actors"><b>CI</b><b>Claude (author session)</b><b>Claude (review instance)</b><b>PR</b></div><div class="lane"><div class="m r" style="grid-column:1/3;--s:2;--k:0"><span>claude -p "implement issue #88" (CLAUDE.md loaded)</span><i></i></div><div class="m l reply" style="grid-column:1/3;--s:2;--k:1"><span>diff + tests</span><i></i></div><div class="m r" style="grid-column:1/4;--s:3;--k:2"><span>claude -p review --output-format json --json-schema (diff, CLAUDE.md, prior findings)</span><i></i></div><div class="m note" style="grid-column:3/4;--k:3"><span>No author reasoning in context; criteria from CLAUDE.md</span></div><div class="m l reply" style="grid-column:1/4;--s:3;--k:4"><span>findings JSON: only new or unaddressed issues</span><i></i></div><div class="m r" style="grid-column:1/5;--s:4;--k:5"><span>inline comments; resolved findings marked as such</span><i></i></div></div></figure><p>The re-run rule is easy to get wrong. Here's de-duplication against the previous review, keyed on a stable fingerprint (file, rule, code snippet) rather than line numbers, which shift with every commit.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">import hashlib, json
+
+def fp(f): return hashlib.sha1(f&quot;{f[&#x27;file&#x27;]}|{f[&#x27;rule&#x27;]}|{f[&#x27;snippet&#x27;].strip()}&quot;.encode()).hexdigest()[:10]
+
+prior = [
+    {&quot;file&quot;: &quot;api/refunds.py&quot;, &quot;line&quot;: 41, &quot;rule&quot;: &quot;missing-authz-check&quot;, &quot;snippet&quot;: &quot;def refund(req):&quot;},
+    {&quot;file&quot;: &quot;api/refunds.py&quot;, &quot;line&quot;: 77, &quot;rule&quot;: &quot;float-money&quot;, &quot;snippet&quot;: &quot;total = price * 1.18&quot;},
+    {&quot;file&quot;: &quot;db/models.py&quot;,   &quot;line&quot;: 12, &quot;rule&quot;: &quot;n-plus-one&quot;, &quot;snippet&quot;: &quot;for o in orders: o.items.all()&quot;},
+]
+current = [   # after the developer&#x27;s new commit: lines moved, one issue fixed, one new
+    {&quot;file&quot;: &quot;api/refunds.py&quot;, &quot;line&quot;: 45, &quot;rule&quot;: &quot;missing-authz-check&quot;, &quot;snippet&quot;: &quot;def refund(req):&quot;},
+    {&quot;file&quot;: &quot;db/models.py&quot;,   &quot;line&quot;: 14, &quot;rule&quot;: &quot;n-plus-one&quot;, &quot;snippet&quot;: &quot;for o in orders: o.items.all()&quot;},
+    {&quot;file&quot;: &quot;api/refunds.py&quot;, &quot;line&quot;: 90, &quot;rule&quot;: &quot;secret-in-log&quot;, &quot;snippet&quot;: &quot;log(f&#x27;card={card}&#x27;)&quot;},
+]
+prior_fps = {fp(f): f for f in prior}
+for f in current:
+    status = &quot;still unaddressed (reply on the existing comment)&quot; if fp(f) in prior_fps else &quot;NEW: post a comment&quot;
+    print(f&quot;{f[&#x27;file&#x27;]}:{f[&#x27;line&#x27;]:&lt;4} {f[&#x27;rule&#x27;]:&lt;20} {status}&quot;)
+resolved = [f for k, f in prior_fps.items() if k not in {fp(c) for c in current}]
+print(&quot;resolved since last review:&quot;, [f&quot;{r[&#x27;file&#x27;]}:{r[&#x27;line&#x27;]} {r[&#x27;rule&#x27;]}&quot; for r in resolved])</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>api/refunds.py:45   missing-authz-check  still unaddressed (reply on the existing comment)
+db/models.py:14   n-plus-one           still unaddressed (reply on the existing comment)
+api/refunds.py:90   secret-in-log        NEW: post a comment
+resolved since last review: [&#x27;api/refunds.py:77 float-money&#x27;]</pre></div></div><aside class="call read"><b>How to read it</b><p>Two findings moved lines but are the same issues, so they're "still unaddressed", not new comments. One was fixed (the float arithmetic on money) and can be marked resolved, and one is genuinely new. Keyed on line numbers, all three current findings would have been posted as new, burying developers in duplicates.</p></aside><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>A pipeline runs claude "Analyze this pull request for security issues" and hangs waiting for input. What's the correct fix?</p><div class="opts"><button type="button" data-ok="1">A. Add the -p flag: claude -p "Analyze this pull request for security issues"</button><button type="button" data-ok="0">B. Set CLAUDE_HEADLESS=true</button><button type="button" data-ok="0">C. Redirect stdin from /dev/null</button><button type="button" data-ok="0">D. Add a --batch flag</button></div><p class="why" hidden>-p (--print) is the documented non-interactive mode: it prints the result and exits. The other options don't exist or are workarounds.</p></div><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>After each new commit, the CI review re-posts comments developers have already seen. What should change?</p><div class="opts"><button type="button" data-ok="0">A. Review only the first commit of each PR</button><button type="button" data-ok="1">B. Include the prior review's findings in context and instruct Claude to report only new or still-unaddressed issues</button><button type="button" data-ok="0">C. Disable reviews after the first run</button><button type="button" data-ok="0">D. Use a higher temperature</button></div><p class="why" hidden>Giving the reviewer the previous findings lets it separate new issues from known ones, avoiding duplicate comments.</p></div></section>
+  <div class="pager"><a class="btn ghost" href="../module-2/">← Module 2</a><a class="btn" href="../module-4/">Module 4 →</a></div>
+  </div>
+</div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="fine" style="border:none;margin:0;padding:0">
+      <span>© 2026 XploreAI · <a href="/">xploreai.co.in</a></span>
+      <span><a href="mailto:hello@xploreai.co.in">hello@xploreai.co.in</a></span>
+    </div>
+  </div>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/json.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/bash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/markdown.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/typescript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/yaml.min.js"></script>
+<script src="/courses/claude-architect-foundations/course.js?v=1793068677"></script>
+</body>
+</html>

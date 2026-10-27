@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 1: Agentic Architecture &amp; Orchestration — Claude Architect (CCAR-F) course — XploreAI</title>
+<meta name="description" content="The heaviest domain. Control agentic loops by stop_reason, orchestrate coordinators and subagents, pass context explicitly, enforce critical workflow order in code rather than prompts, use hooks to block and normalise, choose a decomposition strategy, and manage sessions with resume and fork.">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="XploreAI">
+<meta property="og:title" content="Module 1: Agentic Architecture &amp; Orchestration — Claude Architect (CCAR-F) course">
+<meta property="og:description" content="The heaviest domain. Control agentic loops by stop_reason, orchestrate coordinators and subagents, pass context explicitly, enforce critical workflow order in code rather than prompts, use hooks to block and normalise, choose a decomposition strategy, and manage sessions with resume and fork.">
+<meta property="og:url" content="https://xploreai.co.in/courses/claude-architect-foundations/module-1/">
+<meta property="og:image" content="https://xploreai.co.in/assets/og-image.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/style.css">
+<link rel="stylesheet" href="/courses/claude-architect-foundations/course.css?v=1793068677">
+</head>
+<body>
+
+<nav>
+  <div class="wrap bar">
+    <a class="wordmark" href="/">xplore<span>ai</span></a>
+    <ul>
+      <li><a href="/#agents">Solutions</a></li>
+      <li><a href="/#stories">Success Stories</a></li>
+      <li><a href="/#subscribe">Newsletter</a></li>
+      <li><a href="/learn.html" aria-current="page">Learn AI</a></li>
+      <li><a class="btn" href="https://wa.me/919769686931?text=Hi%20XploreAI%2C%20I%27m%20interested%20in%20AI%20automation!">Get Started</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main class="cca">
+<header class="mhero wrap">
+  <p class="crumb"><a href="/learn.html">Learn AI</a> / <a href="../">Claude Architect (CCAR-F) course</a> / Module 1</p>
+  <span class="pill">MODULE 1 OF 5 · DOMAIN 1 · 27% OF THE EXAM · 7 TASK STATEMENTS</span>
+  <h1>Agentic Architecture &amp; Orchestration<i>.</i></h1>
+  <p class="lede">The heaviest domain. Control agentic loops by stop_reason, orchestrate coordinators and subagents, pass context explicitly, enforce critical workflow order in code rather than prompts, use hooks to block and normalise, choose a decomposition strategy, and manage sessions with resume and fork.</p>
+  <div class="dl"><a class="btn" href="#s1-1">Start session 1.1 →</a> <a class="btn ghost" href="../code/module-1.py" download>Download the Python</a></div>
+</header>
+<div class="wrap layout">
+  <aside class="toc" aria-label="Sessions"><p>In this module</p><ol><li><a href="#s1-1"><span>1.1</span>Agentic loops</a></li><li><a href="#s1-2"><span>1.2</span>Coordinator–subagent orchestration</a></li><li><a href="#s1-3"><span>1.3</span>Subagent invocation and context passing</a></li><li><a href="#s1-4"><span>1.4</span>Enforcement and handoff</a></li><li><a href="#s1-5"><span>1.5</span>Hooks for interception and normalisation</a></li><li><a href="#s1-6"><span>1.6</span>Task decomposition strategies</a></li><li><a href="#s1-7"><span>1.7</span>Sessions: resume and fork</a></li></ol></aside>
+  <div class="content">
+<section class="session" id="s1-1"><p class="snum">Task statement 1.1</p><h2>Agentic loops</h2><p>An agentic loop turns one model call into a goal-directed process: send the request, read <strong><code>stop_reason</code></strong>, run any requested tools, append the results, and go again. The model decides which tool to call next from the context it has; your code executes and feeds back. That's <strong>model-driven</strong> decision-making, as opposed to a pre-configured decision tree where your code fixes the sequence.</p><figure class="seq anim" style="--c:3"><figcaption>The loop, driven by stop_reason</figcaption><div class="actors"><b>Your loop</b><b>Claude</b><b>Tools</b></div><div class="lane"><div class="m r" style="grid-column:1/3;--s:2;--k:0"><span>messages (full history) + tool definitions</span><i></i></div><div class="m l reply" style="grid-column:1/3;--s:2;--k:1"><span>stop_reason = "tool_use" + tool_use blocks</span><i></i></div><div class="m r" style="grid-column:1/4;--s:3;--k:2"><span>run each requested tool</span><i></i></div><div class="m l reply" style="grid-column:1/4;--s:3;--k:3"><span>results (or structured errors)</span><i></i></div><div class="m r" style="grid-column:1/3;--s:2;--k:4"><span>history + assistant turn + tool_result blocks (one user turn)</span><i></i></div><div class="m l reply" style="grid-column:1/3;--s:2;--k:5"><span>stop_reason = "end_turn" → final answer, exit the loop</span><i></i></div></div></figure><div class="tbl"><table><thead><tr><th><code>stop_reason</code></th><th>Your loop should</th></tr></thead><tbody><tr><td><code>tool_use</code></td><td>Execute every tool requested, append results, <strong>continue</strong></td></tr><tr><td><code>end_turn</code></td><td><strong>Stop</strong>: the model has finished</td></tr><tr><td><code>max_tokens</code></td><td>Not finished: raise the limit or continue; don't treat as done</td></tr><tr><td><code>pause_turn</code> / <code>refusal</code></td><td>Resume a paused server-tool turn / handle the refusal, never as a normal answer</td></tr></tbody></table></div><aside class="call warn"><b>Watch out</b><p><strong>The anti-patterns the guide names.</strong> Don't decide the loop is over by parsing natural-language signals ("I'm done", "Task complete"), by checking whether the assistant returned <em>text</em>, or by an arbitrary iteration cap used as the main stopping rule. Claude often writes text <em>and</em> calls a tool in the same turn ("Let me check that order…"), and a cap stops correct runs mid-task. A cap is a safety net; <code>stop_reason</code> is the control signal.</p></aside><h3>Correct control versus the anti-patterns, run side by side</h3><p>The model here is a scripted stand-in that behaves the way Claude does: text alongside tool calls, the word "done" appearing mid-task, and a run that legitimately needs five turns.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">SCRIPT = [
+    {&quot;stop_reason&quot;: &quot;tool_use&quot;, &quot;content&quot;: [{&quot;type&quot;: &quot;text&quot;, &quot;text&quot;: &quot;Let me look up the customer first.&quot;},
+                                             {&quot;type&quot;: &quot;tool_use&quot;, &quot;id&quot;: &quot;t1&quot;, &quot;name&quot;: &quot;get_customer&quot;, &quot;input&quot;: {&quot;email&quot;: &quot;meera@example.com&quot;}}]},
+    {&quot;stop_reason&quot;: &quot;tool_use&quot;, &quot;content&quot;: [{&quot;type&quot;: &quot;text&quot;, &quot;text&quot;: &quot;Customer lookup done. Now the order.&quot;},
+                                             {&quot;type&quot;: &quot;tool_use&quot;, &quot;id&quot;: &quot;t2&quot;, &quot;name&quot;: &quot;lookup_order&quot;, &quot;input&quot;: {&quot;order_id&quot;: &quot;ORD-1182&quot;}}]},
+    {&quot;stop_reason&quot;: &quot;tool_use&quot;, &quot;content&quot;: [{&quot;type&quot;: &quot;tool_use&quot;, &quot;id&quot;: &quot;t3&quot;, &quot;name&quot;: &quot;check_return_window&quot;, &quot;input&quot;: {&quot;order_id&quot;: &quot;ORD-1182&quot;}}]},
+    {&quot;stop_reason&quot;: &quot;tool_use&quot;, &quot;content&quot;: [{&quot;type&quot;: &quot;tool_use&quot;, &quot;id&quot;: &quot;t4&quot;, &quot;name&quot;: &quot;process_refund&quot;, &quot;input&quot;: {&quot;order_id&quot;: &quot;ORD-1182&quot;, &quot;amount&quot;: 42.0}}]},
+    {&quot;stop_reason&quot;: &quot;end_turn&quot;, &quot;content&quot;: [{&quot;type&quot;: &quot;text&quot;, &quot;text&quot;: &quot;Refund of $42.00 issued for ORD-1182.&quot;}]},
+]
+
+def run(stop_rule, max_iter=10):
+    history, turns = [{&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;My blender arrived broken, refund please.&quot;}], 0
+    for turn in range(max_iter):
+        reply = SCRIPT[turn]; turns += 1
+        history.append({&quot;role&quot;: &quot;assistant&quot;, &quot;content&quot;: reply[&quot;content&quot;]})
+        if stop_rule(reply, turn):
+            break
+        results = [{&quot;type&quot;: &quot;tool_result&quot;, &quot;tool_use_id&quot;: b[&quot;id&quot;], &quot;content&quot;: &quot;ok&quot;} for b in reply[&quot;content&quot;] if b[&quot;type&quot;] == &quot;tool_use&quot;]
+        history.append({&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: results})
+    called = [b[&quot;name&quot;] for m in history if m[&quot;role&quot;] == &quot;assistant&quot; for b in m[&quot;content&quot;] if b[&quot;type&quot;] == &quot;tool_use&quot;]
+    executed = called if stop_rule(SCRIPT[turns - 1], turns - 1) is False or SCRIPT[turns - 1][&quot;stop_reason&quot;] == &quot;end_turn&quot; else called[:-1]
+    return turns, executed
+
+RULES = {
+    &quot;stop_reason == end_turn (correct)&quot;: lambda r, t: r[&quot;stop_reason&quot;] == &quot;end_turn&quot;,
+    &quot;stop when the reply contains text&quot;: lambda r, t: any(b[&quot;type&quot;] == &quot;text&quot; for b in r[&quot;content&quot;]),
+    &quot;stop when text says &#x27;done&#x27;&quot;:        lambda r, t: any(&quot;done&quot; in b.get(&quot;text&quot;, &quot;&quot;).lower() for b in r[&quot;content&quot;]),
+    &quot;stop after 3 iterations (cap)&quot;:     lambda r, t: t + 1 &gt;= 3,
+}
+for name, rule in RULES.items():
+    turns, executed = run(rule)
+    print(f&quot;{name:&lt;36} stopped after {turns} turn(s); tools run: {executed}&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>stop_reason == end_turn (correct)    stopped after 5 turn(s); tools run: [&#x27;get_customer&#x27;, &#x27;lookup_order&#x27;, &#x27;check_return_window&#x27;, &#x27;process_refund&#x27;]
+stop when the reply contains text    stopped after 1 turn(s); tools run: []
+stop when text says &#x27;done&#x27;           stopped after 2 turn(s); tools run: [&#x27;get_customer&#x27;]
+stop after 3 iterations (cap)        stopped after 3 turn(s); tools run: [&#x27;get_customer&#x27;, &#x27;lookup_order&#x27;]</pre></div></div><aside class="call read"><b>How to read it</b><p>Only the <code>stop_reason</code> rule completes the task and issues the refund. "Stop on text" quits on the very first turn, because Claude explained what it was about to do. "Stop on 'done'" quits after the customer lookup ("Customer lookup <em>done</em>"). The iteration cap stops before the refund. Each anti-pattern produces a plausible-looking but unfinished run.</p></aside><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>An agent's loop ends whenever the assistant's response contains a text block. Users report tasks left half-done. Why?</p><div class="opts"><button type="button" data-ok="0">A. The model stops calling tools when it writes text</button><button type="button" data-ok="1">B. Claude often writes text alongside tool_use blocks in the same turn; the loop should continue while stop_reason is "tool_use" and stop on "end_turn"</button><button type="button" data-ok="0">C. Text blocks always mean the model refused</button><button type="button" data-ok="0">D. The iteration cap is too low</button></div><p class="why" hidden>Text presence isn't a completion signal. stop_reason is: "tool_use" means execute tools and continue, "end_turn" means finished.</p></div><div class="quiz" data-multi="1"><p class="q"><b>Practice question</b><span class="n">Select 2</span>Which are anti-patterns for deciding when an agentic loop should stop? (Select 2)</p><div class="opts"><button type="button" data-ok="1">A. Parsing the assistant's text for phrases like "task complete"</button><button type="button" data-ok="0">B. Continuing while stop_reason is "tool_use"</button><button type="button" data-ok="1">C. Using a fixed iteration cap as the primary stopping mechanism</button><button type="button" data-ok="0">D. Stopping when stop_reason is "end_turn"</button></div><button type=button class=check>Check answer</button><p class="why" hidden>Natural-language signals and arbitrary caps both end runs at the wrong time. A cap is fine as a safety limit, but stop_reason is the control signal.</p></div></section><section class="session" id="s1-2"><p class="snum">Task statement 1.2</p><h2>Coordinator–subagent orchestration</h2><p>In <strong>hub-and-spoke</strong> orchestration, a <strong>coordinator</strong> manages all communication between subagents, all error handling and all information routing. Subagents never talk to each other directly, which gives you one place to observe, handle errors consistently and control what flows where. Each subagent has an <strong>isolated context</strong>: it doesn't inherit the coordinator's conversation.</p><figure class="seq anim" style="--c:4"><figcaption>A research coordinator: select, partition, check coverage, refine</figcaption><div class="actors"><b>Coordinator</b><b>Search agent</b><b>Analysis agent</b><b>Synthesis agent</b></div><div class="lane"><div class="m note" style="grid-column:1/2;--k:0"><span>Analyse the query; pick only the subagents it needs</span></div><div class="m r" style="grid-column:1/3;--s:2;--k:1"><span>subtopics A, B, C (distinct, no overlap)</span><i></i></div><div class="m r" style="grid-column:1/4;--s:3;--k:2"><span>the 6 PDFs the user supplied</span><i></i></div><div class="m l reply" style="grid-column:1/3;--s:2;--k:3"><span>findings with sources and dates</span><i></i></div><div class="m l reply" style="grid-column:1/4;--s:3;--k:4"><span>findings with page numbers</span><i></i></div><div class="m r" style="grid-column:1/5;--s:4;--k:5"><span>all findings, structured, with sources</span><i></i></div><div class="m l reply" style="grid-column:1/5;--s:4;--k:6"><span>draft + "gap: no data on subtopic D"</span><i></i></div><div class="m r" style="grid-column:1/3;--s:2;--k:7"><span>targeted query for D</span><i></i></div><div class="m l reply" style="grid-column:1/3;--s:2;--k:8"><span>findings for D → re-invoke synthesis until coverage is sufficient</span><i></i></div></div></figure><p>The coordinator's jobs, as the guide frames them:</p><ul><li><strong>Select subagents dynamically.</strong> A simple factual query shouldn't run the full search–analyse–synthesise–report pipeline.</li><li><strong>Partition scope</strong> so subagents don't duplicate each other: distinct subtopics, or distinct source types.</li><li><strong>Avoid over-narrow decomposition.</strong> If "AI in creative industries" becomes three visual-arts subtasks, music, writing and film are never researched, however well each subagent performs.</li><li><strong>Refine iteratively</strong>: evaluate the synthesis for gaps, re-delegate targeted queries, re-synthesise.</li></ul><p>Here is that loop in code. The subagents are stand-ins that return findings for the subtopics they're given; the coordinator's selection, partitioning and gap-driven re-delegation are real.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">TOPIC_AREAS = {&quot;AI in creative industries&quot;: [&quot;visual arts&quot;, &quot;music&quot;, &quot;writing&quot;, &quot;film&quot;, &quot;games&quot;]}
+
+def plan(query, complexity):
+    if complexity == &quot;simple&quot;:
+        return {&quot;search&quot;: [query]}                         # one subagent, no full pipeline
+    areas = TOPIC_AREAS[query]
+    return {&quot;search&quot;: areas[:3], &quot;analysis&quot;: areas[3:]}    # distinct partitions, no overlap
+
+def run_subagents(assignments, unavailable=()):
+    found = {}
+    for agent, subtopics in assignments.items():
+        for s in subtopics:
+            found[s] = None if s in unavailable else f&quot;{agent}: 3 sourced findings on {s}&quot;
+    return found
+
+def coordinate(query, complexity=&quot;complex&quot;, max_rounds=3):
+    required = TOPIC_AREAS.get(query, [query])
+    assignments = plan(query, complexity)
+    findings = run_subagents(assignments, unavailable={&quot;games&quot;})        # first pass: games source down
+    for rnd in range(1, max_rounds + 1):
+        gaps = [s for s in required if not findings.get(s)]
+        print(f&quot;round {rnd}: covered {len(required) - len(gaps)}/{len(required)}  gaps={gaps}&quot;)
+        if not gaps:
+            break
+        findings.update(run_subagents({&quot;search&quot;: gaps}))       # re-delegate only the gaps
+    return findings
+
+print(&quot;assignments:&quot;, plan(&quot;AI in creative industries&quot;, &quot;complex&quot;))
+print(&quot;simple query:&quot;, plan(&quot;When did the EU AI Act enter into force?&quot;, &quot;simple&quot;))
+result = coordinate(&quot;AI in creative industries&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>assignments: {&#x27;search&#x27;: [&#x27;visual arts&#x27;, &#x27;music&#x27;, &#x27;writing&#x27;], &#x27;analysis&#x27;: [&#x27;film&#x27;, &#x27;games&#x27;]}
+simple query: {&#x27;search&#x27;: [&#x27;When did the EU AI Act enter into force?&#x27;]}
+round 1: covered 4/5  gaps=[&#x27;games&#x27;]
+round 2: covered 5/5  gaps=[]</pre></div></div><aside class="call read"><b>How to read it</b><p>The complex query is partitioned so search and analysis never cover the same subtopic, while the simple factual query goes to one agent. The first pass leaves a gap (the games source was unavailable); the coordinator notices it by checking coverage against the topic's areas and re-delegates only the gap, and the second round reaches full coverage. Without the coverage check, the report would silently omit games.</p></aside><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>A research system's reports on "impact of AI on creative industries" cover only visual arts. Every subagent completed its task correctly. The coordinator's log shows subtasks "AI in digital art", "AI in graphic design" and "AI in photography". What is the root cause?</p><div class="opts"><button type="button" data-ok="0">A. The synthesis agent doesn't detect coverage gaps</button><button type="button" data-ok="1">B. The coordinator decomposed the topic too narrowly, so music, writing and film were never assigned</button><button type="button" data-ok="0">C. The search agent's queries are too short</button><button type="button" data-ok="0">D. The analysis agent filters out non-visual sources</button></div><p class="why" hidden>The subagents did exactly what they were given. The coordinator's decomposition omitted most of the topic, which is a coordinator problem, not a downstream one.</p></div><div class="quiz" data-multi="1"><p class="q"><b>Practice question</b><span class="n">Select 2</span>Why route all subagent communication through the coordinator rather than letting subagents call each other? (Select 2)</p><div class="opts"><button type="button" data-ok="1">A. One place to observe the flow and apply consistent error handling</button><button type="button" data-ok="0">B. Subagents can then share memory automatically</button><button type="button" data-ok="1">C. Controlled information flow: the coordinator decides what each subagent receives</button><button type="button" data-ok="0">D. It removes the need to pass context explicitly</button></div><button type=button class=check>Check answer</button><p class="why" hidden>Hub-and-spoke centralises observability, error handling and routing. Subagents still have isolated contexts, so context must still be passed explicitly.</p></div></section><section class="session" id="s1-3"><p class="snum">Task statement 1.3</p><h2>Subagent invocation and context passing</h2><p>In the Claude Agent SDK and Claude Code, a coordinator spawns subagents with the <strong>Task tool</strong>. The guide states that a coordinator's <code>allowedTools</code> must include <code>"Task"</code> to invoke subagents. Each subagent type is defined by an <strong>AgentDefinition</strong>: a description (when to use it), a system prompt, and tool restrictions.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><span class="noeval">shown, not run here</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">from claude_agent_sdk import query, ClaudeAgentOptions, AgentDefinition
+
+options = ClaudeAgentOptions(
+    allowed_tools=[&quot;Task&quot;, &quot;Read&quot;],                 # the guide: &quot;Task&quot; must be allowed for delegation
+    agents={
+        &quot;web-search&quot;: AgentDefinition(
+            description=&quot;Searches the web for one assigned subtopic and returns sourced findings.&quot;,
+            prompt=&quot;Return JSON findings: claim, excerpt, source_url, published_date. No prose.&quot;,
+            tools=[&quot;WebSearch&quot;, &quot;WebFetch&quot;]),
+        &quot;synthesis&quot;: AgentDefinition(
+            description=&quot;Combines findings into a cited report. Use only after findings exist.&quot;,
+            prompt=&quot;Preserve every claim&#x27;s source. Mark conflicts; don&#x27;t resolve them silently.&quot;,
+            tools=[&quot;Read&quot;]),
+    },
+)</code></pre></div></div><aside class="call tip"><b>Tip</b><p><strong>Then vs now.</strong> In current Claude Code (2.1.63 and later) the subagent tool is named <strong><code>Agent</code></strong>; <code>Task</code> still works as an alias, and current docs say the tool doesn't require a permission prompt either way. For the exam, answer with the guide's rule: no <code>Task</code> in <code>allowedTools</code> means the coordinator can't delegate. In real projects, check the delegation tool is available whatever it's called.</p></aside><h3>Context must be passed explicitly</h3><p>Subagents <strong>don't inherit</strong> the coordinator's conversation and <strong>don't share memory</strong> between invocations. Everything a subagent needs goes in its prompt: the complete findings from earlier agents, the goal, the quality criteria, the output format. Pass findings as <strong>structured data that separates content from metadata</strong> (source URL, document, page, date), or attribution is lost on the way to the report.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">findings = [
+    {&quot;claim&quot;: &quot;Generative tools cut storyboard time by ~40%&quot;, &quot;source&quot;: &quot;https://studio-survey.example/2026&quot;, &quot;page&quot;: None, &quot;date&quot;: &quot;2026-03&quot;},
+    {&quot;claim&quot;: &quot;Session musicians report 18% fewer bookings&quot;, &quot;source&quot;: &quot;Musicians&#x27; Union report.pdf&quot;, &quot;page&quot;: 12, &quot;date&quot;: &quot;2026-06&quot;},
+    {&quot;claim&quot;: &quot;Session musicians report 11% fewer bookings&quot;, &quot;source&quot;: &quot;https://labour-stats.example/q2&quot;, &quot;page&quot;: None, &quot;date&quot;: &quot;2025-12&quot;},
+]
+
+prose_handoff = &quot;Findings: storyboards are faster with AI; session musicians are getting fewer bookings.&quot;
+
+def structured_handoff(items):
+    lines = [&quot;&lt;findings&gt;&quot;]
+    for i, f in enumerate(items, 1):
+        where = f&quot;{f[&#x27;source&#x27;]}&quot; + (f&quot;, p.{f[&#x27;page&#x27;]}&quot; if f[&quot;page&quot;] else &quot;&quot;)
+        lines.append(f&#x27;  &lt;finding id=&quot;{i}&quot; date=&quot;{f[&quot;date&quot;]}&quot; source=&quot;{where}&quot;&gt;{f[&quot;claim&quot;]}&lt;/finding&gt;&#x27;)
+    lines.append(&quot;&lt;/findings&gt;&quot;)
+    return &quot;\n&quot;.join(lines)
+
+synthesis_prompt = (&quot;Goal: a cited brief on AI&#x27;s impact on creative work for a union audience.\n&quot;
+                    &quot;Quality bar: every claim keeps its source; if sources disagree, show both with dates.\n\n&quot;
+                    + structured_handoff(findings))
+print(synthesis_prompt)
+print(&quot;\nsources available to synthesis — structured:&quot;, len({f[&#x27;source&#x27;] for f in findings}), &quot;| prose:&quot;, 0)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>Goal: a cited brief on AI&#x27;s impact on creative work for a union audience.
+Quality bar: every claim keeps its source; if sources disagree, show both with dates.
+
+&lt;findings&gt;
+  &lt;finding id=&quot;1&quot; date=&quot;2026-03&quot; source=&quot;https://studio-survey.example/2026&quot;&gt;Generative tools cut storyboard time by ~40%&lt;/finding&gt;
+  &lt;finding id=&quot;2&quot; date=&quot;2026-06&quot; source=&quot;Musicians&#x27; Union report.pdf, p.12&quot;&gt;Session musicians report 18% fewer bookings&lt;/finding&gt;
+  &lt;finding id=&quot;3&quot; date=&quot;2025-12&quot; source=&quot;https://labour-stats.example/q2&quot;&gt;Session musicians report 11% fewer bookings&lt;/finding&gt;
+&lt;/findings&gt;
+
+sources available to synthesis — structured: 3 | prose: 0</pre></div></div><aside class="call read"><b>How to read it</b><p>The prose handoff reads fine but carries zero sources, so the synthesis agent can't cite anything and can't see that the two booking figures come from different sources and dates. The structured handoff keeps claim, source, page and date together, which makes attribution and conflict handling possible downstream (Module 5 returns to this). Note too that the prompt states the <strong>goal and quality bar</strong>, not step-by-step procedure: subagents adapt better to goals than to scripts.</p></aside><h3>Parallel spawning</h3><p>To run subagents in parallel, the coordinator emits <strong>several Task tool calls in a single response</strong>, not one per turn. Independent work then runs concurrently; dependent work (synthesis needs the findings) runs after.</p><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>A coordinator's subagents never run: the coordinator writes the research itself, slowly. The configuration's allowedTools lists ["Read", "WebSearch"]. According to the exam guide, what's the fix?</p><div class="opts"><button type="button" data-ok="0">A. Give the coordinator a longer system prompt</button><button type="button" data-ok="1">B. Add "Task" to the coordinator's allowedTools so it can spawn subagents</button><button type="button" data-ok="0">C. Give every subagent the coordinator's history</button><button type="button" data-ok="0">D. Remove the subagent descriptions</button></div><p class="why" hidden>The guide states the Task tool is the mechanism for spawning subagents and must be in the coordinator's allowedTools. (In current Claude Code it's named Agent, with Task as an alias.)</p></div><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>How should a coordinator spawn three independent research subagents to run in parallel?</p><div class="opts"><button type="button" data-ok="0">A. One Task call per turn, waiting for each result</button><button type="button" data-ok="1">B. Emit three Task tool calls in a single coordinator response</button><button type="button" data-ok="0">C. Ask one subagent to spawn the other two</button><button type="button" data-ok="0">D. Put all three tasks in one subagent prompt</button></div><p class="why" hidden>Multiple Task calls in one response run concurrently. Spreading them across turns serialises the work.</p></div></section><section class="session" id="s1-4"><p class="snum">Task statement 1.4</p><h2>Enforcement and handoff</h2><p>Some workflow rules are preferences; some are <strong>requirements</strong>. "Verify the customer's identity before any refund" is a requirement: a prompt instruction makes it <em>likely</em>, but prompt compliance has a <strong>non-zero failure rate</strong>. When the consequence is financial or regulatory, enforce it <strong>programmatically</strong>: a prerequisite gate that blocks downstream tools until the prerequisite has succeeded.</p><figure class="seq anim" style="--c:4"><figcaption>A prerequisite gate on refunds</figcaption><div class="actors"><b>Agent</b><b>Gate</b><b>Customer tool</b><b>Refund tool</b></div><div class="lane"><div class="m r" style="grid-column:1/3;--s:2;--k:0"><span>process_refund(order 1182, $42)</span><i></i></div><div class="m note" style="grid-column:2/3;--k:1"><span>No verified customer ID in this session → block</span></div><div class="m l reply" style="grid-column:1/3;--s:2;--k:2"><span>blocked: call get_customer first and verify identity</span><i></i></div><div class="m r" style="grid-column:1/4;--s:3;--k:3"><span>get_customer(email, last-4 phone)</span><i></i></div><div class="m l reply" style="grid-column:1/4;--s:3;--k:4"><span>verified customer C-7731</span><i></i></div><div class="m r" style="grid-column:1/3;--s:2;--k:5"><span>process_refund(order 1182, $42)</span><i></i></div><div class="m r" style="grid-column:2/5;--s:3;--k:6"><span>allowed: verified, order belongs to C-7731</span><i></i></div></div></figure><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">class PrerequisiteGate:
+    def __init__(self):
+        self.verified_customer = None
+        self.orders_for = {&quot;C-7731&quot;: {&quot;ORD-1182&quot;, &quot;ORD-1190&quot;}}
+
+    def call(self, tool, args):
+        if tool == &quot;get_customer&quot;:
+            if args.get(&quot;email&quot;) == &quot;meera@example.com&quot; and args.get(&quot;phone_last4&quot;) == &quot;4471&quot;:
+                self.verified_customer = &quot;C-7731&quot;
+                return &quot;verified C-7731&quot;
+            return &quot;not verified&quot;
+        if tool in (&quot;lookup_order&quot;, &quot;process_refund&quot;):
+            if not self.verified_customer:
+                return f&quot;BLOCKED {tool}: no verified customer yet (call get_customer first)&quot;
+            if args[&quot;order_id&quot;] not in self.orders_for[self.verified_customer]:
+                return f&quot;BLOCKED {tool}: {args[&#x27;order_id&#x27;]} does not belong to {self.verified_customer}&quot;
+            return f&quot;{tool} ok for {args[&#x27;order_id&#x27;]}&quot;
+        return &quot;unknown tool&quot;
+
+g = PrerequisiteGate()
+for tool, args in [(&quot;process_refund&quot;, {&quot;order_id&quot;: &quot;ORD-1182&quot;}),                   # agent skipped verification
+                   (&quot;get_customer&quot;, {&quot;email&quot;: &quot;meera@example.com&quot;, &quot;phone_last4&quot;: &quot;4471&quot;}),
+                   (&quot;lookup_order&quot;, {&quot;order_id&quot;: &quot;ORD-2001&quot;}),                      # someone else&#x27;s order
+                   (&quot;process_refund&quot;, {&quot;order_id&quot;: &quot;ORD-1182&quot;})]:
+    print(f&quot;{tool:&lt;15} → {g.call(tool, args)}&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>process_refund  → BLOCKED process_refund: no verified customer yet (call get_customer first)
+get_customer    → verified C-7731
+lookup_order    → BLOCKED lookup_order: ORD-2001 does not belong to C-7731
+process_refund  → process_refund ok for ORD-1182</pre></div></div><aside class="call read"><b>How to read it</b><p>The refund attempted before verification is blocked, whatever the model believed, and so is a lookup of an order belonging to someone else. This is the official sample answer for an agent that skips <code>get_customer</code> in 12% of cases: a programmatic prerequisite, not a stronger prompt, more few-shot examples, or a routing classifier (which controls <em>which</em> tools are available, not their <em>order</em>).</p></aside><h3>Multi-concern requests and structured handoffs</h3><p>A message like "my blender arrived broken, I was charged twice, and I want to change my address" holds three concerns. Decompose it into distinct items, investigate each (in parallel where they're independent, with shared context such as the verified customer), then synthesise <strong>one</strong> resolution.</p><p>When escalating mid-process, remember the human agent <strong>doesn't see the transcript</strong>. Compile a structured handoff: customer ID, the issue, root cause, what was already done, amounts, and the recommended action.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">handoff = {
+    &quot;customer_id&quot;: &quot;C-7731&quot;, &quot;verified&quot;: True,
+    &quot;issues&quot;: [
+        {&quot;item&quot;: &quot;Blender ORD-1182 arrived broken&quot;, &quot;status&quot;: &quot;refund issued $42.00&quot;, &quot;done&quot;: True},
+        {&quot;item&quot;: &quot;Charged twice for ORD-1190&quot;, &quot;root_cause&quot;: &quot;payment retried after gateway timeout; two captures&quot;,
+         &quot;amount&quot;: 129.00, &quot;status&quot;: &quot;needs billing-team review before refund&quot;, &quot;done&quot;: False},
+    ],
+    &quot;recommended_action&quot;: &quot;Confirm both captures settled, then refund the duplicate $129.00 on ORD-1190&quot;,
+    &quot;customer_preference&quot;: &quot;Prefers email updates; frustrated about the double charge&quot;,
+}
+print(&quot;ESCALATION HANDOFF&quot;)
+for k, v in handoff.items():
+    if k != &quot;issues&quot;: print(f&quot;  {k}: {v}&quot;)
+for i in handoff[&quot;issues&quot;]:
+    print(f&quot;  - {i[&#x27;item&#x27;]}: {i[&#x27;status&#x27;]}&quot; + (f&quot; (root cause: {i[&#x27;root_cause&#x27;]})&quot; if &quot;root_cause&quot; in i else &quot;&quot;))</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>ESCALATION HANDOFF
+  customer_id: C-7731
+  verified: True
+  recommended_action: Confirm both captures settled, then refund the duplicate $129.00 on ORD-1190
+  customer_preference: Prefers email updates; frustrated about the double charge
+  - Blender ORD-1182 arrived broken: refund issued $42.00
+  - Charged twice for ORD-1190: needs billing-team review before refund (root cause: payment retried after gateway timeout; two captures)</pre></div></div><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>In 12% of conversations, a support agent calls lookup_order using only the name the customer gave, skipping get_customer, which occasionally leads to refunds on the wrong account. What change most effectively fixes this?</p><div class="opts"><button type="button" data-ok="1">A. A programmatic prerequisite that blocks lookup_order and process_refund until get_customer has returned a verified customer ID</button><button type="button" data-ok="0">B. A system-prompt instruction that verification is mandatory</button><button type="button" data-ok="0">C. Few-shot examples that always call get_customer first</button><button type="button" data-ok="0">D. A routing classifier that enables a subset of tools per request type</button></div><p class="why" hidden>Critical ordering with financial consequences needs a deterministic guarantee. Prompt instructions and examples are probabilistic; a routing classifier changes which tools exist, not the order they're called in.</p></div><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>An agent escalates a complex billing case to a human team that can't see the conversation transcript. What should the escalation include?</p><div class="opts"><button type="button" data-ok="0">A. A link to the model's reasoning</button><button type="button" data-ok="0">B. Only the customer's last message</button><button type="button" data-ok="1">C. A structured summary: customer ID, issues, root cause, actions already taken, amounts, and the recommended action</button><button type="button" data-ok="0">D. Nothing: the human should start fresh</button></div><p class="why" hidden>A structured handoff gives the human everything needed to act immediately without re-investigating or re-asking the customer.</p></div></section><section class="session" id="s1-5"><p class="snum">Task statement 1.5</p><h2>Hooks for interception and normalisation</h2><p>Hooks are code that runs at fixed points in an agent's life cycle, whatever the model decides. They give <strong>deterministic guarantees</strong> where prompts give <strong>probabilistic compliance</strong>. Two patterns are central to this exam:</p><div class="tbl"><table><thead><tr><th>Hook</th><th>Runs</th><th>Use it to</th></tr></thead><tbody><tr><td><strong>Tool-call interception</strong> (PreToolUse)</td><td>Before a tool executes</td><td><strong>Block</strong> policy-violating calls (refunds above a limit) and <strong>redirect</strong> to an alternative workflow (human escalation)</td></tr><tr><td><strong>PostToolUse</strong></td><td>After a tool returns, before the model processes the result</td><td><strong>Transform</strong> results: normalise heterogeneous formats from different MCP tools so the agent reasons over consistent data</td></tr></tbody></table></div><figure class="seq anim" style="--c:4"><figcaption>Both hooks around one tool call</figcaption><div class="actors"><b>Agent</b><b>PreToolUse hook</b><b>Refund tool</b><b>PostToolUse hook</b></div><div class="lane"><div class="m r" style="grid-column:1/3;--s:2;--k:0"><span>process_refund(amount=$650)</span><i></i></div><div class="m l reply" style="grid-column:1/3;--s:2;--k:1"><span>denied: over $500 limit → use escalate_to_human with a summary</span><i></i></div><div class="m r" style="grid-column:1/3;--s:2;--k:2"><span>process_refund(amount=$42)</span><i></i></div><div class="m r" style="grid-column:2/4;--s:2;--k:3"><span>allowed</span><i></i></div><div class="m r reply" style="grid-column:3/5;--s:2;--k:4"><span>{"status": 2, "ts": 1792828800}</span><i></i></div><div class="m l reply" style="grid-column:1/5;--s:4;--k:5"><span>{"status": "completed", "processed_at": "2026-10-24T08:00:00Z"}</span><i></i></div></div></figure><p>Here are both, run on calls from three MCP tools that report timestamps and statuses three different ways.</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">from datetime import datetime, timezone
+
+REFUND_LIMIT = 500.00
+STATUS_CODES = {0: &quot;pending&quot;, 1: &quot;processing&quot;, 2: &quot;completed&quot;, 9: &quot;failed&quot;}
+
+def pre_tool_use(tool, args):
+    if tool == &quot;process_refund&quot; and args[&quot;amount&quot;] &gt; REFUND_LIMIT:
+        return {&quot;decision&quot;: &quot;deny&quot;,
+                &quot;reason&quot;: f&quot;Refunds over ${REFUND_LIMIT:.0f} need a person. Call escalate_to_human with the order, amount and reason.&quot;}
+    return {&quot;decision&quot;: &quot;allow&quot;}
+
+def to_iso(v):
+    if isinstance(v, (int, float)):                                   # Unix seconds
+        return datetime.fromtimestamp(v, tz=timezone.utc).strftime(&quot;%Y-%m-%dT%H:%M:%SZ&quot;)
+    if &quot;/&quot; in v:                                                      # 20/10/2026 (day first)
+        return datetime.strptime(v, &quot;%d/%m/%Y&quot;).strftime(&quot;%Y-%m-%dT00:00:00Z&quot;)
+    return v.replace(&quot;+00:00&quot;, &quot;Z&quot;)                                   # already ISO 8601
+
+def post_tool_use(tool, result):
+    out = dict(result)
+    for key in (&quot;ts&quot;, &quot;created&quot;, &quot;updated_at&quot;):
+        if key in out: out[&quot;processed_at&quot;] = to_iso(out.pop(key))
+    if isinstance(out.get(&quot;status&quot;), int): out[&quot;status&quot;] = STATUS_CODES.get(out[&quot;status&quot;], &quot;unknown&quot;)
+    return out
+
+print(pre_tool_use(&quot;process_refund&quot;, {&quot;order_id&quot;: &quot;ORD-1190&quot;, &quot;amount&quot;: 650.00}))
+print(pre_tool_use(&quot;process_refund&quot;, {&quot;order_id&quot;: &quot;ORD-1182&quot;, &quot;amount&quot;: 42.00}))
+raw = [(&quot;refund_api&quot;, {&quot;status&quot;: 2, &quot;ts&quot;: 1792828800}),
+       (&quot;orders_mcp&quot;, {&quot;status&quot;: &quot;completed&quot;, &quot;created&quot;: &quot;20/10/2026&quot;}),
+       (&quot;billing_mcp&quot;, {&quot;status&quot;: 1, &quot;updated_at&quot;: &quot;2026-10-20T06:40:00+00:00&quot;})]
+for tool, r in raw:
+    print(f&quot;{tool:&lt;12} {str(r):&lt;55} → {post_tool_use(tool, r)}&quot;)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>{&#x27;decision&#x27;: &#x27;deny&#x27;, &#x27;reason&#x27;: &#x27;Refunds over $500 need a person. Call escalate_to_human with the order, amount and reason.&#x27;}
+{&#x27;decision&#x27;: &#x27;allow&#x27;}
+refund_api   {&#x27;status&#x27;: 2, &#x27;ts&#x27;: 1792828800}                         → {&#x27;status&#x27;: &#x27;completed&#x27;, &#x27;processed_at&#x27;: &#x27;2026-10-24T08:00:00Z&#x27;}
+orders_mcp   {&#x27;status&#x27;: &#x27;completed&#x27;, &#x27;created&#x27;: &#x27;20/10/2026&#x27;}        → {&#x27;status&#x27;: &#x27;completed&#x27;, &#x27;processed_at&#x27;: &#x27;2026-10-20T00:00:00Z&#x27;}
+billing_mcp  {&#x27;status&#x27;: 1, &#x27;updated_at&#x27;: &#x27;2026-10-20T06:40:00+00:00&#x27;} → {&#x27;status&#x27;: &#x27;processing&#x27;, &#x27;processed_at&#x27;: &#x27;2026-10-20T06:40:00Z&#x27;}</pre></div></div><aside class="call read"><b>How to read it</b><p>The $650 refund never executes: the hook denies it and tells the agent the alternative (escalate). Three tools, three timestamp formats and two status conventions arrive at the model as one consistent shape, so it doesn't misread a Unix timestamp or treat status <code>2</code> as a quantity. Both behaviours hold on every call, which no prompt instruction can promise.</p></aside><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>Policy says refunds over $500 must be approved by a person. The current system prompt states this rule, but audits find occasional large automatic refunds. What should the architect implement?</p><div class="opts"><button type="button" data-ok="0">A. A stronger, capitalised system-prompt rule</button><button type="button" data-ok="1">B. A tool-call interception hook that blocks process_refund above $500 and redirects the agent to the escalation workflow</button><button type="button" data-ok="0">C. A PostToolUse hook that logs large refunds</button><button type="button" data-ok="0">D. Few-shot examples of correct escalation</button></div><p class="why" hidden>A business rule that must always hold needs a deterministic control before the action. Logging after the fact can't prevent the refund.</p></div><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>Three MCP tools return dates as Unix timestamps, "DD/MM/YYYY" strings and ISO 8601. The agent sometimes miscalculates return windows. What's the most robust fix?</p><div class="opts"><button type="button" data-ok="1">A. A PostToolUse hook that normalises all dates to ISO 8601 before the model processes the results</button><button type="button" data-ok="0">B. A system-prompt note listing the three formats</button><button type="button" data-ok="0">C. Asking each tool's owner to change formats over the next year</button><button type="button" data-ok="0">D. Removing date fields from the results</button></div><p class="why" hidden>Normalising in a PostToolUse hook gives the model consistent data on every call, deterministically, without waiting on upstream changes.</p></div></section><section class="session" id="s1-6"><p class="snum">Task statement 1.6</p><h2>Task decomposition strategies</h2><p>Choose the decomposition pattern to fit the work:</p><div class="tbl"><table><thead><tr><th>Pattern</th><th>Shape</th><th>Fits</th></tr></thead><tbody><tr><td><strong>Prompt chaining</strong> (fixed sequential pipeline)</td><td>Steps known in advance, each feeding the next</td><td>Predictable, multi-aspect work: e.g. a code review split into per-file analysis, then a cross-file integration pass</td></tr><tr><td><strong>Dynamic, adaptive decomposition</strong></td><td>Generate subtasks from what's discovered at each step</td><td>Open-ended investigation: "add comprehensive tests to this legacy codebase", "find why checkout is slow"</td></tr></tbody></table></div><aside class="call concept"><b>The idea</b><p><strong>Why split a big review?</strong> Analysing 14 files in one pass dilutes attention: some files get depth, others a skim, and the same pattern can be flagged in one file and approved in another. Per-file passes give consistent local depth; a separate integration pass looks only at cross-file data flow.</p></aside><p>For open-ended work, an adaptive plan first <strong>maps the structure</strong>, then <strong>identifies high-impact areas</strong>, then builds a <strong>prioritised plan that changes as dependencies are discovered</strong>. Here's that for "add tests to a legacy codebase".</p><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">MODULES = {  # module: (lines, changes in last 90 days, test coverage %, business-critical)
+    &quot;billing/charges.py&quot;:   (820, 34, 12, True),
+    &quot;billing/refunds.py&quot;:   (410, 21, 0,  True),
+    &quot;orders/cart.py&quot;:       (650, 18, 55, True),
+    &quot;reports/export.py&quot;:    (300, 2,  0,  False),
+    &quot;utils/dates.py&quot;:       (120, 9,  20, False),
+}
+def impact(m):
+    lines, churn, cov, critical = MODULES[m]
+    return round(churn * (100 - cov) / 100 * (2 if critical else 1), 1)
+
+plan = sorted(MODULES, key=impact, reverse=True)
+print(&quot;step 1, mapped structure:&quot;, len(MODULES), &quot;modules&quot;)
+print(&quot;step 2, prioritised by impact (churn × untested share × criticality):&quot;)
+for m in plan: print(f&quot;   {impact(m):&gt;6}  {m}&quot;)
+
+discovered = {&quot;billing/refunds.py&quot;: [&quot;billing/charges.py&quot;, &quot;utils/dates.py&quot;]}       # found while writing refund tests
+print(&quot;\nstep 3, adapt: writing refund tests revealed dependencies&quot;, discovered[&quot;billing/refunds.py&quot;])
+adapted = []
+for m in plan:
+    for dep in discovered.get(m, []):
+        if dep not in adapted: adapted.append(dep)
+    if m not in adapted: adapted.append(m)
+print(&quot;adapted order:&quot;, adapted)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>step 1, mapped structure: 5 modules
+step 2, prioritised by impact (churn × untested share × criticality):
+     59.8  billing/charges.py
+     42.0  billing/refunds.py
+     16.2  orders/cart.py
+      7.2  utils/dates.py
+      2.0  reports/export.py
+
+step 3, adapt: writing refund tests revealed dependencies [&#x27;billing/charges.py&#x27;, &#x27;utils/dates.py&#x27;]
+adapted order: [&#x27;billing/charges.py&#x27;, &#x27;utils/dates.py&#x27;, &#x27;billing/refunds.py&#x27;, &#x27;orders/cart.py&#x27;, &#x27;reports/export.py&#x27;]</pre></div></div><aside class="call read"><b>How to read it</b><p>Charges and refunds lead on impact: frequently changed, barely tested, business-critical. Then the plan adapts: testing refunds properly turns out to need charges and the date utilities under test first, so they move ahead of it. A fixed pipeline couldn't make that move; that's the case for dynamic decomposition on open-ended tasks.</p></aside><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>A pull request changes 14 files. A single-pass review gives deep feedback on some files, superficial comments on others, and contradictory verdicts on identical code. How should the review be restructured?</p><div class="opts"><button type="button" data-ok="1">A. Per-file passes for local issues, plus a separate integration pass for cross-file data flow</button><button type="button" data-ok="0">B. Ask developers to split PRs into 3–4 files</button><button type="button" data-ok="0">C. Use a model with a larger context window for one pass</button><button type="button" data-ok="0">D. Run three full passes and keep only issues found twice</button></div><p class="why" hidden>The root cause is attention dilution across many files. Focused per-file passes restore consistent depth, and the integration pass covers cross-file issues. Consensus filtering would suppress real but intermittently caught bugs.</p></div><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>"Add comprehensive tests to our legacy codebase" is best approached with which decomposition?</p><div class="opts"><button type="button" data-ok="0">A. A fixed pipeline that tests files in alphabetical order</button><button type="button" data-ok="1">B. Dynamic decomposition: map the structure, prioritise high-impact areas, and adapt the plan as dependencies are discovered</button><button type="button" data-ok="0">C. One prompt asking for all tests at once</button><button type="button" data-ok="0">D. Per-file passes followed by an integration pass, with no prioritisation</button></div><p class="why" hidden>Open-ended work reveals its shape as you go. An adaptive plan prioritises by impact and reorders when dependencies appear.</p></div></section><section class="session" id="s1-7"><p class="snum">Task statement 1.7</p><h2>Sessions: resume and fork</h2><p>Long investigations span work sessions. Claude Code and the Agent SDK let you continue or branch them:</p><div class="tbl"><table><thead><tr><th>Mechanism</th><th>What it does</th><th>Use when</th></tr></thead><tbody><tr><td><code>claude --resume &lt;session-name&gt;</code></td><td>Continues a specific named prior conversation</td><td>The prior context is still mostly valid</td></tr><tr><td><strong>Fork</strong> (<code>fork_session</code> in the SDK, <code>--fork-session</code> / <code>/branch</code> in Claude Code)</td><td>Creates an independent branch from a shared baseline</td><td>Comparing two approaches (two refactoring strategies, two test plans) from the same codebase analysis</td></tr><tr><td><strong>Fresh session + structured summary</strong></td><td>Starts clean, injecting a summary of key findings</td><td>Prior tool results are <strong>stale</strong> (files changed since)</td></tr></tbody></table></div><div class="cell file"><div class="code"><div class="lab"><span>Terminal</span><button class="copy" type="button">Copy</button></div><pre><code class="language-bash"># Name the investigation so it can be resumed later
+claude -n refund-flow-investigation
+# ...next day...
+claude --resume refund-flow-investigation
+# Branch to compare two approaches from the same analysis
+claude --resume refund-flow-investigation --fork-session</code></pre></div></div><div class="cell"><div class="code"><div class="lab"><span>Python</span><span class="noeval">shown, not run here</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">from claude_agent_sdk import query, ClaudeAgentOptions
+
+# Branch B: same baseline analysis, different strategy, without touching branch A
+options = ClaudeAgentOptions(resume=baseline_session_id, fork_session=True)
+async for msg in query(prompt=&quot;Try the strangler-fig migration approach instead.&quot;, options=options):
+    ...</code></pre></div></div><aside class="call concept"><b>The idea</b><p><strong>Stale context is worse than none.</strong> A resumed session still "remembers" file contents and test results from before yesterday's changes, and will reason from them confidently. If the files changed, either tell the resumed session <strong>exactly what changed</strong> (for targeted re-analysis) or start fresh with a structured summary.</p></aside><div class="cell"><div class="code"><div class="lab"><span>Python</span><button class="copy" type="button">Copy</button></div><pre><code class="language-python">def resume_or_fresh(files_analysed, files_changed_since, days_since):
+    stale = len(set(files_analysed) &amp; set(files_changed_since)) / len(files_analysed)
+    if stale == 0:
+        return &quot;resume as is&quot;, None
+    if stale &lt;= 0.25:
+        note = (&quot;Since we last spoke these files changed: &quot; + &quot;, &quot;.join(sorted(set(files_analysed) &amp; set(files_changed_since)))
+                + &quot;. Re-read only those before continuing; earlier findings for other files still hold.&quot;)
+        return &quot;resume + tell it what changed&quot;, note
+    return &quot;start fresh with a structured summary of findings&quot;, None
+
+analysed = [&quot;billing/refunds.py&quot;, &quot;billing/charges.py&quot;, &quot;orders/cart.py&quot;, &quot;utils/dates.py&quot;, &quot;api/refunds.py&quot;, &quot;tests/test_refunds.py&quot;, &quot;models/order.py&quot;, &quot;models/payment.py&quot;]
+for changed in ([], [&quot;billing/refunds.py&quot;], [&quot;billing/refunds.py&quot;, &quot;billing/charges.py&quot;, &quot;orders/cart.py&quot;, &quot;models/order.py&quot;]):
+    choice, note = resume_or_fresh(analysed, changed, 1)
+    print(f&quot;{len(changed)} changed → {choice}&quot;)
+    if note: print(&quot;   message:&quot;, note)</code></pre></div><div class="out"><div class="lab"><span>Output · produced by running this code</span></div><pre>0 changed → resume as is
+1 changed → resume + tell it what changed
+   message: Since we last spoke these files changed: billing/refunds.py. Re-read only those before continuing; earlier findings for other files still hold.
+4 changed → start fresh with a structured summary of findings</pre></div></div><aside class="call read"><b>How to read it</b><p>With nothing changed, resume. With one of eight files changed, resume and <strong>say which file changed</strong>, so the session re-reads just that one instead of re-exploring everything. With half the analysed files changed, the old tool results are mostly stale: a fresh session seeded with a structured summary is more reliable. The 25% threshold is a judgement call, not a rule; the principle is to keep stale results from being trusted.</p></aside><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>Yesterday's named investigation session analysed 8 files. Overnight, a teammate changed 1 of them. What's the best way to continue?</p><div class="opts"><button type="button" data-ok="0">A. Start a completely new session and re-explore everything</button><button type="button" data-ok="1">B. Resume the named session and tell it which file changed, so it re-analyses just that file</button><button type="button" data-ok="0">C. Resume without mentioning the change</button><button type="button" data-ok="0">D. Fork the session twice</button></div><p class="why" hidden>Most of the prior context is still valid. Naming the changed file lets the session re-read it in a targeted way instead of reasoning from a stale version.</p></div><div class="quiz" data-multi="0"><p class="q"><b>Practice question</b>You want to compare two refactoring strategies starting from the same codebase analysis, without either exploration affecting the other. What should you use?</p><div class="opts"><button type="button" data-ok="0">A. --resume on the same session twice</button><button type="button" data-ok="1">B. Fork the session (fork_session / --fork-session) to create independent branches from the shared baseline</button><button type="button" data-ok="0">C. A new session for each, re-running the analysis from scratch</button><button type="button" data-ok="0">D. CLAUDE.md</button></div><p class="why" hidden>Forking creates independent branches that share the baseline analysis but diverge afterwards, which is exactly what comparing approaches needs.</p></div></section>
+  <div class="pager"><a class="btn ghost" href="../">← Course home</a><a class="btn" href="../module-2/">Module 2 →</a></div>
+  </div>
+</div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="fine" style="border:none;margin:0;padding:0">
+      <span>© 2026 XploreAI · <a href="/">xploreai.co.in</a></span>
+      <span><a href="mailto:hello@xploreai.co.in">hello@xploreai.co.in</a></span>
+    </div>
+  </div>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/json.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/bash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/markdown.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/typescript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/yaml.min.js"></script>
+<script src="/courses/claude-architect-foundations/course.js?v=1793068677"></script>
+</body>
+</html>
