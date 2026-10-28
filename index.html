@@ -47,8 +47,6 @@
   /* hero film: autoplays muted, with a sound toggle */
   .herofilm{position:relative;margin-top:38px;border-radius:24px;overflow:hidden;border:1px solid var(--line);background:var(--dark);box-shadow:0 44px 90px -42px rgba(74,66,56,.55)}
   .herofilm video{display:block;width:100%;height:auto}
-  .herofilm .snd{position:absolute;right:16px;bottom:16px;background:rgba(43,38,32,.72);color:var(--cream);border:0;border-radius:999px;padding:9px 17px;font-family:inherit;font-size:13.5px;font-weight:700;cursor:pointer;backdrop-filter:blur(6px)}
-  .herofilm .snd:hover{background:var(--rust)}
   /* the three parts of the page */
   .partlabel{display:flex;align-items:center;gap:14px;font-size:13px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:var(--soft);margin:0 0 26px}
   .partlabel b{color:var(--rust);font-size:15px;letter-spacing:2px}
@@ -96,7 +94,6 @@
              aria-label="XploreAI in 60 seconds: what AI changes, what we publish, and how routine work moves to agents">
         <source src="/assets/video/xploreai-promo.mp4" type="video/mp4">
       </video>
-      <button class="snd" id="sndBtn" type="button" aria-pressed="false">🔇 Sound off</button>
     </div>
   </div>
 </header>
@@ -289,20 +286,15 @@ fetch('/briefing/issues.json')
 <script src="/assets/motion.js" defer></script>
 <script>
 (function () {
-  var v = document.getElementById("promoVideo"), b = document.getElementById("sndBtn");
+  var v = document.getElementById("promoVideo");
   if (!v) return;
+  // The file carries no audio track; `muted` keeps autoplay allowed everywhere.
   // Respect a visitor who asked for less motion: show controls instead of autoplaying.
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-    v.removeAttribute("autoplay"); v.controls = true; v.pause(); if (b) b.hidden = true; return;
+    v.removeAttribute("autoplay"); v.controls = true; v.pause(); return;
   }
   var pr = v.play();
   if (pr && pr.catch) pr.catch(function () { v.controls = true; });   // autoplay refused: let them press play
-  if (b) b.addEventListener("click", function () {
-    v.muted = !v.muted;
-    if (!v.muted) v.play();
-    b.textContent = v.muted ? "🔇 Sound off" : "🔊 Sound on";
-    b.setAttribute("aria-pressed", String(!v.muted));
-  });
 })();
 </script>
 </body>
