@@ -48,6 +48,22 @@
   #latest-issue .pill{margin-bottom:10px}
   #latest-issue h3{font-size:23px;margin-bottom:8px}
   #latest-issue p{font-size:15px;color:var(--soft);margin-bottom:16px}
+  /* hero film: autoplays muted, with a sound toggle */
+  .herofilm{position:relative;margin-top:38px;border-radius:24px;overflow:hidden;border:1px solid var(--line);background:var(--dark);box-shadow:0 44px 90px -42px rgba(74,66,56,.55)}
+  .herofilm video{display:block;width:100%;height:auto}
+  .herofilm .snd{position:absolute;right:16px;bottom:16px;background:rgba(43,38,32,.72);color:var(--cream);border:0;border-radius:999px;padding:9px 17px;font-family:inherit;font-size:13.5px;font-weight:700;cursor:pointer;backdrop-filter:blur(6px)}
+  .herofilm .snd:hover{background:var(--rust)}
+  /* the three parts of the page */
+  .partlabel{display:flex;align-items:center;gap:14px;font-size:13px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:var(--soft);margin:0 0 26px}
+  .partlabel b{color:var(--rust);font-size:15px;letter-spacing:2px}
+  .partlabel::after{content:"";flex:1;height:1px;background:var(--line)}
+  .lightband{background:var(--card);border:1px solid var(--line);border-radius:24px;padding:40px 36px}
+  .lmenu{list-style:none;display:flex;flex-direction:column;gap:12px;margin-top:14px}
+  .lmenu li{display:flex;flex-direction:column;padding-bottom:12px;border-bottom:1px solid var(--line)}
+  .lmenu li:last-child{border-bottom:0;padding-bottom:0}
+  .lmenu a{font-weight:700;font-size:16.5px;color:var(--espresso);text-decoration:none}
+  .lmenu a:hover{color:var(--rust)}
+  .lmenu span{font-size:13.5px;color:var(--soft);font-weight:600}
   .learntags{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
   .learntags span{background:var(--card);border:1px solid var(--line);border-radius:30px;padding:7px 15px;font-size:13.5px;font-weight:700;color:var(--soft)}
   .subscribe{text-align:center}
@@ -65,10 +81,10 @@
   <div class="wrap bar">
     <a class="wordmark" href="/">xplore<span>ai</span></a>
     <ul>
+      <li><a href="/learn.html">Learn AI</a></li>
+      <li><a href="#subscribe">Newsletter</a></li>
       <li><a href="#agents">Solutions</a></li>
       <li><a href="#stories">Success Stories</a></li>
-      <li><a href="#subscribe">Newsletter</a></li>
-      <li><a href="/learn.html">Learn AI</a></li>
       <li><a class="btn" href="https://wa.me/919769686931?text=Hi%20XploreAI%2C%20I%27m%20interested%20in%20AI%20automation!">Get Started</a></li>
     </ul>
   </div>
@@ -89,11 +105,71 @@
     <div class="industries">
       <span>🏥 Healthcare</span><span>🏠 Real Estate</span><span>🎓 Education</span><span>💊 Pharmacies</span><span>🦷 Dental</span><span>🏋️ Fitness</span><span>⚖️ Law Firms</span><span>🍽️ Restaurants</span>
     </div>
+
+    <div class="herofilm">
+      <video id="promoVideo" autoplay muted loop playsinline preload="metadata"
+             poster="/assets/video/xploreai-promo-poster.jpg"
+             aria-label="XploreAI in 60 seconds: what AI changes, what we publish, and how routine work moves to agents">
+        <source src="/assets/video/xploreai-promo.mp4" type="video/mp4">
+      </video>
+      <button class="snd" id="sndBtn" type="button" aria-pressed="false">🔇 Sound off</button>
+    </div>
   </div>
 </header>
 
+<section id="learn" style="padding-top:26px">
+  <div class="wrap">
+    <p class="partlabel"><b>01</b> Learn AI</p>
+    <div class="lightband newsbox">
+      <div>
+        <span class="eyebrow">🎓 Learn AI · free</span>
+        <h2 class="big">Curious how AI actually works<i>?</i></h2>
+        <p class="lede">From tokens to agents — the ideas behind today's AI, explained with animation, interactive tools and zero jargon.</p>
+        <div class="learntags">
+          <span>🧠 Neural Networks</span><span>🤖 Large Language Models</span><span>👁️ Computer Vision</span><span>📊 Supervised Learning</span>
+        </div>
+        <div class="cta-row">
+          <a class="btn" href="/learn.html">Explore Learn AI →</a>
+        </div>
+      </div>
+      <div class="card">
+        <span class="pill">WHAT'S INSIDE</span>
+        <ul class="lmenu">
+          <li><a href="/learn.html#concepts">Concepts made simple</a><span>explainers with animation</span></li>
+          <li><a href="/learn.html#tools">Interactive tools</a><span>try the numbers yourself</span></li>
+          <li><a href="/learn.html#courses">Courses</a><span>learn by doing</span></li>
+          <li><a href="/learn.html#certifications">Claude certification prep</a><span>four tracks + mock exams</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="subscribe">
+  <div class="wrap">
+    <p class="partlabel"><b>02</b> Newsletter</p>
+    <div class="band newsbox">
+      <div>
+        <span class="eyebrow">📬 Newsletter · Every Sunday</span>
+        <h2 class="big">The AI Weekly Briefing<i>.</i></h2>
+        <p>Research, releases and funding from the week in AI — a 5-minute read, published every Sunday. Get it on WhatsApp or read it right here.</p>
+        <div class="cta-row">
+          <a class="btn" href="https://wa.me/919769686931?text=SUBSCRIBE">Subscribe on WhatsApp</a>
+          <a class="btn ghost" style="border-color:var(--cream);color:var(--cream) !important" href="/briefing/">All issues →</a>
+        </div>
+        <p style="margin-top:14px;font-size:13.5px">Send <b style="color:#F7A97E">SUBSCRIBE</b> to +91 97696 86931 on WhatsApp · No spam, just the most important updates.</p>
+      </div>
+      <div class="card" id="latest-issue">
+        <span class="pill">LOADING…</span>
+        <h3>Fetching the latest issue…</h3>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section id="agents">
   <div class="wrap">
+    <p class="partlabel"><b>03</b> Agentic solutions for business</p>
     <div class="agents-intro">
       <div>
         <span class="eyebrow">Multi-Agent Intelligence</span>
@@ -183,39 +259,6 @@
   </div>
 </section>
 
-<section id="learn" style="padding-top:0">
-  <div class="wrap">
-    <span class="eyebrow">Learn AI</span>
-    <h2 class="big">Curious how AI actually works<i>?</i></h2>
-    <p class="lede">From Neural Networks to Large Language Models — learn the concepts powering today's AI revolution. Interactive animations, real use cases, zero jargon.</p>
-    <div class="learntags">
-      <span>🧠 Neural Networks</span><span>🤖 Large Language Models</span><span>👁️ Computer Vision</span><span>📊 Supervised Learning</span>
-    </div>
-    <a class="btn ghost" style="margin-top:22px" href="/learn.html">Explore Learn AI →</a>
-  </div>
-</section>
-
-<section id="subscribe" style="padding-top:0">
-  <div class="wrap">
-    <div class="band newsbox">
-      <div>
-        <span class="eyebrow">📬 Newsletter · Every Sunday</span>
-        <h2 class="big">The AI Weekly Briefing<i>.</i></h2>
-        <p>Research, releases and funding from the week in AI — a 5-minute read, published every Sunday. Get it on WhatsApp or read it right here.</p>
-        <div class="cta-row">
-          <a class="btn" href="https://wa.me/919769686931?text=SUBSCRIBE">Subscribe on WhatsApp</a>
-          <a class="btn ghost" style="border-color:var(--cream);color:var(--cream) !important" href="/briefing/">All issues →</a>
-        </div>
-        <p style="margin-top:14px;font-size:13.5px">Send <b style="color:#F7A97E">SUBSCRIBE</b> to +91 97696 86931 on WhatsApp · No spam, just the most important updates.</p>
-      </div>
-      <div class="card" id="latest-issue">
-        <span class="pill">LOADING…</span>
-        <h3>Fetching the latest issue…</h3>
-      </div>
-    </div>
-  </div>
-</section>
-
 <footer>
   <div class="wrap">
     <div class="cols">
@@ -260,5 +303,23 @@ fetch('/briefing/issues.json')
   });
 </script>
 <script src="/assets/motion.js" defer></script>
+<script>
+(function () {
+  var v = document.getElementById("promoVideo"), b = document.getElementById("sndBtn");
+  if (!v) return;
+  // Respect a visitor who asked for less motion: show controls instead of autoplaying.
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    v.removeAttribute("autoplay"); v.controls = true; v.pause(); if (b) b.hidden = true; return;
+  }
+  var pr = v.play();
+  if (pr && pr.catch) pr.catch(function () { v.controls = true; });   // autoplay refused: let them press play
+  if (b) b.addEventListener("click", function () {
+    v.muted = !v.muted;
+    if (!v.muted) v.play();
+    b.textContent = v.muted ? "🔇 Sound off" : "🔊 Sound on";
+    b.setAttribute("aria-pressed", String(!v.muted));
+  });
+})();
+</script>
 </body>
 </html>
