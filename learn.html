@@ -28,11 +28,11 @@
   .tool.cert .badge{width:96px;height:96px;object-fit:contain;margin:0 0 14px}
   .tool.cert h3{font-size:19px}
   .tool.cert .btn{white-space:nowrap}
+  .cert-actions{display:flex;flex-wrap:wrap;gap:10px}
   .tool.cert.soon{justify-content:flex-start;text-align:left}
   .tool.cert.soon .badge{opacity:.55;filter:grayscale(.35)}
   .tool.cert.soon h3{margin:12px 0 8px}
   .fine-note{font-size:13px;color:var(--soft);margin-top:14px}
-  #mock-exams{padding:40px 0 10px}
   #courses{padding:40px 0 10px}
   #concepts{padding:40px 0 10px}
   #tools{padding:40px 0 10px}
@@ -74,7 +74,7 @@
   <div class="wrap">
     <span class="eyebrow">🏅 Claude Certification Series</span>
     <h2 class="big">Prepare for Claude certification<i>.</i></h2>
-    <p class="lede">Free study courses for Anthropic's Claude certification exams, one module per exam domain, with practice questions throughout.</p>
+    <p class="lede">Free study courses for Anthropic's Claude certification exams, one module per exam domain, with practice questions throughout. Then take a mock: ten full-length timed exams per certification, with an explanation for every answer.</p>
 
     <div class="tools certs">
       <!-- To add a certification course: copy an <article>, add its badge to /assets/badges/ -->
@@ -83,72 +83,43 @@
         <span class="pill">CCAO-F · 7 MODULES · 48 QUESTIONS</span>
         <h3>Associate – Foundations</h3>
         <p>Prompting, checking outputs, choosing products and models, workflows, Projects, governance and troubleshooting.</p>
-        <a class="btn" href="/courses/claude-associate/">Start the course →</a>
+        <div class="cert-actions">
+          <a class="btn" href="/courses/claude-associate/">Start the course →</a>
+          <a class="btn ghost" href="/courses/claude-mock-exams/#ccao-f">Take a mock →</a>
+        </div>
       </article>
       <article class="card tool cert">
         <img class="badge" src="/assets/badges/claude-developer-foundations.png" alt="Claude Certified Developer – Foundations badge" width="96" height="96">
         <span class="pill">CCDV-F · 8 MODULES · 92 QUESTIONS</span>
         <h3>Developer – Foundations</h3>
         <p>Agents, the Messages API, Claude Code, evals, model choice, context engineering, security, tools and MCP.</p>
-        <a class="btn" href="/courses/claude-developer/">Start the course →</a>
+        <div class="cert-actions">
+          <a class="btn" href="/courses/claude-developer/">Start the course →</a>
+          <a class="btn ghost" href="/courses/claude-mock-exams/#ccdv-f">Take a mock →</a>
+        </div>
       </article>
       <article class="card tool cert">
         <img class="badge" src="/assets/badges/claude-architect-foundations.png" alt="Claude Certified Architect – Foundations badge" width="96" height="96">
         <span class="pill">CCAR-F · 5 MODULES · 56 QUESTIONS</span>
         <h3>Architect – Foundations</h3>
         <p>Agent loops and subagents, tools and MCP, Claude Code configuration, structured output, context and escalation.</p>
-        <a class="btn" href="/courses/claude-architect-foundations/">Start the course →</a>
+        <div class="cert-actions">
+          <a class="btn" href="/courses/claude-architect-foundations/">Start the course →</a>
+          <a class="btn ghost" href="/courses/claude-mock-exams/#ccar-f">Take a mock →</a>
+        </div>
       </article>
       <article class="card tool cert">
         <img class="badge" src="/assets/badges/claude-architect-professional.png" alt="Claude Certified Architect – Professional badge" width="96" height="96">
         <span class="pill">CCAR-P · 7 MODULES · 76 QUESTIONS</span>
         <h3>Architect – Professional</h3>
         <p>Solution design, integration and RAG, evaluation, governance, stakeholders and team enablement.</p>
-        <a class="btn" href="/courses/claude-architect/">Start the course →</a>
+        <div class="cert-actions">
+          <a class="btn" href="/courses/claude-architect/">Start the course →</a>
+          <a class="btn ghost" href="/courses/claude-mock-exams/#ccar-p">Take a mock →</a>
+        </div>
       </article>
     </div>
-    <p class="fine-note">Unofficial study material. Not affiliated with or endorsed by Anthropic; badges identify the exam each course prepares for.</p>
-  </div>
-</section>
-
-<section id="mock-exams">
-  <div class="wrap">
-    <span class="eyebrow">📝 Practice Exams</span>
-    <h2 class="big">Test yourself before exam day<i>.</i></h2>
-    <p class="lede">Full-length, timed mock exams for each Claude certification. Submit to get a scaled score, a domain-by-domain breakdown, and an explanation for every option: why the right answer is right and why each wrong one is wrong.</p>
-
-    <div class="tools certs">
-      <!-- Generated app: ~/Claude/cert-infographics/mock-exams (build.py, then make_site_copy.py) -->
-      <article class="card tool cert">
-        <img class="badge" src="/assets/badges/claude-associate-foundations.png" alt="Claude Certified Associate – Foundations badge" width="96" height="96" loading="lazy">
-        <span class="pill">CCAO-F · 10 MOCKS · 600 QUESTIONS</span>
-        <h3>Associate – Foundations</h3>
-        <p>Ten full 60-question mocks in exam proportions, plus a timed 20-question set and a full drill for every domain.</p>
-        <a class="btn" href="/courses/claude-mock-exams/#ccao-f">Take a mock →</a>
-      </article>
-      <article class="card tool cert">
-        <img class="badge" src="/assets/badges/claude-developer-foundations.png" alt="Claude Certified Developer – Foundations badge" width="96" height="96" loading="lazy">
-        <span class="pill">CCDV-F · 10 MOCKS · 545 QUESTIONS</span>
-        <h3>Developer – Foundations</h3>
-        <p>Ten full 53-question mocks in exam proportions, plus a timed 20-question set and a full drill for every domain.</p>
-        <a class="btn" href="/courses/claude-mock-exams/#ccdv-f">Take a mock →</a>
-      </article>
-      <article class="card tool cert">
-        <img class="badge" src="/assets/badges/claude-architect-foundations.png" alt="Claude Certified Architect – Foundations badge" width="96" height="96" loading="lazy">
-        <span class="pill">CCAR-F · 10 MOCKS · 600 QUESTIONS</span>
-        <h3>Architect – Foundations</h3>
-        <p>Ten full 60-question mocks in exam proportions, plus a timed 20-question set and a full drill for every domain.</p>
-        <a class="btn" href="/courses/claude-mock-exams/#ccar-f">Take a mock →</a>
-      </article>
-      <article class="card tool cert">
-        <img class="badge" src="/assets/badges/claude-architect-professional.png" alt="Claude Certified Architect – Professional badge" width="96" height="96" loading="lazy">
-        <span class="pill">CCAR-P · 10 MOCKS · 630 QUESTIONS</span>
-        <h3>Architect – Professional</h3>
-        <p>Ten full 63-question mocks in exam proportions, plus a timed 20-question set and a full drill for every domain.</p>
-        <a class="btn" href="/courses/claude-mock-exams/#ccar-p">Take a mock →</a>
-      </article>
-    </div>
-    <p class="fine-note">Unofficial practice questions written from the study material. Not affiliated with or endorsed by Anthropic; scores are estimates, not a prediction of your exam result.</p>
+    <p class="fine-note">Unofficial study material and practice exams. Not affiliated with or endorsed by Anthropic; badges identify the exam each course prepares for, and mock scores are estimates, not a prediction of your exam result.</p>
   </div>
 </section>
 
