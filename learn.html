@@ -29,6 +29,8 @@
   .tool.cert h3{font-size:19px}
   .tool.cert .btn{white-space:nowrap}
   .cert-actions{display:flex;flex-wrap:wrap;gap:10px}
+  .promo-video{margin:26px 0 30px;border-radius:22px;overflow:hidden;background:#F5EFE4;box-shadow:0 24px 50px -28px rgba(74,66,56,.45);border:1px solid rgba(74,66,56,.12);aspect-ratio:16/9}
+  .promo-video video{display:block;width:100%;height:100%}
   .tool.cert.soon{justify-content:flex-start;text-align:left}
   .tool.cert.soon .badge{opacity:.55;filter:grayscale(.35)}
   .tool.cert.soon h3{margin:12px 0 8px}
@@ -75,6 +77,12 @@
     <span class="eyebrow">🏅 Claude Certification Series</span>
     <h2 class="big">Prepare for Claude certification<i>.</i></h2>
     <p class="lede">Study courses for Anthropic's Claude certification exams, one module per exam domain, with practice questions throughout. Then take a mock: ten full-length timed exams per certification, with an explanation for every answer.</p>
+
+    <figure class="promo-video">
+      <video controls playsinline preload="none" poster="/assets/video/claude-cert-promo-poster.jpg" aria-label="Claude Certification Series: a 70-second tour of the courses and mock exams">
+        <source src="/assets/video/claude-cert-promo.mp4" type="video/mp4">
+      </video>
+    </figure>
 
     <div class="tools certs">
       <!-- To add a certification course: copy an <article>, add its badge to /assets/badges/ -->
