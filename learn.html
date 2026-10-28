@@ -79,7 +79,7 @@
     <p class="lede">Study courses for Anthropic's Claude certification exams, one module per exam domain, with practice questions throughout. Then take a mock: ten full-length timed exams per certification, with an explanation for every answer.</p>
 
     <figure class="promo-video">
-      <video controls playsinline preload="none" poster="/assets/video/claude-cert-promo-poster.jpg" aria-label="Claude Certification Series: a 70-second tour of the courses and mock exams">
+      <video controls muted loop playsinline preload="none" poster="/assets/video/claude-cert-promo-poster.jpg" aria-label="Claude Certification Series: a 70-second tour of the courses and mock exams">
         <source src="/assets/video/claude-cert-promo.mp4" type="video/mp4">
       </video>
     </figure>
@@ -257,5 +257,13 @@
   </div>
 </footer>
 
+<script>
+// Promo video: plays muted while on screen, pauses when scrolled away (and stays still for reduced-motion users).
+(() => {
+  const v = document.querySelector('.promo-video video');
+  if (!v || matchMedia('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window)) return;
+  new IntersectionObserver(([e]) => { e.isIntersecting ? v.play().catch(() => {}) : v.pause(); }, { threshold: 0.35 }).observe(v);
+})();
+</script>
 </body>
 </html>
