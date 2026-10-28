@@ -4,13 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Claude Certification Mock Exams — XploreAI</title>
-<meta name="description" content="Free Claude certification mock exams: 10 full-length practice tests per exam for CCAO-F, CCDV-F, CCAR-F and CCAR-P, timed domain sets, and an explanation for every option.">
+<meta name="description" content="Claude certification mock exams: 10 full-length practice tests per exam for CCAO-F, CCDV-F, CCAR-F and CCAR-P, timed domain sets, and an explanation for every option.">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="XploreAI">
 <meta property="og:title" content="Claude Certification Mock Exams — XploreAI">
-<meta property="og:description" content="Free Claude certification mock exams: 10 full-length practice tests per exam for CCAO-F, CCDV-F, CCAR-F and CCAR-P, timed domain sets, and an explanation for every option.">
+<meta property="og:description" content="Claude certification mock exams: 10 full-length practice tests per exam for CCAO-F, CCDV-F, CCAR-F and CCAR-P, timed domain sets, and an explanation for every option.">
 <meta property="og:url" content="https://xploreai.co.in/courses/claude-mock-exams/">
 <meta property="og:image" content="https://xploreai.co.in/assets/og-image.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -91,6 +91,9 @@ button:focus-visible,.opt:focus-within,a:focus-visible{outline:3px solid var(--a
 .mock-tile{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;background:transparent;border:1px solid var(--line);border-radius:12px;padding:10px 14px}
 .mock-tile:hover{border-color:var(--accent)}
 .mock-tile small{color:var(--soft);font-size:12.5px}
+.locked{opacity:.62;text-decoration:none;color:inherit}
+.unlock{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;background:var(--tint);border:1px solid var(--accent);border-radius:16px;padding:14px 18px;margin:0 0 18px}
+.unlock b{color:var(--accent-ink)}
 .drills{display:grid;gap:8px;margin-top:4px}
 .drill{display:flex;justify-content:space-between;align-items:center;gap:12px;text-align:left;width:100%;background:transparent;border:1px solid var(--line);border-radius:12px;padding:10px 14px}
 .drill:hover{border-color:var(--accent)}
@@ -242,7 +245,7 @@ let timerId = null;
 
 /* ---------- test builders ---------- */
 // Mock n takes each domain's questions [(n-1)*quota, n*quota), so no two mocks share a question.
-function mockCount(c){ return Math.min(...c.domains.map(d => Math.floor(c.bank.filter(q => q.domain === d.id).length / d.quota))); }
+function mockCount(c){ if(c.locked) return c.mocks; return Math.min(...c.domains.map(d => Math.floor(c.bank.filter(q => q.domain === d.id).length / d.quota))); }
 function mockQuestions(c, n){
   const ids = [];
   c.domains.forEach(d => {
@@ -274,9 +277,11 @@ function renderHome(){
   $('#bar-right').innerHTML = '';
   const c = course;
   const hist = store.get('cme-history', []).filter(h => h.course === c.code).slice(-8).reverse();
-  const prog = store.get('cme-progress', null);
+  let prog = store.get('cme-progress', null);
+  if(prog && prog.course === c.code && !prog.ids.every(id => c.bank.some(q => q.id === id))) prog = null;   // saved from a bank this viewer can't open
+  const lock = c.locked ? `<a class="btn small" href="${esc(c.buy)}">Unlock · ${esc(c.price)}</a>` : '';
   const best = key => { const h = store.get('cme-history', []).filter(x => x.course === c.code && x.key === key); return h.length ? Math.max(...h.map(x => x.scaled)) : null; };
-  const counts = d => c.bank.filter(q => q.domain === d.id).length;
+  const counts = d => c.locked ? c.domainCounts[d.id] : c.bank.filter(q => q.domain === d.id).length;
   $('#app').innerHTML = `
     <section class="hero">
       <span class="eyebrow">Claude certification · practice</span>
@@ -286,22 +291,23 @@ function renderHome(){
         <div class="fact"><b class="num">${c.examQuestions}</b><small>questions per mock</small></div>
         <div class="fact"><b class="num">${c.minutes} min</b><small>time limit</small></div>
         <div class="fact"><b class="num">${c.pass} / 1000</b><small>passing score</small></div>
-        <div class="fact"><b class="num">${c.bank.length}</b><small>questions in the bank</small></div>
+        <div class="fact"><b class="num">${c.bankSize || c.bank.length}</b><small>questions in the bank</small></div>
       </div>
     </section>
     <div class="courses" role="group" aria-label="Certification">
       ${COURSES.map(x => `<button class="course" type="button" data-course="${x.code}" aria-pressed="${x.code===c.code}" ${x.live?'':'disabled'}>${esc(x.code)}${x.live?'':' · soon'}</button>`).join('')}
     </div>
+    ${c.locked ? `<div class="unlock"><span>You're viewing the <b>preview</b>: one Quick 20. Unlock all ${c.mocks} mocks, every domain drill and the full ${esc(c.code)} course.</span>${lock}</div>` : ''}
     ${prog && prog.course === c.code ? `<div class="resume"><span><b>${esc(prog.title)}</b> in progress · ${Object.keys(prog.answers).length} of ${prog.ids.length} answered</span><span style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn small" id="resume" type="button">Resume</button><button class="btn small ghost" id="discard" type="button">Discard</button></span></div>` : ''}
     <div class="modes">
       <div class="card mode mocks-card">
         <span class="pill">FULL MOCKS · ${c.examQuestions} Q · ${c.minutes} MIN EACH</span>
         <h3>${mockCount(c)} mock tests</h3>
         <p>Full-length exams in blueprint proportions across all ${c.domains.length} domains. No question appears in more than one mock.</p>
-        <div class="mock-grid">${Array.from({length: mockCount(c)}, (_, i) => i + 1).map(n => `<button class="mock-tile" type="button" data-start="mock" data-arg="${n}"><b>Mock ${n}</b><small class="num">${best('mock'+n)!==null?'Best '+best('mock'+n):'Not taken'}</small></button>`).join('')}</div>
+        <div class="mock-grid">${Array.from({length: mockCount(c)}, (_, i) => i + 1).map(n => (c.locked ? `<a class="mock-tile locked" href="${esc(c.buy)}"><b>Mock ${n}</b><small>🔒 Locked</small></a>` : `<button class="mock-tile" type="button" data-start="mock" data-arg="${n}"><b>Mock ${n}</b><small class="num">${best('mock'+n)!==null?'Best '+best('mock'+n):'Not taken'}</small></button>`)).join('')}</div>
       </div>
       <div class="card mode">
-        <span class="pill">QUICK · 20 Q · 30 MIN</span>
+        <span class="pill">${c.locked ? 'PREVIEW · ' : 'QUICK · '}20 Q · 30 MIN</span>
         <h3>Quick 20</h3>
         <p>Twenty random questions from the whole bank. Good for a daily warm-up.</p>
         <div class="row"><button class="btn ghost" type="button" data-start="quick" data-arg="0">Start Quick 20</button></div>
@@ -309,7 +315,7 @@ function renderHome(){
     </div>
     <div class="section-h"><h2>Domain drills<span class="dot">.</span></h2><span class="muted" style="font-size:14px">Full drill: untimed, every question · Timed 20: random set at exam pace</span></div>
     <div class="drills">
-      ${c.domains.map(d => `<div class="drill-row"><button class="drill" type="button" data-start="drill" data-arg="${d.id}"><span><b>${d.id}. ${esc(d.name)}</b></span><small class="num">${d.weight}% of exam · ${counts(d)} Q${best('d'+d.id)!==null?' · best '+best('d'+d.id):''}</small></button><button class="drill timed" type="button" data-start="timed" data-arg="${d.id}" aria-label="Timed 20 for domain ${d.id}, ${timedMinutes(c, Math.min(20, counts(d)))} minutes"><span><b>Timed 20</b></span><small class="num">${timedMinutes(c, Math.min(20, counts(d)))} min${best('t'+d.id)!==null?' · best '+best('t'+d.id):''}</small></button></div>`).join('')}
+      ${c.domains.map(d => c.locked ? `<a class="drill locked" href="${esc(c.buy)}"><span><b>${d.id}. ${esc(d.name)}</b></span><small class="num">${d.weight}% of exam · ${counts(d)} Q · 🔒</small></a>` : `<div class="drill-row"><button class="drill" type="button" data-start="drill" data-arg="${d.id}"><span><b>${d.id}. ${esc(d.name)}</b></span><small class="num">${d.weight}% of exam · ${counts(d)} Q${best('d'+d.id)!==null?' · best '+best('d'+d.id):''}</small></button><button class="drill timed" type="button" data-start="timed" data-arg="${d.id}" aria-label="Timed 20 for domain ${d.id}, ${timedMinutes(c, Math.min(20, counts(d)))} minutes"><span><b>Timed 20</b></span><small class="num">${timedMinutes(c, Math.min(20, counts(d)))} min${best('t'+d.id)!==null?' · best '+best('t'+d.id):''}</small></button></div>`).join('')}
     </div>
     <div class="section-h"><h2>Your attempts<span class="dot">.</span></h2><span class="muted" style="font-size:14px">Saved in this browser only</span></div>
     <div class="history">${hist.length ? hist.map(h => `<div class="hrow"><span><b class="num">${h.scaled}</b> <span class="muted">· ${esc(h.title)}</span></span><span class="tag ${h.pass?'ok':'bad'}">${h.pass?'Pass':'Below 720'}</span><span class="muted num" style="font-size:13px">${new Date(h.at).toLocaleDateString()}</span></div>`).join('') : '<div class="empty">No attempts yet. Your scores appear here after you submit a test.</div>'}</div>
