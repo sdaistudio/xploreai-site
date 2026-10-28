@@ -77,7 +77,7 @@ def render_hub(outline, counts, head, foot, inline, slug, site):
             f'<h3>{title}</h3><p>{inline(m["lede"])}</p><ol>{li}</ol>{cta}</div></article>')
     facts = "".join(f'<div class="card"><b>{a}</b><span>{b}</span></div>' for a, b in FACTS)
     first = f'<a class="btn" href="module-{live[0]["module"]}/">Start with Module {live[0]["module"]} →</a>' if live else ""
-    page = head("Claude Certified Developer – Foundations (CCDV-F): a free study course",
+    page = head("Claude Certified Developer – Foundations (CCDV-F): a study course",
                 "Prepare for the Claude Certified Developer – Foundations exam: eight modules mapped to the official blueprint, "
                 "with animated diagrams, real Python with its output, API code, config files and practice questions.",
                 "https://xploreai.co.in/courses/claude-developer/")
@@ -85,7 +85,7 @@ def render_hub(outline, counts, head, foot, inline, slug, site):
 <main class="cca">
 <header class="mhero wrap">
   <p class="crumb"><a href="/learn.html">Learn AI</a> / Courses</p>
-  <span class="pill">FREE STUDY COURSE · CCDV-F · {len(outline)} MODULES · {nsess} SESSIONS</span>
+  <span class="pill">STUDY COURSE · CCDV-F · {len(outline)} MODULES · {nsess} SESSIONS</span>
   <h1>Claude Certified Developer – Foundations<i>.</i></h1>
   <p class="lede">A study course for Anthropic's <strong>Claude Certified Developer – Foundations</strong> exam, built on its official blueprint: one module per exam domain. Every idea is shown as an animated <strong>diagram</strong>, a <strong>screen</strong> or a <strong>config file</strong>, then built step by step in <strong>Python</strong> that really runs, with its real output, and checked with practice questions.</p>
   <div class="dl">{first} <a class="btn ghost" href="#exam">The exam at a glance</a></div>

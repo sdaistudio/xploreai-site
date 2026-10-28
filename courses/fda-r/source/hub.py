@@ -36,7 +36,7 @@ def render_hub(mods, ncells, nplots, head, foot, inline, slug, site):
     rows = "".join(f'<tr><td><a href="data/{f}" download><code>{f}</code></a></td><td>{d}</td><td>{s}</td><td>{u}</td></tr>'
                    for f, d, s, u in DATASETS)
     others = ", ".join(f'<a href="data/{x}.csv" download>{x}.csv</a>' for x in OTHER)
-    page = head("Financial Data Analytics using R — a free hands-on course",
+    page = head("Financial Data Analytics using R — a hands-on course",
                 "Learn financial data analytics in R: cleaning, returns, statistics, regression, ARIMA, VAR, VECM, ARDL, "
                 "GARCH, VaR, event studies and machine learning, with runnable code and real output.",
                 "https://xploreai.co.in/courses/fda-r/")
@@ -44,7 +44,7 @@ def render_hub(mods, ncells, nplots, head, foot, inline, slug, site):
 <main class="fdar">
 <header class="mhero wrap">
   <p class="crumb"><a href="/learn.html">Learn AI</a> / Courses</p>
-  <span class="pill">FREE COURSE · R · {len(mods)} MODULES · {nsess} SESSIONS</span>
+  <span class="pill">COURSE · R · {len(mods)} MODULES · {nsess} SESSIONS</span>
   <h1>Financial Data Analytics using R<i>.</i></h1>
   <p class="lede">From your first line of R to GARCH volatility forecasts and machine-learning models on NIFTY. Every session shows the <strong>code</strong>, explains what it does, and shows the <strong>exact console output and charts</strong> it produces, so you can check your work as you follow along.</p>
   <div class="dl"><a class="btn" href="module-1/">Start with Module 1 →</a> <a class="btn ghost" href="#data">Download the data</a></div>

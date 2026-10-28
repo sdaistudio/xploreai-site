@@ -71,7 +71,7 @@ def render_hub(outline, counts, head, foot, inline, slug, site):
             f'<h3>{title}</h3><p>{inline(m["lede"])}</p><ol>{li}</ol>{cta}</div></article>')
     facts = "".join(f'<div class="card"><b>{a}</b><span>{b}</span></div>' for a, b in FACTS)
     first = f'<a class="btn" href="module-{live[0]["module"]}/">Start with Module {live[0]["module"]} →</a>' if live else ""
-    page = head("Claude Certified Architect – Professional (CCAR-P): a free study course",
+    page = head("Claude Certified Architect – Professional (CCAR-P): a study course",
                 "Prepare for the Claude Certified Architect – Professional exam: seven modules mapped to the official blueprint, "
                 "with animated architectures, decision records, real Python with its output, and practice questions.",
                 "https://xploreai.co.in/courses/claude-architect/")
@@ -79,7 +79,7 @@ def render_hub(outline, counts, head, foot, inline, slug, site):
 <main class="cca">
 <header class="mhero wrap">
   <p class="crumb"><a href="/learn.html">Learn AI</a> / Courses</p>
-  <span class="pill">FREE STUDY COURSE · CCAR-P · {len(outline)} MODULES · {nsess} SESSIONS</span>
+  <span class="pill">STUDY COURSE · CCAR-P · {len(outline)} MODULES · {nsess} SESSIONS</span>
   <h1>Claude Certified Architect – Professional<i>.</i></h1>
   <p class="lede">A study course for Anthropic's <strong>Claude Certified Architect – Professional</strong> exam, built on its official blueprint: one module per exam domain. It's about <strong>decisions</strong>: which pattern, which model, which integration, which control, and how to justify each to engineers, security, legal and executives. Every idea comes as an animated <strong>architecture</strong>, a <strong>decision record</strong> or a <strong>trade-off</strong> worked through in <strong>Python</strong> that really runs, with practice questions to check yourself.</p>
   <div class="dl">{first} <a class="btn ghost" href="#exam">The exam at a glance</a></div>

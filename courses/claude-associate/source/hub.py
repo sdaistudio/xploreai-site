@@ -65,7 +65,7 @@ def render_hub(outline, counts, head, foot, inline, slug, site):
             f'<h3>{title}</h3><p>{inline(m["lede"])}</p><ol>{li}</ol>{cta}</div></article>')
     facts = "".join(f'<div class="card"><b>{a}</b><span>{b}</span></div>' for a, b in FACTS)
     first = f'<a class="btn" href="module-{live[0]["module"]}/">Start with Module {live[0]["module"]} →</a>' if live else ""
-    page = head("Claude Certified Associate – Foundations (CCAO-F): a free study course",
+    page = head("Claude Certified Associate – Foundations (CCAO-F): a study course",
                 "Prepare for the Claude Certified Associate – Foundations exam: seven modules mapped to the official blueprint, "
                 "with animated workflows, example screens, prompts to copy, light Python and practice questions.",
                 "https://xploreai.co.in/courses/claude-associate/")
@@ -73,7 +73,7 @@ def render_hub(outline, counts, head, foot, inline, slug, site):
 <main class="cca">
 <header class="mhero wrap">
   <p class="crumb"><a href="/learn.html">Learn AI</a> / Courses</p>
-  <span class="pill">FREE STUDY COURSE · CCAO-F · {len(outline)} MODULES · {nsess} SESSIONS</span>
+  <span class="pill">STUDY COURSE · CCAO-F · {len(outline)} MODULES · {nsess} SESSIONS</span>
   <h1>Claude Certified Associate – Foundations<i>.</i></h1>
   <p class="lede">A study course for Anthropic's <strong>Claude Certified Associate – Foundations</strong> exam, built on its official blueprint: one module per exam domain, one session per objective. Every idea is shown as a <strong>workflow</strong>, a <strong>screen</strong> or a <strong>prompt</strong> you can copy, with light Python where it helps, and practice questions to check yourself.</p>
   <div class="dl">{first} <a class="btn ghost" href="#exam">The exam at a glance</a></div>

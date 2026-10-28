@@ -73,7 +73,7 @@ def render_hub(outline, counts, head, foot, inline, slug, site):
     scen = "".join(f'<div class="card"><b>{k}. {html.escape(t)}</b><span>{html.escape(d)} <em>Domains {dm}.</em></span></div>'
                    for k, (t, d, dm) in enumerate(SCENARIOS, 1))
     first = f'<a class="btn" href="module-{live[0]["module"]}/">Start with Module {live[0]["module"]} →</a>' if live else ""
-    page = head("Claude Certified Architect – Foundations (CCAR-F): a free study course",
+    page = head("Claude Certified Architect – Foundations (CCAR-F): a study course",
                 "Prepare for the Claude Certified Architect – Foundations exam: five modules mapped to the official blueprint, one session per "
                 "task statement, with animated architectures, real Python with its output, configs and practice questions.",
                 "https://xploreai.co.in/courses/claude-architect-foundations/")
@@ -81,7 +81,7 @@ def render_hub(outline, counts, head, foot, inline, slug, site):
 <main class="cca">
 <header class="mhero wrap">
   <p class="crumb"><a href="/learn.html">Learn AI</a> / Courses</p>
-  <span class="pill">FREE STUDY COURSE · CCAR-F · {len(outline)} MODULES · {nsess} TASK STATEMENTS</span>
+  <span class="pill">STUDY COURSE · CCAR-F · {len(outline)} MODULES · {nsess} TASK STATEMENTS</span>
   <h1>Claude Certified Architect – Foundations<i>.</i></h1>
   <p class="lede">A study course for Anthropic's <strong>Claude Certified Architect – Foundations</strong> exam, built on its official guide: one module per domain and <strong>one session per task statement</strong>. The exam is scenario-based and practical (agent loops, subagents, hooks, tools, MCP, Claude Code configuration, structured output, context and escalation), so every session pairs an animated <strong>architecture</strong> with <strong>Python</strong> that really runs and scenario-style practice questions.</p>
   <div class="dl">{first} <a class="btn ghost" href="#scenarios">The six scenarios</a></div>
