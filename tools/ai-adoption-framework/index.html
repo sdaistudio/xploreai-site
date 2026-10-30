@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Adoption Framework Simulator — XploreAI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{--paper:#F5EFE4;--card:#FFFDF8;--ink:#4A4238;--soft:#6E665C;--line:rgba(74,66,56,.16);
+        --rust:#E2571B;--tint:#FBE9DF;--dark:#2B2620;--apricot:#F7A97E;--good:#2E7D4F;--warn:#B8860B;--bad:#A63D2F}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);
+       font:500 15px/1.55 Quicksand,-apple-system,"Segoe UI",Arial,sans-serif}
+  .wrap{max-width:1240px;margin:0 auto;padding:0 20px}
+  header{background:var(--dark);color:var(--paper);padding:20px 0 22px}
+  .brandrow{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+  .wordmark{font-weight:700;font-size:21px;letter-spacing:-.6px;color:var(--paper)}
+  .wordmark i{font-style:normal;color:var(--apricot)}
+  .eyebrow{border:1.5px solid var(--apricot);color:var(--apricot);border-radius:20px;
+           padding:3px 12px;font-size:11px;font-weight:700;letter-spacing:1.6px}
+  header h1{margin:0;font-size:25px;font-weight:700}
+  header h1 i{font-style:normal;color:var(--apricot)}
+  header p{margin:4px 0 0;font-size:14px;color:rgba(245,239,228,.72)}
+  .meta{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+  .meta input{background:rgba(255,255,255,.1);border:1px solid rgba(245,239,228,.25);color:var(--paper);
+              border-radius:8px;padding:7px 11px;font:inherit;font-size:13.5px;min-width:170px}
+  .meta input::placeholder{color:rgba(245,239,228,.5)}
+  nav.tabs{position:sticky;top:0;z-index:20;background:rgba(245,239,228,.96);backdrop-filter:blur(8px);
+      border-bottom:1px solid var(--line)}
+  nav.tabs .wrap{display:flex;gap:4px;overflow-x:auto}
+  nav.tabs button{background:none;border:0;border-bottom:3px solid transparent;padding:13px 15px;
+             font:inherit;font-weight:700;font-size:14.5px;color:var(--soft);cursor:pointer;white-space:nowrap}
+  nav.tabs button[aria-selected=true]{color:var(--ink);border-bottom-color:var(--rust)}
+  main{padding:26px 0 70px}
+  section[hidden]{display:none}
+  h2{font-size:22px;margin:0 0 4px}
+  .sub{color:var(--soft);font-size:14px;margin:0 0 18px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 20px;margin-bottom:16px}
+  .grid{display:grid;gap:14px}
+  .g2{grid-template-columns:repeat(auto-fit,minmax(330px,1fr))}
+  .g4{grid-template-columns:repeat(auto-fit,minmax(190px,1fr))}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th{text-align:left;font-weight:700;color:var(--soft);font-size:12.5px;letter-spacing:.4px;
+     text-transform:uppercase;padding:8px 8px;border-bottom:2px solid var(--line)}
+  td{padding:7px 8px;border-bottom:1px solid var(--line);vertical-align:middle}
+  td.num,th.num{text-align:right}
+  input[type=text],input[type=number],select,textarea{font:inherit;font-size:14px;color:var(--ink);
+     background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:6px 9px;width:100%}
+  input:focus,select:focus,textarea:focus{outline:2px solid var(--rust);outline-offset:1px}
+  input[type=number]{text-align:right}
+  .sc{width:62px}
+  .kpi{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--rust);
+       border-radius:0 14px 14px 0;padding:14px 16px}
+  .kpi b{display:block;font-size:27px;font-weight:700;line-height:1.15;color:var(--rust)}
+  .kpi span{font-size:12.5px;color:var(--soft);font-weight:600}
+  .kpi em{display:block;font-style:normal;font-size:12px;font-weight:700;margin:3px 0 0}
+  .kpi em.sub{margin:3px 0 0;font-size:12px}
+  .pill{display:inline-block;background:var(--tint);color:var(--rust);font-weight:700;font-size:12px;
+        text-transform:uppercase;
+        letter-spacing:.8px;border-radius:20px;padding:3px 11px}
+  .ok{color:var(--good)} .mid{color:var(--warn)} .no{color:var(--bad)}
+  .kpi b.ok{color:var(--good)} .kpi b.mid{color:var(--warn)} .kpi b.no{color:var(--bad)}
+  .meter{height:9px;border-radius:6px;background:var(--paper);overflow:hidden;border:1px solid var(--line)}
+  .meter i{display:block;height:100%;background:var(--rust)}
+  .note{background:var(--tint);border-left:3px solid var(--rust);border-radius:0 12px 12px 0;
+        padding:12px 15px;font-size:13.5px;margin-bottom:16px}
+  .note b{color:var(--rust)}
+  .btn{background:var(--rust);color:#fff;border:0;border-radius:24px;padding:9px 18px;
+       font:inherit;font-weight:700;font-size:14px;cursor:pointer}
+  .btn.ghost{background:transparent;color:var(--ink);border:2px solid var(--ink)}
+  .btn:hover{opacity:.9}
+  .tools{display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin-bottom:18px}
+  .saved{font-size:13px;color:var(--soft)}
+  details summary{cursor:pointer;font-weight:700;padding:9px 0}
+  .scroll{overflow-x:auto}
+  footer{background:var(--dark);color:rgba(245,239,228,.72);padding:22px 0;font-size:13px}
+  footer a{color:var(--apricot);font-weight:700;text-decoration:none}
+  footer .wordmark{font-size:17px}
+  .dark{background:var(--dark);color:var(--paper);border-color:transparent}
+  .dark h3,.dark b{color:var(--paper)}
+  .dark .sub{color:rgba(245,239,228,.72)}
+  .dark .big{display:block;font-size:44px;font-weight:700;line-height:1.1;color:var(--apricot)}
+  .sim label{display:block;margin-bottom:15px}
+  .sim .lab{display:flex;justify-content:space-between;align-items:baseline;font-size:13.5px;
+            font-weight:700;margin-bottom:4px}
+  .sim .lab b{color:var(--rust);font-size:15px}
+  .sim input[type=range]{width:100%;accent-color:var(--rust);padding:0;background:none;border:0}
+  .sim .hint{font-size:12px;color:var(--soft);font-weight:500}
+  .verdict{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+  .boardgrid{grid-template-columns:minmax(280px,1fr) minmax(330px,1.6fr)}
+  @media(max-width:860px){.boardgrid{grid-template-columns:1fr}}
+  @media print{nav,.sitebar,.crumb,.tools,header .meta,.sim input[type=range]{display:none}
+               section[hidden]{display:block!important}
+               body{background:#fff}.card{break-inside:avoid}}
+
+  .sitebar{background:var(--paper);border-bottom:1px solid var(--line)}
+  .sitebar .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;
+                 padding-top:14px;padding-bottom:14px;flex-wrap:wrap}
+  .sitebar a.home{font-weight:700;font-size:21px;letter-spacing:-.6px;color:var(--ink);text-decoration:none}
+  .sitebar a.home span{color:var(--rust)}
+  .sitebar ul{display:flex;gap:18px;margin:0;padding:0;list-style:none;flex-wrap:wrap;align-items:center}
+  .sitebar ul a{color:var(--ink);text-decoration:none;font-weight:700;font-size:14.5px}
+  .sitebar ul a:hover{color:var(--rust)}
+  .sitebar ul a[aria-current=page]{color:var(--rust)}
+  .crumb{font-size:13.5px;font-weight:700;color:var(--soft);padding:16px 0 0}
+  .crumb a{color:var(--soft);text-decoration:none}
+  .crumb a:hover{color:var(--rust)}
+</style>
+</head>
+<body>
+<div class="sitebar"><div class="wrap">
+  <a class="home" href="/">xplore<span>ai</span></a>
+  <ul>
+    <li><a href="/#agents">Solutions</a></li>
+    <li><a href="/#stories">Success Stories</a></li>
+    <li><a href="/#subscribe">Newsletter</a></li>
+    <li><a href="/learn.html" aria-current="page">Learn AI</a></li>
+  </ul>
+</div></div>
+<div class="wrap"><p class="crumb"><a href="/learn.html">Learn AI</a> &nbsp;/&nbsp; <a href="/learn.html#tools">Tools</a> &nbsp;/&nbsp; AI adoption framework</p></div>
+<header>
+  <div class="wrap">
+    <div class="brandrow">
+      <span class="wordmark">xplore<i>ai</i></span>
+      <span class="eyebrow">AI ADOPTION FRAMEWORK</span>
+    </div>
+    <h1>Is the organisation ready to invest<i>?</i></h1>
+    <p>Score the four pillars, run the decision gate, model the money — and show a board what changes when the assumptions do. Saved in this browser, nothing is sent anywhere.</p>
+    <div class="meta">
+      <input id="m_org"  placeholder="Organisation">
+      <input id="m_by"   placeholder="Assessed by">
+      <input id="m_date" type="date">
+      <input id="m_next" placeholder="Next review">
+    </div>
+  </div>
+</header>
+<nav class="tabs"><div class="wrap" id="tabs"></div></nav>
+<main class="wrap">
+  <div class="tools">
+    <button class="btn" onclick="exportJSON()">Export JSON</button>
+    <button class="btn ghost" onclick="document.getElementById('imp').click()">Import</button>
+    <input type="file" id="imp" accept="application/json" hidden onchange="importJSON(this)">
+    <button class="btn ghost" onclick="window.print()">Print / PDF</button>
+    <button class="btn ghost" onclick="resetAll()">Reset to sheet values</button>
+    <span class="saved" id="saved"></span>
+  </div>
+  <section id="t-board"></section>
+  <section id="t-dash" hidden></section>
+  <section id="t-pillars" hidden></section>
+  <section id="t-gate" hidden></section>
+  <section id="t-fin" hidden></section>
+  <section id="t-uc" hidden></section>
+  <section id="t-ref" hidden></section>
+</main>
+<footer><div class="wrap">
+  <span class="wordmark">xplore<i>ai</i></span>
+  &nbsp; Built from the FDE AI Adoption Framework activity sheet. &nbsp;
+  <a href="https://xploreai.co.in">xploreai.co.in</a>
+</div></footer>
+
+<script>
+const SEED = {"pillars": [{"name": "People", "sheet": "People Assessment", "items": [{"area": "Skills & Competencies", "cur": 2, "tgt": 5, "act": "Upskilling programs, AI certification courses, role-based training", "own": "HR Lead"}, {"area": "Change Management Readiness", "cur": 2, "tgt": 4, "act": "Adoption incentive program, feedback loops, success story sharing", "own": "Change Manager"}, {"area": "Leadership Buy-in", "cur": 4, "tgt": 5, "act": "Executive alignment sessions, vision reinforcement, quarterly reviews", "own": "CIO/CDO"}, {"area": "Talent Attraction/Retention", "cur": 2, "tgt": 4, "act": "Competitive compensation, career pathing, innovation roles", "own": "HR Lead"}, {"area": "Cultural Mindset", "cur": 3, "tgt": 5, "act": "Innovation culture initiatives, hackathons, experimentation labs", "own": "CEO/COO"}, {"area": "Team Collaboration", "cur": 3, "tgt": 4, "act": "Cross-functional AI pods, shared OKRs, collaboration tools", "own": "Team Leads"}, {"area": "Adoption Incentive Structure", "cur": 0, "tgt": 5, "act": "Design & launch bonus/promotion criteria tied to AI adoption metrics", "own": "HR/Change Manager"}, {"area": "User Adoption Metrics (WAU/CSAT)", "cur": 1, "tgt": 5, "act": "Implement tracking for weekly active users, CSAT >4.2/5 target", "own": "Change Manager"}, {"area": "Center of Excellence Readiness", "cur": 0, "tgt": 5, "act": "Define CoE structure, appoint Chief AI Officer, budget allocation", "own": "CIO"}]}, {"name": "Process", "sheet": "Process Assessment", "items": [{"area": "Decision-Making Frameworks", "cur": 2, "tgt": 5, "act": "Define AI decision tree, governance model, approval workflows", "own": "COO"}, {"area": "Data Governance", "cur": 2, "tgt": 4, "act": "Data strategy, quality standards, ownership model, stewardship roles", "own": "CDO"}, {"area": "Risk Management", "cur": 3, "tgt": 5, "act": "Risk assessment, mitigation framework, risk register, escalation paths", "own": "Risk Officer"}, {"area": "Process Standardization", "cur": 2, "tgt": 4, "act": "Document core processes, create playbooks, standardized templates", "own": "Process Lead"}, {"area": "Governance Structure & RACI", "cur": 2, "tgt": 5, "act": "AI governance committee, clear RACI matrix, decision authority", "own": "CIO"}, {"area": "Vendor Management", "cur": 3, "tgt": 4, "act": "Partner ecosystem, SLA definitions, vendor risk assessments", "own": "Procurement"}, {"area": "Compliance & Ethics", "cur": 2, "tgt": 5, "act": "Ethics board, responsible AI framework, regulatory compliance plan", "own": "Legal/Risk"}, {"area": "Change Management Processes", "cur": 1, "tgt": 5, "act": "Adoption incentives, feedback loops, communication cadence, issue tracking", "own": "Change Manager"}, {"area": "Responsible AI Governance Gates", "cur": 0, "tgt": 5, "act": "Ethics review process, bias assessment, model card requirements, audit trails", "own": "Legal/Ethics"}]}, {"name": "Technology", "sheet": "Technology Assessment", "items": [{"area": "Infrastructure & Cloud", "cur": 2, "tgt": 5, "act": "Cloud migration, scalable infrastructure, multi-region capability", "own": "IT Lead"}, {"area": "Data & Analytics Capability", "cur": 2, "tgt": 5, "act": "Data warehouse, analytics platform, real-time streaming", "own": "Data Lead"}, {"area": "AI/ML Tools & Platforms", "cur": 1, "tgt": 5, "act": "ML platform selection, MLOps setup, model registry", "own": "Data Lead"}, {"area": "MLOps & Deployment Pipeline", "cur": 1, "tgt": 5, "act": "CI/CD for ML, automated testing, model versioning, rollback capability", "own": "DevOps Lead"}, {"area": "Integration & APIs", "cur": 2, "tgt": 4, "act": "API-first architecture, system integration, microservices", "own": "Tech Lead"}, {"area": "Security & Data Privacy", "cur": 3, "tgt": 5, "act": "Security hardening, encryption, GDPR, access controls, audit logs", "own": "Security Lead"}, {"area": "Monitoring & Observability", "cur": 1, "tgt": 4, "act": "Logging, monitoring, alerting, drift detection, performance tracking", "own": "DevOps Lead"}, {"area": "Model Monitoring & Drift Detection", "cur": 0, "tgt": 5, "act": "Automated drift detection, performance degradation alerts, retraining triggers", "own": "Data Lead"}, {"area": "Vendor Technology Stack", "cur": 2, "tgt": 4, "act": "Tool evaluation, licensing, partnerships, multi-vendor strategy", "own": "Procurement"}]}, {"name": "Responsible AI", "sheet": "Responsible AI", "items": [{"area": "Bias Detection & Fairness Framework", "cur": 0, "tgt": 5, "act": "Fairness testing methodology, bias assessment tool, remediation process", "own": "Data Lead"}, {"area": "Model Explainability (XAI)", "cur": 1, "tgt": 5, "act": "LIME/SHAP implementation, model card standards, decision transparency", "own": "Data Lead"}, {"area": "Ethical AI Governance Board", "cur": 0, "tgt": 5, "act": "Board charter, ethics principles, quarterly reviews, authority defined", "own": "Legal/CEO"}, {"area": "Hallucination & Drift Monitoring", "cur": 0, "tgt": 5, "act": "Automated drift detection, output validation, retraining triggers", "own": "DevOps/Data Lead"}, {"area": "Regulatory Compliance Framework", "cur": 2, "tgt": 5, "act": "EU AI Act mapping, India AI rules, industry-specific (BFSI/Healthcare)", "own": "Legal/Risk"}, {"area": "Privacy & Data Protection", "cur": 3, "tgt": 5, "act": "GDPR/DPA compliance, consent management, data minimization, anonymization", "own": "Legal/Security"}, {"area": "Model Documentation & Card Standards", "cur": 0, "tgt": 5, "act": "Model card template, lineage tracking, training data documentation", "own": "Data Lead"}, {"area": "Third-Party Vendor Risk Assessment", "cur": 1, "tgt": 5, "act": "Vendor due diligence, contract review, responsible AI commitments", "own": "Procurement"}, {"area": "Audit Trail & Accountability", "cur": 1, "tgt": 5, "act": "Model versioning, decision logging, accountability matrix, incident response", "own": "Legal/Risk"}]}], "decision": [{"name": "STRATEGIC ALIGNMENT", "pct": 20, "questions": [{"q": "Does the AI initiative align with business goals?", "crit": "Strong alignment=5, Moderate=3, Low=1", "w": 20}]}, {"name": "PEOPLE READINESS", "pct": 15, "questions": [{"q": "Do we have skills and change management capability?", "crit": "Full capability=5, Partial=3, None=1", "w": 15}, {"q": "Leadership support and buy-in present?", "crit": "Strong support=5, Moderate=3, Low=1", "w": 15}]}, {"name": "PROCESS MATURITY", "pct": 20, "questions": [{"q": "Are relevant processes documented and optimized?", "crit": "Documented & optimized=5, Partial=3, Ad-hoc=1", "w": 20}, {"q": "Data governance and quality standards exist?", "crit": "Comprehensive=5, Partial=3, None=1", "w": 15}, {"q": "Do we have risk & compliance framework?", "crit": "Complete framework=5, Partial=3, None=1", "w": 10}]}, {"name": "TECHNOLOGY INFRASTRUCTURE", "pct": 25, "questions": [{"q": "Is cloud infrastructure and scalability available?", "crit": "Fully ready=5, Partial=3, Not ready=1", "w": 15}, {"q": "Do we have data & analytics platform?", "crit": "Advanced platform=5, Basic=3, None=1", "w": 20}, {"q": "ML tools and MLOps capability in place?", "crit": "Full capability=5, Partial=3, None=1", "w": 15}]}, {"name": "RESPONSIBLE AI READINESS", "pct": 15, "questions": [{"q": "Bias detection & fairness assessment in place?", "crit": "Comprehensive=5, Basic=3, None=1", "w": 10}, {"q": "Ethics governance framework established?", "crit": "Formal board + processes=5, Informal=3, None=1", "w": 15}, {"q": "Privacy & compliance risk mitigated?", "crit": "Full assessment done=5, Partial=3, None=1", "w": 10}]}, {"name": "BUSINESS CASE", "pct": 20, "questions": [{"q": "Is there clear ROI and business value defined?", "crit": "Clear ROI >2x=5, >1.5x=3, <1.5x=1", "w": 15}, {"q": "Are resources and budget allocated?", "crit": "Fully funded=5, Partial=3, Not allocated=1", "w": 15}, {"q": "Is there vendor/partner ecosystem support?", "crit": "Strong partners=5, Few partners=3, None=1", "w": 10}]}, {"name": "CHANGE MANAGEMENT READINESS", "pct": 10, "questions": [{"q": "Adoption incentive program designed?", "crit": "Yes, linked to bonus/promotion=5, Basic=3, No=1", "w": 10}, {"q": "User adoption tracking in place (WAU/CSAT)?", "crit": "Comprehensive dashboard=5, Manual tracking=3, None=1", "w": 10}]}], "usecases": [{"id": "UC-001", "desc": "Customer Service Chatbot", "dept": "Customer Service", "people": 3, "process": 3, "tech": 2, "risk": "Medium", "roi": "2.5x", "prisk": "Medium", "sheetPrio": "High", "status": "Ready to Start"}, {"id": "UC-002", "desc": "Predictive Analytics - Demand", "dept": "Operations", "people": 2, "process": 2, "tech": 1, "risk": "Low", "roi": "3.0x", "prisk": "Medium", "sheetPrio": "Critical", "status": "Requires Foundation"}, {"id": "UC-003", "desc": "Fraud Detection System", "dept": "Finance", "people": 3, "process": 3, "tech": 2, "risk": "High", "roi": "4.0x", "prisk": "Low", "sheetPrio": "Critical", "status": "Ready to Start"}, {"id": "UC-004", "desc": "HR Talent Analytics", "dept": "HR", "people": 2, "process": 1, "tech": 1, "risk": "High (Privacy/Bias)", "roi": "1.8x", "prisk": "High", "sheetPrio": "Medium", "status": "Requires Foundation"}, {"id": "UC-005", "desc": "Sales Forecasting", "dept": "Sales", "people": 3, "process": 2, "tech": 2, "risk": "Low", "roi": "2.0x", "prisk": "Medium", "sheetPrio": "High", "status": "Ready to Start"}, {"id": "UC-006", "desc": "Supply Chain Optimization", "dept": "Supply Chain", "people": 2, "process": 1, "tech": 1, "risk": "Medium", "roi": "3.5x", "prisk": "High", "sheetPrio": "Critical", "status": "Requires Foundation"}, {"id": "UC-007", "desc": "Document Processing & RPA", "dept": "Operations", "people": 2, "process": 2, "tech": 2, "risk": "Low", "roi": "2.2x", "prisk": "Low", "sheetPrio": "Medium", "status": "Ready to Start"}, {"id": "UC-008", "desc": "Product Recommendation Engine", "dept": "Marketing", "people": 2, "process": 2, "tech": 1, "risk": "High (Fairness)", "roi": "2.8x", "prisk": "Medium", "sheetPrio": "High", "status": "Requires Foundation"}, {"id": "UC-009", "desc": "Pricing Optimization", "dept": "Revenue", "people": 2, "process": 2, "tech": 1, "risk": "Medium", "roi": "3.2x", "prisk": "Medium", "sheetPrio": "High", "status": "Requires Foundation"}, {"id": "UC-010", "desc": "Maintenance Prediction", "dept": "Operations", "people": 1, "process": 1, "tech": 1, "risk": "Low", "roi": "2.5x", "prisk": "High", "sheetPrio": "Low", "status": "Requires Foundation"}, {"id": "UC-011", "desc": "Employee Experience Analytics", "dept": "HR", "people": 2, "process": 1, "tech": 1, "risk": "High (Privacy/Bias)", "roi": "1.5x", "prisk": "High", "sheetPrio": "Low", "status": "Requires Foundation"}, {"id": "UC-012", "desc": "Market Intelligence & News Analysis", "dept": "Strategy", "people": 2, "process": 2, "tech": 2, "risk": "Medium", "roi": "1.8x", "prisk": "Medium", "sheetPrio": "Medium", "status": "Ready to Start"}], "finance": [{"name": "GenAI Process Automation", "impl": 0, "r1": 0, "s1": 0, "r2": 0, "s2": 0, "opex": 0, "notes": ""}, {"name": "Predictive Analytics", "impl": 0, "r1": 0, "s1": 0, "r2": 0, "s2": 0, "opex": 0, "notes": ""}, {"name": "Customer AI Assistant", "impl": 0, "r1": 0, "s1": 0, "r2": 0, "s2": 0, "opex": 0, "notes": ""}, {"name": "Document Intelligence", "impl": 0, "r1": 0, "s1": 0, "r2": 0, "s2": 0, "opex": 0, "notes": ""}, {"name": "Code Generation", "impl": 0, "r1": 0, "s1": 0, "r2": 0, "s2": 0, "opex": 0, "notes": ""}, {"name": "Risk Assessment AI", "impl": 0, "r1": 0, "s1": 0, "r2": 0, "s2": 0, "opex": 0, "notes": ""}], "reference": [], "bands": [{"lo": 80, "label": "READY FOR IMMEDIATE IMPLEMENTATION", "action": "Green Light - Proceed full speed"}, {"lo": 65, "label": "READY WITH MINOR PREPARATORY STEPS", "action": "Yellow Light - Address 2-3 gaps, then proceed"}, {"lo": 50, "label": "REQUIRES SIGNIFICANT PREPARATION", "action": "Red Light - Delay 4-6 weeks; address major gaps"}, {"lo": 0, "label": "NOT READY - BUILD FOUNDATION FIRST", "action": "Stop - Halt; redesign or defer 6+ months"}], "financeTargets": [["Total Investment Required", "$1-5M"], ["Total 2-Year Benefits", ">$3M"], ["Total Net Benefit", ">$1M"], ["ROI %", ">100%"], ["Benefit Cost Ratio", ">2.0"], ["Payback Period (Months)", "<12 months"]]};
+const KEY = 'fde-ai-adoption-v1';
+const clone = o => JSON.parse(JSON.stringify(o));
+const EXAMPLE = [
+  ['GenAI Process Automation', 300000, 150000, 250000, 300000, 250000, 60000],
+  ['Predictive Analytics',     220000, 100000, 120000, 200000, 130000, 45000],
+  ['Customer AI Assistant',    180000,  90000, 110000, 150000, 100000, 40000],
+  ['Document Intelligence',    130000,  40000,  90000,  60000,  70000, 25000],
+  ['Code Generation',          100000,  20000,  60000,  40000,  50000, 18000],
+  ['Risk Assessment AI',        70000,  20000,  40000,  30000,  30000, 12000],
+].map(([name,impl,r1,s1,r2,s2,opex]) => ({name,impl,r1,s1,r2,s2,opex,notes:'example figures'}));
+const SIM0 = { invest:1, realise:1, ramp:1, opexm:1, gate:0 };
+const esc = s => String(s==null?'':s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const num = v => { const n = parseFloat(v); return isFinite(n) ? n : 0; };
+const fmt = (n,d=0) => n.toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});
+const money = n => '$' + fmt(n);
+
+// ── state ───────────────────────────────────────────────────────────────────
+let S = load();
+function blank() {
+  const s = { meta:{org:'',by:'',date:'',next:''},
+    pillars: clone(SEED.pillars),
+    gate: SEED.decision.map(sec => ({ name:sec.name, pct:sec.pct,
+            questions: sec.questions.map(q => ({...q, score:0})) })),
+    fin: clone(SEED.finance),
+    uc: SEED.usecases.map(u => ({...u, budget:0 })),
+    sim: clone(SIM0) };
+  return s;
+}
+function load() {
+  try { const r = localStorage.getItem(KEY);
+        if (r) { const s = JSON.parse(r); s.sim = {...clone(SIM0), ...(s.sim||{})}; return s; } } catch(e){}
+  return blank();
+}
+let saveT;
+function save() {
+  clearTimeout(saveT);
+  saveT = setTimeout(() => {
+    try { localStorage.setItem(KEY, JSON.stringify(S));
+          document.getElementById('saved').textContent = 'saved ' + new Date().toLocaleTimeString();
+    } catch(e) { document.getElementById('saved').textContent = 'could not save in this browser'; }
+  }, 250);
+}
+
+// ── maths ───────────────────────────────────────────────────────────────────
+function pillarScore(p) {
+  const n = p.items.length || 1;
+  const cur = p.items.reduce((a,i) => a + num(i.cur), 0) / n;
+  const tgt = p.items.reduce((a,i) => a + num(i.tgt), 0) / n;
+  return { cur, tgt, gap: tgt - cur };
+}
+function overall() {
+  const sc = S.pillars.map(pillarScore);
+  return { pillars: sc, cur: sc.reduce((a,s)=>a+s.cur,0)/sc.length, tgt: sc.reduce((a,s)=>a+s.tgt,0)/sc.length };
+}
+// The sheet's weights add to 240 (questions) and 125 (section headers) against a 0-100 scale,
+// so they are normalised here: sections to 100%, questions within their own section.
+function gateScore() {
+  const secTotal = S.gate.reduce((a,s) => a + num(s.pct), 0) || 1;
+  const rows = S.gate.map(sec => {
+    const qTotal = sec.questions.reduce((a,q) => a + num(q.w), 0) || 1;
+    const inner = sec.questions.reduce((a,q) => a + (num(q.w)/qTotal) * (num(q.score)/5), 0);
+    const weight = num(sec.pct) / secTotal;
+    return { name: sec.name, weight, inner, points: weight * inner * 100 };
+  });
+  return { rows, total: rows.reduce((a,r) => a + r.points, 0), secTotal };
+}
+function band(score) { return (SEED.bands.find(b => score >= b.lo) || SEED.bands[SEED.bands.length-1]); }
+// Corrected finance maths. The workbook had Total Benefits = E+F+G+J, which drops Year 1,
+// counts operating cost as a benefit and includes the Notes column; and Net = H-B-G,
+// which subtracts operating cost twice.
+function finance() {
+  const t = { impl:0, r1:0, s1:0, r2:0, s2:0, opex:0 };
+  S.fin.forEach(f => { t.impl+=num(f.impl); t.r1+=num(f.r1); t.s1+=num(f.s1);
+                       t.r2+=num(f.r2); t.s2+=num(f.s2); t.opex+=num(f.opex); });
+  const benefits = t.r1 + t.s1 + t.r2 + t.s2;
+  const net = benefits - t.impl - t.opex;
+  const monthly = (benefits - t.opex) / 24;
+  return { ...t, benefits, net,
+           roi: t.impl ? net / t.impl * 100 : null,
+           bcr: t.impl ? benefits / t.impl : null,
+           payback: monthly > 0 ? t.impl / monthly : null };
+}
+// Board simulator. The levers scale the figures entered on the Financials tab;
+// at every lever on its default the result is exactly that tab's result.
+// Ramp-up is modelled honestly: benefits reach full run-rate linearly over the
+// ramp, so a slow start genuinely costs two-year benefit rather than just delaying it.
+function sim() {
+  const base = finance(), v = S.sim;
+  const impl = base.impl * v.invest, opex2 = base.opex * v.opexm;
+  const full = (base.benefits * v.realise) / 24, opexM = opex2 / 24;
+  const ramp = Math.max(0.01, v.ramp);
+  const cum = []; let run = 0, benefits = 0;
+  for (let m = 1; m <= 24; m++) {
+    const b = full * Math.min(1, m / ramp);
+    benefits += b; run += b - opexM; cum.push(run - impl);
+  }
+  let payback = null;
+  for (let m = 0; m < 24; m++) if (cum[m] >= 0) {
+    const prev = m ? cum[m-1] : -impl;
+    payback = m + (cum[m] === prev ? 1 : (0 - prev) / (cum[m] - prev));
+    break;
+  }
+  const net = cum[23];
+  const gate = Math.max(0, Math.min(100, gateScore().total + v.gate));
+  return { impl, opex: opex2, benefits, net, cum, payback, gate, band: band(gate),
+           roi: impl ? net / impl * 100 : null, bcr: impl ? benefits / impl : null };
+}
+
+const riskPenalty = r => /high/i.test(r) ? 2 : /medium/i.test(r) ? 1 : 0;
+const roiMult = r => { const m = String(r).match(/([\d.]+)/); return m ? parseFloat(m[1]) : 0; };
+function ucScore(u) {
+  const readiness = (num(u.people) + num(u.process) + num(u.tech)) / 3;      // 0-5
+  const roi = roiMult(u.roi);
+  const pen = riskPenalty(u.risk) + riskPenalty(u.prisk);                    // 0-4
+  // Value blends return against risk. Separately, readiness to begin uses the rule the
+  // workbook itself follows: its Status column is exactly "process >= 2 and tech >= 2"
+  // on all twelve rows, so the tool agrees with the sheet and keeps agreeing as scores change.
+  const value = Math.max(0, Math.min(100, Math.min(roi,5)/5*70 + (4-pen)/4*30));
+  const ready = num(u.process) >= 2 && num(u.tech) >= 2;
+  const tier = !ready ? 'Needs foundation' : value >= 60 ? 'Start now' : 'Schedule';
+  return { readiness, roi, pen, value, ready, tier, score: value };
+}
+
+// ── tiny SVG charts ─────────────────────────────────────────────────────────
+function radar(sc) {
+  const R = 98, cx = 190, cy = 126, n = sc.length;
+  const pt = (i, v) => { const a = -Math.PI/2 + i*2*Math.PI/n, r = R*v/5;
+                         return [cx + r*Math.cos(a), cy + r*Math.sin(a)]; };
+  const poly = vals => vals.map((v,i) => pt(i,v).join(',')).join(' ');
+  let g = '';
+  for (let k = 1; k <= 5; k++) g += `<polygon points="${poly(sc.map(()=>k))}" fill="none" stroke="${k===5?'#B9AE9D':'#E4DACA'}" stroke-width="1"/>`;
+  sc.forEach((s,i) => { const p = pt(i,5); g += `<line x1="${cx}" y1="${cy}" x2="${p[0]}" y2="${p[1]}" stroke="#E4DACA"/>`; });
+  g += `<polygon points="${poly(sc.map(s=>s.tgt))}" fill="rgba(74,66,56,.10)" stroke="#4A4238" stroke-width="2" stroke-dasharray="5 4"/>`;
+  g += `<polygon points="${poly(sc.map(s=>s.cur))}" fill="rgba(226,87,27,.22)" stroke="#E2571B" stroke-width="2.5"/>`;
+  sc.forEach((s,i) => { const p = pt(i,5.75);
+    g += `<text x="${p[0]}" y="${p[1]}" text-anchor="middle" dominant-baseline="middle" font-size="12" font-weight="700" fill="#4A4238">${esc(s.name)}</text>`; });
+  return `<svg viewBox="0 0 380 262" width="100%" style="max-width:400px" role="img" aria-label="Readiness radar, current versus target">${g}</svg>`;
+}
+function gauge(score) {
+  const cx=150, cy=132, R=104, a = Math.PI * (1 - Math.min(100,Math.max(0,score))/100);
+  const arc = (from,to,col,w) => { const p = t => [cx + R*Math.cos(Math.PI*(1-t)), cy - R*Math.sin(Math.PI*(1-t))];
+    const [x1,y1]=p(from), [x2,y2]=p(to);
+    return `<path d="M${x1} ${y1} A${R} ${R} 0 0 1 ${x2} ${y2}" fill="none" stroke="${col}" stroke-width="${w}" stroke-linecap="butt"/>`; };
+  let g = arc(0,.5,'#D9CFBE',16) + arc(.5,.65,'#E6C79A',16) + arc(.65,.8,'#E2A06B',16) + arc(.8,1,'#E2571B',16);
+  const x = cx + (R-26)*Math.cos(a), y = cy - (R-26)*Math.sin(a);
+  g += `<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="#2B2620" stroke-width="4" stroke-linecap="round"/>`;
+  g += `<circle cx="${cx}" cy="${cy}" r="7" fill="#2B2620"/>`;
+  g += `<text x="${cx}" y="${cy+46}" text-anchor="middle" font-size="38" font-weight="700" fill="#4A4238">${fmt(score,1)}</text>`;
+  g += `<text x="${cx}" y="${cy+66}" text-anchor="middle" font-size="11.5" font-weight="700" fill="#6E665C">of 100</text>`;
+  g += `<text x="40" y="152" font-size="11.5" fill="#6E665C">0</text><text x="252" y="152" font-size="11.5" fill="#6E665C">100</text>`;
+  return `<svg viewBox="0 0 300 208" width="100%" style="max-width:320px" role="img" aria-label="Adoption readiness score ${fmt(score,1)} of 100">${g}</svg>`;
+}
+function bars(rows, unit) {
+  const max = Math.max(1, ...rows.map(r => Math.abs(r.v)));
+  return rows.map(r => {
+    const w = Math.abs(r.v)/max*100, neg = r.v < 0;
+    return `<div style="margin-bottom:9px">
+      <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:3px">
+        <span>${esc(r.k)}</span><b style="color:${neg?'#A63D2F':'#4A4238'}">${unit==='$'?money(r.v):fmt(r.v,2)}</b></div>
+      <div class="meter"><i style="width:${w}%;background:${neg?'#A63D2F':'var(--rust)'}"></i></div></div>`;
+  }).join('');
+}
+function cashCurve(r) {
+  const W=620,H=300,L=74,T=18,B=46, iw=W-L-18, ih=H-T-B;
+  const lo = Math.min(-r.impl, ...r.cum), hi = Math.max(0, ...r.cum), span = (hi-lo)||1;
+  const X = m => L + (m/24)*iw, Y = v => T + (hi-v)/span*ih;
+  const short = v => (Math.abs(v)>=1e6? (v/1e6).toFixed(1)+'M' : Math.abs(v)>=1e3? Math.round(v/1e3)+'k' : Math.round(v));
+  let g = `<rect x="${L}" y="${T}" width="${iw}" height="${ih}" fill="#FFFDF8" stroke="#E4DACA"/>`;
+  for (let m=6;m<=24;m+=6) g += `<line x1="${X(m)}" y1="${T}" x2="${X(m)}" y2="${T+ih}" stroke="#EFE6D7"/>`
+    + `<text x="${X(m)}" y="${T+ih+18}" text-anchor="middle" font-size="11.5" font-weight="700" fill="#6E665C">m${m}</text>`;
+  [hi, 0, lo].forEach(v => { g += `<line x1="${L}" y1="${Y(v)}" x2="${L+iw}" y2="${Y(v)}" stroke="${v===0?'#4A4238':'#EFE6D7'}" stroke-width="${v===0?1.5:1}"/>`
+    + `<text x="${L-8}" y="${Y(v)+4}" text-anchor="end" font-size="11.5" fill="#6E665C">${v<0?'-$':'$'}${short(v)}</text>`; });
+  const pts = [[X(0),Y(-r.impl)], ...r.cum.map((v,i)=>[X(i+1),Y(v)])];
+  const line = pts.map(p=>p.join(',')).join(' ');
+  g += `<polygon points="${X(0)},${Y(0)} ${line} ${X(24)},${Y(0)}" fill="rgba(226,87,27,.13)"/>`;
+  g += `<polyline points="${line}" fill="none" stroke="#E2571B" stroke-width="3" stroke-linejoin="round"/>`;
+  if (r.payback !== null && r.payback <= 24) {
+    const px = X(r.payback);
+    g += `<line x1="${px}" y1="${T}" x2="${px}" y2="${T+ih}" stroke="#2E7D4F" stroke-width="2" stroke-dasharray="5 4"/>`
+      + `<circle cx="${px}" cy="${Y(0)}" r="6" fill="#2E7D4F"/>`
+      + `<text x="${Math.min(px+10, W-150)}" y="${T+16}" font-size="12.5" font-weight="700" fill="#2E7D4F">breaks even · month ${fmt(r.payback,1)}</text>`;
+  } else {
+    g += `<text x="${L+12}" y="${T+16}" font-size="12.5" font-weight="700" fill="#A63D2F">never breaks even inside 24 months</text>`;
+  }
+  g += `<text x="${L}" y="${H-8}" font-size="11.5" font-weight="700" fill="#6E665C">cumulative cash position, month 0 to 24</text>`;
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Cumulative cash position over 24 months; ${r.payback!==null&&r.payback<=24?'breaks even in month '+fmt(r.payback,1):'does not break even within 24 months'}">${g}</svg>`;
+}
+
+function scatter(items) {
+  const W=560,H=330,pad=48;
+  const X = v => pad + (v/5)*(W-pad-20), Y = v => H-pad - (Math.min(v,5)/5)*(H-pad-24);
+  let g = `<rect x="${pad}" y="24" width="${W-pad-20}" height="${H-pad-24}" fill="#FFFDF8" stroke="#E4DACA"/>`;
+  g += `<line x1="${X(2.5)}" y1="24" x2="${X(2.5)}" y2="${H-pad}" stroke="#E4DACA"/>`;
+  g += `<line x1="${pad}" y1="${Y(2.5)}" x2="${W-20}" y2="${Y(2.5)}" stroke="#E4DACA"/>`;
+  g += `<text x="${W-26}" y="${H-pad+26}" text-anchor="end" font-size="12" font-weight="700" fill="#6E665C">readiness →</text>`;
+  g += `<text x="${pad-10}" y="34" text-anchor="end" font-size="12" font-weight="700" fill="#6E665C" transform="rotate(-90 ${pad-10} 34)">ROI ×</text>`;
+  items.forEach(u => { const s = ucScore(u);
+    const col = s.tier==='Start now' ? '#E2571B' : s.tier==='Schedule' ? '#B8860B' : '#9A9086';
+    g += `<circle cx="${X(s.readiness)}" cy="${Y(s.roi)}" r="${9 + s.score/14}" fill="${col}" fill-opacity=".75" stroke="#FFFDF8" stroke-width="2"><title>${esc(u.id)} ${esc(u.desc)} — ${s.tier}</title></circle>`;
+    g += `<text x="${X(s.readiness)}" y="${Y(s.roi)-16}" text-anchor="middle" font-size="10.5" font-weight="700" fill="#4A4238">${esc(u.id)}</text>`; });
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Use cases plotted by readiness and ROI">${g}</svg>`;
+}
+
+// ── views ───────────────────────────────────────────────────────────────────
+const TABS = [['board','Board view'],['dash','Dashboard'],['pillars','Pillars'],['gate','Decision gate'],
+              ['fin','Financials'],['uc','Use cases'],['ref','Reference']]
+             .filter(([id]) => id !== 'ref' || SEED.reference.length);
+function drawTabs(active) {
+  document.getElementById('tabs').innerHTML = TABS.map(([id,label]) =>
+    `<button role="tab" aria-selected="${id===active}" onclick="show('${id}')">${label}</button>`).join('');
+  TABS.forEach(([id]) => document.getElementById('t-'+id).hidden = id !== active);
+}
+function show(id) { if (!TABS.some(t => t[0] === id)) id = TABS[0][0];
+                    drawTabs(id); render(); location.hash = id; }
+
+const LEVERS = [
+  ['invest',  'Investment',        0.5, 2,   0.05, v => '\u00d7'+v.toFixed(2), 'Scales the implementation cost entered on Financials.'],
+  ['realise', 'Benefits realised', 0,   1.2, 0.05, v => Math.round(v*100)+'%', 'How much of the forecast benefit the business actually captures.'],
+  ['ramp',    'Ramp-up',           1,   18,  1,    v => v===1?'immediate':v+' mo', 'Months to reach full run-rate. A slow start costs benefit, it does not only delay it.'],
+  ['opexm',   'Operating cost',    0.5, 2,   0.05, v => '\u00d7'+v.toFixed(2), 'Scales the two-year running cost.'],
+  ['gate',    'Readiness',         -25, 25,  1,    v => (v>0?'+':'')+v+' pts',  'Shifts the decision-gate score to test a weaker or stronger starting position.'],
+];
+function vBoard() {
+  return `<h2>Board view</h2>
+  <p class="sub">One screen for the decision. Move a lever, watch the case change. Every lever at its default reproduces the Financials and Decision gate tabs exactly.</p>
+  <div class="grid boardgrid">
+    <div class="card sim"><h3 style="margin:0 0 14px">Assumptions</h3>
+      ${LEVERS.map(([k,label,lo,hi,step,fm,hint]) => `
+        <label><span class="lab">${label} <b id="lv_${k}">${fm(S.sim[k])}</b></span>
+          <input type="range" min="${lo}" max="${hi}" step="${step}" value="${S.sim[k]}"
+                 oninput="setSim('${k}',this.value)" aria-label="${label}">
+          <span class="hint">${hint}</span></label>`).join('')}
+      <button class="btn ghost" style="margin-top:4px" onclick="resetSim()">Reset assumptions</button>
+    </div>
+    <div id="boardout"></div>
+  </div>`;
+}
+function boardOut() {
+  const r = sim(), f = finance();
+  if (!f.impl && !f.benefits) return `<div class="card">
+    <h3 style="margin:0 0 6px">No figures yet</h3>
+    <p class="sub">The workbook ships its Revenue vs Cost rows blank, so there is nothing for the levers to act on.
+       Enter your own on the <b>Financials</b> tab, or drop in a worked set to see how the simulator behaves.</p>
+    <button class="btn" onclick="loadExample()">Load example figures</button>
+    <button class="btn ghost" onclick="show('fin')">Go to Financials</button></div>`;
+  const delta = (a,b2,d=0,pc='') => { const x = a-b2; if (Math.abs(x) < (d?0.05:0.5)) return '<em class="sub">as entered</em>';
+    return `<em class="${x>0?'ok':'no'}">${x>0?'+':'\u2212'}${pc==='$'?money(Math.abs(x)):fmt(Math.abs(x),d)+pc} vs entered</em>`; };
+  const k = (v,l,cls,extra) => `<div class="kpi"><b class="${cls||''}">${v}</b><span>${l}</span>${extra||''}</div>`;
+  return `<div class="card dark" style="margin-bottom:14px">
+    <span class="sub" style="font-weight:700;letter-spacing:1.4px;font-size:11px">THE CASE, AS SET</span>
+    <span class="big">${r.net<0?'\u2212':''}${money(Math.abs(r.net))}</span>
+    <p class="sub" style="margin:2px 0 0">net benefit over two years, after ${money(r.impl)} to build and ${money(r.opex)} to run</p></div>
+  <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr));margin-bottom:14px">
+    ${k(r.roi===null?'\u2014':fmt(r.roi,0)+'%','Return on investment', r.roi>=100?'ok':'no', delta(r.roi, f.roi, 0, '%'))}
+    ${k(r.payback===null?'>24':fmt(r.payback,1),'Payback (months)', r.payback!==null&&r.payback<12?'ok':'no',
+        r.payback===null?'<em class="no">outside the window</em>':'<em class="sub">target under 12</em>')}
+    ${k(r.bcr===null?'\u2014':fmt(r.bcr,2),'Benefit\u2013cost ratio', r.bcr>=2?'ok':'no','<em class="sub">target above 2.0</em>')}
+    ${k(fmt(r.gate,0),'Readiness /100', r.gate>=80?'ok':r.gate>=65?'mid':'no', `<em class="sub">${esc(r.band.label)}</em>`)}
+  </div>
+  <div class="card"><h3 style="margin:0 0 2px">When the money comes back</h3>
+    <p class="sub" style="margin-bottom:6px">Cash out on day one, benefit building as adoption ramps.</p>
+    ${cashCurve(r)}</div>
+  <div class="card verdict" style="border-left:3px solid var(--rust)">
+    <span class="pill">${esc(r.band.label)}</span>
+    <span style="flex:1;min-width:220px">${esc(r.band.action)}</span>
+    <b class="${r.roi>=100 && r.payback!==null && r.payback<12 && r.gate>=65 ? 'ok':'no'}">
+      ${r.roi>=100 && r.payback!==null && r.payback<12 && r.gate>=65
+        ? 'Clears every financial and readiness test.'
+        : 'Does not clear every test \u2014 see the red figures above.'}</b></div>`;
+}
+function paintBoard() {
+  const out = document.getElementById('boardout'); if (!out) return;
+  out.innerHTML = boardOut();
+  LEVERS.forEach(([k,,,,,fm]) => { const el = document.getElementById('lv_'+k); if (el) el.textContent = fm(S.sim[k]); });
+}
+function loadExample() { S.fin = clone(EXAMPLE); save(); render(); }
+function setSim(k, v) { S.sim[k] = num(v); save(); paintBoard(); }
+function resetSim() { S.sim = clone(SIM0); save(); render(); }
+
+function vDash() {
+  const o = overall(), g = gateScore(), f = finance(), b = band(g.total);
+  const gaps = [];
+  S.pillars.forEach(p => p.items.forEach(i => gaps.push({ k: p.name+' · '+i.area, v: num(i.tgt)-num(i.cur) })));
+  gaps.sort((a,b2) => b2.v - a.v);
+  const kpi = (v,l,cls,extra) => `<div class="kpi"><b class="${cls||''}">${v}</b><span>${l}</span>${extra?`<em class="${cls||''}">${extra}</em>`:''}</div>`;
+  return `<h2>Dashboard</h2><p class="sub">Everything here is computed live from the tabs. Nothing is copied from the workbook's stored totals.</p>
+  <div class="grid g4" style="margin-bottom:16px">
+    ${kpi(fmt(o.cur,2)+' <small style="font-size:15px;color:#6E665C">/5</small>','Overall readiness now')}
+    ${kpi(fmt(o.tgt-o.cur,2),'Average gap to target', o.tgt-o.cur>2?'no':'mid')}
+    ${kpi(fmt(g.total,1),'Decision gate score /100', g.total>=80?'ok':g.total>=65?'mid':'no', esc(b.label))}
+    ${kpi(f.roi===null?'—':fmt(f.roi,0)+'%','Programme ROI', f.roi===null?'':f.roi>=100?'ok':'no', f.roi===null?'enter financials':'target >100%')}
+  </div>
+  <div class="grid g2">
+    <div class="card"><h3 style="margin:0 0 6px">Four pillars</h3>
+      <p class="sub" style="margin-bottom:6px">Solid = today, dashed = target.</p>
+      ${radar(o.pillars.map((s,i) => ({...s, name: S.pillars[i].name})))}</div>
+    <div class="card"><h3 style="margin:0 0 10px">Biggest gaps</h3>${bars(gaps.slice(0,8),'')}</div>
+  </div>
+  <div class="card"><h3 style="margin:0 0 10px">Decision gate verdict</h3>
+    <div class="grid g2" style="align-items:center">
+      <div>${gauge(g.total)}</div>
+      <div><span class="pill">${esc(b.label)}</span>
+        <p style="margin:10px 0 0">${esc(b.action)}</p>
+        <p class="sub" style="margin-top:10px">${g.rows.map(r=>`${esc(r.name)} <b>${fmt(r.points,1)}</b>`).join(' · ')}</p></div>
+    </div></div>`;
+}
+
+function vPillars() {
+  return `<h2>Pillar assessments</h2>
+  <p class="sub">Score each area 0–5 today and at target. The gap and the pillar score update as you type.</p>
+  <div class="note"><b>Note.</b> The workbook's printed pillar scores don't match its own rows — People prints 2.11 where its nine items average 1.89, and 4.56 against a target average of 4.67. These are recomputed from the rows.</div>
+  ${S.pillars.map((p,pi) => { const s = pillarScore(p); return `
+    <div class="card"><div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px">
+      <h3 style="margin:0">${esc(p.name)}</h3>
+      <div><span class="pill">now ${fmt(s.cur,2)}</span> <span class="pill">target ${fmt(s.tgt,2)}</span>
+           <span class="pill" style="background:#F0E6D4;color:#4A4238">gap ${fmt(s.gap,2)}</span></div></div>
+    <div class="scroll"><table><thead><tr><th>Assessment area</th><th class="num">Now</th><th class="num">Target</th>
+      <th class="num">Gap</th><th>Actions required</th><th>Owner</th></tr></thead><tbody>
+      ${p.items.map((it,ii) => `<tr>
+        <td>${esc(it.area)}</td>
+        <td class="num"><input class="sc" type="number" min="0" max="5" step="1" value="${num(it.cur)}" oninput="setP(${pi},${ii},'cur',this.value)"></td>
+        <td class="num"><input class="sc" type="number" min="0" max="5" step="1" value="${num(it.tgt)}" oninput="setP(${pi},${ii},'tgt',this.value)"></td>
+        <td class="num"><b class="${num(it.tgt)-num(it.cur)>=3?'no':num(it.tgt)-num(it.cur)>=2?'mid':''}">${fmt(num(it.tgt)-num(it.cur),0)}</b></td>
+        <td><input type="text" value="${esc(it.act)}" oninput="setP(${pi},${ii},'act',this.value)"></td>
+        <td><input type="text" value="${esc(it.own)}" oninput="setP(${pi},${ii},'own',this.value)"></td></tr>`).join('')}
+    </tbody></table></div></div>`; }).join('')}`;
+}
+
+function vGate() {
+  const g = gateScore(), b = band(g.total);
+  return `<h2>Decision gate</h2>
+  <p class="sub">Score each question 0–5. The weighted total drives the go / no-go verdict.</p>
+  <div class="note"><b>Weights are normalised.</b> In the workbook the question weights add to 240 and the section headers to 125, yet the score is read against a 0–100 scale. Sections are scaled to 100% (they currently total ${fmt(g.secTotal,0)}), and each question is weighted within its own section. Edit any weight and the normalisation follows.</div>
+  <div class="grid g2"><div class="card">${gauge(g.total)}
+      <div style="text-align:center"><span class="pill">${esc(b.label)}</span>
+      <p style="margin:8px 0 0">${esc(b.action)}</p></div></div>
+    <div class="card"><h3 style="margin:0 0 10px">Where the points come from</h3>
+      ${bars(g.rows.map(r => ({k: r.name + ' (' + fmt(r.weight*100,0) + '%)', v: r.points})),'')}</div></div>
+  ${S.gate.map((sec,si) => `<div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap">
+      <h3 style="margin:0">${esc(sec.name)}</h3>
+      <label class="sub" style="margin:0">section weight
+        <input class="sc" type="number" min="0" value="${num(sec.pct)}" oninput="setG(${si},null,'pct',this.value)"> %
+        → <b>${fmt(g.rows[si].weight*100,1)}%</b> normalised</label></div>
+    <div class="scroll"><table><thead><tr><th>Question</th><th>Scoring criteria</th>
+      <th class="num">Weight</th><th class="num">Score 0–5</th></tr></thead><tbody>
+      ${sec.questions.map((q,qi) => `<tr><td>${esc(q.q)}</td><td class="sub" style="font-size:13px">${esc(q.crit)}</td>
+        <td class="num"><input class="sc" type="number" min="0" value="${num(q.w)}" oninput="setG(${si},${qi},'w',this.value)"></td>
+        <td class="num"><select onchange="setG(${si},${qi},'score',this.value)">
+          ${[0,1,2,3,4,5].map(v => `<option value="${v}" ${num(q.score)===v?'selected':''}>${v}</option>`).join('')}
+        </select></td></tr>`).join('')}
+    </tbody></table></div></div>`).join('')}
+  <div class="card"><h3 style="margin:0 0 8px">Scoring guide</h3><table><tbody>
+    ${SEED.bands.map(x => `<tr><td style="width:90px"><b>${x.lo}+</b></td><td>${esc(x.label)}</td><td class="sub">${esc(x.action)}</td></tr>`).join('')}
+  </tbody></table></div>`;
+}
+
+function vFin() {
+  const f = finance();
+  const st = (ok) => ok ? '<span class="ok">on target</span>' : '<span class="no">below target</span>';
+  return `<h2>Financials</h2><p class="sub">Enter costs and benefits per initiative. Everything below recalculates.</p>
+  <div class="note"><b>Corrected maths.</b> The workbook computed Total Benefits as <code>E+F+G+J</code> — which leaves out Year 1 entirely, counts Operating Costs as a benefit and includes the Notes column — and Net as <code>H−B−G</code>, subtracting operating costs twice. Here: benefits = Y1 revenue + Y1 savings + Y2 revenue + Y2 savings; net = benefits − implementation − operating.</div>
+  <div class="card scroll"><table><thead><tr><th>Initiative</th>
+    <th class="num">Implementation</th><th class="num">Y1 revenue</th><th class="num">Y1 savings</th>
+    <th class="num">Y2 revenue</th><th class="num">Y2 savings</th><th class="num">Operating</th>
+    <th class="num">Benefits</th><th class="num">Net</th></tr></thead><tbody>
+    ${S.fin.map((r,i) => { const ben = num(r.r1)+num(r.s1)+num(r.r2)+num(r.s2), net = ben-num(r.impl)-num(r.opex);
+      return `<tr><td><input type="text" value="${esc(r.name)}" oninput="setF(${i},'name',this.value)"></td>
+      ${['impl','r1','s1','r2','s2','opex'].map(k => `<td class="num"><input type="number" step="1000" value="${num(r[k])}" oninput="setF(${i},'${k}',this.value)"></td>`).join('')}
+      <td class="num">${money(ben)}</td><td class="num ${net<0?'no':'ok'}"><b>${money(net)}</b></td></tr>`; }).join('')}
+    <tr><td><b>Totals</b></td><td class="num"><b>${money(f.impl)}</b></td><td class="num">${money(f.r1)}</td>
+      <td class="num">${money(f.s1)}</td><td class="num">${money(f.r2)}</td><td class="num">${money(f.s2)}</td>
+      <td class="num">${money(f.opex)}</td><td class="num"><b>${money(f.benefits)}</b></td>
+      <td class="num ${f.net<0?'no':'ok'}"><b>${money(f.net)}</b></td></tr>
+  </tbody></table>
+  <button class="btn ghost" style="margin-top:12px" onclick="addFin()">Add initiative</button>
+  <button class="btn ghost" style="margin-top:12px" onclick="loadExample()">Load example figures</button></div>
+  <div class="grid g4" style="margin-bottom:16px">
+    <div class="kpi"><b>${money(f.impl)}</b><span>Total investment</span><em class="sub">target $1–5M</em></div>
+    <div class="kpi"><b>${money(f.benefits)}</b><span>2-year benefits</span><em class="sub">target &gt;$3M</em></div>
+    <div class="kpi"><b class="${f.roi!==null&&f.roi>=100?'ok':'no'}">${f.roi===null?'—':fmt(f.roi,0)+'%'}</b><span>ROI</span><em>${f.roi===null?'enter costs':st(f.roi>=100)}</em></div>
+    <div class="kpi"><b class="${f.bcr!==null&&f.bcr>=2?'ok':'no'}">${f.bcr===null?'—':fmt(f.bcr,2)}</b><span>Benefit–cost ratio</span><em>${f.bcr===null?'target >2.0':st(f.bcr>=2)}</em></div>
+    <div class="kpi"><b class="${f.payback!==null&&f.payback<12?'ok':'no'}">${f.payback===null?'—':fmt(f.payback,1)}</b><span>Payback (months)</span><em>${f.payback===null?'target <12':st(f.payback<12)}</em></div>
+    <div class="kpi"><b class="${f.net<0?'no':'ok'}">${money(f.net)}</b><span>Net benefit</span><em class="sub">target &gt;$1M</em></div>
+  </div>
+  <div class="card"><h3 style="margin:0 0 10px">Net benefit by initiative</h3>
+    ${bars(S.fin.map(r => ({k:r.name, v:num(r.r1)+num(r.s1)+num(r.r2)+num(r.s2)-num(r.impl)-num(r.opex)})),'$')}</div>`;
+}
+
+function vUC() {
+  const sorted = S.uc.map((u,i) => ({u, i, s: ucScore(u)})).sort((a,b) => b.s.value - a.s.value);
+  return `<h2>Use cases</h2><p class="sub">Value blends ROI against risk. Whether a use case can start follows the rule the workbook itself uses — process and tech both at 2 or more — which matches its Status column on all twelve rows.</p>
+  <div class="grid g2"><div class="card"><h3 style="margin:0 0 6px">Priority map</h3>
+    <p class="sub" style="margin-bottom:4px">Top right = ready and high return. Bubble size is the priority score.</p>
+    ${scatter(S.uc)}</div>
+    <div class="card"><h3 style="margin:0 0 10px">Ranked</h3>
+      ${bars(sorted.slice(0,8).map(x => ({k:x.u.id+' '+x.u.desc, v:x.s.value})),'')}</div></div>
+  <div class="card scroll"><table><thead><tr><th>ID</th><th>Use case</th><th>Dept</th>
+    <th class="num">People</th><th class="num">Process</th><th class="num">Tech</th>
+    <th>AI risk</th><th>Portfolio risk</th><th class="num">ROI ×</th>
+    <th class="num">Value</th><th>Call</th></tr></thead><tbody>
+    ${S.uc.map((u,i) => { const s = ucScore(u);
+      return `<tr><td><b>${esc(u.id)}</b></td>
+      <td><input type="text" value="${esc(u.desc)}" oninput="setU(${i},'desc',this.value)"></td>
+      <td>${esc(u.dept)}</td>
+      ${['people','process','tech'].map(k => `<td class="num"><input class="sc" type="number" min="0" max="5" value="${num(u[k])}" oninput="setU(${i},'${k}',this.value)"></td>`).join('')}
+      <td><input type="text" value="${esc(u.risk)}" oninput="setU(${i},'risk',this.value)"></td>
+      <td><input type="text" value="${esc(u.prisk)}" oninput="setU(${i},'prisk',this.value)"></td>
+      <td class="num"><input class="sc" type="text" value="${esc(u.roi)}" oninput="setU(${i},'roi',this.value)"></td>
+      <td class="num"><b>${fmt(s.value,0)}</b></td>
+      <td><span class="${s.tier==='Start now'?'ok':s.tier==='Schedule'?'mid':'no'}"><b>${s.tier}</b></span>
+          <div class="sub" style="font-size:12px">sheet said: ${esc(u.sheetPrio)} / ${esc(u.status)}</div></td></tr>`; }).join('')}
+  </tbody></table></div>`;
+}
+
+function vRef() {
+  return `<h2>Reference</h2><p class="sub">The remaining ${SEED.reference.length} sheets from the workbook, unchanged, so nothing is lost.</p>
+  ${SEED.reference.map(sh => `<details class="card"><summary>${esc(sh.name)} — ${sh.rows.length} rows</summary>
+    <div class="scroll"><table><tbody>${sh.rows.map(r => `<tr>${r.map(c => `<td>${esc(c)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>
+  </details>`).join('')}`;
+}
+
+// ── wiring ──────────────────────────────────────────────────────────────────
+function setP(p,i,k,v){ S.pillars[p].items[i][k] = (k==='cur'||k==='tgt') ? Math.max(0,Math.min(5,num(v))) : v; save(); softRender(); }
+function setG(s,q,k,v){ if(q===null) S.gate[s][k]=num(v); else S.gate[s].questions[q][k]=num(v); save(); softRender(); }
+function setF(i,k,v){ S.fin[i][k] = k==='name'||k==='notes' ? v : num(v); save(); softRender(); }
+function setU(i,k,v){ S.uc[i][k] = ['people','process','tech'].includes(k) ? Math.max(0,Math.min(5,num(v))) : v; save(); softRender(); }
+function addFin(){ S.fin.push({name:'New initiative',impl:0,r1:0,s1:0,r2:0,s2:0,opex:0,notes:''}); save(); render(); }
+['org','by','date','next'].forEach(k => { const el = document.getElementById('m_'+k);
+  el.addEventListener('input', () => { S.meta[k] = el.value; save(); }); });
+
+// keep focus and caret while typing: only redraw the panels that are not focused
+let rt;
+function softRender(){ clearTimeout(rt); rt = setTimeout(() => {
+  const a = document.activeElement, id = a && a.id, sel = a && a.selectionStart;
+  render(true);
+  if (id) { const n = document.getElementById(id); if (n) { n.focus(); try { n.setSelectionRange(sel,sel); } catch(e){} } }
+}, 160); }
+function render(partial) {
+  const active = (TABS.find(t => !document.getElementById('t-'+t[0]).hidden) || TABS[0])[0];
+  const V = { board:vBoard, dash:vDash, pillars:vPillars, gate:vGate, fin:vFin, uc:vUC, ref:vRef };
+  // while typing, refresh only the summary pieces of the open tab, never the inputs themselves
+  if (partial && (active === 'pillars' || active === 'gate' || active === 'fin' || active === 'uc')) {
+    const keep = document.activeElement;
+    const html = V[active]();
+    const holder = document.getElementById('t-'+active);
+    const path = keep && keep.getAttribute && keep.getAttribute('oninput');
+    holder.innerHTML = html;
+    if (path) { const again = [...holder.querySelectorAll('[oninput]')].find(n => n.getAttribute('oninput') === path);
+                if (again) { again.focus(); if (again.select && keep.tagName==='INPUT' && keep.type!=='number') {} } }
+    return;
+  }
+  document.getElementById('t-'+active).innerHTML = V[active]();
+  if (active === 'board') paintBoard();
+}
+function exportJSON(){
+  const blob = new Blob([JSON.stringify(S,null,2)], {type:'application/json'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = 'ai-adoption-' + (S.meta.org || 'assessment').replace(/\W+/g,'-').toLowerCase() + '.json';
+  a.click(); URL.revokeObjectURL(a.href);
+}
+function importJSON(input){
+  const f = input.files[0]; if (!f) return;
+  const r = new FileReader();
+  r.onload = () => { try { S = JSON.parse(r.result); save(); fillMeta(); render(); }
+                     catch(e) { alert('That file is not a saved assessment.'); } };
+  r.readAsText(f); input.value = '';
+}
+function resetAll(){ if (confirm('Discard your entries and reload the values from the workbook?')) { S = blank(); save(); fillMeta(); render(); } }
+function fillMeta(){ ['org','by','date','next'].forEach(k => document.getElementById('m_'+k).value = S.meta[k] || ''); }
+
+fillMeta();
+(function(){ let h = (location.hash||'#board').slice(1);
+  if (!TABS.some(t => t[0] === h)) h = 'board';
+  drawTabs(h); })();
+render();
+</script>
+</body>
+</html>
