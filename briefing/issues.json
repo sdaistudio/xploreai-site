@@ -1,5 +1,20 @@
 [
   {
+    "issue": 12,
+    "slug": "issue-12",
+    "title": "Watching the Agents Work",
+    "dates": "25–31 Oct 2026",
+    "summary": "Gemini 4 Carbon and GPT-6.1 Terra push agents deeper into computers and science, OpenAI shows it can watch its own agents for misalignment, Anthropic files its Nasdaq IPO — and Quantum goes full-stack as Intel buys Classiq and NIST issues the post-quantum migration roadmap.",
+    "highlights": [
+      "Agentic AI 🔥🔥🔥🔥🔥",
+      "AI observability 🔥🔥🔥🔥🔥",
+      "Cyber AI 🔥🔥🔥🔥🔥",
+      "AI for science 🔥🔥🔥🔥🔥",
+      "Quantum software ⚛️⚛️⚛️⚛️⚛️",
+      "Post-quantum security ⚛️⚛️⚛️⚛️⚛️"
+    ]
+  },
+  {
     "issue": 11,
     "slug": "issue-11",
     "title": "Agents Become Infrastructure",
