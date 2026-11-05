@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Beyond AI — XploreAI</title>
+<meta name="description" content="Not everything worth learning is about machines. Patanjali's Yoga Sutras retold for young minds, and the full Rider-Waite tarot deck explained in plain English — with a card of the day.">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="XploreAI">
+<meta property="og:title" content="Beyond AI — XploreAI">
+<meta property="og:description" content="Timeless ideas on focus, attention and reflection, retold so anyone can follow them.">
+<meta property="og:url" content="https://xploreai.co.in/beyond-ai/">
+<meta property="og:image" content="https://xploreai.co.in/assets/og-image.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/style.css">
+<style>
+  nav ul a[aria-current="page"]{color:var(--rust)}
+  .head-block{padding-top:70px;padding-bottom:10px;text-align:center}
+  .head-block h1{font-size:clamp(32px,5vw,48px);font-weight:700;line-height:1.2;margin:10px 0 12px}
+  .head-block h1 i{font-style:normal;color:var(--rust)}
+  #pieces{padding:30px 0 90px}
+  /* Card of the day — filled in by /beyond-ai/tarot/daily.js */
+  .tarot-hero{display:flex;gap:30px;align-items:center;text-decoration:none;margin:0;padding:28px 32px;
+    border-radius:22px;border:1px solid rgba(201,162,74,.4);color:#F2EDE1;
+    background:radial-gradient(900px 300px at 15% -40%,#3a2f6b 0%,rgba(58,47,107,0) 70%),linear-gradient(135deg,#1C1738,#2A2350);
+    box-shadow:0 24px 50px -30px rgba(27,19,52,.8);transition:transform .18s,box-shadow .18s}
+  .tarot-hero:hover{transform:translateY(-3px);box-shadow:0 30px 60px -30px rgba(27,19,52,.9)}
+  .tarot-hero-card img{display:block;width:170px;height:auto;border-radius:10px;border:1px solid rgba(201,162,74,.55);
+    box-shadow:0 14px 30px -12px rgba(0,0,0,.7)}
+  .tarot-hero-card.rev img{transform:rotate(180deg)}
+  .tarot-hero-text{flex:1;min-width:0}
+  .tarot-hero-text .pill{background:rgba(232,205,136,.16);color:#E8CD88;letter-spacing:1.4px}
+  .tarot-hero-text h3{font-size:clamp(26px,3.6vw,34px);font-weight:700;margin:12px 0 8px;line-height:1.15}
+  .tarot-hero-text h3 em{font-style:normal;font-size:.5em;color:#E8CD88;letter-spacing:.1em;text-transform:uppercase;vertical-align:middle}
+  .tarot-hero-text p{color:rgba(242,237,225,.78);font-size:16.5px;margin-bottom:16px;max-width:52ch}
+  .tarot-hero-text strong{color:#E8CD88;font-weight:700}
+  .tarot-hero .btn{background:#C9A24A;color:#241B06 !important}
+  .tarot-hero:hover .btn{background:#E8CD88}
+  .tarot-fallback{color:var(--soft);font-size:15px}
+  @media(max-width:700px){.tarot-hero{flex-direction:column;text-align:center;padding:24px 20px}
+    .tarot-hero-text p{margin-left:auto;margin-right:auto}}
+  .tools{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;margin-top:24px}
+  .tool{display:flex;flex-direction:column}
+  .tool .pill{align-self:flex-start}
+  .tool h3{font-size:21px;margin:12px 0 8px}
+  .tool p{font-size:15px;color:var(--soft);margin-bottom:18px;flex:1}
+  .tool .btn{align-self:flex-start}
+  .tool p.ext{flex:0;font-size:13px;margin:-8px 0 16px}
+  .tool.soon{background:transparent;border-style:dashed;justify-content:center;text-align:center}
+  .tool.soon h3{font-size:18px;color:var(--soft);margin-top:0}
+  .tool.soon p{flex:0;margin:0}
+  .sub-head{margin:54px 0 0}
+  .sub-head h2{font-size:clamp(22px,3vw,28px);font-weight:700}
+  .sub-head p{color:var(--soft);font-size:16px;margin-top:6px;max-width:620px}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap bar">
+    <a class="wordmark" href="/">xplore<span>ai</span></a>
+    <ul>
+      <li><a href="/#agents">Solutions</a></li>
+      <li><a href="/#stories">Success Stories</a></li>
+      <li><a href="/#subscribe">Newsletter</a></li>
+      <li><a href="/learn.html">Learn AI</a></li>
+      <li><a href="/beyond-ai/" aria-current="page">Beyond AI</a></li>
+      <li><a class="btn" href="https://wa.me/919769686931?text=Hi%20XploreAI%2C%20I%27m%20interested%20in%20AI%20automation!">Get Started</a></li>
+    </ul>
+  </div>
+</nav>
+
+<header class="head-block wrap">
+  <span class="pill">🪷 BEYOND AI</span>
+  <h1>Wisdom for a calmer mind<i>.</i></h1>
+  <p class="lede" style="margin:0 auto">Not everything worth learning is about machines. Timeless ideas on focus, attention and reflection, retold so anyone can follow them.</p>
+</header>
+
+<section id="pieces">
+  <div class="wrap">
+
+    <div id="tarot-daily">
+      <p class="tarot-fallback"><a href="/beyond-ai/tarot/">The Tarot Reader &mdash; all 78 Rider-Waite cards in plain English &rarr;</a></p>
+    </div>
+    <script src="/beyond-ai/tarot/daily.js" defer></script>
+
+    <div class="sub-head">
+      <h2>What&rsquo;s here</h2>
+      <p>Two pieces so far, both built to be read by anyone &mdash; no background needed.</p>
+    </div>
+
+    <div class="tools">
+      <!-- To add a Beyond AI piece: copy an <article>, point it at /beyond-ai/<slug>/ -->
+      <article class="card tool">
+        <span class="pill">78 CARDS · PLAIN ENGLISH</span>
+        <h3>The Tarot Reader</h3>
+        <p>The complete Rider-Waite deck from 1909, with every card explained in everyday words. Take the card set aside for today, or shuffle all 78, pick three yourself and get the reading written out &mdash; what each card means, what the three say together, and one thing to do.</p>
+        <p class="ext">For reflection, not prediction</p>
+        <a class="btn" href="/beyond-ai/tarot/">Open the deck →</a>
+      </article>
+
+      <article class="card tool">
+        <span class="pill">VISUAL EDITION · 195 SUTRAS</span>
+        <h3>Patanjali&rsquo;s Yoga Sutras, for Young Minds</h3>
+        <p>All 195 of Patanjali&rsquo;s Yoga Sutras, retold so a 10-year-old can follow them, with Swami Vivekananda as our guide. Every sutra has an animated picture, word-by-word Sanskrit meanings, a read-aloud button and a one-page mind map of the whole text.</p>
+        <p class="ext">Simplified by Surinder Dhanjal</p>
+        <a class="btn" href="/beyond-ai/yoga-sutras/">Explore the sutras →</a>
+      </article>
+
+      <article class="card tool soon">
+        <h3>More on the way</h3>
+        <p>New pieces land here as we write them.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="fine" style="border:none;margin:0;padding:0">
+      <span>© 2026 XploreAI · <a href="/">xploreai.co.in</a></span>
+      <span><a href="mailto:hello@xploreai.co.in">hello@xploreai.co.in</a></span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
