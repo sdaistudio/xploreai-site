@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>The Tarot Reader &mdash; XploreAI</title>
+<meta name="description" content="All 78 cards of the Rider-Waite tarot deck, explained in plain English. A card of the day, a three-card reading you choose yourself, and the whole deck with upright and reversed meanings.">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="XploreAI">
+<meta property="og:title" content="The Tarot Reader">
+<meta property="og:description" content="All 78 cards of the Rider-Waite tarot deck, explained in plain English. A card of the day, a three-card reading you choose yourself, and the whole deck with upright and reversed meanings.">
+<meta property="og:url" content="https://xploreai.co.in/beyond-ai/tarot/">
+<meta property="og:image" content="https://xploreai.co.in/assets/og-image.jpg">
+<style>*,*::before,*::after{box-sizing:border-box}
+:root{
+  --night:#0d0b1f; --night2:#171334; --ink:#1a1630; --gold:#c9a24a; --gold-l:#e8cd88;
+  --parch:#f6efdf; --parch2:#eee2c8; --line:#b9a06a; --text:#f0ebe0; --muted:#a79fc0;
+  --red:#8c2f39; --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+}
+html,body{margin:0;padding:0}
+body{
+  font-family:var(--serif); color:var(--text); background:var(--night);
+  background-image:radial-gradient(1200px 700px at 50% -10%, #2a2259 0%, rgba(42,34,89,0) 60%),
+    radial-gradient(900px 500px at 90% 110%, #1b2a4a 0%, rgba(27,42,74,0) 60%);
+  background-attachment:fixed; min-height:100vh; -webkit-font-smoothing:antialiased;
+}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.5;
+  background-image:radial-gradient(1.4px 1.4px at 20% 30%, #fff 50%, transparent 52%),
+   radial-gradient(1.2px 1.2px at 70% 15%, #fff 50%, transparent 52%),
+   radial-gradient(1px 1px at 40% 70%, #fff 50%, transparent 52%),
+   radial-gradient(1.5px 1.5px at 85% 60%, #fff 50%, transparent 52%),
+   radial-gradient(1px 1px at 10% 85%, #fff 50%, transparent 52%),
+   radial-gradient(1.2px 1.2px at 55% 45%, #fff 50%, transparent 52%),
+   radial-gradient(1px 1px at 92% 32%, #fff 50%, transparent 52%),
+   radial-gradient(1px 1px at 30% 12%, #fff 50%, transparent 52%);
+}
+.wrap{max-width:1080px;margin:0 auto;padding:28px 20px 80px;position:relative}
+header.top{text-align:center;padding:14px 0 6px}
+.eyebrow{letter-spacing:.42em;text-transform:uppercase;font-size:11px;color:var(--gold);margin:0 0 10px}
+h1{font-size:clamp(30px,5.4vw,46px);margin:0 0 6px;font-weight:500;letter-spacing:.01em}
+h1 em{font-style:italic;color:var(--gold-l)}
+.sub{color:var(--muted);font-size:15px;margin:0 auto;max-width:56ch;line-height:1.6}
+nav.tabs{display:flex;gap:6px;justify-content:center;margin:26px 0 24px;flex-wrap:wrap}
+nav.tabs button{
+  font-family:var(--serif);font-size:14px;letter-spacing:.14em;text-transform:uppercase;
+  background:transparent;color:var(--muted);border:1px solid rgba(201,162,74,.28);
+  padding:9px 18px;border-radius:999px;cursor:pointer;transition:.18s
+}
+nav.tabs button:hover{color:var(--gold-l);border-color:rgba(201,162,74,.6)}
+nav.tabs button[aria-selected="true"]{background:rgba(201,162,74,.14);color:var(--gold-l);border-color:var(--gold)}
+.panel{display:none}.panel.on{display:block}
+.card-surface{background:rgba(23,19,52,.72);border:1px solid rgba(201,162,74,.22);border-radius:14px;padding:22px;backdrop-filter:blur(3px)}
+h2.sect{font-size:13px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin:0 0 14px;font-weight:500}
+p{line-height:1.72}
+.muted{color:var(--muted)}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end}
+label.fld{display:flex;flex-direction:column;gap:6px;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+select,input[type=text]{
+  font-family:var(--serif);font-size:15px;color:var(--text);background:rgba(13,11,31,.8);
+  border:1px solid rgba(201,162,74,.3);border-radius:8px;padding:10px 12px;min-width:220px
+}
+input[type=text]{min-width:min(420px,70vw)}
+select:focus,input:focus{outline:1px solid var(--gold)}
+label.check.fld{display:flex;flex-direction:row;align-items:center;gap:8px;font-size:14px;color:var(--muted);cursor:pointer;text-transform:none;letter-spacing:0}
+.btn{
+  font-family:var(--serif);font-size:14px;letter-spacing:.16em;text-transform:uppercase;cursor:pointer;
+  background:linear-gradient(180deg,#d8b65f,#b6902f);color:#1b1505;border:none;padding:12px 24px;border-radius:999px;
+  box-shadow:0 6px 20px rgba(201,162,74,.22);transition:.18s
+}
+.btn:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.btn.ghost{background:transparent;color:var(--gold-l);border:1px solid rgba(201,162,74,.5);box-shadow:none}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+
+/* ---- card ---- */
+.card{width:var(--cw,160px);aspect-ratio:1/1.72;perspective:1200px;flex:0 0 auto}
+.card .inner{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .7s cubic-bezier(.2,.8,.2,1)}
+.card.flipped .inner{transform:rotateY(180deg)}
+.face,.back{position:absolute;inset:0;backface-visibility:hidden;border-radius:9px;overflow:hidden}
+.back{
+  background:linear-gradient(145deg,#241c4e,#140f2e);border:1px solid rgba(201,162,74,.45);
+  box-shadow:inset 0 0 0 4px rgba(201,162,74,.12);display:grid;place-items:center
+}
+.back::after{content:"";position:absolute;inset:7px;border:1px solid rgba(201,162,74,.3);border-radius:5px;
+  background-image:repeating-linear-gradient(45deg,rgba(201,162,74,.09) 0 2px,transparent 2px 9px),
+   repeating-linear-gradient(-45deg,rgba(201,162,74,.09) 0 2px,transparent 2px 9px)}
+.back .rose{font-size:calc(var(--cw,160px)*.3);color:rgba(232,205,136,.75);z-index:1;line-height:1}
+.face{
+  transform:rotateY(180deg);background:#f6efdf;color:#2b2213;border:1px solid var(--line);
+  box-shadow:0 10px 26px rgba(0,0,0,.4)
+}
+.face img{width:100%;height:100%;object-fit:cover;display:block;user-select:none;
+  backface-visibility:visible;-webkit-backface-visibility:visible;transform:translateZ(1px)}
+.card.rev .face img{transform:rotate(180deg) translateZ(1px)}
+.card.pickable .back{cursor:pointer;transition:transform .16s,box-shadow .16s}
+.card.pickable:hover .back{transform:translateY(-8px);box-shadow:0 10px 24px rgba(0,0,0,.45),inset 0 0 0 4px rgba(232,205,136,.3)}
+.card.picked .back{box-shadow:0 0 0 2px var(--gold-l),inset 0 0 0 4px rgba(232,205,136,.4);transform:translateY(-8px)}
+.card.dim{opacity:.4}
+
+/* ---- daily ---- */
+.daily{display:flex;gap:28px;align-items:flex-start;flex-wrap:wrap}
+.daily .card{--cw:230px}
+.daily .read{flex:1;min-width:280px}
+.cardname{font-size:26px;margin:0 0 4px}
+.kw{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0 16px;padding:0;list-style:none}
+.kw li{font-size:12px;letter-spacing:.1em;text-transform:uppercase;border:1px solid rgba(201,162,74,.35);color:var(--gold-l);border-radius:999px;padding:4px 11px}
+.tagline{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted)}
+.rev-badge{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--red);background:rgba(140,47,57,.18);border:1px solid rgba(140,47,57,.5);border-radius:999px;padding:3px 10px;margin-left:8px;vertical-align:middle}
+.pic{font-size:14px;color:var(--muted);margin:10px 0 0;line-height:1.6}
+.pic strong{color:var(--gold-l);font-weight:600}
+.summary{max-width:60ch;margin:0 auto 24px;text-align:center;font-size:19px;line-height:1.6;color:var(--gold-l);font-style:italic}
+.readings .blk .pic{margin-top:8px;font-size:13.5px;font-style:italic}
+.advice{border-left:2px solid var(--gold);padding:4px 0 4px 16px;margin:18px 0 0;font-style:italic;color:var(--gold-l)}
+
+/* ---- spread picking ---- */
+.slots{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin:0 0 22px}
+.slot{width:112px;text-align:center}
+.slot .box{width:112px;aspect-ratio:1/1.72;border:1px dashed rgba(201,162,74,.45);border-radius:9px;display:grid;place-items:center;color:var(--muted);font-size:30px}
+.slot.full .box{border-style:solid}
+.slot .lbl{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-top:8px}
+.slot .q{font-size:11px;color:var(--muted);margin-top:2px;line-height:1.4}
+.fan{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:18px 0}
+.fan .card{--cw:72px}
+.counter{text-align:center;color:var(--muted);font-size:14px;margin:4px 0 0}
+
+/* ---- result ---- */
+.result{display:none}
+.result.on{display:block}
+.spread3{display:flex;gap:20px;justify-content:center;flex-wrap:wrap;margin:8px 0 28px}
+.spread3 .col{width:180px;text-align:center}
+.spread3 .card{--cw:180px}
+.spread3 .pos{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin:12px 0 2px}
+.spread3 .cn{font-size:16px;margin:0}
+.readings{display:grid;gap:18px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));margin:0 0 26px}
+.readings .blk h3{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin:0 0 6px}
+.readings .blk p{margin:0;font-size:15px}
+.readings .blk .nm{font-weight:600;color:var(--gold-l)}
+.narr p{margin:0 0 14px}
+.actions{list-style:none;padding:0;margin:14px 0 0;display:grid;gap:8px}
+.actions li{padding-left:22px;position:relative;font-size:15px}
+.actions li::before{content:"✦";position:absolute;left:0;color:var(--gold)}
+.foot{display:flex;gap:10px;justify-content:center;margin:28px 0 0;flex-wrap:wrap}
+
+/* ---- library ---- */
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 16px}
+.chips button{font-family:var(--serif);font-size:12px;letter-spacing:.14em;text-transform:uppercase;background:transparent;border:1px solid rgba(201,162,74,.3);color:var(--muted);padding:7px 14px;border-radius:999px;cursor:pointer}
+.chips button[aria-pressed="true"]{background:rgba(201,162,74,.16);color:var(--gold-l);border-color:var(--gold)}
+.lib{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:16px}
+.lib .cell{text-align:center;cursor:pointer}
+.lib .cell .card{--cw:100%;width:100%}
+.lib .cell .card .inner{transform:rotateY(180deg)}
+.lib .cell .nm{font-size:12px;color:var(--muted);margin-top:7px;line-height:1.3}
+.lib .cell:hover .nm{color:var(--gold-l)}
+dialog.modal{border:1px solid rgba(201,162,74,.4);background:#171334;color:var(--text);border-radius:14px;max-width:620px;width:92vw;padding:0}
+dialog.modal::backdrop{background:rgba(6,4,18,.78)}
+.modal .body{padding:24px;display:flex;gap:22px;flex-wrap:wrap}
+.modal .card{--cw:150px}
+.modal .txt{flex:1;min-width:240px}
+.modal h3{margin:0 0 2px;font-size:24px}
+.modal .meta{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin:0 0 12px}
+.modal h4{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin:16px 0 4px}
+.modal p{margin:0;font-size:15px}
+.modal .close{position:absolute;top:10px;right:14px;background:none;border:none;color:var(--muted);font-size:26px;cursor:pointer;line-height:1}
+.note{font-size:13px;color:var(--muted);text-align:center;margin:40px auto 0;max-width:62ch;line-height:1.7;border-top:1px solid rgba(201,162,74,.18);padding-top:18px}
+@media(max-width:640px){
+  .daily .card{--cw:190px}
+  .spread3 .col{width:140px}.spread3 .card{--cw:140px}
+  .fan .card{--cw:58px}
+  .slot,.slot .box{width:92px}
+}
+
+.backlink{text-align:center;margin:0 0 6px}
+.backlink a{color:var(--muted);text-decoration:none;font-size:13px;letter-spacing:.18em;text-transform:uppercase}
+.backlink a:hover{color:var(--gold-l)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="backlink"><a href="/learn.html">&larr; Beyond AI</a></p>
+  <header class="top">
+    <p class="eyebrow">Rider &middot; Waite &middot; Smith</p>
+    <h1>The <em>Tarot</em> Reader</h1>
+    <p class="sub">All 78 cards of the 1909 deck, with the readings written in plain English. Take the one card set aside for today, or shuffle the deck, choose three cards yourself and get the whole thing explained.</p>
+  </header>
+
+  <nav class="tabs" role="tablist">
+    <button data-tab="daily" aria-selected="true">Card of the day</button>
+    <button data-tab="reading" aria-selected="false">Three-card reading</button>
+    <button data-tab="library" aria-selected="false">All 78 cards</button>
+  </nav>
+
+  <!-- DAILY -->
+  <section class="panel on" id="panel-daily">
+    <div class="card-surface">
+      <h2 class="sect">Card of the day &middot; <span id="dailyDate"></span></h2>
+      <div class="daily">
+        <div id="dailyCard"></div>
+        <div class="read" id="dailyRead"></div>
+      </div>
+      <p style="margin:22px 0 0"><label class="check fld"><input type="checkbox" id="dailyRev"> Allow reversed cards</label></p>
+    </div>
+    <p class="note">The daily card is drawn from the date itself, so it is the same card all day on this device and a different one tomorrow.</p>
+  </section>
+
+  <!-- READING -->
+  <section class="panel" id="panel-reading">
+    <div class="card-surface" id="pickStage">
+      <h2 class="sect">Choose three</h2>
+      <div class="row" style="margin-bottom:18px">
+        <label class="fld">Spread<select id="spread"></select></label>
+        <label class="fld">Your question (optional)<input type="text" id="question" placeholder="Should I take the offer?"></label>
+        <label class="check fld"><input type="checkbox" id="spreadRev"> Reversed cards</label>
+        <button class="btn ghost" id="dealBtn">Shuffle again</button>
+      </div>
+      <div class="slots" id="slots"></div>
+      <p class="counter" id="counter"></p>
+      <div class="fan" id="fan"></div>
+      <div class="foot"><button class="btn" id="readBtn" disabled>Read the cards</button></div>
+    </div>
+
+    <div class="result" id="result">
+      <div class="card-surface">
+        <h2 class="sect">Your reading</h2>
+        <p class="summary" id="summary"></p>
+        <div class="spread3" id="spread3"></div>
+        <div class="readings" id="readings"></div>
+        <h2 class="sect">What the three say together</h2>
+        <div class="narr" id="narr"></div>
+        <h2 class="sect" style="margin-top:26px">What to do</h2>
+        <ul class="actions" id="actions"></ul>
+        <div class="foot">
+          <button class="btn" id="againBtn">New reading</button>
+          <button class="btn ghost" id="copyBtn">Copy reading</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LIBRARY -->
+  <section class="panel" id="panel-library">
+    <div class="card-surface">
+      <h2 class="sect">The deck &middot; <span id="libCount"></span></h2>
+      <div class="row" style="margin-bottom:14px">
+        <label class="fld">Search<input type="text" id="libSearch" placeholder="grief, money, new beginning&hellip;"></label>
+      </div>
+      <div class="chips">
+        <button data-f="all" aria-pressed="true">All</button>
+        <button data-f="major" aria-pressed="false">Major Arcana</button>
+        <button data-f="wands" aria-pressed="false">Wands</button>
+        <button data-f="cups" aria-pressed="false">Cups</button>
+        <button data-f="swords" aria-pressed="false">Swords</button>
+        <button data-f="pentacles" aria-pressed="false">Pentacles</button>
+      </div>
+      <div class="lib" id="lib"></div>
+    </div>
+  </section>
+
+  <p class="note">Card meanings follow the Rider-Waite-Smith tradition (Arthur Waite and Pamela Colman Smith, 1909, public domain). The art here is drawn in code rather than reproduced. Tarot is for reflection, not prediction &mdash; nothing here is medical, legal or financial advice.</p>
+</div>
+
+<dialog class="modal" id="modal">
+  <button class="close" id="modalClose" aria-label="Close">&times;</button>
+  <div class="body" id="modalBody"></div>
+</dialog>
+
+<script>// Major Arcana — 22 cards. Rider-Waite-Smith (1909) tradition, in plain English.
+// pic = what you can see on the card. upText / revText = what it means. advice = one thing to do.
+const MAJORS = [
+  {n:0, name:"The Fool", glyph:"✿", astro:"Uranus", el:"Air",
+   pic:"A young man steps off a cliff edge with a small bag on a stick, looking at the sky. A little dog barks at his feet.",
+   up:["a fresh start","taking a chance","innocence","going with your gut"],
+   rev:["being careless","holding back","bad timing","not thinking it through"],
+   upText:"Something new is starting and you cannot see where it leads. That is normal, and it is not a reason to stop. If an idea keeps coming back to you, begin it, even though you do not feel fully ready.",
+   revText:"Either you are jumping in without looking, or you are too scared to jump at all. Check what you might be giving up, and whether the risk is really yours to take.",
+   advice:"Start the thing you cannot fully explain yet."},
+  {n:1, name:"The Magician", glyph:"∞", astro:"Mercury", el:"Air",
+   pic:"A man stands at a table with a cup, a coin, a sword and a wand on it. One hand points up, the other down.",
+   up:["making things happen","willpower","using what you have","focus"],
+   rev:["being misled","doing too much at once","wasted talent","empty talk"],
+   upText:"You already have everything you need to do this. The skills, the contacts and the tools are there. What makes the difference now is picking one clear goal and acting on it.",
+   revText:"Either someone is talking a good game without delivering, or your ability is going unused. Watch for people who persuade instead of prove, and check you are not doing the same.",
+   advice:"Write down exactly what you want, then use what you already have."},
+  {n:2, name:"The High Priestess", glyph:"☽", astro:"Moon", el:"Water",
+   pic:"A woman sits between a black pillar and a white one, a scroll half hidden in her lap and a crescent moon at her feet.",
+   up:["gut feeling","inner knowing","things not yet said","quiet"],
+   rev:["ignoring your instinct","secrets","staying on the surface"],
+   upText:"You already know the answer, you just have not said it out loud. Stop asking other people what they think. Give it a few quiet days and the answer will be obvious.",
+   revText:"You are talking yourself out of what you feel, or someone is not telling you everything. The silence in this situation is doing something.",
+   advice:"Stop asking around. Sit with it for a day and listen to yourself."},
+  {n:3, name:"The Empress", glyph:"♀", astro:"Venus", el:"Earth",
+   pic:"A woman in a flowing gown rests on cushions in a wheat field, a forest and a stream behind her.",
+   up:["growth","looking after people","comfort","creativity"],
+   rev:["doing too much for others","feeling stuck creatively","neglecting yourself"],
+   upText:"Things grow here when you look after them rather than push them. Work, relationships and your own health all respond to steady care. Rest, good food and comfort are not a waste of time right now.",
+   revText:"Either you are caring for everyone but yourself, or care has turned into control. Ideas feel dry because you never let yourself stop and refill.",
+   advice:"Feed the thing you want to grow, and include yourself in that."},
+  {n:4, name:"The Emperor", glyph:"♈", astro:"Aries", el:"Fire",
+   pic:"A bearded king sits on a stone throne carved with rams' heads, holding a sceptre, mountains behind him.",
+   up:["structure","being in charge","discipline","protecting what matters"],
+   rev:["being too rigid","someone throwing their weight around","no boundaries"],
+   upText:"This needs a plan with dates, not more enthusiasm. Set the rules, build the routine, say clearly what you will and will not do. Order is what lets the rest of it work.",
+   revText:"Either someone is controlling things for the sake of it, or there is no structure here at all. Both leave people unsure where they stand.",
+   advice:"Write the rule down, and be the first to follow it."},
+  {n:5, name:"The Hierophant", glyph:"⌥", astro:"Taurus", el:"Earth",
+   pic:"A robed teacher sits between two pillars, two students kneeling in front of him, keys crossed at his feet.",
+   up:["learning from someone","tradition","doing it the proven way","institutions"],
+   rev:["rules that no longer fit","doing it your own way","questioning the teacher"],
+   upText:"There is a tested way of doing this and someone who already knows it. A course, a mentor or an established method will cost you far less than working it out alone.",
+   revText:"The rule you are following cannot be justified any more, or you are about to leave a group, job or system that shaped you.",
+   advice:"Learn the standard way properly before you change it."},
+  {n:6, name:"The Lovers", glyph:"⚭", astro:"Gemini", el:"Air",
+   pic:"A man and a woman stand under an angel with open arms, a tree behind each of them.",
+   up:["a close relationship","agreeing on what matters","an important choice","attraction"],
+   rev:["pulling in different directions","avoiding a decision","imbalance"],
+   upText:"Two things are coming together, usually two people. Underneath it there is a choice, and it should be made on what you actually believe, not on what is easiest. This decision will shape a long stretch of your life.",
+   revText:"You and the other person want different things, or you are putting off a decision. Putting it off is still choosing.",
+   advice:"Choose based on your values, not on what feels good this week."},
+  {n:7, name:"The Chariot", glyph:"⚔", astro:"Cancer", el:"Water",
+   pic:"An armoured figure rides a chariot pulled by one black sphinx and one white one, a city behind him.",
+   up:["drive","winning through effort","momentum","staying in control"],
+   rev:["pulled in two directions","losing control","giving up near the end"],
+   upText:"Two forces are pulling against each other and you are holding them together by sheer will. Keep going. Here, simply not stopping is the win.",
+   revText:"You are putting in effort with no clear direction, or you have run out of steam just short of the finish.",
+   advice:"Pick one direction and stick to it for thirty days."},
+  {n:8, name:"Strength", glyph:"∞", astro:"Leo", el:"Fire",
+   pic:"A calm woman gently closes a lion's mouth with her hands. A looped symbol floats above her head.",
+   up:["quiet strength","patience","courage","self-control"],
+   rev:["forcing things","self-doubt","acting on impulse","running on empty"],
+   upText:"You get through this by being patient, not forceful. Staying calm when it would be easy to lose your temper is the whole skill here. Gentle and persistent wins.",
+   revText:"You are pushing where coaxing would work, or your own temper and cravings are in charge. If your courage has gone, you need rest, not more effort.",
+   advice:"Win this slowly, and without raising your voice."},
+  {n:9, name:"The Hermit", glyph:"⚙", astro:"Virgo", el:"Earth",
+   pic:"An old man in a grey cloak stands alone on a snowy peak, holding up a lantern with a star inside.",
+   up:["time alone","thinking it through","guidance","stepping back"],
+   rev:["loneliness","hiding from people","losing your way"],
+   upText:"Step back from the noise so you can hear yourself think. You will not see the whole route, only the next step, and that is enough for now. Time alone here is useful, not avoidance.",
+   revText:"Keeping to yourself has turned into hiding, or you are lonelier than you admit. The soul-searching has become an excuse not to act.",
+   advice:"Take the time alone on purpose, and set a date to come back."},
+  {n:10, name:"Wheel of Fortune", glyph:"⊕", astro:"Jupiter", el:"Fire",
+   pic:"A great wheel turns in the sky, with four winged creatures reading books in the corners.",
+   up:["change","a turning point","luck","things moving on their own"],
+   rev:["fighting a change","bad timing","the same thing happening again"],
+   upText:"Circumstances are changing and the change is not coming from you. Something that felt fixed is about to move. Get ready to take the opening rather than brace against it.",
+   revText:"You are resisting something that is happening anyway, or you are watching the same pattern come round again because nothing about your own behaviour changed.",
+   advice:"Stop gripping. Move with the change and use the opening it makes."},
+  {n:11, name:"Justice", glyph:"⚖", astro:"Libra", el:"Air",
+   pic:"A figure on a stone seat holds an upright sword in one hand and a set of scales in the other.",
+   up:["the truth coming out","consequences","fairness","taking responsibility"],
+   rev:["unfairness","dodging responsibility","dishonesty"],
+   upText:"Actions have results, and those results are arriving. Decisions will be made on the facts, agreements will matter, and what you did will come back to you. Legal and contract matters go the way the evidence points.",
+   revText:"Someone is tipping the scales, and it may be you. Something is being left out of the story, and it will keep resurfacing until it is said.",
+   advice:"Tell the whole truth, including the part that costs you something."},
+  {n:12, name:"The Hanged Man", glyph:"⊥", astro:"Neptune", el:"Water",
+   pic:"A man hangs upside down by one ankle from a wooden frame, calm, with a glow around his head.",
+   up:["a pause","seeing it differently","giving something up","waiting"],
+   rev:["stalling","playing the martyr","pointless delay"],
+   upText:"Things are on hold, and the pause is the point. You are meant to see this from another angle. Give one thing up and the whole picture rearranges itself.",
+   revText:"The pause has become a habit, or you are suffering loudly without getting anything from it. You are paying a price that buys you nothing.",
+   advice:"Let it sit. Do not force a decision this week."},
+  {n:13, name:"Death", glyph:"☠", astro:"Scorpio", el:"Water",
+   pic:"A skeleton in black armour rides a white horse past fallen figures, with the sun rising between two towers.",
+   up:["an ending","big change","clearing out","moving on"],
+   rev:["holding on","fear of change","an ending that drags"],
+   upText:"This almost never means a real death. Something in your life is finished, and treating it as if it is still alive is the only thing hurting you now. What comes next is genuinely new.",
+   revText:"You know it is over and you are keeping the shape of it going out of fear. The ending has already happened inside you.",
+   advice:"End it properly this month, and do not reopen the negotiation."},
+  {n:14, name:"Temperance", glyph:"⚗", astro:"Sagittarius", el:"Fire",
+   pic:"An angel with one foot on land and one in a stream pours water between two cups.",
+   up:["balance","moderation","mixing things well","patience"],
+   rev:["too much of one thing","swinging between extremes","impatience"],
+   upText:"A little of each thing, repeated for a long time, is what works here. Not a dramatic push. This is also a good card for recovering from illness or burnout.",
+   revText:"You are overdoing one thing, or bouncing between extremes and calling it balance.",
+   advice:"Halve the amount and double how often you do it."},
+  {n:15, name:"The Devil", glyph:"⛧", astro:"Capricorn", el:"Earth",
+   pic:"A horned figure sits above two chained people. The chains around their necks are loose enough to lift off.",
+   up:["being stuck in something","a habit you cannot stop","money pressure","your darker side"],
+   rev:["breaking free","seeing the habit clearly","taking back control"],
+   upText:"Something has a hold on you: a habit, a debt, a job, a person you keep going back to. The hold is real, but you are the one maintaining it. Ask what you get out of staying.",
+   revText:"The grip is loosening. You can see how the trap works now, and that is the first honest step out of it.",
+   advice:"Name what you get out of the thing you say you hate."},
+  {n:16, name:"The Tower", glyph:"⚡", astro:"Mars", el:"Fire",
+   pic:"Lightning strikes a tall tower, knocking off its crown, and two people fall from it.",
+   up:["sudden upheaval","the truth coming out","something collapsing"],
+   rev:["a disaster avoided","a collapse delayed","fear of it falling"],
+   upText:"Something breaks suddenly, and it was built badly in the first place. It is a shock, and it is not a punishment. What falls here could not have lasted anyway.",
+   revText:"You can see the cracks and you are propping it up. Either the collapse is postponed, or you survived one and are still flinching.",
+   advice:"Let the weak thing fall. Protect the people, not the structure."},
+  {n:17, name:"The Star", glyph:"★", astro:"Aquarius", el:"Air",
+   pic:"A woman kneels by a pool at night, pouring water from two jugs, one large star and seven small ones above her.",
+   up:["hope","healing","a fresh start","calm"],
+   rev:["discouragement","losing faith","doubting yourself"],
+   upText:"Calm comes back after a hard time, and this time there is a real reason to feel hopeful. Expect slow repair rather than a dramatic rescue.",
+   revText:"You have given up hope, or you are measuring yourself against something impossible and calling the gap failure.",
+   advice:"Do one small thing that restores you, every day, and let it add up."},
+  {n:18, name:"The Moon", glyph:"☾", astro:"Pisces", el:"Water",
+   pic:"A path runs between two towers under a face in the moon. A dog and a wolf howl, and a crayfish crawls from the water.",
+   up:["confusion","fears and imagination","uncertainty","dreams"],
+   rev:["things becoming clear","confusion lifting","the truth surfacing"],
+   upText:"You cannot see this clearly yet. Fear and imagination are making things look bigger or worse than they are. Do not make a decision you cannot undo while it is this murky.",
+   revText:"The fog is lifting. What scared you is turning out to be smaller than it looked, or something hidden is coming out.",
+   advice:"Write down what you are afraid of, then mark which parts you have evidence for."},
+  {n:19, name:"The Sun", glyph:"☀", astro:"Sun", el:"Fire",
+   pic:"A child rides a white horse under a huge sun, with sunflowers along a wall behind.",
+   up:["success","clarity","good health","plain happiness"],
+   rev:["low confidence","success delayed","forced cheerfulness"],
+   upText:"Things go well and nothing is hidden. Success, good health and straightforward happiness, with no catch. You are allowed to enjoy it instead of waiting for it to go wrong.",
+   revText:"The good thing is there but you cannot feel it, or a win is taking longer than you were told. Cheerfulness you are performing rather than feeling.",
+   advice:"Let yourself be seen. Say the good news out loud."},
+  {n:20, name:"Judgement", glyph:"✡", astro:"Pluto", el:"Fire",
+   pic:"An angel blows a trumpet and people rise from their coffins with their arms open.",
+   up:["looking back honestly","waking up","a calling","starting again"],
+   rev:["self-doubt","ignoring the call","being hard on yourself"],
+   upText:"You take an honest look at the past and it stops holding you. There is also something you have been half-hearing for a while, about what you should be doing with your life. This card is about direction, not details.",
+   revText:"You heard the call and said no, or your inner critic is running the review instead of a fair assessment.",
+   advice:"Forgive the earlier version of yourself, then answer the call."},
+  {n:21, name:"The World", glyph:"✠", astro:"Saturn", el:"Earth",
+   pic:"A dancer inside a laurel wreath, with a bull, a lion, an eagle and an angel in the four corners.",
+   up:["finishing something","wholeness","travel","a chapter completed"],
+   rev:["unfinished business","so close","closure delayed"],
+   upText:"A long chapter finishes properly, with the lesson learned. Graduations, deliveries, travel, arriving somewhere you genuinely worked to reach.",
+   revText:"You are ninety per cent done. Something is left hanging, and the next chapter cannot start until you finish it.",
+   advice:"Close it off properly, then mark the occasion."}
+];
+
+// Wands (Fire — energy, work, creativity) and Cups (Water — feelings and relationships), in plain English.
+const WANDS = [
+  {r:1, pic:"A hand comes out of a cloud holding a wooden staff with fresh leaves sprouting from it.",
+   up:["a spark","inspiration","a new venture","potential"], rev:["a false start","delay","no enthusiasm yet"],
+   upText:"The first flash of an idea, and this one has real energy behind it. A new venture, a creative urge, or an invitation worth saying yes to.",
+   revText:"The idea has not caught fire, or the excitement arrived before any plan did. Delayed rather than cancelled.",
+   advice:"Act on the idea this week, while you still want to."},
+  {r:2, pic:"A man on a castle wall holds a small globe and looks out to sea, one staff fixed beside him.",
+   up:["planning","looking ahead","the first decision"], rev:["fear of the unknown","poor planning","thinking too small"],
+   upText:"The idea is now a plan. The question has changed from whether to do it to how far you intend to take it.",
+   revText:"Planning has become a way of not starting. Either the plan is too small to be worth it, or the groundwork is missing.",
+   advice:"Decide how big this is going to be before you build anything."},
+  {r:3, pic:"A man stands on a cliff between three staffs, watching ships sail out below him.",
+   up:["growth","results showing","working with others"], rev:["delays","thinking too small","things stuck elsewhere"],
+   upText:"The plan is underway and the first results are visible. Now is the time to widen it: more customers, more reach, more people involved.",
+   revText:"Progress has stalled for reasons outside your control, or the plan was never big enough to justify the effort.",
+   advice:"Bring in one person who gets you further than you can go alone."},
+  {r:4, pic:"Four staffs hold up a garland of flowers, with people celebrating in front of a castle.",
+   up:["celebration","coming home","stability","a milestone"], rev:["unsettled home life","a celebration skipped"],
+   upText:"Something is worth celebrating: a home, a wedding, the end of a hard stretch, a sense of belonging somewhere.",
+   revText:"Home or the ground under you feels unstable, or you went straight from the milestone to the next job without stopping.",
+   advice:"Stop and mark it, with people around you."},
+  {r:5, pic:"Five young men swing staffs at each other, though nobody looks hurt.",
+   up:["competition","friction","clashing ideas"], rev:["conflict avoided","inner conflict","the rivalry ending"],
+   upText:"Noisy disagreement and competition, the kind that sharpens people rather than damaging them. It is tiring and scattered, but not dangerous.",
+   revText:"An argument pushed under the carpet to keep the peace, or a fight you are having with yourself.",
+   advice:"Compete on the one thing that matters and let the rest go."},
+  {r:6, pic:"A rider wearing a laurel wreath is cheered along by a crowd on foot.",
+   up:["recognition","a win","confidence"], rev:["work going unnoticed","an inflated ego"],
+   upText:"A visible success, and praise from people whose opinion actually counts. You earned it and you are allowed to enjoy it.",
+   revText:"Your work is going unseen, or the praise has gone to your head and your reputation is ahead of your results.",
+   advice:"Take the credit publicly, then name who helped you."},
+  {r:7, pic:"A man on high ground fends off six staffs coming at him from below.",
+   up:["standing your ground","persistence","feeling outnumbered"], rev:["giving up","stretched too thin"],
+   upText:"You are defending something you built, outnumbered but in the stronger position. Hold on, but check that what you are defending is still worth it.",
+   revText:"Too many things to fight at once. You are either spread too thin or ready to put it down.",
+   advice:"Drop two commitments so you can defend the one that matters."},
+  {r:8, pic:"Eight staffs fly through the air over open countryside and a river.",
+   up:["speed","fast movement","news arriving"], rev:["delays","rushing","no clear direction"],
+   upText:"Things move quickly now. News arrives, travel happens, a decision that was dragging suddenly resolves. Let it move.",
+   revText:"Either everything is stuck in a holding pattern, or you are rushing with no aim. Messages missed, or sent too early.",
+   advice:"Move today, while the window is open."},
+  {r:9, pic:"A bandaged man leans on a staff, watching the horizon, eight more staffs behind him.",
+   up:["resilience","one last push","being on guard"], rev:["suspicion","exhaustion","refusing help"],
+   upText:"You are tired and still standing, and closer to the end than it feels. One more careful push should do it.",
+   revText:"You are defending yourself when nobody is attacking, or hiding how worn out you are. Suspicion is costing you allies.",
+   advice:"Rest properly once, then finish it."},
+  {r:10, pic:"A man carries ten heavy staffs bent double, a village just ahead of him.",
+   up:["too much to carry","responsibility","the final stretch"], rev:["handing work over","letting go","collapsing under it"],
+   upText:"You can see the finish, but you are carrying everything yourself. The load is the problem here, not the goal.",
+   revText:"Either you are about to drop the lot, or you are finally giving pieces of it to other people. Both bring relief.",
+   advice:"Give away a third of the load now, not at the end."},
+  {r:11, name:"Page of Wands", pic:"A young man in a patterned tunic holds a tall staff and studies it, desert behind him.",
+   up:["curiosity","enthusiasm","a new interest"], rev:["flakiness","half-formed ideas","restlessness"],
+   upText:"News of an opportunity, or a new interest worth following before you decide whether it is serious.",
+   revText:"Enthusiasm that never lands anywhere. Starting a fourth thing to avoid finishing the first.",
+   advice:"Follow the interest, but commit to finishing one small piece of it."},
+  {r:12, name:"Knight of Wands", pic:"A knight in armour charges on a rearing horse, his staff held upright.",
+   up:["bold action","adventure","charm","acting on impulse"], rev:["recklessness","burning out","all talk"],
+   upText:"Fast, confident, impatient energy that gets things moving by force of personality. Either you or someone around you.",
+   revText:"Speed with no direction. Promises bigger than what gets delivered, or a temper steering the decisions.",
+   advice:"Charge, but pick the target first."},
+  {r:13, name:"Queen of Wands", pic:"A crowned woman sits facing forward with a sunflower in her hand and a black cat at her feet.",
+   up:["warmth","confidence","presence","being yourself"], rev:["jealousy","self-doubt","needing attention"],
+   upText:"Someone who leads by being completely themselves and draws people in without chasing them. Warm and sharp at the same time.",
+   revText:"Confidence slipping into comparison with others, or warmth withdrawn to punish someone.",
+   advice:"Lead with warmth, and stop auditioning for anyone."},
+  {r:14, name:"King of Wands", pic:"A king on a throne carved with lions and lizards holds a flowering staff.",
+   up:["vision","leadership","starting things","direction"], rev:["bossiness","impatience","promising too much"],
+   upText:"The founder's card: a long view, the nerve to act on it, and the ability to make other people want to build it with you.",
+   revText:"A leader who has stopped listening, keeps changing the plan, or hands down a vision instead of sharing it.",
+   advice:"Set the direction once, clearly, then let people get on with it."}
+];
+const CUPS = [
+  {r:1, pic:"A hand holds out an overflowing cup with five streams running from it and a dove above.",
+   up:["a new feeling","love offered","openness","intuition"], rev:["blocked feelings","love held back","emptiness"],
+   upText:"A new feeling begins: love, closeness, or a burst of creative warmth. It is being offered to you, not something you have to earn.",
+   revText:"The feeling is there and the lid is on. Numbness, or an opening you turned down because it felt risky.",
+   advice:"Let yourself be moved by it, and say so out loud."},
+  {r:2, pic:"A man and a woman exchange cups, a winged lion's head above them.",
+   up:["partnership","mutual attraction","a real bond","making up"], rev:["one-sided effort","a break-up","mismatch"],
+   upText:"A genuine meeting between equals: romance, a close friendship, or a partnership where both sides put in the same amount.",
+   revText:"One person is doing all the giving. A break, or a bond held together only by history.",
+   advice:"Match what the other person puts in, no more and no less."},
+  {r:3, pic:"Three women dance in a circle, raising their cups, with fruit and vines at their feet.",
+   up:["friendship","community","celebrating together","teamwork"], rev:["gossip","feeling left out","a third person causing trouble"],
+   upText:"Your people are around you: celebration, working well with others, the relief of being understood by a group.",
+   revText:"The group has turned on itself. Gossip, a crowd that drains you, or feeling outside a circle you thought you belonged to.",
+   advice:"Gather the three people who actually know you."},
+  {r:4, pic:"A man sits under a tree with his arms folded, ignoring three cups in front of him and a fourth being offered from a cloud.",
+   up:["boredom","withdrawing","dissatisfaction","rethinking"], rev:["getting interested again","accepting the offer"],
+   upText:"Boredom, and a quiet refusal to be interested in anything. Something good is being offered and you are not looking at it.",
+   revText:"The flatness is lifting. You are ready to look up and take what is being held out to you.",
+   advice:"Look at what is already on the table before you go looking for more."},
+  {r:5, pic:"A cloaked figure looks down at three spilled cups, not noticing two still standing behind them.",
+   up:["grief","loss","regret"], rev:["acceptance","moving on","forgiveness"],
+   upText:"Real loss, and it deserves to be felt. But something is still standing behind you that you have not turned around to see.",
+   revText:"The grief is loosening. You are starting to count what is left rather than what went.",
+   advice:"Grieve it properly, then turn around and count what you still have."},
+  {r:6, pic:"A child hands another child a cup filled with white flowers, in the courtyard of an old village.",
+   up:["nostalgia","childhood","kindness","the familiar"], rev:["living in the past","a rose-tinted memory","homesickness"],
+   upText:"Old friendships, memories, simple kindness, the pull of where you came from. Comfort in something familiar.",
+   revText:"The past has become somewhere you live rather than visit. A memory polished so bright the present cannot compete.",
+   advice:"Visit the past for comfort, do not move back into it."},
+  {r:7, pic:"A figure in shadow faces seven cups floating in cloud, each holding something different: a castle, jewels, a dragon, a face.",
+   up:["too many options","daydreaming","wishful thinking"], rev:["clarity","choosing one","facing facts"],
+   upText:"Lots of appealing options, and most of them exist only in your head. Imagining is not the same as deciding.",
+   revText:"The haze is clearing and one real option is standing out. You are ready to put the fantasies down.",
+   advice:"Pick one. The other six are not real."},
+  {r:8, pic:"A figure with a staff walks away from eight stacked cups toward the hills, under a clouded moon.",
+   up:["walking away","looking for meaning","leaving"], rev:["going back","fear of leaving","drifting"],
+   upText:"Leaving something that is perfectly fine but no longer enough. You may not be able to justify it to other people, and that is alright.",
+   revText:"One foot in and one out. Either you are circling back, or you left in body but not in attention.",
+   advice:"Go, even though nothing is technically wrong."},
+  {r:9, pic:"A well-fed man sits with his arms crossed, smiling, nine cups lined up on a shelf behind him.",
+   up:["contentment","a wish granted","satisfaction"], rev:["smugness","a wish that disappointed","shallow pleasure"],
+   upText:"The wish comes true. Comfort, pleasure, and the feeling of having enough.",
+   revText:"You got the thing and it did not deliver. Satisfaction mistaken for collecting more.",
+   advice:"Enjoy it properly, and check the wish was really yours."},
+  {r:10, pic:"A couple stand with arms raised beside two dancing children, under a rainbow of ten cups.",
+   up:["happy family","harmony","belonging","emotional security"], rev:["family strain","a broken ideal","distance"],
+   upText:"Lasting happiness with other people: home, family whether born or chosen, a relationship that has grown into a whole life.",
+   revText:"The picture and the reality do not match. Tension at home, or an ideal of family that the real one cannot live up to.",
+   advice:"Invest in the people who will still be there in ten years."},
+  {r:11, name:"Page of Cups", pic:"A young person in a flowered tunic holds a cup with a fish popping out of it.",
+   up:["a sweet message","a creative idea","openness","a nice surprise"], rev:["sulking","immaturity","ignoring a feeling"],
+   upText:"A message from the heart, a creative idea with real feeling in it, or a willingness to be surprised. Sincere and a bit silly.",
+   revText:"Feelings sulked about instead of spoken, or an idea dismissed as daft before it had a chance.",
+   advice:"Say the soft thing without wrapping it in a joke."},
+  {r:12, name:"Knight of Cups", pic:"A knight rides a white horse at walking pace, holding a cup out in front of him.",
+   up:["romance","following your heart","an offer","idealism"], rev:["moodiness","empty gestures","disappointment"],
+   upText:"Someone acting on feeling: courtship, an artistic calling, a gesture made with genuine intent.",
+   revText:"Charm with nothing behind it, or an ideal so perfect no real person could meet it.",
+   advice:"Make the gesture, then back it up with something boring and consistent."},
+  {r:13, name:"Queen of Cups", pic:"A woman on a throne at the water's edge gazes at an ornate closed cup in her hands.",
+   up:["empathy","reading people well","intuition","being there for someone"], rev:["giving too much","taking on others' moods"],
+   upText:"Deep feeling, held steadily. The person others bring their troubles to, who can take it without being pulled under.",
+   revText:"Empathy with no limits: carrying what is not yours, or losing your own feelings in somebody else's.",
+   advice:"Feel all of it, and keep the boundary anyway."},
+  {r:14, name:"King of Cups", pic:"A king sits on a throne that floats on a rough sea, holding a cup, completely calm.",
+   up:["emotional steadiness","good advice","compassion","calm"], rev:["bottling it up","manipulation","trouble under the surface"],
+   upText:"Feelings felt fully and not acted out. Wise advice, diplomacy, the kind of calm that settles a whole room.",
+   revText:"Calm used as a lid. Emotion managed into silence, or used quietly to control other people.",
+   advice:"Be the steady one, without pretending you feel nothing."}
+];
+
+// Swords (Air — thinking, truth, conflict) and Pentacles (Earth — money, work, health), in plain English.
+const SWORDS = [
+  {r:1, pic:"A hand from a cloud holds up a sword with a crown and a wreath hanging on its point.",
+   up:["clarity","truth","a breakthrough","a sharp idea"], rev:["confusion","wrong information","clouded judgement"],
+   upText:"Suddenly you can think straight. The right question, the honest sentence, the idea that cuts through the mess.",
+   revText:"Everyone is talking at cross purposes. Bad information, a half-truth repeated often, or honesty being used as a weapon.",
+   advice:"Write one sentence that says what the real issue is."},
+  {r:2, pic:"A blindfolded woman sits by the sea holding two crossed swords over her chest, a crescent moon above.",
+   up:["stalemate","a hard choice","refusing to look","an uneasy truce"], rev:["the decision made","new information","deadlock broken"],
+   upText:"A decision stuck in the balance because you will not look at one side of it. The peace here is bought by not deciding.",
+   revText:"The blindfold is coming off. New information makes the choice obvious, or you decide and the tension drops away.",
+   advice:"Take the blindfold off: list what you already know, then choose."},
+  {r:3, pic:"Three swords pierce a red heart under grey rain clouds.",
+   up:["heartbreak","a painful truth","grief"], rev:["healing","letting the pain go","forgiveness"],
+   upText:"Words that wound, a betrayal, or a truth that hurts precisely because it is true. The pain is clean, not pointless.",
+   revText:"The swords are coming out. Either you are recovering, or you keep replaying a hurt long after the event.",
+   advice:"Let it hurt for a set period, then stop re-reading it."},
+  {r:4, pic:"A carved figure lies still on a tomb in a church, three swords on the wall above and one beneath.",
+   up:["rest","recovery","stepping back","quiet"], rev:["burnout","restlessness","refusing to rest"],
+   upText:"Enforced quiet after a rough patch. Resting is the job right now. Nothing needs deciding today.",
+   revText:"You have pushed exhaustion past its limit, or you are lying down while your mind keeps working.",
+   advice:"Take three days completely off the problem."},
+  {r:5, pic:"A smirking man gathers up swords while two defeated figures walk away along the shore.",
+   up:["winning at a cost","conflict","defeat"], rev:["making amends","walking away","reconciliation"],
+   upText:"A fight won at a price that was not worth paying, or a loss that leaves resentment behind.",
+   revText:"Ready to put the weapon down. An apology, or deciding that being right matters less than the relationship.",
+   advice:"Decide whether you want to win or want this settled."},
+  {r:6, pic:"A ferryman poles a boat carrying a cloaked woman and a child, six swords upright in the hull, toward calm water.",
+   up:["moving on","a transition","leaving trouble behind"], rev:["stuck in between","carrying it with you","a delayed escape"],
+   upText:"Leaving a hard period behind, taking what you learned with you. Not arrived yet, but out of the rough water.",
+   revText:"Movement without really leaving. Either the crossing is blocked, or you brought the entire argument along with you.",
+   advice:"Make the move, and leave two of the swords behind."},
+  {r:7, pic:"A man tiptoes away from a camp carrying five swords, leaving two stuck in the ground.",
+   up:["deception","a shortcut","doing it behind someone's back"], rev:["being found out","owning up","giving it back"],
+   upText:"Something being done quietly without everyone knowing: a clever move, a shortcut, a half-truth. It works, and it costs trust.",
+   revText:"It is coming to the surface. Being caught, confessing, or abandoning a plan that only worked while nobody noticed.",
+   advice:"Assume this will be found out, and act accordingly."},
+  {r:8, pic:"A bound and blindfolded woman stands among eight swords, with open ground in front of her.",
+   up:["feeling trapped","limits you set yourself","powerlessness"], rev:["getting free","seeing the way out"],
+   upText:"The restriction is mostly in your head. The ropes are loose, the swords are behind you, and the way out is not guarded.",
+   revText:"The ropes are coming off. You are starting to see which walls you built yourself.",
+   advice:"List the restrictions, then mark which ones anyone is actually enforcing."},
+  {r:9, pic:"Someone sits up in bed with their face in their hands, nine swords hanging on the black wall behind.",
+   up:["anxiety","sleepless worry","dread"], rev:["relief","worry easing","asking for help"],
+   upText:"Night-time fear, almost always bigger than the facts. Suffering something in advance that may not happen.",
+   revText:"The worst of it is passing. A fear said out loud gets smaller, and help is available.",
+   advice:"Tell one person the exact thing you are afraid of."},
+  {r:10, pic:"A figure lies face down with ten swords in their back, under a black sky with dawn breaking at the edge.",
+   up:["rock bottom","ruin","a final ending"], rev:["survival","recovery starting","the worst behind you"],
+   upText:"The absolute end of something, and it feels dramatic. Look at the horizon on the card: the sky is already getting light. Nothing worse is coming from this direction.",
+   revText:"You are getting up. It has happened, you are still here, and the only way from here is up.",
+   advice:"Accept it is over. Rebuild from scratch, not from the wreckage."},
+  {r:11, name:"Page of Swords", pic:"A young man stands on a windy hill holding a sword up in both hands, watching over his shoulder.",
+   up:["curiosity","asking questions","new information"], rev:["gossip","scattered thinking","speaking too soon"],
+   upText:"Wanting to know, asking sharp questions, news arriving. Learning for the sake of it.",
+   revText:"Talking before thinking, or sharp words thrown around for fun. Information half understood.",
+   advice:"Ask the blunt question, then actually listen to the answer."},
+  {r:12, name:"Knight of Swords", pic:"A knight charges at full gallop into the wind, sword stretched out ahead.",
+   up:["decisive action","being direct","urgency"], rev:["rushing","aggression","burning out"],
+   upText:"Fast, blunt, intelligent action. Says the thing, makes the call, does not wait around for everyone to be comfortable.",
+   revText:"Speed turning into recklessness. Arguments picked for momentum, consequences discovered later.",
+   advice:"Move fast, and take one breath before you hit send."},
+  {r:13, name:"Queen of Swords", pic:"A stern woman on a throne in the clouds holds a sword upright and reaches out her other hand.",
+   up:["clear judgement","honesty","boundaries","independence"], rev:["coldness","harshness","bitterness"],
+   upText:"Someone who sees straight through things and says so kindly. Experience turned into good judgement rather than cynicism.",
+   revText:"Clear-sightedness gone cold. Honesty used to keep people at a distance, or old hurt hardened into a worldview.",
+   advice:"Be honest and warm in the same sentence."},
+  {r:14, name:"King of Swords", pic:"A king sits facing forward on a plain throne, sword held straight up in his right hand.",
+   up:["clear thinking","principles","fair decisions","authority"], rev:["coldness","winning on technicalities","rigid thinking"],
+   upText:"Grown-up judgement: decides hard things on reason and principle, and stands behind the decision afterwards.",
+   revText:"Logic used to dominate rather than understand, or a mind so made up it cannot take in anything new.",
+   advice:"Decide on principle, and write the reasoning down."}
+];
+const PENTS = [
+  {r:1, pic:"A hand from a cloud holds a large gold coin above a garden with a flowered archway.",
+   up:["a new opportunity","money coming in","a practical start"], rev:["a missed chance","money delayed","a bad investment"],
+   upText:"A solid opening with real ground under it: a job, a client, funding, or the first practical step of something.",
+   revText:"An opportunity let slip, or one arriving in a form you cannot use yet. Money promised but not landed.",
+   advice:"Take the practical opportunity, even if it looks small."},
+  {r:2, pic:"A man in a tall hat dances while juggling two coins, two ships riding big waves behind him.",
+   up:["juggling","balance","adapting","priorities"], rev:["overwhelmed","dropping things","wrong priorities"],
+   upText:"Holding two demands at once and just about pulling it off. Keeping moving is what keeps it working.",
+   revText:"Too many plates. The juggling has stopped looking clever and started costing you both things.",
+   advice:"Protect the two priorities and drop the third."},
+  {r:3, pic:"A stonemason on a bench works on a cathedral arch while two people review plans with him.",
+   up:["skilled work","teamwork","being recognised","building something"], rev:["poor teamwork","sloppy work","unclear roles"],
+   upText:"Good work done properly as part of a team, and noticed. What gets built here will last.",
+   revText:"People pulling in different directions, nobody sure who does what, or quality sacrificed for speed.",
+   advice:"Agree who does what before another day passes."},
+  {r:4, pic:"A seated man clutches one coin to his chest, one balanced on his crown and two under his feet.",
+   up:["security","holding on","saving","playing it safe"], rev:["loosening up","generosity","fear about money"],
+   upText:"You have made yourself secure and now you are gripping it. Sensible caution that is starting to look like fear.",
+   revText:"Letting go a little, by spending, giving or investing. Or hoarding that is running your decisions.",
+   advice:"Keep the savings, and let one coin move."},
+  {r:5, pic:"Two ragged figures trudge through snow past a lit stained-glass window.",
+   up:["hard times","going without","feeling left out","money worry"], rev:["recovery","accepting help","the worst passing"],
+   upText:"A genuine shortage of money, health or support, made worse by the belief that help is not meant for you. Look at the card: the lit window is right there.",
+   revText:"Things turn upward. Help accepted, work found, the cold stretch ending.",
+   advice:"Knock on the lit window. The help does exist."},
+  {r:6, pic:"A merchant holds scales in one hand and drops coins into the hands of two kneeling beggars.",
+   up:["generosity","fair exchange","giving and receiving","support"], rev:["strings attached","imbalance","debt"],
+   upText:"Resources moving to where they are needed: a raise, a backer, help given or accepted without anyone being humiliated.",
+   revText:"Help with a hook in it, or a one-way flow that has made someone dependent.",
+   advice:"Give it or take it cleanly, with no running total."},
+  {r:7, pic:"A young man leans on a hoe, looking at seven coins growing on a leafy bush.",
+   up:["patience","a long-term investment","taking stock","slow growth"], rev:["impatience","effort wasted","poor returns"],
+   upText:"The work is done and now it has to grow. This is a progress check, not the harvest.",
+   revText:"Digging up the plant to inspect the roots, or realising the effort is going into the wrong field.",
+   advice:"Wait one more season before you judge the results."},
+  {r:8, pic:"A craftsman at a bench hammers coins one at a time, finished ones hung up beside him.",
+   up:["diligence","practice","getting good","focused work"], rev:["perfectionism","drudgery","cutting corners"],
+   upText:"Doing the same thing again and again until you are genuinely good at it. Unglamorous, and it works.",
+   revText:"Work with no learning in it, or polishing long past the point of value. The craft has turned into a grind.",
+   advice:"Put in the repetitions. Quality comes out of quantity here."},
+  {r:9, pic:"A richly dressed woman stands in a walled vineyard with a hooded falcon on her gloved hand.",
+   up:["independence","earned comfort","self-sufficiency","reward"], rev:["lonely success","leaning on others","empty wealth"],
+   upText:"Comfort you built yourself and get to enjoy on your own terms. Independence that is a pleasure rather than a defence.",
+   revText:"Money that does not feel like anything, or self-sufficiency that has hardened into isolation.",
+   advice:"Enjoy what you built, and let someone in to see it."},
+  {r:10, pic:"An old man with two dogs watches a couple and a child under an archway, ten coins arranged across the scene.",
+   up:["lasting wealth","family","legacy","long-term security"], rev:["money trouble in the family","short-term thinking"],
+   upText:"Wealth that outlives you: property, a business that runs without you, a family and a structure that holds. The long game paying off.",
+   revText:"Arguments over what was built, or decisions made for this quarter at the expense of the next decade.",
+   advice:"Make the choice your ten-years-older self would thank you for."},
+  {r:11, name:"Page of Pentacles", pic:"A young man in a green tunic stands in a field, studying a coin held in both hands.",
+   up:["studying","a practical start","learning a trade"], rev:["putting it off","unfocused study","missing details"],
+   upText:"The beginning of a skill or a venture, taken seriously. Learning the basics, saving the first money.",
+   revText:"Plans studied forever and never started, or details skipped that will cost you later.",
+   advice:"Start learning it properly today, in small doses."},
+  {r:12, name:"Knight of Pentacles", pic:"A knight sits still on a heavy black horse in a ploughed field, holding a coin.",
+   up:["reliability","steady effort","routine","thoroughness"], rev:["stuck in a rut","stubbornness","boredom"],
+   upText:"The slowest and most dependable card in the deck. Turns up, finishes the job, makes no drama. Progress through persistence.",
+   revText:"Steadiness that has become a rut: the same effort repeated long after it stopped producing anything.",
+   advice:"Keep the routine, but change one thing in it."},
+  {r:13, name:"Queen of Pentacles", pic:"A woman on a throne decorated with goats and fruit holds a coin in her lap, a rabbit in the grass beside her.",
+   up:["practical care","resourcefulness","looking after people","being grounded"], rev:["neglecting yourself","overwork","smothering"],
+   upText:"Competence that shows up as care: the person who feeds everyone, runs the house and the accounts, and makes it look easy.",
+   revText:"Everyone looked after except you, or care that has turned into managing other people's lives.",
+   advice:"Turn the same practical care on your own life first."},
+  {r:14, name:"King of Pentacles", pic:"A king in a robe of grapevines sits on a throne carved with bulls, a coin resting in his hand.",
+   up:["wealth","security","reliability","providing for people"], rev:["greed","using money as leverage","too cautious"],
+   upText:"Material mastery: a business that works, money looked after properly, generosity that comes from having enough.",
+   revText:"Worth measured only in what you own, money used as leverage, or caution that has frozen all growth.",
+   advice:"Build the thing that keeps earning when you are not there."}
+];
+
+/* ---------- Deck assembly ---------- */
+const SUITS = {
+  wands:    {label:"Wands",     el:"Fire",  domain:"drive, creativity and action",        cards:WANDS},
+  cups:     {label:"Cups",      el:"Water", domain:"feeling, relationship and intuition", cards:CUPS},
+  swords:   {label:"Swords",    el:"Air",   domain:"mind, truth and conflict",            cards:SWORDS},
+  pentacles:{label:"Pentacles", el:"Earth", domain:"money, work and the body",            cards:PENTS}
+};
+const RANK_NAME = {1:"Ace",2:"Two",3:"Three",4:"Four",5:"Five",6:"Six",7:"Seven",8:"Eight",9:"Nine",10:"Ten",
+                   11:"Page",12:"Knight",13:"Queen",14:"King"};
+const ROMAN = ["0","I","II","III","IV","V","VI","VII","VIII","IX","X","XI","XII","XIII","XIV","XV","XVI","XVII","XVIII","XIX","XX","XXI"];
+
+const DECK = [];
+MAJORS.forEach(c => DECK.push({
+  id:"m"+c.n, name:c.name, arcana:"major", major:c.n, roman:ROMAN[c.n], glyph:c.glyph,
+  suit:null, suitLabel:"Major Arcana", rank:null, el:c.el, astro:c.astro, pic:c.pic,
+  up:c.up, rev:c.rev, upText:c.upText, revText:c.revText, advice:c.advice
+}));
+Object.keys(SUITS).forEach(key => {
+  const s = SUITS[key];
+  s.cards.forEach(c => DECK.push({
+    id:key[0]+c.r, name:c.name || (RANK_NAME[c.r] + " of " + s.label),
+    arcana:"minor", major:null, roman:null, glyph:null,
+    suit:key, suitLabel:s.label, rank:c.r, el:s.el, astro:null, pic:c.pic,
+    up:c.up, rev:c.rev, upText:c.upText, revText:c.revText, advice:c.advice
+  }));
+});
+
+/* ---------- Seeded randomness ---------- */
+function hashStr(str){ let h=2166136261; for(let i=0;i<str.length;i++){ h^=str.charCodeAt(i); h=Math.imul(h,16777619);} return h>>>0; }
+function mulberry32(a){ return function(){ a|=0; a=a+0x6D2B79F5|0; let t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+function shuffled(arr, rnd){ const a=arr.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(rnd()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+
+/* ---------- Spreads ---------- */
+const SPREADS = {
+  ppf: {label:"Past · Present · Future", positions:[
+    {name:"Past",    q:"what has shaped this"},
+    {name:"Present", q:"where you actually stand"},
+    {name:"Future",  q:"where this is heading"}]},
+  sao: {label:"Situation · Action · Outcome", positions:[
+    {name:"Situation", q:"the real nature of the matter"},
+    {name:"Action",    q:"what to do about it"},
+    {name:"Outcome",   q:"what follows if you do"}]},
+  mbs: {label:"Mind · Body · Spirit", positions:[
+    {name:"Mind",   q:"what your thinking is doing"},
+    {name:"Body",   q:"what your material life is doing"},
+    {name:"Spirit", q:"what you actually want"}]},
+  ysa: {label:"You · The Other · The Bond", positions:[
+    {name:"You",       q:"your side of it"},
+    {name:"The Other", q:"their side of it"},
+    {name:"The Bond",  q:"what exists between you"}]}
+};
+
+/* ---------- Reading synthesis ---------- */
+function meaning(d){ return d.reversed ? d.card.revText : d.card.upText; }
+function keywords(d){ return (d.reversed ? d.card.rev : d.card.up); }
+
+function list(items, join){
+  join = join || "and";
+  if(items.length===1) return items[0];
+  if(items.length===2) return items[0]+" "+join+" "+items[1];
+  return items.slice(0,-1).join(", ")+" "+join+" "+items[items.length-1];
+}
+
+function synthesise(draw, spreadKey, question){
+  const spread = SPREADS[spreadKey];
+  const majors = draw.filter(d=>d.card.arcana==="major");
+  const minors = draw.filter(d=>d.card.arcana==="minor");
+  const revs   = draw.filter(d=>d.reversed);
+  const paras  = [];
+
+  /* One-line answer first */
+  const summary = "In short: " + draw.map(d =>
+      d.pos.name.toLowerCase()+" says "+keywords(d)[0]).join(", ") + ".";
+
+  /* How big a deal is this? */
+  if(majors.length===3)
+    paras.push("All three cards are from the Major Arcana, the 22 cards about big life themes. So this is not about your week, it is about a whole chapter. These are things to recognise and work with, not small decisions you can simply fix.");
+  else if(majors.length===2)
+    paras.push("Two of your three cards are Major Arcana, the big-theme cards: "+list(majors.map(d=>d.card.name))+". Something sizeable is shifting in your life. The third card shows how it shows up day to day.");
+  else if(majors.length===1)
+    paras.push(majors[0].card.name+" is a Major Arcana card, which means it carries the most weight here. It sits in the "+majors[0].pos.name.toLowerCase()+" position, and the other two cards fill in the practical detail around it.");
+  else
+    paras.push("There are no Major Arcana cards here, and that is good news. Nothing big and fated is going on. This is ordinary life, which means your own effort can change how it turns out.");
+
+  /* Which part of life */
+  const bySuit = {};
+  minors.forEach(d => bySuit[d.card.suit] = (bySuit[d.card.suit]||0)+1);
+  const dom = Object.keys(bySuit).filter(k=>bySuit[k]>=2);
+  if(dom.length){
+    const k = dom[0];
+    paras.push((bySuit[k]===3?"All three":"Two")+" of your cards are "+SUITS[k].label+", the suit of "+SUITS[k].domain+". Whatever you had in mind when you asked, that is the area the answer is pointing at.");
+  } else if(minors.length===3){
+    paras.push("Your three cards come from three different suits: "+list(minors.map(d=>SUITS[d.card.suit].label))+", which cover "+list(minors.map(d=>SUITS[d.card.suit].domain), "and")+". That is why this is hard to put your finger on. Treat it as three separate issues rather than one.");
+  }
+
+  /* Repeats and patterns */
+  const ranks = {};
+  minors.forEach(d => ranks[d.card.rank] = (ranks[d.card.rank]||0)+1);
+  const echo = Object.keys(ranks).filter(r=>ranks[r]>1);
+  if(echo.length){
+    const r = echo[0];
+    paras.push("Two "+(RANK_NAME[r]==="Ace"?"Aces":RANK_NAME[r]+"s")+" turned up. When the same number repeats, it usually means the same thing is happening in two parts of your life at once, which normally points back to you rather than to the circumstances.");
+  }
+  const courts = minors.filter(d=>d.card.rank>=11);
+  if(courts.length>=2)
+    paras.push("Two or more court cards ("+list(courts.map(d=>d.card.name))+"). Court cards stand for people, so other people are a big part of this. One of them may well be you.");
+  const aces = minors.filter(d=>d.card.rank===1);
+  if(aces.length)
+    paras.push("The "+list(aces.map(d=>d.card.name))+" means a real fresh start is on offer. Aces are offers, not achievements: it only counts if you pick it up.");
+  const tens = minors.filter(d=>d.card.rank===10);
+  if(tens.length)
+    paras.push("The "+list(tens.map(d=>d.card.name))+" means something has reached its natural end. Trying to stretch it out further is the mistake here.");
+
+  /* Reversals, explained */
+  if(revs.length===3)
+    paras.push("All three cards came out upside down. A reversed card is the same energy, blocked or turned inward. Three of them says this is stuck on the inside rather than being done to you from outside, and nothing will move out there until something moves in here.");
+  else if(revs.length===2)
+    paras.push(list(revs.map(d=>d.card.name))+" came out upside down. Reversed means the same force, held up. These are not bad cards, they are stalled ones, and the thing holding them up is most likely you.");
+  else if(revs.length===1)
+    paras.push(revs[0].card.name+" came out upside down in the "+revs[0].pos.name.toLowerCase()+" position. That is the one sticking point in an otherwise moving reading, so start there.");
+  else
+    paras.push("Nothing came out reversed. Everything here is upright and straightforward, so these cards are describing things you can actually get at. Not much is hidden.");
+
+  /* The story across the three */
+  paras.push("Put together: "+draw.map(d => d.pos.name.toLowerCase()+" is "+d.card.name.replace(/^The /,"")+(d.reversed?" reversed":"")).join(", then ")+". "+arcLine(draw));
+
+  if(question && question.trim())
+    paras.unshift("You asked: “"+question.trim()+"” and drew three cards for "+SPREADS[spreadKey].label+".");
+
+  const actions = draw.map(d => d.pos.name+": "+d.card.advice);
+  return {summary, paras, actions, spread};
+}
+
+function arcLine(draw){
+  const hard = ["Death","The Tower","Three of Swords","Ten of Swords","Five of Pentacles","Nine of Swords","Five of Cups","The Devil"];
+  const good = ["The Sun","The Star","The World","Ten of Cups","Six of Wands","Nine of Cups","Ten of Pentacles","Four of Wands"];
+  const last = draw[2], first = draw[0];
+  if(good.includes(last.card.name) && !last.reversed) return "It finishes on a good card, and that is the part to hold on to.";
+  if(hard.includes(last.card.name) && !last.reversed) return "The last card is a hard one. Read it as a warning about where this is heading, not a verdict: the third card is always the one you can still change.";
+  if(hard.includes(first.card.name)) return "It starts somewhere heavy and does not stay there. The movement is away from that weight.";
+  if(last.reversed) return "The last card is upside down, so the ending is not settled yet. It depends on what you do about the middle card.";
+  return "The change across the three is gradual rather than dramatic. This gets sorted out by small steps adding up, not by one big event.";
+}
+
+/* ---------- card art: scans of the 1909 Rider-Waite-Smith deck (public domain) ---------- */
+const ART = "cards/";
+const CARD_BACK = '<div class="back"><span class="rose">\u2724</span></div>';
+
+function faceHTML(card, eager){
+  return '<div class="face"><img src="'+ART+card.id+'.webp" alt="'+card.name+
+         '" draggable="false"'+(eager?'':' loading="lazy"')+'></div>';
+}
+function cardHTML(card, opts){
+  opts = opts||{};
+  const cls = ["card"];
+  if(opts.flipped) cls.push("flipped");
+  if(opts.reversed) cls.push("rev");
+  if(opts.extra) cls.push(opts.extra);
+  return '<div class="'+cls.join(" ")+'"'+(opts.attrs||"")+'><div class="inner">'+
+         CARD_BACK + faceHTML(card, opts.eager) + '</div></div>';
+}
+const $ = s => document.querySelector(s);
+const $$ = s => Array.prototype.slice.call(document.querySelectorAll(s));
+
+/* ---------- tabs ---------- */
+$$("nav.tabs button").forEach(b => b.onclick = () => {
+  $$("nav.tabs button").forEach(x => x.setAttribute("aria-selected", x===b));
+  $$(".panel").forEach(p => p.classList.toggle("on", p.id === "panel-"+b.dataset.tab));
+  window.scrollTo({top:0,behavior:"smooth"});
+});
+
+/* ---------- settings ---------- */
+const store = {
+  get(k,d){ try{ const v=localStorage.getItem("rw:"+k); return v===null?d:JSON.parse(v);}catch(e){return d;} },
+  set(k,v){ try{ localStorage.setItem("rw:"+k, JSON.stringify(v)); }catch(e){} }
+};
+
+/* ---------- daily card ---------- */
+function todayKey(){ const d=new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+function prettyDate(){ return new Date().toLocaleDateString(undefined,{weekday:"long",day:"numeric",month:"long",year:"numeric"}); }
+
+function dailyDraw(){
+  const key = todayKey();
+  const saved = store.get("daily:"+key, null);
+  const allowRev = $("#dailyRev").checked;
+  if(saved && saved.rev === allowRev) return saved;
+  const rnd = mulberry32(hashStr("rw-daily-"+key+(allowRev?"-r":"")));
+  const card = shuffled(DECK, rnd)[0];
+  const d = {id:card.id, reversed: allowRev ? rnd() < 0.42 : false, rev:allowRev};
+  store.set("daily:"+key, d);
+  return d;
+}
+function byId(id){ return DECK.find(c=>c.id===id); }
+
+function renderDaily(revealNow){
+  const d = dailyDraw(), card = byId(d.id);
+  const revealed = revealNow || store.get("dailyShown:"+todayKey(), false);
+  $("#dailyDate").textContent = prettyDate();
+  $("#dailyCard").innerHTML = cardHTML(card, {flipped:revealed, reversed:d.reversed, eager:true});
+  const read = $("#dailyRead");
+  if(!revealed){
+    read.innerHTML = '<p class="muted">One card is set aside for today. It is the same card however many times you come back — turn it when you are ready to read it.</p>'+
+      '<button class="btn" id="revealDaily">Turn the card</button>';
+    $("#revealDaily").onclick = () => { store.set("dailyShown:"+todayKey(), true); renderDaily(true);
+      setTimeout(()=>$("#dailyCard .card").classList.add("flipped"),30); };
+    return;
+  }
+  read.innerHTML =
+    '<p class="tagline">'+card.suitLabel+(card.astro?" · "+card.astro:"")+" · "+card.el+'</p>'+
+    '<h3 class="cardname">'+card.name+(d.reversed?'<span class="rev-badge">Reversed</span>':'')+'</h3>'+
+    '<ul class="kw">'+(d.reversed?card.rev:card.up).map(k=>'<li>'+k+'</li>').join("")+'</ul>'+
+    '<p>'+(d.reversed?card.revText:card.upText)+'</p>'+
+    '<p class="pic"><strong>What you see:</strong> '+card.pic+(d.reversed?" Today it came out upside down, so read it the other way round.":"")+'</p>'+
+    '<p class="advice"><strong>One thing to do:</strong> '+card.advice+'</p>';
+}
+$("#dailyRev").onchange = () => { store.set("allowRev", $("#dailyRev").checked); renderDaily(store.get("dailyShown:"+todayKey(),false)); };
+
+/* ---------- three-card reading ---------- */
+let state = {order:[], picks:[], spread:"ppf"};
+
+function buildSpreadSelect(){
+  $("#spread").innerHTML = Object.keys(SPREADS).map(k=>'<option value="'+k+'">'+SPREADS[k].label+'</option>').join("");
+}
+function renderSlots(){
+  const pos = SPREADS[state.spread].positions;
+  $("#slots").innerHTML = pos.map((p,i)=>{
+    const picked = state.picks[i];
+    return '<div class="slot'+(picked?" full":"")+'">'+
+      (picked ? cardHTML(picked.card,{eager:true}) : '<div class="box">✧</div>')+
+      '<div class="lbl">'+p.name+'</div><div class="q">'+p.q+'</div></div>';
+  }).join("");
+  $("#counter").textContent = state.picks.length===3
+    ? "Three cards chosen. Read them when you are ready."
+    : "Choose "+(3-state.picks.length)+" more card"+(3-state.picks.length===1?"":"s")+" from the "+ (78-state.picks.length) +" face down.";
+  $("#readBtn").disabled = state.picks.length!==3;
+}
+function dealFan(){
+  state.order = shuffled(DECK, Math.random);
+  state.picks = [];
+  $("#fan").innerHTML = state.order.map((c,i)=>cardHTML(c,{extra:"pickable",attrs:' data-i="'+i+'" title="Face down"'})).join("");
+  $$("#fan .card").forEach(el => el.onclick = () => pick(el));
+  $("#result").classList.remove("on");
+  $("#pickStage").style.display = "";
+  renderSlots();
+}
+function pick(el){
+  if(state.picks.length>=3 || el.classList.contains("picked")) return;
+  const card = state.order[+el.dataset.i];
+  const allowRev = $("#spreadRev").checked;
+  el.classList.add("picked");
+  state.picks.push({card, reversed: allowRev ? Math.random()<0.42 : false});
+  renderSlots();
+  if(state.picks.length===3) $$("#fan .card:not(.picked)").forEach(c=>{c.classList.add("dim");c.classList.remove("pickable");});
+}
+$("#spread").onchange = () => { state.spread = $("#spread").value; renderSlots(); };
+$("#dealBtn").onclick = dealFan;
+$("#readBtn").onclick = reveal;
+$("#againBtn").onclick = () => { dealFan(); window.scrollTo({top:$("#panel-reading").offsetTop-20,behavior:"smooth"}); };
+
+function reveal(){
+  const spread = SPREADS[state.spread];
+  const draw = state.picks.map((p,i)=>({card:p.card, reversed:p.reversed, pos:spread.positions[i]}));
+  const out = synthesise(draw, state.spread, $("#question").value);
+
+  $("#spread3").innerHTML = draw.map(d =>
+    '<div class="col">'+cardHTML(d.card,{reversed:d.reversed, eager:true})+
+    '<div class="pos">'+d.pos.name+'</div><p class="cn">'+d.card.name+(d.reversed?" <span class=\"rev-badge\">rev</span>":"")+'</p></div>').join("");
+  $("#summary").textContent = out.summary;
+  $("#readings").innerHTML = draw.map(d =>
+    '<div class="blk"><h3>'+d.pos.name+' — '+d.pos.q+'</h3>'+
+    '<p><span class="nm">'+d.card.name+(d.reversed?", upside down":"")+'.</span> '+meaning(d)+'</p>'+
+    '<p class="pic">'+d.card.pic+'</p></div>').join("");
+  $("#narr").innerHTML = out.paras.map(p=>'<p>'+p+'</p>').join("");
+  $("#actions").innerHTML = out.actions.map(a=>'<li>'+a+'</li>').join("");
+  $("#pickStage").style.display = "none";
+  $("#result").classList.add("on");
+  window.scrollTo({top:$("#result").offsetTop-70,behavior:"smooth"});
+  setTimeout(()=>$$("#spread3 .card").forEach((c,i)=>setTimeout(()=>c.classList.add("flipped"), i*260)), 180);
+
+  const q = $("#question").value.trim();
+  window.__readingText = (q?"Question: "+q+"\n":"")+spread.label+" — "+prettyDate()+"\n\n"+out.summary+"\n\n"+
+    draw.map(d=>d.pos.name+": "+d.card.name+(d.reversed?" (upside down)":"")+"\n"+meaning(d)).join("\n\n")+
+    "\n\n"+out.paras.join("\n\n")+"\n\nWhat to do\n"+out.actions.map(a=>"- "+a).join("\n");
+}
+$("#copyBtn").onclick = async () => {
+  try{ await navigator.clipboard.writeText(window.__readingText||""); $("#copyBtn").textContent="Copied"; }
+  catch(e){ $("#copyBtn").textContent="Select & copy below"; }
+  setTimeout(()=>$("#copyBtn").textContent="Copy reading",1600);
+};
+
+/* ---------- library ---------- */
+let libFilter="all";
+function renderLib(){
+  const q = $("#libSearch").value.trim().toLowerCase();
+  const cards = DECK.filter(c=>{
+    const okF = libFilter==="all" || (libFilter==="major"? c.arcana==="major" : c.suit===libFilter);
+    if(!okF) return false;
+    if(!q) return true;
+    return (c.name+" "+c.up.join(" ")+" "+c.rev.join(" ")+" "+c.upText).toLowerCase().includes(q);
+  });
+  $("#lib").innerHTML = cards.map(c=>
+    '<div class="cell" data-id="'+c.id+'">'+cardHTML(c,{})+'<div class="nm">'+c.name+'</div></div>').join("")
+    || '<p class="muted">No cards match that.</p>';
+  $("#libCount").textContent = cards.length+" of 78";
+  $$("#lib .cell").forEach(el => el.onclick = () => openCard(el.dataset.id));
+}
+$$(".chips button").forEach(b => b.onclick = () => {
+  libFilter = b.dataset.f; $$(".chips button").forEach(x=>x.setAttribute("aria-pressed", x===b)); renderLib();
+});
+$("#libSearch").oninput = renderLib;
+
+function openCard(id){
+  const c = byId(id);
+  $("#modalBody").innerHTML =
+    cardHTML(c,{flipped:true, eager:true})+
+    '<div class="txt"><h3>'+c.name+'</h3><p class="meta">'+c.suitLabel+
+      (c.arcana==="major"?" · "+c.roman:"")+(c.astro?" · "+c.astro:"")+" · "+c.el+'</p>'+
+    '<h4>What you see on the card</h4><p>'+c.pic+'</p>'+
+    '<h4>Upright</h4><ul class="kw">'+c.up.map(k=>'<li>'+k+'</li>').join("")+'</ul><p>'+c.upText+'</p>'+
+    '<h4>Upside down (reversed)</h4><ul class="kw">'+c.rev.map(k=>'<li>'+k+'</li>').join("")+'</ul><p>'+c.revText+'</p>'+
+    '<h4>One thing to do</h4><p>'+c.advice+'</p></div>';
+  $("#modal").showModal();
+}
+$("#modalClose").onclick = () => $("#modal").close();
+$("#modal").onclick = e => { if(e.target.id==="modal") $("#modal").close(); };
+
+/* ---------- init ---------- */
+$("#dailyRev").checked = store.get("allowRev", true);
+$("#spreadRev").checked = store.get("allowRev", true);
+$("#spreadRev").onchange = () => store.set("allowRev", $("#spreadRev").checked);
+buildSpreadSelect();
+renderDaily(false);
+dealFan();
+renderLib();
+</script>
+</body>
+</html>
