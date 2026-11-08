@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="XploreAI Weekly Briefing #13 (2–8 Nov 2026): AI moves into execution-heavy work — GPT-6 Cyber finds 81 unknown Firefox vulnerabilities, Mistral Studio becomes an enterprise-agent platform, Kalepa brings agents to insurance underwriting — while IBM, AMD and Oak Ridge build a quantum error-correction platform.">
+<link rel="canonical" href="https://xploreai.co.in/briefing/issue-13/">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="XploreAI">
+<meta property="og:title" content="AI + Quantum Briefing #13 — The Execution Era (2–8 Nov 2026)">
+<meta property="og:description" content="The week in AI + Quantum, in 5 minutes: specialist cyber models, wet-lab benchmarks, insurance AI — and QPU + GPU + CPU as one system.">
+<meta property="og:url" content="https://xploreai.co.in/briefing/issue-13/">
+<meta property="og:image" content="https://xploreai.co.in/briefing/issue-13/og-image.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="AI + Quantum Briefing #13 — XploreAI">
+<meta name="twitter:description" content="The week in AI, in 5 minutes.">
+<meta name="twitter:image" content="https://xploreai.co.in/briefing/issue-13/og-image.jpg">
+<title>XploreAI — AI + Quantum Briefing · 2–8 Nov 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#F5EFE4; --card:#FFFDF8; --espresso:#4A4238; --espresso-soft:rgba(74,66,56,.72);
+    --rust:#E2571B; --rust-soft:#FBE9DF; --line:rgba(74,66,56,.14); --dark:#2B2620;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--cream);color:var(--espresso);font-family:'Quicksand',-apple-system,'Segoe UI',Arial,sans-serif;font-weight:500;line-height:1.62;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:720px;margin:0 auto;padding:40px 22px 64px}
+
+  /* Masthead */
+  .masthead{text-align:center;padding:26px 0 30px}
+  .wordmark{font-weight:700;font-size:44px;letter-spacing:.5px}
+  .wordmark .ai{color:var(--rust)}
+  .eyebrow{display:inline-block;margin-top:14px;font-size:13px;font-weight:700;letter-spacing:5px;color:var(--rust)}
+  .issue{margin-top:8px;font-size:15px;color:var(--espresso-soft)}
+  .dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--rust);margin:0 10px;vertical-align:middle}
+
+  /* One-line summary strip */
+  .strip{background:var(--dark);color:var(--cream);border-radius:18px;padding:18px 24px;text-align:center;font-weight:600;font-size:15.5px;margin:8px 0 34px}
+  .strip .up{color:#F7A97E;font-weight:700}
+
+  h2.section{font-size:14px;font-weight:700;letter-spacing:4px;color:var(--rust);margin:42px 0 6px}
+  h3.sectiontitle{font-size:27px;font-weight:700;line-height:1.25;margin-bottom:16px}
+  h3.sectiontitle .enddot{color:var(--rust)}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px 24px;margin-bottom:14px}
+  .card h4{font-size:18.5px;font-weight:700;margin-bottom:6px}
+  .card .date{display:inline-block;background:var(--rust-soft);color:var(--rust);font-weight:700;font-size:12.5px;letter-spacing:1.5px;border-radius:20px;padding:3px 12px;margin-bottom:10px}
+  .card p{font-size:15.5px;color:var(--espresso-soft)}
+  .card p b{color:var(--espresso)}
+  .why{margin-top:10px;padding-top:10px;border-top:1px dashed var(--line);font-size:14.5px}
+  .why b{color:var(--rust)}
+
+  /* Funding table */
+  table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden;font-size:14.5px}
+  thead th{background:var(--dark);color:var(--cream);text-align:left;font-weight:700;padding:12px 14px;letter-spacing:.5px}
+  tbody td{padding:12px 14px;border-top:1px solid var(--line);vertical-align:top;color:var(--espresso-soft)}
+  tbody td:first-child{white-space:nowrap;font-weight:700;color:var(--espresso)}
+  tbody td b{color:var(--rust);font-weight:700}
+  .tablewrap{border-radius:18px;overflow:hidden;border:1px solid var(--line)}
+  .tablewrap table{border:none;border-radius:0}
+
+  /* Signals */
+  .signal{display:flex;gap:16px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 18px;margin-bottom:10px}
+  .signal .num{flex:0 0 40px;height:40px;border-radius:50%;background:var(--rust);color:#fff;font-weight:700;font-size:17px;display:flex;align-items:center;justify-content:center}
+  .signal h5{font-size:16px;font-weight:700;margin-bottom:2px}
+  .signal p{font-size:14.5px;color:var(--espresso-soft)}
+
+  /* India watch + quote */
+  .india{background:var(--rust-soft);border:1px solid rgba(226,87,27,.25);border-radius:18px;padding:22px 24px;margin-top:6px}
+  .india h4{font-size:18px;font-weight:700;margin-bottom:8px}
+  .india p{font-size:15px;color:var(--espresso-soft)}
+  .quote{margin:44px 0 8px;text-align:center;padding:30px 26px;background:var(--dark);border-radius:20px;color:var(--cream)}
+  .quote .q{font-size:23px;font-weight:700;line-height:1.4}
+  .quote .q span{color:#F7A97E}
+  .quote .sub{margin-top:10px;font-size:14px;color:rgba(245,239,228,.65)}
+
+  /* Footer */
+  footer{margin-top:46px;text-align:center;border-top:1px solid var(--line);padding-top:28px}
+  footer .wordmark{font-size:26px}
+  footer .link{margin-top:8px;font-weight:700;color:var(--rust);font-size:15px;text-decoration:none;display:inline-block}
+  footer .fine{margin-top:10px;font-size:12.5px;color:var(--espresso-soft)}
+
+  @media (max-width:560px){
+    .wordmark{font-size:36px}
+    h3.sectiontitle{font-size:23px}
+    thead{display:none}
+    tbody td{display:block;border-top:none;padding:4px 14px}
+    tbody tr{display:block;border-top:1px solid var(--line);padding:8px 0}
+  }
+
+  a.readmore{display:inline-block;margin-top:10px;font-weight:700;font-size:14px;color:var(--rust);text-decoration:none}
+  a.readmore:hover{text-decoration:underline}
+  tbody td a{color:var(--espresso);text-decoration:none;border-bottom:2px solid var(--rust)}
+
+  /* ---- Issue 11: quantum accent ---- */
+  :root{--quantum:#5B4FC9; --quantum-soft:#EBE8F8;}
+  .qcard{background:var(--card);border:1px solid rgba(91,79,201,.3);border-radius:18px;padding:22px 24px;margin-bottom:14px}
+  .qdate{display:inline-block;background:var(--quantum-soft);color:var(--quantum);font-weight:700;font-size:12.5px;letter-spacing:1.5px;border-radius:20px;padding:3px 12px;margin-bottom:10px}
+  h2.qsection{font-size:14px;font-weight:700;letter-spacing:4px;color:var(--quantum);margin:42px 0 6px}
+  .qsignal .num{background:var(--quantum) !important}
+  .qwhy b{color:var(--quantum) !important}
+  .qtable thead th{background:#2A2452 !important}
+  .qtable tbody td:first-child{color:var(--quantum) !important}
+
+  /* ---- Issue 11: motion graphics ---- */
+  @media (prefers-reduced-motion: no-preference){
+    .reveal{opacity:0;transform:translateY(22px);transition:opacity .6s ease,transform .6s cubic-bezier(.22,.9,.35,1)}
+    .reveal.in{opacity:1;transform:none}
+    .masthead .wordmark{animation:popIn .8s cubic-bezier(.22,1.2,.36,1) both}
+    .masthead .eyebrow{animation:fadeDown .7s .25s ease both}
+    .masthead .issue{animation:fadeDown .7s .4s ease both}
+    @keyframes popIn{0%{opacity:0;transform:scale(.92) translateY(10px)}100%{opacity:1;transform:none}}
+    @keyframes fadeDown{0%{opacity:0;transform:translateY(-8px)}100%{opacity:1;transform:none}}
+    .dot{animation:dotPulse 2.6s ease-in-out infinite}
+    @keyframes dotPulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.35);opacity:.75}}
+    .strip{position:relative;overflow:hidden}
+    .strip::after{content:"";position:absolute;top:0;left:-60%;width:40%;height:100%;background:linear-gradient(105deg,transparent,rgba(247,169,126,.14),transparent);animation:sweep 4.5s ease-in-out infinite}
+    @keyframes sweep{0%{left:-60%}55%,100%{left:110%}}
+    .strip .up{display:inline-block;animation:rise 2.2s ease-in-out infinite}
+    @keyframes rise{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+    .signal .num{transition:transform .3s ease}
+    .signal:hover .num{transform:scale(1.18) rotate(-6deg)}
+    .card,.qcard{transition:transform .35s ease,box-shadow .35s ease}
+    .card:hover,.qcard:hover{transform:translateY(-3px);box-shadow:0 10px 28px rgba(74,66,56,.10)}
+    .readmore{transition:letter-spacing .25s ease}
+    .readmore:hover{letter-spacing:.4px}
+    .quote{position:relative;overflow:hidden}
+    .quote::before{content:"";position:absolute;inset:-40%;background:radial-gradient(circle at 30% 30%,rgba(226,87,27,.12),transparent 55%);animation:glow 7s ease-in-out infinite alternate}
+    @keyframes glow{0%{transform:translate(0,0)}100%{transform:translate(18%,12%)}}
+    .quote>*{position:relative}
+  }
+</style>
+</head>
+<body>
+<nav style="position:sticky;top:0;z-index:50;background:rgba(245,239,228,.92);border-bottom:1px solid rgba(74,66,56,.14);backdrop-filter:blur(8px)">
+  <div style="max-width:720px;margin:0 auto;padding:12px 22px;display:flex;justify-content:space-between;align-items:center">
+    <a href="/" style="font-weight:700;font-size:22px;text-decoration:none;color:#4A4238">xplore<span style="color:#E2571B">ai</span></a>
+    <a href="/briefing/" style="font-weight:700;font-size:14px;text-decoration:none;color:#E2571B">← All issues</a>
+  </div>
+</nav>
+<div class="wrap">
+
+  <!-- Masthead -->
+  <div class="masthead">
+    <div class="wordmark">xplore<span class="ai">ai</span></div>
+    <div class="eyebrow">AI + QUANTUM WEEKLY BRIEFING</div>
+    <div class="issue">Issue #13 <span class="dot"></span> 2–8 November 2026 <span class="dot"></span> xploreai.co.in</div>
+  </div>
+
+  <div class="strip">
+    Agentic AI <span class="up">↑↑↑</span> &nbsp;·&nbsp; Cyber AI <span class="up">↑↑↑</span> &nbsp;·&nbsp; AI for science <span class="up">↑↑↑</span> &nbsp;·&nbsp; Insurance AI <span class="up">↑↑</span> &nbsp;·&nbsp; Quantum error correction <span class="up">⚛</span> &nbsp;·&nbsp; Quantum platforms <span class="up">⚛</span>
+  </div>
+
+  <!-- Section 1 -->
+  <h2 class="section reveal">01 · AI RESEARCH &amp; DEVELOPMENT</h2>
+  <h3 class="sectiontitle reveal">Can the agent actually finish it<span class="enddot">?</span></h3>
+
+  <div class="card reveal">
+    <span class="date">2 NOV · OPENAI</span>
+    <h4>LifeVal — benchmarking AI on everyday life</h4>
+    <p>A new benchmark measuring how well agents perform <b>practical everyday tasks</b> — childcare research, budgeting, paperwork, shopping, accessing government services — designed around a representative survey of <b>3,995 people</b> on where they most want AI help.</p>
+    <p class="why"><b>Why it matters:</b> AI evaluation is moving from academic Q&amp;A toward <b>"can the agent actually finish something useful?"</b></p>
+    <a class="readmore" href="https://openai.com/index/lifeval/" target="_blank" rel="noopener">Read OpenAI&#8217;s post →</a>
+  </div>
+
+  <div class="card reveal">
+    <span class="date">3 NOV · OPENAI</span>
+    <h4>AI pushes into physical engineering</h4>
+    <p>GPT-6 Astra demonstrated across <b>mechanical design, PCB design, firmware and CAD workflows</b> — in one internal test, two people used Astra to design a prototype device in under a week. OpenAI is also collaborating with <b>Mazda</b> on aerodynamics and crash-safety engineering.</p>
+    <p class="why"><b>The frontier opens:</b> AI coding agent → AI engineering agent → <b>physical product design</b>.</p>
+    <a class="readmore" href="https://openai.com/index/accelerating-engineering-for-the-physical-world/" target="_blank" rel="noopener">Read the announcement →</a>
+  </div>
+
+  <div class="card reveal">
+    <span class="date">6 NOV · OPENAI × LIGO</span>
+    <h4>BioBasicsBench tests AI on messy wet-lab science</h4>
+    <p>A <b>100-task benchmark</b> built on raw experimental data rather than polished paper figures. GPT-6 Astra scored <b>66.7% vs 43.8%</b> for GPT-5.6 Sol — while still showing weaknesses around controls, ambiguous images and experimental context.</p>
+    <p class="why"><b>Why it matters:</b> a reliable AI scientist must recognize when an experiment <b>doesn't support a conclusion</b> — not merely produce plausible explanations.</p>
+    <a class="readmore" href="https://openai.com/index/measuring-how-ai-agents-handle-wet-lab-science/" target="_blank" rel="noopener">Read the benchmark post →</a>
+  </div>
+
+  <!-- Section 2 -->
+  <h2 class="section reveal">02 · AI MODELS &amp; TOOLS</h2>
+  <h3 class="sectiontitle reveal">Specialists and execution platforms<span class="enddot">.</span></h3>
+
+  <div class="card reveal">
+    <span class="date">🥇 5 NOV · OPENAI</span>
+    <h4>GPT-6 Cyber — the model release of the week</h4>
+    <p>A specialized cybersecurity model built to discover and validate vulnerabilities <b>while staying within authorized boundaries</b>: <b>48.5% on ExploitGym</b> (vs 32.1% for GPT-5.6 Cyber), with OpenAI reporting <b>99.93% avoidance of out-of-scope services</b> without a deployment prompt and 100% with one. The model helped develop <b>948 Linux privilege-escalation exploits</b>, identify <b>81 previously unknown high-severity Firefox vulnerabilities</b>, and assist with candidate patches. Access is initially restricted through <b>Daybreak Red</b>.</p>
+    <p class="why"><b>Why it matters:</b> specialized AI is now capable enough that <b>capability + permission boundaries + monitoring have to be designed together</b>.</p>
+    <a class="readmore" href="https://openai.com/index/introducing-gpt-6-cyber/" target="_blank" rel="noopener">Read OpenAI&#8217;s announcement →</a>
+  </div>
+
+  <div class="card reveal">
+    <span class="date">5 NOV · MISTRAL 🇫🇷</span>
+    <h4>Mistral turns Studio into an enterprise-agent platform</h4>
+    <p>Studio now bundles <b>managed agents + workflows + apps + MCP + skills + sandboxes + subagents + human approvals + OpenTelemetry observability</b> — deployable in Mistral Cloud, a private VPC or on-premises. Mistral reports an internal incident-response agent saving engineers <b>hundreds of hours a month</b> and a product-ops workflow saving <b>~35 hours a week</b> (Mistral-reported figures).</p>
+    <p class="why"><b>The converging enterprise architecture:</b> model + agent + workflow + MCP + skills + approval + <b>observability</b>.</p>
+    <a class="readmore" href="https://mistral.ai/news/build-with-studio/" target="_blank" rel="noopener">Read Mistral&#8217;s announcement →</a>
+  </div>
+
+  <div class="card reveal">
+    <span class="date">5 NOV · GOOGLE</span>
+    <h4>Gemini Omni 1.2 Flash — production video gets cheaper</h4>
+    <p>A faster, lower-cost generative-video model with <b>15-second clips</b>, improved consistency and stronger production efficiency.</p>
+    <p class="why"><b>The direction:</b> generative video keeps moving from experimental clips toward <b>usable production workflows</b>.</p>
+    <a class="readmore" href="https://blog.google/innovation-and-ai/technology/developers-tools/introducing-gemini-omni-1-2-flash/" target="_blank" rel="noopener">Read Google&#8217;s post →</a>
+  </div>
+
+  <div class="card reveal">
+    <span class="date">DEVELOPER RADAR</span>
+    <h4>What builders were watching</h4>
+    <p>The exact ExplainX weekly-trending URL was unavailable to automated retrieval again, so no formal ranking — but its November coverage strongly emphasized <b>GPT-6 Cyber, AI security benchmarks, Mistral Studio, agent workflows, agent safety and open-weight models</b>, aligning closely with the primary sources above.</p>
+    <a class="readmore" href="https://www.explainx.ai/blog/topics/openai" target="_blank" rel="noopener">See the coverage →</a>
+  </div>
+
+  <!-- Section 3 -->
+  <h2 class="section reveal">03 · AI FUNDING &amp; STARTUPS</h2>
+  <h3 class="sectiontitle reveal">Trillion-dollar rounds, insurance agents<span class="enddot">.</span></h3>
+
+  <div class="tablewrap reveal">
+  <table>
+    <thead><tr><th>Date</th><th>Company</th><th>Development</th></tr></thead>
+    <tbody>
+      <tr><td>6 Nov</td><td><a href="https://www.reuters.com/business/openai-secures-11-billion-funding-125-trillion-valuation-bloomberg-news-reports-2026-11-06/" target="_blank" rel="noopener">🥇 OpenAI</a></td><td>Reuters: closed <b>$11B at a $1.25 trillion valuation</b> (SoftBank, MGX) — the first portion of a round originally targeting up to $30B. The counter-signal inside the headline: the valuation sits <b>below the $1.5T initially sought</b> — investors are getting more disciplined about AI capital requirements.</td></tr>
+      <tr><td>5 Nov</td><td><a href="https://www.reuters.com/business/drone-delivery-startup-zipline-valued-215-billion-latest-funding-round-2026-11-05/" target="_blank" rel="noopener">Zipline</a></td><td>Autonomous drone-delivery company raised <b>$1.5B</b>, nearly tripling its valuation in ~10 months to <b>$21.5B</b> — plans US manufacturing expansion and a nationwide autonomous delivery network. A strong signal for <b>physical AI + autonomy + logistics</b>.</td></tr>
+      <tr><td>5 Nov</td><td><a href="https://www.reuters.com/legal/transactional/ai-powered-insurance-startup-kalepa-valued-470-million-new-funding-round-2026-11-05/" target="_blank" rel="noopener">Kalepa 🛡️</a></td><td>AI insurance platform raised <b>$75M at $470M</b> — underwriting, pricing, operations and portfolio management. Customers report <b>30–60% more premium per underwriter</b> and a <b>58% cut in quote time</b> (company-reported). Expansion: underwriting → product development → reinsurance → distribution — a case study for where <b>AI in life/general insurance</b> goes beyond copilots.</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="card reveal" style="margin-top:14px">
+    <span class="date">2 NOV · ⚠️ THE COST SIDE</span>
+    <h4>Anthropic's IPO filings highlight the economics question</h4>
+    <p>Q3 revenue of <b>$16.96B, up 47% quarter-on-quarter</b> — but the filing also disclosed roughly <b>$895.4B in future computing commitments</b>. The market debate this sets up: <b>can AI revenue grow quickly enough to justify the infrastructure being built?</b> That question may become as important in 2027 as model benchmarks.</p>
+    <a class="readmore" href="https://www.reuters.com/business/anthropics-quarterly-loss-shrinks-revenue-jumps-ahead-blockbuster-ipo-2026-11-02/" target="_blank" rel="noopener">Read the Reuters report →</a>
+  </div>
+
+  <!-- Section 4: QUANTUM -->
+  <h2 class="qsection reveal">04 · ⚛️ QUANTUM — WEEKLY UPDATE</h2>
+  <h3 class="sectiontitle reveal">One system: QPU + GPU + CPU<span class="enddot" style="color:var(--quantum)">.</span></h3>
+
+  <div class="qcard reveal">
+    <span class="qdate">🥇 5 NOV · IBM × AMD × OAK RIDGE</span>
+    <h4>A quantum error-correction co-design platform</h4>
+    <p>IBM Quantum, AMD and Oak Ridge National Laboratory deployed a <b>QEC co-design platform</b>: IBM Nighthawk quantum processors + AMD Instinct MI355X GPUs + AMD EPYC CPUs + Oak Ridge HPC — with classical compute sitting <b>next to the quantum processors</b> for extremely low-latency decoding and real-time quantum-classical feedback.</p>
+    <p class="why qwhy"><b>Why it matters:</b> practical fault tolerance won't be a QPU alone — it will be <b>QPU + GPU + CPU + error-correction software working as one system</b>. Exactly the hybrid architecture this briefing has been tracking.</p>
+    <a class="readmore" style="color:var(--quantum)" href="https://www.ibm.com/quantum/blog/ornl-amd-error-correction-co-design-platform" target="_blank" rel="noopener">Read IBM&#8217;s post →</a>
+  </div>
+
+  <div class="qcard reveal">
+    <span class="qdate">5 NOV · QUANTINUUM</span>
+    <h4>Nexus — a developer platform for the fault-tolerant era</h4>
+    <p>A roadmap for <b>Nexus</b>, Quantinuum's quantum developer platform, designed to hide the complexity of <b>error-correction encoding, compilation, resource management and hybrid execution</b> — running toward <b>Apollo</b>, its planned universal fault-tolerant computer in 2029. Nexus already supports <b>200+ organizations</b>, with job submissions up <b>10× year-on-year</b> through August.</p>
+    <p class="why qwhy"><b>The quantum echo of AI's playbook:</b> hardware → developer platform → applications.</p>
+    <a class="readmore" style="color:var(--quantum)" href="https://www.quantinuum.com/press-releases/quantinuum-unveils-nexus-roadmap-to-deliver-the-first-developer-platform-designed-for-the-fault-tolerant-quantum-era" target="_blank" rel="noopener">Read the announcement →</a>
+  </div>
+
+  <div class="qcard reveal">
+    <span class="qdate">6 NOV · IBM</span>
+    <h4>Quantum System Two goes live in Chicago</h4>
+    <p>IBM deployed its most advanced currently available quantum system at the University of Chicago's Hyde Park Labs — a Nighthawk-based <b>Quantum System Two</b> that will anchor the Illinois Quantum and Microelectronics Park's National Quantum Algorithm Center. Initial application work: <b>drug discovery, molecular simulation, power-grid optimization and high-energy physics</b>.</p>
+    <a class="readmore" style="color:var(--quantum)" href="https://newsroom.ibm.com/2026-11-06-ibm-unveils-its-most-advanced-quantum-computer-in-chicago,-marking-a-milestone-for-illinoiss-quantum-future" target="_blank" rel="noopener">Read IBM&#8217;s announcement →</a>
+  </div>
+
+  <div class="qcard reveal">
+    <span class="qdate">📈 COMMERCIALIZATION SIGNAL</span>
+    <h4>Quantinuum: Q3 revenue $9.1M, +233% YoY</h4>
+    <p>Full-year outlook raised; platform adoption up nearly 20% quarter-on-quarter. The absolute revenue is tiny next to AI companies — but the trend is the point: <b>research hardware → developer ecosystem → enterprise experimentation → commercial revenue</b>.</p>
+    <a class="readmore" style="color:var(--quantum)" href="https://ir.quantinuum.com/news-releases/news-release-details/quantinuum-reports-third-quarter-2026-results-and-raises-full" target="_blank" rel="noopener">Read the results →</a>
+  </div>
+
+  <!-- Radar -->
+  <h2 class="section reveal">05 · THE AI + QUANTUM RADAR</h2>
+  <h3 class="sectiontitle reveal">Momentum after this week<span class="enddot">.</span></h3>
+
+  <div class="signal reveal"><div class="num">1</div><div><h5>Agentic AI · 🔥🔥🔥🔥🔥</h5><p>Mistral Studio — the enterprise execution platform converges.</p></div></div>
+  <div class="signal reveal"><div class="num">2</div><div><h5>AI cybersecurity · 🔥🔥🔥🔥🔥</h5><p>GPT-6 Cyber: 81 unknown Firefox vulnerabilities found.</p></div></div>
+  <div class="signal reveal"><div class="num">3</div><div><h5>AI for science · 🔥🔥🔥🔥🔥</h5><p>BioBasicsBench puts agents in the messy wet lab.</p></div></div>
+  <div class="signal reveal"><div class="num">4</div><div><h5>Physical AI / robotics · 🔥🔥🔥🔥🔥</h5><p>Zipline's $1.5B for autonomous delivery.</p></div></div>
+  <div class="signal reveal"><div class="num">5</div><div><h5>Insurance AI · 🔥🔥🔥🔥</h5><p>Kalepa — agents reach underwriting economics.</p></div></div>
+  <div class="signal reveal"><div class="num">6</div><div><h5>AI infrastructure economics · 🔥🔥🔥🔥🔥</h5><p>OpenAI's $1.25T round; Anthropic's $895B commitments.</p></div></div>
+  <div class="signal qsignal reveal"><div class="num">⚛</div><div><h5>Quantum error correction · ⚛️⚛️⚛️⚛️⚛️</h5><p>IBM + AMD + ORNL co-design platform.</p></div></div>
+  <div class="signal qsignal reveal"><div class="num">⚛</div><div><h5>Quantum developer platforms · ⚛️⚛️⚛️⚛️⚛️</h5><p>Quantinuum Nexus, 10× job growth.</p></div></div>
+  <div class="signal qsignal reveal"><div class="num">⚛</div><div><h5>Hybrid quantum-classical · ⚛️⚛️⚛️⚛️⚛️</h5><p>QPU + GPU + CPU as one system.</p></div></div>
+  <div class="signal qsignal reveal"><div class="num">⚛</div><div><h5>Quantum commercialization · ⚛️⚛️⚛️⚛️</h5><p>Quantinuum revenue +233% YoY.</p></div></div>
+
+  <!-- Closing -->
+  <div class="quote reveal">
+    <div class="q">For AI: the advantage is moving from the best model to the best <span>controlled execution system</span> around it. For Quantum: make reliable logical computation work with classical compute — and make the complexity <span>invisible to developers</span>.</div>
+    <div class="sub">Two worlds, one shape: complex underlying compute → orchestration layer → developer platform → governed enterprise application → measurable outcome · 2–8 November 2026</div>
+  </div>
+
+  <footer>
+    <div class="wordmark">xplore<span class="ai">ai</span></div>
+    <a class="link" href="https://xploreai.co.in">xploreai.co.in</a>
+    <div class="fine">You're reading the XploreAI Weekly Briefing — a 5-minute read on the week in AI and Quantum.<br>Items cross-checked against primary sources and Reuters · © 2026 XploreAI · @xploreai</div>
+  </footer>
+
+</div>
+<script>
+(function(){
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    document.querySelectorAll('.reveal').forEach(function(el){ el.classList.add('in'); });
+    return;
+  }
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+    });
+  }, {threshold: 0.12, rootMargin: '0px 0px -40px 0px'});
+  document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+})();
+</script>
+</body>
+</html>

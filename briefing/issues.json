@@ -1,5 +1,20 @@
 [
   {
+    "issue": 13,
+    "slug": "issue-13",
+    "title": "The Execution Era",
+    "dates": "2–8 Nov 2026",
+    "summary": "AI moves into execution-heavy work: GPT-6 Cyber finds 81 unknown Firefox vulnerabilities, Mistral Studio becomes a full enterprise-agent platform, Kalepa brings agents to insurance underwriting, OpenAI raises $11B at $1.25T — while IBM, AMD and Oak Ridge wire QPU + GPU + CPU into one error-correcting system.",
+    "highlights": [
+      "Agentic AI 🔥🔥🔥🔥🔥",
+      "Cyber AI 🔥🔥🔥🔥🔥",
+      "AI for science 🔥🔥🔥🔥🔥",
+      "Insurance AI 🔥🔥🔥🔥",
+      "Quantum error correction ⚛️⚛️⚛️⚛️⚛️",
+      "Quantum platforms ⚛️⚛️⚛️⚛️⚛️"
+    ]
+  },
+  {
     "issue": 12,
     "slug": "issue-12",
     "title": "Watching the Agents Work",
