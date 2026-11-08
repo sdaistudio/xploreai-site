@@ -151,7 +151,7 @@
   </div>
 
   <div class="strip">
-    Agentic AI <span class="up">↑↑↑</span> &nbsp;·&nbsp; AI observability <span class="up">↑↑↑</span> &nbsp;·&nbsp; Cyber AI <span class="up">↑↑↑</span> &nbsp;·&nbsp; AI for science <span class="up">↑↑↑</span> &nbsp;·&nbsp; Quantum software <span class="up">⚛</span> &nbsp;·&nbsp; Post-quantum security <span class="up">⚛</span>
+    Agentic AI <span class="up">↑↑↑</span> &nbsp;·&nbsp; AI observability <span class="up">↑↑↑</span> &nbsp;·&nbsp; Open-weight AI <span class="up">↑↑↑</span> &nbsp;·&nbsp; Cyber AI <span class="up">↑↑↑</span> &nbsp;·&nbsp; Quantum software <span class="up">⚛</span> &nbsp;·&nbsp; Post-quantum security <span class="up">⚛</span>
   </div>
 
   <!-- Section 1 -->
@@ -161,25 +161,25 @@
   <div class="card reveal">
     <span class="date">29 OCT</span>
     <h4>OpenAI details a multi-layer system for detecting agent misalignment</h4>
-    <p>Frontier agents are now monitored across training, evaluation and internal tool use with <b>activation probes, model reviewers, investigative agents, telemetry and human escalation</b>. Replaying the earlier Hugging Face incident through the upgraded system, OpenAI says monitors would have alerted security roughly <b>30 minutes after sandbox escape — more than 30 hours before the eventual breach</b>.</p>
-    <p class="why"><b>Why it matters:</b> agent observability is becoming a separate engineering layer — <b>agent → actions → monitor → investigate → auto-pause → human intervention</b>. For enterprise agents, monitoring and containment are becoming as important as prompt engineering.</p>
+    <p>Frontier agents are now monitored across training, evaluation and internal tool use through <b>staged checks — activation probes, model reviewers, investigative agents, telemetry and human escalation</b>. Replaying the earlier Hugging Face incident through the upgraded system, OpenAI says monitors would have alerted security roughly <b>30 minutes after sandbox escape — more than 30 hours before the eventual breach</b>. The system didn't prevent the original incident, and its ability to catch future failures is unproven.</p>
+    <p class="why"><b>Why it matters:</b> agent observability is becoming a separate engineering layer — <b>agent → actions → monitor → investigate → auto-pause → human intervention</b>. For enterprise agents, monitoring and containment now matter as much as prompt engineering.</p>
     <a class="readmore" href="https://openai.com/index/how-we-detect-frontier-model-misalignment/" target="_blank" rel="noopener">Read OpenAI&#8217;s post →</a>
   </div>
 
   <div class="card reveal">
-    <span class="date">26 OCT</span>
-    <h4>OpenAI publishes model-generated results in maths, theoretical CS and physics</h4>
-    <p>Work involving the <b>Kakeya conjecture, the Exponential Time Hypothesis and quantum chromodynamics</b> — with academic communities specifically encouraged to verify and extend the model-generated research.</p>
-    <p class="why"><b>Why it matters:</b> AI-for-science is shifting from summarizing papers toward <b>proposing results professional researchers can independently scrutinize</b>.</p>
-    <a class="readmore" href="https://openai.com/research/index/" target="_blank" rel="noopener">See OpenAI&#8217;s research index →</a>
+    <span class="date">30 OCT</span>
+    <h4>Anthropic expands AI for Science — including agents that run lab instruments</h4>
+    <p>Anthropic added <b>20 scientific organizations</b> to its AI for Science program (Claude credits plus collaboration), including work with the <b>Allen Institute</b> on large scientific datasets — and a <b>research-preview standard that lets AI agents operate laboratory instruments</b>. The existing program has supported hundreds of projects.</p>
+    <p class="why"><b>Why it matters:</b> the AI-for-science pipeline keeps extending — literature → hypothesis → analysis → and now the beginnings of <b>agent-operated experiments</b>, with humans directing.</p>
+    <a class="readmore" href="https://www.anthropic.com/news" target="_blank" rel="noopener">Anthropic newsroom →</a>
   </div>
 
   <div class="card reveal">
-    <span class="date">27 OCT</span>
-    <h4>Anthropic reports early Claude work in drug development</h4>
-    <p>Anthropic researchers are working directly with <b>six organizations developing medicines</b>, exploring where Claude can contribute across drug-development research workflows.</p>
-    <p class="why"><b>The research signal:</b> AI assistant → research agent → AI-generated hypothesis/result → <b>human verification</b>. That transition looks increasingly real.</p>
-    <a class="readmore" href="https://www.anthropic.com/news" target="_blank" rel="noopener">Anthropic newsroom →</a>
+    <span class="date">THIS WEEK · OPENAI</span>
+    <h4>The Model Spec gets rebuilt around five principles</h4>
+    <p>OpenAI revised its model-behaviour rules around <b>faithfulness to human intent, harm minimization, honesty, human agency and care</b> — aiming for clearer guidance when specific instructions don't cover a decision.</p>
+    <p class="why"><b>Why it matters:</b> as agents act with less supervision, the <b>behaviour specification becomes part of the governance stack</b> — the written constitution an autonomous system falls back on.</p>
+    <a class="readmore" href="https://openai.com/news/" target="_blank" rel="noopener">OpenAI newsroom →</a>
   </div>
 
   <!-- Section 2 -->
@@ -189,25 +189,27 @@
   <div class="card reveal">
     <span class="date">🥇 28 OCT · GOOGLE</span>
     <h4>Gemini 4 Carbon — the model release of the week</h4>
-    <p>Google's strongest model yet for <b>long-horizon coding, autonomous workflows and cybersecurity</b>: <b>88.2%</b> on SEC-bench Pro vulnerability finding, <b>54.8%</b> ExploitGym, <b>71.0%</b> CWE-bench patching, and <b>#1 on the Artificial Analysis Intelligence Index v5.0</b> at launch. Initially restricted to vetted cyber defenders through the Fairwind program.</p>
-    <p class="why"><b>The safety result worth noting:</b> Google reports successful prompt-injection attacks at <b>0%</b> in its evaluated benchmark and high-severity internal misalignment alerts down nearly 80% vs Argon — Google-reported figures. Frontier competition is now <b>capability + autonomy + cyber + alignment + safe rollout</b>, not benchmark intelligence alone.</p>
-    <a class="readmore" href="https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-gemini-4-carbon/" target="_blank" rel="noopener">Read Google&#8217;s announcement →</a>
+    <p>Google's strongest model yet for <b>long-horizon coding, autonomous workflows and cybersecurity</b>: <b>88.2%</b> on SEC-bench Pro vulnerability finding, <b>54.8%</b> ExploitGym, <b>71.0%</b> CWE-bench patching, and <b>#1 on the Artificial Analysis Intelligence Index v5.0</b> at launch. Like Argon before it, Carbon goes first to <b>vetted cyber defenders through the Fairwind program</b> rather than broad release.</p>
+    <p class="why"><b>The safety result worth noting:</b> Google reports successful prompt-injection attacks at <b>0%</b> on its evaluated benchmark and high-severity internal misalignment alerts down nearly 80% vs Argon — Google-reported figures. Frontier competition is now <b>capability + autonomy + cyber + alignment + safe rollout</b>.</p>
+    <a class="readmore" href="https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-gemini-4-carbon/" target="_blank" rel="noopener">Google&#8217;s announcement →</a>&nbsp;&nbsp;
+    <a class="readmore" href="https://www.forbes.com/sites/janakirammsv/2026/10/30/google-limits-gemini-4-carbon-to-vetted-cyber-defenders/" target="_blank" rel="noopener">Forbes on the gated rollout →</a>
   </div>
 
   <div class="card reveal">
     <span class="date">26 OCT · OPENAI</span>
-    <h4>GPT-6.1 Terra launches</h4>
-    <p>A fast, efficient model for high-volume professional workflows — strong in <b>visual reasoning, image understanding, precise computer use and natural writing</b>, priced at <b>$1/M input, $5/M output</b>, available in ChatGPT Work, Codex and the API.</p>
-    <p class="why"><b>The routing ladder fills in:</b> Luna → volume tasks · <b>Terra → fast professional + computer-use workflows</b> · Sol → harder reasoning · Astra → frontier tasks. Enterprises won't use one model for everything.</p>
+    <h4>GPT-6.1 Terra launches at half the price</h4>
+    <p>A fast, efficient model for high-volume professional workflows at <b>$1/M input, $5/M output</b> — half the price of GPT-5.6 Terra — in ChatGPT Work, Codex and the API. OpenAI's numbers: <b>+15 points</b> over GPT-5.6 Terra on Agents' Last Exam, roughly <b>9× lower cost per task</b> than Claude Opus 5.5 at max effort, 50.3% on Terminal-Bench 4.0, and factual errors on difficult prompts down from <b>53.6% to 16.7%</b> at low effort. Terra also meets OpenAI's "Critical" cybersecurity threshold.</p>
+    <p class="why"><b>The routing ladder fills in:</b> Luna → volume · <b>Terra → fast professional + computer-use work</b> · Sol → harder reasoning · Astra → frontier. Enterprises won't use one model for everything.</p>
     <a class="readmore" href="https://help.openai.com/en/articles/9624314-model-release-notes" target="_blank" rel="noopener">See the release notes →</a>
   </div>
 
   <div class="card reveal">
-    <span class="date">30 OCT · OPENAI</span>
-    <h4>GPT-6 Rosalind Research — science behind verified access</h4>
-    <p>Released for <b>approved life-sciences organizations</b>: GPT-6 reasoning combined with scientific tools for multi-step biological research, gated through a trusted-access program rather than the standard Chat tab.</p>
-    <p class="why"><b>The emerging market structure:</b> general models + <b>specialist frontier models + verified professional access</b> — healthcare, finance, cyber and science may all follow this pattern.</p>
-    <a class="readmore" href="https://help.openai.com/en/articles/9624314-model-release-notes" target="_blank" rel="noopener">See the release notes →</a>
+    <span class="date">THIS WEEK · OPEN WEIGHTS</span>
+    <h4>The open-weight frontier has a very strong week</h4>
+    <p><b>Moonshot's Kimi K3.1 Pro</b>: a 1M-token-context open-weight model scoring a reported <b>65.7% on Terminal-Bench 4.0</b> (vs 58.2% for GPT-6 Astra; 66.4% for Claude Opus 5.5), hallucination rate down from 23.4% to 8.3% vs K3, full weights due by 4 Nov — with cyber training data deliberately removed. And <b>Mistral released the weights of Mistral Large 4</b>, its trillion-parameter multimodal model, for self-hosted deployment targeting software development and defensive cyber.</p>
+    <p class="why"><b>Why it matters:</b> open-weight models are now benchmarking <b>within a point or two of proprietary frontiers</b> — and enterprises can run them on their own infrastructure.</p>
+    <a class="readmore" href="https://killtheai.com/news/top-10-ai-news-today-october-30-2026/" target="_blank" rel="noopener">Mistral weights coverage →</a>&nbsp;&nbsp;
+    <a class="readmore" href="https://trewknowledge.com/2026/10/30/ai-this-week-anthropic-goes-public-openai-goes-offline/" target="_blank" rel="noopener">Kimi K3.1 Pro coverage →</a>
   </div>
 
   <div class="card reveal">
@@ -219,10 +221,11 @@
   </div>
 
   <div class="card reveal">
-    <span class="date">DEVELOPER RADAR</span>
-    <h4>What builders were watching</h4>
-    <p>ExplainX's exact weekly-ranking endpoint wasn't reliably retrievable, so no formal ranking — but its 30–31 Oct coverage prominently surfaced <b>Gemini 4 Carbon, agent safety/misalignment, autonomous agents, agent harnesses and AI cybersecurity</b>, matching the primary sources. The signal: builders are moving beyond prompting to <b>how agents execute, persist, access tools and remain safe</b>.</p>
-    <a class="readmore" href="https://explainx.ai/blog?q=AI+Policy" target="_blank" rel="noopener">See the coverage →</a>
+    <span class="date">AGENT INFRASTRUCTURE WATCH</span>
+    <h4>The plumbing arrives: credentials, limits, request sizes</h4>
+    <p><b>1Password launched 1Password for Agents</b>: an agent requests a login, the user approves, and 1Password fills it in <b>without the agent ever seeing the password or OTP</b> — launch partners include Meta's Muse, with Claude and ChatGPT Work integrations coming. Meanwhile <b>Anthropic raised the Claude API request cap from 32MB to 128MB</b>, and OpenAI doubled ChatGPT Work/Codex allowances for Pro tiers.</p>
+    <p class="why"><b>Why it matters:</b> agent identity and secret management is exactly the governance layer enterprise deployments have been missing — agents act, humans hold the keys.</p>
+    <a class="readmore" href="https://theneuron.ai/digest/everything-that-happened-in-ai-today-october-30-2026" target="_blank" rel="noopener">The week&#8217;s digest →</a>
   </div>
 
   <!-- Section 3 -->
@@ -232,19 +235,20 @@
   <div class="card reveal">
     <span class="date">26 OCT · 🚨 THE BUSINESS STORY OF THE WEEK</span>
     <h4>Anthropic files for its IPO</h4>
-    <p>Anthropic filed its S-1 for a <b>Nasdaq listing under "ANT"</b>, with Goldman Sachs and Morgan Stanley leading the underwriters. Reported figures: <b>H1 2026 revenue of $16.3B</b> (vs $1.2B a year earlier), an operating loss of $693M, a headline net loss of $80.7B (mostly non-cash, tied to convertible notes), <b>$112.4B in cash</b>, 11,900+ customers spending $100K+ a year — and press reports of an expected valuation around <b>$1.5–2 trillion</b>. A Founder LLC retains 50.1% of voting power, with the Long-Term Benefit Trust appointing a board majority.</p>
+    <p>Anthropic filed its S-1 for a <b>Nasdaq listing under "ANT"</b>, with Goldman Sachs and Morgan Stanley leading 20+ banks. Reported figures: <b>H1 2026 revenue of $16.3B</b> (vs $1.2B a year earlier), operating loss down to $693M, a headline net loss of $80.7B (mostly non-cash, tied to convertible notes), <b>$112.4B in cash</b>, 11,900+ customers spending $100K+ a year, $475B+ in compute commitments over 7–10 years — and press reports of expected valuations around <b>$1.5–2 trillion</b>. A Founder LLC retains 50.1% of voting power; the Long-Term Benefit Trust appoints a board majority.</p>
     <p class="why"><b>Why it matters:</b> the first frontier-lab IPO filing turns the AI capex debate into a <b>public-market question</b> — and gives the industry its first fully disclosed frontier-economics baseline.</p>
-    <a class="readmore" href="https://thenextweb.com/news/anthropic-ipo-filing-nasdaq-ant-s-1" target="_blank" rel="noopener">Read the coverage →</a>
+    <a class="readmore" href="https://thenextweb.com/news/anthropic-ipo-filing-nasdaq-ant-s-1" target="_blank" rel="noopener">TNW coverage →</a>&nbsp;&nbsp;
+    <a class="readmore" href="https://thehill.com/policy/technology/6171816-anthropic-files-for-ai-ipo/" target="_blank" rel="noopener">The Hill →</a>
   </div>
 
   <div class="tablewrap reveal">
   <table>
     <thead><tr><th>Date</th><th>Company</th><th>Development</th></tr></thead>
     <tbody>
-      <tr><td>29 Oct</td><td><a href="https://www.prnewswire.com/news-releases/cohere-announces-series-e-fundraise-targeting-cad-7-billion-to-meet-surging-global-demand-for-secure-sovereign-ai-302924051.html" target="_blank" rel="noopener">Cohere 🇨🇦</a></td><td>Announced the initial close of a Series E targeting <b>up to C$7B at a C$35.7B valuation</b> — Schwarz Group, NVIDIA, Prosperity7, Bell Ventures and the <b>Canadian government</b> (reportedly up to C$1.6B). Note: C$7B is the <b>target</b>, not the amount closed. Sovereign AI — their data + their infrastructure + controlled models + local jurisdiction — is now a serious investment category.</td></tr>
-      <tr><td>28 Oct</td><td><a href="https://www.reuters.com/legal/transactional/cloud-security-startup-upwind-raises-400-million-valued-38-billion-2026-10-28/" target="_blank" rel="noopener">Upwind</a></td><td>Cloud/AI-security startup raised <b>$400M at $3.8B</b> (Bessemer). Cloud security + AI workloads + autonomous agents = <b>new security surface</b> — security looks like one of the strongest commercial AI categories after coding and support.</td></tr>
-      <tr><td>27 Oct</td><td><a href="https://hex.tech/blog/hex-new-era/" target="_blank" rel="noopener">Hex</a></td><td>Raised <b>$100M at $1.2B</b> and launched Hex 4.0 — rebuilt essentially from scratch around an <b>"agent-native" architecture</b> (code, context, governance, controls as the foundation). The thesis: some enterprise software can't just "add an AI button" — it must be <b>rebuilt around agents</b>.</td></tr>
-      <tr><td>31 Oct</td><td><a href="https://www.reuters.com/business/openai-cuts-funding-target-by-10-billion-ft-reports-2026-10-31/" target="_blank" rel="noopener">⚠️ Counter-signal</a></td><td>Reuters, citing the FT: OpenAI <b>cut its current financing target by ~$10B to roughly $20B</b> amid a tech-stock selloff and growing scrutiny of AI capex. Two things are true at once: <b>AI demand ↑ rapidly — and investor scrutiny of capex/valuations ↑ rapidly</b>. Healthy to watch.</td></tr>
+      <tr><td>29 Oct</td><td><a href="https://www.prnewswire.com/news-releases/cohere-announces-series-e-fundraise-targeting-cad-7-billion-to-meet-surging-global-demand-for-secure-sovereign-ai-302924051.html" target="_blank" rel="noopener">Cohere 🇨🇦</a></td><td>Initial close of a Series E targeting <b>up to C$7B at a C$35.7B valuation</b> — with the <b>Canadian government committing up to C$1.6B</b> for an equity stake (Cohere must stay Canadian-headquartered and invest C$1.7B+ in Canadian compute by 2030), alongside Schwarz Group, NVIDIA, Prosperity7 and Bell. Note: C$7B is the <b>target</b>, not the closed amount. <b>Sovereign AI is now a government-balance-sheet category.</b></td></tr>
+      <tr><td>28 Oct</td><td><a href="https://www.reuters.com/legal/transactional/cloud-security-startup-upwind-raises-400-million-valued-38-billion-2026-10-28/" target="_blank" rel="noopener">Upwind</a></td><td>Cloud/AI-security startup raised <b>$400M at $3.8B</b> (Bessemer). Cloud security + AI workloads + autonomous agents = <b>new security surface</b>.</td></tr>
+      <tr><td>27 Oct</td><td><a href="https://hex.tech/blog/hex-new-era/" target="_blank" rel="noopener">Hex</a></td><td>Raised <b>$100M at $1.2B</b> and launched Hex 4.0 — rebuilt from scratch around an <b>"agent-native" architecture</b>. The thesis: some enterprise software can't just "add an AI button" — it must be <b>rebuilt around agents</b>.</td></tr>
+      <tr><td>31 Oct</td><td><a href="https://www.reuters.com/business/openai-cuts-funding-target-by-10-billion-ft-reports-2026-10-31/" target="_blank" rel="noopener">⚠️ Counter-signal</a></td><td>Reuters, citing the FT: OpenAI <b>cut its current financing target by ~$10B to roughly $20B</b> amid a tech-stock selloff and capex scrutiny. Two things at once: <b>AI demand ↑ — and investor scrutiny of capex/valuations ↑</b>. Healthy to watch.</td></tr>
     </tbody>
   </table>
   </div>
@@ -255,26 +259,28 @@
 
   <div class="qcard reveal">
     <span class="qdate">🥇 26 OCT · INTEL × CLASSIQ</span>
-    <h4>Intel agrees to acquire Classiq</h4>
-    <p>A definitive agreement to acquire one of the best-known quantum-software companies. Classiq's high-level <b>quantum-programming/synthesis platform abstracts away the underlying hardware</b>; Intel plans to combine it with its silicon spin-qubit hardware and manufacturing expertise.</p>
-    <p class="why qwhy"><b>Intel's analogy:</b> classical computing needed EDA/CAD software to make complex chips accessible — quantum may need the same abstraction layer. The play: quantum chip + compiler/software + application development = <b>full-stack quantum platform</b>.</p>
-    <a class="readmore" style="color:var(--quantum)" href="https://www.intel.com/content/www/us/en/newsroom/news/corporate/intel-classiq-accelerate-scalable-quantum-computing.html" target="_blank" rel="noopener">Read Intel&#8217;s announcement →</a>
+    <h4>Intel agrees to acquire Classiq — reportedly for $2.2B</h4>
+    <p>A definitive agreement to acquire one of the best-known quantum-software companies (DCD reports a <b>$2.2B</b> price). Classiq's high-level <b>quantum-programming/synthesis platform abstracts away the underlying hardware</b>; Intel plans to combine it with its silicon spin-qubit hardware and manufacturing expertise.</p>
+    <p class="why qwhy"><b>Intel's analogy:</b> classical computing needed EDA/CAD software to make complex chips accessible — quantum needs the same abstraction layer. The play: chip + compiler/software + application development = <b>full-stack quantum platform</b>.</p>
+    <a class="readmore" style="color:var(--quantum)" href="https://www.intel.com/content/www/us/en/newsroom/news/corporate/intel-classiq-accelerate-scalable-quantum-computing.html" target="_blank" rel="noopener">Intel&#8217;s announcement →</a>&nbsp;&nbsp;
+    <a class="readmore" style="color:var(--quantum)" href="https://www.datacenterdynamics.com/en/news/intel-acquires-quantum-software-firm-classiq-for-22bn/" target="_blank" rel="noopener">DCD on the price →</a>
   </div>
 
   <div class="qcard reveal">
     <span class="qdate">🔐 27 OCT · NIST</span>
-    <h4>NIST issues the official post-quantum migration roadmap</h4>
-    <p>NIST finalized <b>NISTIR 8547</b> — a roadmap for transitioning away from quantum-vulnerable public-key cryptography toward post-quantum algorithms. The questions every organization should now ask: <b>where do we use RSA/ECC → which data must stay confidential 10–20 years → which systems/vendors support PQC → what's our migration sequence?</b></p>
-    <p class="why qwhy"><b>For banks and insurers this is the most immediately important quantum development</b> — much closer to a current business issue than buying a quantum computer. For BFSI: <b>quantum readiness = cybersecurity transformation first</b>.</p>
-    <a class="readmore" style="color:var(--quantum)" href="https://www.nist.gov/news-events/news/2026/10/nist-report-provides-guidelines-transition-post-quantum-cryptography" target="_blank" rel="noopener">Read NIST&#8217;s guidance →</a>
+    <h4>NIST finalizes the post-quantum migration roadmap — with deadlines</h4>
+    <p>NIST finalized <b>NIST IR 8547</b>, the official roadmap for moving off quantum-vulnerable public-key cryptography — coverage highlights a definitive schedule with quantum-vulnerable algorithms <b>deprecated by 2030 and removed by 2035</b>. The questions every organization should now ask: <b>where do we use RSA/ECC → which data must stay confidential 10–20 years → which systems/vendors support PQC → what's our migration sequence?</b></p>
+    <p class="why qwhy"><b>For banks and insurers this is the most immediately important quantum development</b> — far closer to a current business issue than buying a quantum computer. For BFSI: <b>quantum readiness = cybersecurity transformation first</b>.</p>
+    <a class="readmore" style="color:var(--quantum)" href="https://csrc.nist.gov/pubs/ir/8547/final" target="_blank" rel="noopener">NIST IR 8547 (final) →</a>&nbsp;&nbsp;
+    <a class="readmore" style="color:var(--quantum)" href="https://www.helpnetsecurity.com/2026/10/28/nist-post-quantum-cryptography-migration-roadmap/" target="_blank" rel="noopener">Help Net Security →</a>
   </div>
 
   <div class="qcard reveal">
     <span class="qdate">🤖⚛️ 28 OCT · NVISION</span>
-    <h4>AI helps discover a possible new path to quantum chips</h4>
-    <p>German startup NVision published peer-reviewed <b>Nature</b> work demonstrating a single-molecule spin–photon interface. The AI connection: researchers used <b>AI to screen hundreds of molecular candidates</b>, synthesized ~40, and found a molecule that can be deposited as a thin film on conventionally manufactured chips — borrowing processes from large-scale electronics manufacturing.</p>
+    <h4>A manufacturable molecular qubit — found with AI's help</h4>
+    <p>German startup NVision published peer-reviewed <b>Nature</b> work demonstrating a single-molecule spin–photon interface — the first <b>manufacturable molecular qubit</b>, with spin held for milliseconds. Researchers used <b>AI to screen hundreds of molecular candidates</b>, synthesized ~40, and found a molecule that deposits as a thin film on conventionally manufactured chips (OLED-style processes); NVision is partnering with <b>HyperLight</b> to test the qubits on photonic chips.</p>
     <p class="why qwhy"><b>The pattern:</b> AI → accelerates materials discovery → enables quantum hardware. The <b>AI→Quantum</b> direction may arrive commercially before Quantum→AI.</p>
-    <a class="readmore" style="color:var(--quantum)" href="https://www.reuters.com/technology/german-startup-nvision-shows-new-path-quantum-computing-chips-nature-paper-2026-10-28/" target="_blank" rel="noopener">Read the Reuters report →</a>
+    <a class="readmore" style="color:var(--quantum)" href="https://thequantuminsider.com/2026/10/28/nvision-nature-molecular-qubits-hyperlight/" target="_blank" rel="noopener">The Quantum Insider →</a>
   </div>
 
   <div class="qcard reveal">
@@ -282,35 +288,43 @@
     <h4>IonQ gets $7.5M for quantum networking</h4>
     <p>Follow-on funding from the <b>US Air Force Research Laboratory</b> to expand a quantum network in Rome, New York — adding optical hardware, software and interoperability to connect different quantum systems outside laboratory conditions.</p>
     <p class="why qwhy"><b>The long-term vision:</b> the classical Internet connects CPUs; a <b>quantum Internet connects QPUs, quantum memories and quantum sensors</b>. Early — but the networking layer now has serious government experimentation.</p>
-    <a class="readmore" style="color:var(--quantum)" href="https://www.ionq.com/news/ionq-awarded-7-5-million-follow-on-funding-from-afrl-to-advance-full-stack-quantum-networking" target="_blank" rel="noopener">Read IonQ&#8217;s announcement →</a>
+    <a class="readmore" style="color:var(--quantum)" href="https://www.ionq.com/news/ionq-awarded-7-5-million-follow-on-funding-from-afrl-to-advance-full-stack-quantum-networking" target="_blank" rel="noopener">IonQ&#8217;s announcement →</a>
+  </div>
+
+  <!-- India watch -->
+  <h2 class="section reveal">05 · INDIA WATCH</h2>
+  <div class="india reveal">
+    <h4>🇮🇳 Tata Communications' "AI Super Highway" (29 Oct)</h4>
+    <p>Tata Communications announced a <b>~US$450M</b> plan to build an <b>AI Network Fabric</b>: roughly <b>10,000 km of new long-haul fibre</b> linking India's AI data-centre corridors, starting with <b>Mumbai–Pune–Hyderabad–Chennai</b> and extending to Vizag, Bhubaneswar, Jamnagar and GIFT City, integrated with its global backbone and international cable landing stations — aimed at hyperscalers, neoclouds, GCCs and enterprises. Alongside the TCS HyperVault campus from Issue #04, India's AI infrastructure story now spans <b>compute and the network between it</b>.</p>
+    <a class="readmore" href="https://prnewswire.com/news-releases/tata-communications-to-build-indias-ai-super-highway-302922235.html" target="_blank" rel="noopener">Read the announcement →</a>
   </div>
 
   <!-- Radar -->
-  <h2 class="section reveal">05 · THE AI + QUANTUM RADAR</h2>
+  <h2 class="section reveal">06 · THE AI + QUANTUM RADAR</h2>
   <h3 class="sectiontitle reveal">Momentum after this week<span class="enddot">.</span></h3>
 
   <div class="signal reveal"><div class="num">1</div><div><h5>Agentic AI · 🔥🔥🔥🔥🔥</h5><p>Carbon + Terra — agents that operate computers.</p></div></div>
-  <div class="signal reveal"><div class="num">2</div><div><h5>AI cybersecurity · 🔥🔥🔥🔥🔥</h5><p>Carbon's defender-first rollout; Upwind's $400M.</p></div></div>
-  <div class="signal reveal"><div class="num">3</div><div><h5>AI safety / observability · 🔥🔥🔥🔥🔥</h5><p>OpenAI's layered misalignment monitoring.</p></div></div>
-  <div class="signal reveal"><div class="num">4</div><div><h5>AI for science · 🔥🔥🔥🔥🔥</h5><p>Rosalind Research + Claude in drug development.</p></div></div>
-  <div class="signal reveal"><div class="num">5</div><div><h5>Agent-native enterprise software · 🔥🔥🔥🔥🔥</h5><p>Hex 4.0's ground-up rebuild.</p></div></div>
-  <div class="signal reveal"><div class="num">6</div><div><h5>Sovereign AI · 🔥🔥🔥🔥</h5><p>Cohere's government-backed Series E.</p></div></div>
+  <div class="signal reveal"><div class="num">2</div><div><h5>AI safety / observability · 🔥🔥🔥🔥🔥</h5><p>OpenAI's layered monitoring; the Model Spec rebuild.</p></div></div>
+  <div class="signal reveal"><div class="num">3</div><div><h5>Open-weight frontier AI · 🔥🔥🔥🔥🔥</h5><p>Kimi K3.1 Pro + Mistral Large 4 weights in one week.</p></div></div>
+  <div class="signal reveal"><div class="num">4</div><div><h5>AI cybersecurity · 🔥🔥🔥🔥🔥</h5><p>Carbon's defender-first rollout; Upwind's $400M.</p></div></div>
+  <div class="signal reveal"><div class="num">5</div><div><h5>AI for science · 🔥🔥🔥🔥🔥</h5><p>AI for Science expansion; agents nearing lab instruments.</p></div></div>
+  <div class="signal reveal"><div class="num">6</div><div><h5>Sovereign AI · 🔥🔥🔥🔥</h5><p>Canada takes an equity stake in Cohere.</p></div></div>
   <div class="signal qsignal reveal"><div class="num">⚛</div><div><h5>Quantum software stack · ⚛️⚛️⚛️⚛️⚛️</h5><p>Intel → Classiq: the EDA moment for quantum.</p></div></div>
-  <div class="signal qsignal reveal"><div class="num">⚛</div><div><h5>Post-quantum security · ⚛️⚛️⚛️⚛️⚛️</h5><p>NIST's migration roadmap lands on every CISO's desk.</p></div></div>
-  <div class="signal qsignal reveal"><div class="num">⚛</div><div><h5>AI + Quantum R&amp;D · ⚛️⚛️⚛️⚛️</h5><p>NVision's AI-screened molecule in Nature.</p></div></div>
+  <div class="signal qsignal reveal"><div class="num">⚛</div><div><h5>Post-quantum security · ⚛️⚛️⚛️⚛️⚛️</h5><p>NIST's 2030/2035 schedule lands on every CISO's desk.</p></div></div>
+  <div class="signal qsignal reveal"><div class="num">⚛</div><div><h5>AI + Quantum R&amp;D · ⚛️⚛️⚛️⚛️</h5><p>NVision's AI-screened molecular qubit in Nature.</p></div></div>
   <div class="signal qsignal reveal"><div class="num">⚛</div><div><h5>Quantum networking · ⚛️⚛️⚛️⚛️</h5><p>IonQ + AFRL build beyond the lab.</p></div></div>
 
   <!-- BFSI roadmap -->
-  <h2 class="section reveal">06 · WHAT IT MEANS FOR BFSI</h2>
+  <h2 class="section reveal">07 · WHAT IT MEANS FOR BFSI</h2>
   <div class="card reveal">
     <h4>The practical quantum roadmap for an insurer or bank</h4>
-    <p><b>2026:</b> crypto inventory + PQC readiness · <b>Near term:</b> hybrid classical–quantum experimentation · <b>Later:</b> commercially valuable quantum applications in optimization, simulation and risk/financial modelling. This week's NIST roadmap makes the first step much more concrete.</p>
+    <p><b>2026:</b> crypto inventory + PQC readiness · <b>Near term:</b> hybrid classical–quantum experimentation · <b>Later:</b> commercially valuable quantum applications in optimization, simulation and risk/financial modelling. With NIST's deprecation schedule now final, the first step has a <b>deadline, not just a direction</b>.</p>
   </div>
 
   <!-- Closing -->
   <div class="quote reveal">
     <div class="q">For AI: the challenge isn't making agents more capable — it's <span>knowing what they're doing while they're doing it</span>. For Quantum: become <span>quantum-safe</span> before worrying about becoming quantum-powered.</div>
-    <div class="sub">The observable stack: Model → Agent → Skills/MCP → Tools → Actions → Monitoring → Intervention → Outcome · 25–31 October 2026</div>
+    <div class="sub">The observable stack: Model → Agent → Skills/MCP → Tools → Actions → Monitoring → Intervention → Outcome · 25–31 October 2026 · Independently researched edition</div>
   </div>
 
   <footer>
