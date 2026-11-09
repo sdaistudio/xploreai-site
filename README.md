@@ -16,6 +16,7 @@ tools/token-economics/      → Token economics calculator
 tools/bpe-visualizer/       → BPE tokenization visualizer
 concepts/context-windows/   → "Why AI forgets" explainer (Concepts made simple)
 concepts/agent-harness/     → "What is an agent harness?" explainer (Concepts made simple)
+concepts/ai-concepts-2027/  → "20 AI concepts to know before 2027" interview-prep page (Concepts made simple)
 courses/fda-r/              → "Financial Data Analytics using R" course (Learn AI → Courses)
 courses/ai-engineering/     → "AI Engineering, in motion" study notes (Learn AI → Courses); generated, see below
 favicon.ico / favicon-32.png / apple-touch-icon.png
