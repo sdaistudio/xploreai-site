@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="XploreAI Weekly Briefing #14 (9–15 Nov 2026): agents gain economic authority — Claude Fable & Mythos 5.2 launch, ChatGPT Wallet enables agentic payments, AlphaProof Code verifies Signal with six million lines of Lean proofs — while IBM’s Nighthawk r3, Q-CTRL and AMD–PsiQuantum converge Quantum with AI.">
+<link rel="canonical" href="https://xploreai.co.in/briefing/issue-14/">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="XploreAI">
+<meta property="og:title" content="AI + Quantum Briefing #14 — Agents With a Wallet (9–15 Nov 2026)">
+<meta property="og:description" content="The week in AI + Quantum, in 5 minutes: Fable 5.2’s thousand-agent builds, AI that pays, proofs at scale — and the hybrid quantum stack.">
+<meta property="og:url" content="https://xploreai.co.in/briefing/issue-14/">
+<meta property="og:image" content="https://xploreai.co.in/briefing/issue-14/og-image.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="AI + Quantum Briefing #14 — XploreAI">
+<meta name="twitter:description" content="The week in AI, in 5 minutes.">
+<meta name="twitter:image" content="https://xploreai.co.in/briefing/issue-14/og-image.jpg">
+<title>XploreAI — AI + Quantum Briefing · 9–15 Nov 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#F5EFE4; --card:#FFFDF8; --espresso:#4A4238; --espresso-soft:rgba(74,66,56,.72);
+    --rust:#E2571B; --rust-soft:#FBE9DF; --line:rgba(74,66,56,.14); --dark:#2B2620;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--cream);color:var(--espresso);font-family:'Quicksand',-apple-system,'Segoe UI',Arial,sans-serif;font-weight:500;line-height:1.62;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:720px;margin:0 auto;padding:40px 22px 64px}
+
+  /* Masthead */
+  .masthead{text-align:center;padding:26px 0 30px}
+  .wordmark{font-weight:700;font-size:44px;letter-spacing:.5px}
+  .wordmark .ai{color:var(--rust)}
+  .eyebrow{display:inline-block;margin-top:14px;font-size:13px;font-weight:700;letter-spacing:5px;color:var(--rust)}
+  .issue{margin-top:8px;font-size:15px;color:var(--espresso-soft)}
+  .dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--rust);margin:0 10px;vertical-align:middle}
+
+  /* One-line summary strip */
+  .strip{background:var(--dark);color:var(--cream);border-radius:18px;padding:18px 24px;text-align:center;font-weight:600;font-size:15.5px;margin:8px 0 34px}
+  .strip .up{color:#F7A97E;font-weight:700}
+
+  h2.section{font-size:14px;font-weight:700;letter-spacing:4px;color:var(--rust);margin:42px 0 6px}
+  h3.sectiontitle{font-size:27px;font-weight:700;line-height:1.25;margin-bottom:16px}
+  h3.sectiontitle .enddot{color:var(--rust)}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px 24px;margin-bottom:14px}
+  .card h4{font-size:18.5px;font-weight:700;margin-bottom:6px}
+  .card .date{display:inline-block;background:var(--rust-soft);color:var(--rust);font-weight:700;font-size:12.5px;letter-spacing:1.5px;border-radius:20px;padding:3px 12px;margin-bottom:10px}
+  .card p{font-size:15.5px;color:var(--espresso-soft)}
+  .card p b{color:var(--espresso)}
+  .why{margin-top:10px;padding-top:10px;border-top:1px dashed var(--line);font-size:14.5px}
+  .why b{color:var(--rust)}
+
+  /* Funding table */
+  table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden;font-size:14.5px}
+  thead th{background:var(--dark);color:var(--cream);text-align:left;font-weight:700;padding:12px 14px;letter-spacing:.5px}
+  tbody td{padding:12px 14px;border-top:1px solid var(--line);vertical-align:top;color:var(--espresso-soft)}
+  tbody td:first-child{white-space:nowrap;font-weight:700;color:var(--espresso)}
+  tbody td b{color:var(--rust);font-weight:700}
+  .tablewrap{border-radius:18px;overflow:hidden;border:1px solid var(--line)}
+  .tablewrap table{border:none;border-radius:0}
+
+  /* Signals */
+  .signal{display:flex;gap:16px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 18px;margin-bottom:10px}
+  .signal .num{flex:0 0 40px;height:40px;border-radius:50%;background:var(--rust);color:#fff;font-weight:700;font-size:17px;display:flex;align-items:center;justify-content:center}
+  .signal h5{font-size:16px;font-weight:700;margin-bottom:2px}
+  .signal p{font-size:14.5px;color:var(--espresso-soft)}
+
+  /* India watch + quote */
+  .india{background:var(--rust-soft);border:1px solid rgba(226,87,27,.25);border-radius:18px;padding:22px 24px;margin-top:6px}
+  .india h4{font-size:18px;font-weight:700;margin-bottom:8px}
+  .india p{font-size:15px;color:var(--espresso-soft)}
+  .quote{margin:44px 0 8px;text-align:center;padding:30px 26px;background:var(--dark);border-radius:20px;color:var(--cream)}
+  .quote .q{font-size:23px;font-weight:700;line-height:1.4}
+  .quote .q span{color:#F7A97E}
+  .quote .sub{margin-top:10px;font-size:14px;color:rgba(245,239,228,.65)}
+
+  /* Footer */
+  footer{margin-top:46px;text-align:center;border-top:1px solid var(--line);padding-top:28px}
+  footer .wordmark{font-size:26px}
+  footer .link{margin-top:8px;font-weight:700;color:var(--rust);font-size:15px;text-decoration:none;display:inline-block}
+  footer .fine{margin-top:10px;font-size:12.5px;color:var(--espresso-soft)}
+
+  @media (max-width:560px){
+    .wordmark{font-size:36px}
+    h3.sectiontitle{font-size:23px}
+    thead{display:none}
+    tbody td{display:block;border-top:none;padding:4px 14px}
+    tbody tr{display:block;border-top:1px solid var(--line);padding:8px 0}
+  }
+
+  a.readmore{display:inline-block;margin-top:10px;font-weight:700;font-size:14px;color:var(--rust);text-decoration:none}
+  a.readmore:hover{text-decoration:underline}
+  tbody td a{color:var(--espresso);text-decoration:none;border-bottom:2px solid var(--rust)}
+
+  /* ---- Issue 11: quantum accent ---- */
+  :root{--quantum:#5B4FC9; --quantum-soft:#EBE8F8;}
+  .qcard{background:var(--card);border:1px solid rgba(91,79,201,.3);border-radius:18px;padding:22px 24px;margin-bottom:14px}
+  .qdate{display:inline-block;background:var(--quantum-soft);color:var(--quantum);font-weight:700;font-size:12.5px;letter-spacing:1.5px;border-radius:20px;padding:3px 12px;margin-bottom:10px}
+  h2.qsection{font-size:14px;font-weight:700;letter-spacing:4px;color:var(--quantum);margin:42px 0 6px}
+  .qsignal .num{background:var(--quantum) !important}
+  .qwhy b{color:var(--quantum) !important}
+  .qtable thead th{background:#2A2452 !important}
+  .qtable tbody td:first-child{color:var(--quantum) !important}
+
+  /* ---- Issue 11: motion graphics ---- */
+  @media (prefers-reduced-motion: no-preference){
+    .reveal{opacity:0;transform:translateY(22px);transition:opacity .6s ease,transform .6s cubic-bezier(.22,.9,.35,1)}
+    .reveal.in{opacity:1;transform:none}
+    .masthead .wordmark{animation:popIn .8s cubic-bezier(.22,1.2,.36,1) both}
+    .masthead .eyebrow{animation:fadeDown .7s .25s ease both}
+    .masthead .issue{animation:fadeDown .7s .4s ease both}
+    @keyframes popIn{0%{opacity:0;transform:scale(.92) translateY(10px)}100%{opacity:1;transform:none}}
+    @keyframes fadeDown{0%{opacity:0;transform:translateY(-8px)}100%{opacity:1;transform:none}}
+    .dot{animation:dotPulse 2.6s ease-in-out infinite}
+    @keyframes dotPulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.35);opacity:.75}}
+    .strip{position:relative;overflow:hidden}
+    .strip::after{content:"";position:absolute;top:0;left:-60%;width:40%;height:100%;background:linear-gradient(105deg,transparent,rgba(247,169,126,.14),transparent);animation:sweep 4.5s ease-in-out infinite}
+    @keyframes sweep{0%{left:-60%}55%,100%{left:110%}}
+    .strip .up{display:inline-block;animation:rise 2.2s ease-in-out infinite}
+    @keyframes rise{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+    .signal .num{transition:transform .3s ease}
+    .signal:hover .num{transform:scale(1.18) rotate(-6deg)}
+    .card,.qcard{transition:transform .35s ease,box-shadow .35s ease}
+    .card:hover,.qcard:hover{transform:translateY(-3px);box-shadow:0 10px 28px rgba(74,66,56,.10)}
+    .readmore{transition:letter-spacing .25s ease}
+    .readmore:hover{letter-spacing:.4px}
+    .quote{position:relative;overflow:hidden}
+    .quote::before{content:"";position:absolute;inset:-40%;background:radial-gradient(circle at 30% 30%,rgba(226,87,27,.12),transparent 55%);animation:glow 7s ease-in-out infinite alternate}
+    @keyframes glow{0%{transform:translate(0,0)}100%{transform:translate(18%,12%)}}
+    .quote>*{position:relative}
+  }
+</style>
+</head>
+<body>
+<nav style="position:sticky;top:0;z-index:50;background:rgba(245,239,228,.92);border-bottom:1px solid rgba(74,66,56,.14);backdrop-filter:blur(8px)">
+  <div style="max-width:720px;margin:0 auto;padding:12px 22px;display:flex;justify-content:space-between;align-items:center">
+    <a href="/" style="font-weight:700;font-size:22px;text-decoration:none;color:#4A4238">xplore<span style="color:#E2571B">ai</span></a>
+    <a href="/briefing/" style="font-weight:700;font-size:14px;text-decoration:none;color:#E2571B">← All issues</a>
+  </div>
+</nav>
+<div class="wrap">
+
+  <!-- Masthead -->
+  <div class="masthead">
+    <div class="wordmark">xplore<span class="ai">ai</span></div>
+    <div class="eyebrow">AI + QUANTUM WEEKLY BRIEFING</div>
+    <div class="issue">Issue #14 <span class="dot"></span> 9–15 November 2026 <span class="dot"></span> xploreai.co.in</div>
+  </div>
+
+  <div class="strip">
+    Agentic AI <span class="up">↑↑↑</span> &nbsp;·&nbsp; Agentic commerce <span class="up">↑↑↑</span> &nbsp;·&nbsp; AI verification <span class="up">↑↑↑</span> &nbsp;·&nbsp; Physical AI <span class="up">↑↑↑</span> &nbsp;·&nbsp; Quantum scale <span class="up">⚛</span> &nbsp;·&nbsp; AI → Quantum <span class="up">⚛</span>
+  </div>
+
+  <!-- Section 1 -->
+  <h2 class="section reveal">01 · AI RESEARCH &amp; DEVELOPMENT</h2>
+  <h3 class="sectiontitle reveal">Proving, not just producing<span class="enddot">.</span></h3>
+
+  <div class="card reveal">
+    <span class="date">10 NOV · DEEPMIND</span>
+    <h4>AlphaProof Code formally verifies Signal's cryptography</h4>
+    <p>A multi-agent framework that <b>mathematically verified key security properties of the production code behind the Signal protocol</b>. Gemini Carbon-powered agents generated more than <b>six million lines of Lean proofs</b> — in about four weeks, versus what historically can take expert teams years.</p>
+    <p class="why"><b>Why it matters:</b> AI is moving beyond finding bugs toward <b>proving that critical software behaves correctly</b> — an approach that could eventually cover banking software, medical devices and infrastructure.</p>
+    <a class="readmore" href="https://deepmind.google/blog/introducing-alphaproof-code/" target="_blank" rel="noopener">Read DeepMind&#8217;s post →</a>
+  </div>
+
+  <div class="card reveal">
+    <span class="date">10–12 NOV · OPENAI</span>
+    <h4>Keeping increasingly capable models monitorable</h4>
+    <p>New research on maintaining <b>chain-of-thought monitorability</b> across model training, and on automated red-teaming for fuzzy, dual-use areas such as biology and cybersecurity.</p>
+    <p class="why"><b>The shift:</b> model safety → agent monitoring → automated red teams → <b>continuous runtime controls</b> — increasingly relevant as enterprise agents gain access to browsers, code execution, APIs and business systems.</p>
+    <a class="readmore" href="https://alignment.openai.com/" target="_blank" rel="noopener">See OpenAI&#8217;s alignment research →</a>
+  </div>
+
+  <div class="card reveal">
+    <span class="date">9 NOV · ANTHROPIC</span>
+    <h4>Claude reports major gains in science and engineering</h4>
+    <p>During prerelease work, Anthropic says <b>Claude Fable 5.2 / Mythos 5.2</b> helped design <b>three functioning electronic devices</b>, formalized <b>Fermat's Last Theorem in roughly 30 hours</b>, made progress on robotics tasks and solved <b>two open black-hole physics problems</b> — Anthropic-reported results, and treated as such.</p>
+    <p class="why"><b>The research signal:</b> AI is moving from understanding scientific material toward <b>designing, proving and experimentally validating things</b>.</p>
+    <a class="readmore" href="https://www.anthropic.com/claude-fable-and-mythos-5-2" target="_blank" rel="noopener">Read Anthropic&#8217;s announcement →</a>
+  </div>
+
+  <!-- Section 2 -->
+  <h2 class="section reveal">02 · AI MODELS &amp; TOOLS</h2>
+  <h3 class="sectiontitle reveal">Agents gain economic authority<span class="enddot">.</span></h3>
+
+  <div class="card reveal">
+    <span class="date">🥇 9 NOV · ANTHROPIC</span>
+    <h4>Claude Fable 5.2 &amp; Mythos 5.2 launch</h4>
+    <p>Substantial improvements across coding, computer use, scientific research, robotics and professional work: Fable 5.2 scores <b>69.9% on FrontierSWE v2</b> (vs 56.3% for 5.1), Mythos 5.2 reaches <b>75.3% on Terminal-Bench-Science</b>, output is up to 30% faster, priced at <b>$8/M input, $40/M output</b>. The striking experiment: Fable 5.2 coordinated <b>1,000+ subagents for eight days</b> to build a prototype operating system from an empty folder.</p>
+    <p class="why"><b>Why it matters:</b> agent <b>orchestration</b> is becoming a genuine capability differentiator — not merely one model answering one prompt.</p>
+    <a class="readmore" href="https://www.anthropic.com/claude-fable-and-mythos-5-2" target="_blank" rel="noopener">Read the announcement →</a>
+  </div>
+
+  <div class="card reveal">
+    <span class="date">12 NOV · GOOGLE</span>
+    <h4>Gemini 4 Hydrogen — the fast, cheap Gemini 4</h4>
+    <p>Positioned as the cost-efficient Gemini 4 for coding and everyday agentic workflows, complementing deeper-reasoning Carbon and Argon: <b>1M-token context</b>, <b>$1.50/M input, $7.50/M output</b> — scoring 51 on the Artificial Analysis Intelligence Index at default high thinking (vs 50 for Argon) while generally executing faster. Rolling out across AI Studio, the Gemini API, enterprise Gemini, the app and Search.</p>
+    <p class="why"><b>The market structure:</b> frontier model for the hardest problems + <b>faster/cheaper model for most agent steps</b> — an architecture that will matter more to enterprise costs than standardizing on one LLM.</p>
+    <a class="readmore" href="https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-gemini-4-hydrogen/" target="_blank" rel="noopener">Read Google&#8217;s announcement →</a>
+  </div>
+
+  <div class="card reveal">
+    <span class="date">💳 13 NOV · OPENAI</span>
+    <h4>ChatGPT Wallet — agentic payments arrive</h4>
+    <p>Initially for US Pro users through dots: agents can <b>complete purchases after explicit user approval without ever receiving the card number</b>, built with American Express, Mastercard and Visa. Today every transaction is reviewed and biometrically approved; the stated direction is <b>pre-approved spending limits, categories and time periods</b>.</p>
+    <p class="why"><b>The evolution:</b> AI recommends → AI acts → <b>AI transacts</b>. For insurance and financial services, identity, authorization, fraud controls, audit trail and <b>delegated spending authority</b> become first-order design questions.</p>
+    <a class="readmore" href="https://openai.com/index/introducing-chatgpt-wallet/" target="_blank" rel="noopener">Read OpenAI&#8217;s announcement →</a>
+  </div>
+
+  <div class="card reveal">
+    <span class="date">DEVELOPER RADAR</span>
+    <h4>What ExplainX highlighted</h4>
+    <p>ExplainX's 14 November Week in Review led with <b>Gemini 4 Hydrogen</b> and <b>Claude Fable 5.2 designing working circuit boards</b> — both independently verified through Google and Anthropic above. Several more speculative items were excluded where stronger primary verification wasn't available.</p>
+    <a class="readmore" href="https://www.explainx.ai/newsletter/ai-week-in-review-faa-traffic-ai-gemini-4-hydrogen" target="_blank" rel="noopener">Read the Week in Review →</a>
+  </div>
+
+  <!-- Section 3 -->
+  <h2 class="section reveal">03 · AI FUNDING &amp; STARTUPS</h2>
+  <h3 class="sectiontitle reveal">Capital spreads across the execution stack<span class="enddot">.</span></h3>
+
+  <div class="tablewrap reveal">
+  <table>
+    <thead><tr><th>Date</th><th>Company</th><th>Development</th></tr></thead>
+    <tbody>
+      <tr><td>9 Nov</td><td><a href="https://nominal.io/blog/series-c-news" target="_blank" rel="noopener">Nominal</a></td><td>Raised a <b>$240M Series C at $3B</b> for an AI/hardware intelligence platform used in aircraft, defense, energy and advanced manufacturing — AI expanding from software engineering into <b>physical engineering</b>.</td></tr>
+      <tr><td>11 Nov</td><td><a href="https://www.reuters.com/legal/transactional/uk-backed-ai-chip-startup-fractile-hits-7-billion-valuation-funding-round-2026-11-11/" target="_blank" rel="noopener">Fractile 🇬🇧</a></td><td>Raised a <b>$720M Series C at $7B</b> for AI-inference chips built for speed and lower energy use — inference hardware remains one of AI's largest capital opportunities.</td></tr>
+      <tr><td>12 Nov</td><td><a href="https://www.reuters.com/business/media-telecom/softbank-nvidia-back-germanys-agile-robots-85-billion-valuation-2026-11-12/" target="_blank" rel="noopener">Agile Robots 🇩🇪</a></td><td>Raised <b>$500M at $8.5B</b>, led by SoftBank with Nvidia and Hitachi — <b>physical AI / humanoid robotics</b> keeps moving toward industrial scale.</td></tr>
+      <tr><td>13 Nov</td><td><a href="https://techcrunch.com/2026/11/13/ai-agent-startup-langchain-hits-3b-valuation/" target="_blank" rel="noopener">LangChain</a></td><td>Raised a <b>$300M Series C at $3B</b> (CapitalG); LangSmith now serves <b>7,000 customers</b> — agent infrastructure, observability and orchestration are standalone enterprise categories now.</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="card reveal" style="margin-top:14px">
+    <span class="date">10–12 NOV · THE IPO WATCH</span>
+    <h4>Anthropic's roadshow: roughly six times oversubscribed</h4>
+    <p>Anthropic began its IPO roadshow on 10 November; Reuters, citing Bloomberg, reported the offer is about <b>6× oversubscribed</b> — investor demand for frontier-AI exposure remains exceptionally strong despite the growing capex debate. The funding pattern across the week: <b>models → agents → agent infrastructure → chips → physical AI</b>. Capital is spreading across the entire execution stack, not concentrating in frontier labs.</p>
+    <a class="readmore" href="https://www.reuters.com/legal/transactional/anthropics-ipo-is-about-six-times-oversubscribed-bloomberg-news-reports-2026-11-12/" target="_blank" rel="noopener">Read the Reuters report →</a>
+  </div>
+
+  <!-- Section 4: QUANTUM -->
+  <h2 class="qsection reveal">04 · ⚛️ QUANTUM — WEEKLY UPDATE</h2>
+  <h3 class="sectiontitle reveal">The strongest quantum week yet<span class="enddot" style="color:var(--quantum)">.</span></h3>
+
+  <div class="qcard reveal">
+    <span class="qdate">🥇 11 NOV · IBM</span>
+    <h4>Nighthawk r3 — toward 1,000+ programmable qubits</h4>
+    <p>The next Nighthawk processor is designed to execute <b>10,000 quantum operations across 520 programmable qubits</b>, with two r3 processors to be connected in 2027 into a <b>1,040-qubit system</b>. IBM is also integrating classical HPC directly into the IBM Quantum Platform; current r2 partners have executed <b>34+ billion circuits</b>, with speedups up to 19× over earlier processors.</p>
+    <p class="why qwhy"><b>The metric shift:</b> from "how many qubits?" to <b>qubits × circuit depth × speed × fidelity × classical integration</b>.</p>
+    <a class="readmore" style="color:var(--quantum)" href="https://newsroom.ibm.com/2026-11-11-ibm-quantum-nighthawk-demonstrates-new-levels-of-speed-and-quality%2C-with-plans-to-scale-beyond-1%2C000-qubits-in-2027" target="_blank" rel="noopener">Read IBM&#8217;s announcement →</a>
+  </div>
+
+  <div class="qcard reveal">
+    <span class="qdate">🤖⚛️ 12 NOV · Q-CTRL</span>
+    <h4>Q-CTRL raises $290M for AI + Quantum convergence</h4>
+    <p>A <b>$290M Series C</b> led by Salesforce Ventures makes Q-CTRL a quantum unicorn — described as the largest private financing yet for a <b>software-focused</b> quantum company. Its thesis: <b>AI-driven control software that suppresses errors and noise in quantum hardware</b>, plus quantum-navigation systems for GPS-denied environments.</p>
+    <p class="why qwhy"><b>A concrete example of the direction we track:</b> AI → makes quantum hardware more useful.</p>
+    <a class="readmore" style="color:var(--quantum)" href="https://q-ctrl.com/blog/q-ctrl-secures-us-290-million-series-c-funding-led-by-salesforce-ventures-to-accelerate-the-convergence-of-quantum-and-ai" target="_blank" rel="noopener">Read Q-CTRL&#8217;s announcement →</a>
+  </div>
+
+  <div class="qcard reveal">
+    <span class="qdate">12 NOV · AMD × PSIQUANTUM</span>
+    <h4>AMD invests in PsiQuantum</h4>
+    <p>An equity investment and expanded partnership combining PsiQuantum's <b>photonic quantum technology</b> with AMD CPUs, GPUs, adaptive computing and software — exploring <b>Quantum + HPC + AI</b> applications. One existing workflow already uses AMD GPUs in PsiQuantum's drug-discovery research to simulate covalent inhibitors relevant to oncology.</p>
+    <p class="why qwhy"><b>The architecture confirmed again:</b> quantum will complement GPUs and classical HPC — <b>not replace them</b>.</p>
+    <a class="readmore" style="color:var(--quantum)" href="https://www.reuters.com/business/amd-invest-psiquantum-advance-quantum-computing-infrastructure-2026-11-12/" target="_blank" rel="noopener">Read the Reuters report →</a>
+  </div>
+
+  <div class="qcard reveal">
+    <span class="qdate">13 NOV · ATOM COMPUTING</span>
+    <h4>US backs Atom Computing with up to $100M</h4>
+    <p>The neutral-atom quantum company finalized an agreement for up to <b>$100M from the US Department of Commerce</b> to accelerate fault-tolerant, utility-scale quantum computing. Atom already operates a 1,000+ qubit platform and says it is the only neutral-atom company in <b>Stage C of DARPA's Quantum Benchmarking Initiative</b>.</p>
+    <p class="why qwhy"><b>The bigger signal:</b> governments are moving from funding basic research to funding <b>manufacturing, logical qubits and commercialization</b>.</p>
+    <a class="readmore" style="color:var(--quantum)" href="https://atom-computing.com/author/atomcomputing/" target="_blank" rel="noopener">Read Atom&#8217;s announcement →</a>
+  </div>
+
+  <!-- Radar -->
+  <h2 class="section reveal">05 · THE AI + QUANTUM RADAR</h2>
+  <h3 class="sectiontitle reveal">Momentum after this week<span class="enddot">.</span></h3>
+
+  <div class="signal reveal"><div class="num">1</div><div><h5>Agentic AI · 🔥🔥🔥🔥🔥</h5><p>Fable 5.2's 1,000-subagent builds + Hydrogen for the agent steps.</p></div></div>
+  <div class="signal reveal"><div class="num">2</div><div><h5>Agentic commerce · 🔥🔥🔥🔥🔥</h5><p>ChatGPT Wallet: research → decide → act → pay.</p></div></div>
+  <div class="signal reveal"><div class="num">3</div><div><h5>AI for software/security proof · 🔥🔥🔥🔥🔥</h5><p>AlphaProof Code's six million lines of Lean.</p></div></div>
+  <div class="signal reveal"><div class="num">4</div><div><h5>Physical AI · 🔥🔥🔥🔥🔥</h5><p>Agile Robots $500M; Nominal $240M.</p></div></div>
+  <div class="signal reveal"><div class="num">5</div><div><h5>Agent infrastructure · 🔥🔥🔥🔥🔥</h5><p>LangChain's $3B valuation.</p></div></div>
+  <div class="signal reveal"><div class="num">6</div><div><h5>AI inference chips · 🔥🔥🔥🔥🔥</h5><p>Fractile's $720M at $7B.</p></div></div>
+  <div class="signal qsignal reveal"><div class="num">⚛</div><div><h5>Quantum scale/performance · ⚛️⚛️⚛️⚛️⚛️</h5><p>IBM Nighthawk r3 toward 1,040 qubits.</p></div></div>
+  <div class="signal qsignal reveal"><div class="num">⚛</div><div><h5>AI → Quantum · ⚛️⚛️⚛️⚛️⚛️</h5><p>Q-CTRL's AI-driven error suppression goes unicorn.</p></div></div>
+  <div class="signal qsignal reveal"><div class="num">⚛</div><div><h5>Hybrid Quantum + AI/HPC · ⚛️⚛️⚛️⚛️⚛️</h5><p>AMD × PsiQuantum.</p></div></div>
+  <div class="signal qsignal reveal"><div class="num">⚛</div><div><h5>Quantum commercialization · ⚛️⚛️⚛️⚛️</h5><p>Atom Computing's US government backing.</p></div></div>
+
+  <!-- Closing -->
+  <div class="quote reveal">
+    <div class="q">For AI: agents are acquiring <span>economic authority</span> — once they can transact, delegation limits, identity, approvals, fraud and liability matter as much as intelligence. For Quantum: don't wait for a standalone machine — the industry is building <span>hybrid systems now</span>.</div>
+    <div class="sub">The converging stack: QPU + CPU/GPU + HPC + AI-based control + developer platform — IBM, Q-CTRL and AMD–PsiQuantum all pointed the same way this week · 9–15 November 2026</div>
+  </div>
+
+  <footer>
+    <div class="wordmark">xplore<span class="ai">ai</span></div>
+    <a class="link" href="https://xploreai.co.in">xploreai.co.in</a>
+    <div class="fine">You're reading the XploreAI Weekly Briefing — a 5-minute read on the week in AI and Quantum.<br>Items cross-checked against primary sources and Reuters · © 2026 XploreAI · @xploreai</div>
+  </footer>
+
+</div>
+<script>
+(function(){
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    document.querySelectorAll('.reveal').forEach(function(el){ el.classList.add('in'); });
+    return;
+  }
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+    });
+  }, {threshold: 0.12, rootMargin: '0px 0px -40px 0px'});
+  document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+})();
+</script>
+</body>
+</html>
