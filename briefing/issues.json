@@ -1,5 +1,20 @@
 [
   {
+    "issue": 15,
+    "slug": "issue-15",
+    "title": "The Frontier Goes Public",
+    "dates": "16–22 Nov 2026",
+    "summary": "OpenAI's GPT-6.2 Astra and Sol land at Critical cyber thresholds, Gemini 4 Neon and Microsoft's Agent 365 push governed enterprise agents, Anthropic completes the largest IPO in history (~$119.5B raised with its placement) — while IBM and NVIDIA wire quantum into the supercomputing stack and IOSCO tells finance to prepare now.",
+    "highlights": [
+      "Frontier AI 🔥🔥🔥🔥🔥",
+      "Agentic enterprise AI 🔥🔥🔥🔥🔥",
+      "AI for science 🔥🔥🔥🔥🔥",
+      "AI goes public 🔥🔥🔥🔥🔥",
+      "Quantum + HPC ⚛️⚛️⚛️⚛️⚛️",
+      "Quantum-safe finance ⚛️⚛️⚛️⚛️⚛️"
+    ]
+  },
+  {
     "issue": 14,
     "slug": "issue-14",
     "title": "Agents With a Wallet",
